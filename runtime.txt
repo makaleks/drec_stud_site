@@ -1,3 +1,0 @@
-# This file tells Heroku dev. hosting the project language, so it can be built.
-# Not required if development is finished
-python-3.6.1
