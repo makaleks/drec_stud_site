@@ -1,6 +1,10 @@
 # Department of Radio Electronics and Cybernetics student site
 
+This branch made to run [DEMO](https://drec-stud-site.herokuapp.com/), adopted to run at Heroku free hosting.
+
 ### Development
+
+> All changes in code at master should be merged with this branch
 
 1. Clone the repository:
 ```bash
