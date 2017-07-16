@@ -40,6 +40,7 @@ http {
         location /media/ {
             alias /home/dev/drec_stud_site/media/;
         }
+    }
 }
 ```
 5. Set up PostgreSQL (note: Django expects UTF-8)
