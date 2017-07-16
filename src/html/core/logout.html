@@ -1,0 +1,42 @@
+{% extends "core/base.html" %}
+
+{% block script %}
+var sec = 3;
+
+function start_timer()
+{
+    sec--;
+    document.getElementById("timer").innerHTML = sec;
+    if(sec == 0)
+    {
+        var pathArray = window.location.pathname.split( '/' );
+        pathArray.pop();
+        pathArray.pop();
+        var newPathname = window.location.protocol + "//" + window.location.host;
+        if(pathArray.length != 0)
+        {
+            newPathname += pathArray.join("/") + "/";
+        }
+        else
+        {
+            newPathname += "/";
+        }
+        window.location.href = newPathname;
+    }
+    setTimeout(start_timer, 1000);
+}
+
+window.onload = function()
+{
+    document.getElementById("timer").innerHTML = sec;
+    //document.write(document.location.href);
+    start_timer();
+}
+{% endblock %}
+
+{% block content %}
+<p>Сессия окончена</p>
+<p>Возврат через: <span id="timer"></span></p>
+{% endblock %}
+
+

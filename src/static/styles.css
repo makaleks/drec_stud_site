@@ -1,0 +1,14 @@
+@charset "UTF-8";
+
+html {
+    height: 100%;
+}
+body {
+/*overriden by bootstrap*/
+/*background-color: rgb(255,0,0);*/
+    background-image: url('drec_logo.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    height: 100%;
+    margin: 0;
+}
