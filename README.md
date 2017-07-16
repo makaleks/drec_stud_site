@@ -43,12 +43,6 @@ http {
     }
 }
 ```
-5. Set up PostgreSQL (note: Django expects UTF-8)
-```sql
-CREATE DATABASE drec_stud_site;
-CREATE USER drec_stud_site_admin;
-GRANT ALL PRIVILEGES ON DATABASE drec_stud_site TO drec_stud_site_admin;
-```
 5. Don`t forget to run Nginx and Postgres. You may also want to enable them (run on starup), also before its first start Postgres requires [installation](https://wiki.archlinux.org/index.php/PostgreSQL#Installing_PostgreSQL):
 ```bash
 sudo systemctl start nginx
@@ -57,27 +51,33 @@ sudo systemctl start postgresql
 sudo systemctl enable nginx
 sudo systemctl enable postgresql
 ```
-6. Migrate all your models:
+6. Set up PostgreSQL (note: Django expects UTF-8)
+```sql
+CREATE DATABASE drec_stud_site;
+CREATE USER drec_stud_site_admin;
+GRANT ALL PRIVILEGES ON DATABASE drec_stud_site TO drec_stud_site_admin;
+```
+7. Migrate all your models:
 ```bash
 src/manage.py makemigrations
 src/manage.py migrate
 ```
 > If you got errors during 'migrate', try detecting Django apps separately:
 > "src/manage.py makemigrations user_info"
-7. (Optional) If you wish to insert some data for demonstration, run:
+8. (Optional) If you wish to insert some data for demonstration, run:
 ```bash
 ./postgresql_helper.py -r
 ```
 > run with --help argument to show all arguments
-8. If you restore database from demonstration backup the default cretentials are "admin, password123". If you did`t, create a Django superuser:
+9. If you restore database from demonstration backup the default cretentials are "admin, password123". If you did`t, create a Django superuser:
 ``` bash
 src/manage.py createsuperuser
 ```
-9. Don`t forget to collect static files from all applications:
+10. Don`t forget to collect static files from all applications:
 ```bash
 src/manage.py collectstatic
 ```
-10. Start gunicorn to run Gunicorn server:
+11. Start gunicorn to run Gunicorn server:
 ```bash
 gunicorn --reload -b localhost:8080 --pythonpath src drec_stud_site.wsgi:application
 ```
