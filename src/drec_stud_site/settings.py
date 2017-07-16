@@ -39,7 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'user_info',
+    'post',
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -56,7 +59,7 @@ ROOT_URLCONF = 'drec_stud_site.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'html')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -126,3 +129,7 @@ STATIC_ROOT = os.path.join(PROJECT_ROOT, 'collected_static')
 STATICFILES_DIRS = (
         os.path.join(BASE_DIR, 'static'),
 )
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'media')
+# Need to give access for nginx (root user, default: none, by fact on my host: 0o600)
+FILE_UPLOAD_PERMISSIONS = 0o644
