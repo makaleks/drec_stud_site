@@ -16,20 +16,31 @@ source env/bin/activate
 ```bash
 pip install -r src/requirements.txt
 ```
-4. To serve static files install Nginx (/etc/nginx/nginx.conf). It must contain:
+4. To serve static files install Nginx. You must have in /etc/nginx/nginx.conf inside 'server{}':
 ```nginx configuration file
 # So files > 20M can be loaded.
 client_max_body_size 10m;
 # Check the port - it should be similar to mentioned in gunicorn
 # Check you've commented previous 'location /'
-location / {
-    proxy_pass http://localhost:8080;
-}
-location /static/ {
-    alias /home/dev/drec_stud_site/collected_static/;
-}
-location /media/ {
-    alias /home/dev/drec_stud_site/media/;
+http {
+    include       mime.types;
+    # I don`t know what 'default_type' means
+    default_type  application/octet-stream;
+    sendfile        on;
+    server {
+        listen       80;
+        server_name  localhost;
+
+        location / {
+            proxy_pass http://localhost:8080;
+        }
+        location /static/ {
+            alias /home/dev/drec_stud_site/collected_static/;
+        }
+        location /media/ {
+            alias /home/dev/drec_stud_site/media/;
+        }
+    }
 }
 ```
 5. Set up PostgreSQL (note: Django expects UTF-8)
