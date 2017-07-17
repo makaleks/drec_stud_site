@@ -4,5 +4,5 @@
 *~
 collected_static
 media
-env/*
+env
 !.gitignore
