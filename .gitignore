@@ -2,5 +2,7 @@
 *.swp
 *.swo
 *~
+collected_static
+media
 env/*
-
+!.gitignore
