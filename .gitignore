@@ -1,8 +1,7 @@
 *.pyc
-*.swp
-*.swo
+*.sw?
 *~
-collected_static
-media
-env/*
 !.gitignore
+media
+env
+collected_static
