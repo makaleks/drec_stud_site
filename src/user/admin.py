@@ -5,6 +5,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
 from utils.validators import is_valid_name, is_valid_phone, is_valid_email
+from utils.utils import check_unique
 from .models import User
 
 # Register your models here.
@@ -14,17 +15,30 @@ class CustomUserCreationForm(forms.ModelForm):
     password2 = forms.CharField(label = 'Password confirmation', widget = forms.PasswordInput)
 
     def clean(self):
-        if is_valid_phone(self.cleaned_data.get('phone_number')) is False:
+        phone_number    = self.cleaned_data.get('phone_number')
+        last_name       = self.cleaned_data.get('last_name')
+        first_name      = self.cleaned_data.get('first_name')
+        patronymic_name = self.cleaned_data.get('patronymic_name')
+        account_url     = self.cleaned_data.get('account_url')
+        email           = self.cleaned_data.get('email')
+        if is_valid_phone(phone_number) is False:
             raise forms.ValidationError('Неверный формат телефонного номера')
-        if is_valid_name(self.cleaned_data.get('last_name')) is False:
+        if is_valid_name(last_name) is False:
             raise forms.ValidationError('Неверный формат фамилии')
-        if is_valid_name(self.cleaned_data.get('first_name')) is False:
+        if is_valid_name(first_name) is False:
             raise forms.ValidationError('Неверный формат имени')
-        if is_valid_name(self.cleaned_data.get('patronymic_name')) is False:
+        if is_valid_name(patronymic_name) is False:
             raise forms.ValidationError('Неверный формат отчества')
         # 'email' is optional
-        if (len(self.cleaned_date.get('email')) != 0) and (is_valid_email(self.cleaned_data.get('email')) is False):
+        if (len(email) != 0) and (is_valid_email(email) is False):
             raise forms.ValidationError('Неверный формат почты')
+
+        if check_unique(User, 'phone_number', phone_number) is False:
+            raise forms.ValidationError('Этот номер телефона уже зарегистрирован')
+        if check_unique(User, 'account_url', account_url) is False:
+            raise forms.ValidationError('Эта ссылка на аккаунт уже зарегистрирована')
+        if (len(email) != 0) and (check_unique(User, 'email', email) is False):
+            raise forms.ValidationError('Эта почта уже зарегистрирована')
         return self.cleaned_data
 
     class Meta:
@@ -49,17 +63,30 @@ class UserChangeForm(forms.ModelForm):
     password = ReadOnlyPasswordHashField()
 
     def clean(self):
-        if is_valid_phone(self.cleaned_data.get('phone_number')) is False:
+        phone_number    = self.cleaned_data.get('phone_number')
+        last_name       = self.cleaned_data.get('last_name')
+        first_name      = self.cleaned_data.get('first_name')
+        patronymic_name = self.cleaned_data.get('patronymic_name')
+        account_url     = self.cleaned_data.get('account_url')
+        email           = self.cleaned_data.get('email')
+        if is_valid_phone(phone_number) is False:
             raise forms.ValidationError('Неверный формат телефонного номера')
-        if is_valid_name(self.cleaned_data.get('last_name')) is False:
+        if is_valid_name(last_name) is False:
             raise forms.ValidationError('Неверный формат фамилии')
-        if is_valid_name(self.cleaned_data.get('first_name')) is False:
+        if is_valid_name(first_name) is False:
             raise forms.ValidationError('Неверный формат имени')
-        if is_valid_name(self.cleaned_data.get('patronymic_name')) is False:
+        if is_valid_name(patronymic_name) is False:
             raise forms.ValidationError('Неверный формат отчества')
         # 'email' is optional
-        if (len(self.cleaned_data.get('email')) != 0) and (is_valid_email(self.cleaned_data.get('email')) is False):
+        if (len(email) != 0) and (is_valid_email(email) is False):
             raise forms.ValidationError('Неверный формат почты')
+
+        if check_unique(User, 'phone_number', phone_number) is False:
+            raise forms.ValidationError('Этот номер телефона уже зарегистрирован')
+        if check_unique(User, 'account_url', account_url) is False:
+            raise forms.ValidationError('Эта ссылка на аккаунт уже зарегистрирована')
+        if (len(email) != 0) and (check_unique(User, 'email', email) is False):
+            raise forms.ValidationError('Эта почта уже зарегистрирована')
         return self.cleaned_data
 
     class Meta:
