@@ -4,6 +4,7 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
+from utils.validators import is_valid_name, is_valid_phone, is_valid_email
 from .models import User
 
 # Register your models here.
@@ -11,6 +12,21 @@ from .models import User
 class CustomUserCreationForm(forms.ModelForm):
     password1 = forms.CharField(label = 'Password', widget = forms.PasswordInput)
     password2 = forms.CharField(label = 'Password confirmation', widget = forms.PasswordInput)
+
+    def clean(self):
+        if is_valid_phone(self.cleaned_data.get('phone_number')) is False:
+            raise forms.ValidationError('Неверный формат телефонного номера')
+        if is_valid_name(self.cleaned_data.get('last_name')) is False:
+            raise forms.ValidationError('Неверный формат фамилии')
+        if is_valid_name(self.cleaned_data.get('first_name')) is False:
+            raise forms.ValidationError('Неверный формат имени')
+        if is_valid_name(self.cleaned_data.get('patronymic_name')) is False:
+            raise forms.ValidationError('Неверный формат отчества')
+        # 'email' is optional
+        if (len(self.cleaned_date.get('email')) != 0) and (is_valid_email(self.cleaned_data.get('email')) is False):
+            raise forms.ValidationError('Неверный формат почты')
+        return self.cleaned_data
+
     class Meta:
         model = User
         fields = ('last_name', 'first_name', 'patronymic_name', 'account_url', 'email')
@@ -31,6 +47,21 @@ class CustomUserCreationForm(forms.ModelForm):
 
 class UserChangeForm(forms.ModelForm):
     password = ReadOnlyPasswordHashField()
+
+    def clean(self):
+        if is_valid_phone(self.cleaned_data.get('phone_number')) is False:
+            raise forms.ValidationError('Неверный формат телефонного номера')
+        if is_valid_name(self.cleaned_data.get('last_name')) is False:
+            raise forms.ValidationError('Неверный формат фамилии')
+        if is_valid_name(self.cleaned_data.get('first_name')) is False:
+            raise forms.ValidationError('Неверный формат имени')
+        if is_valid_name(self.cleaned_data.get('patronymic_name')) is False:
+            raise forms.ValidationError('Неверный формат отчества')
+        # 'email' is optional
+        if (len(self.cleaned_data.get('email')) != 0) and (is_valid_email(self.cleaned_data.get('email')) is False):
+            raise forms.ValidationError('Неверный формат почты')
+        return self.cleaned_data
+
     class Meta:
         model = User
         fields = ('last_name', 'first_name', 'patronymic_name', 'account_url', 'email')

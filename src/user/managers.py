@@ -1,10 +1,23 @@
 from django.contrib.auth.models import BaseUserManager
+from utils.validators import is_valid_name, is_valid_phone, is_valid_email
 
 
 class UserManager(BaseUserManager):
     def create_user(self, last_name, first_name, patronymic_name, phone_number, account_url, email, password=None):
         if not first_name or not last_name or not patronymic_name or not phone_number:
             raise ValueError('Users must have first name, last name, patronymic name and phone number')
+        if is_valid_name(first_name) is False:
+            raise ValueError('First name format is incorrent')
+        if is_valid_name(last_name) is False:
+            raise ValueError('Last name format is incorrent')
+        if is_valid_name(patronymic_name) is False:
+            raise ValueError('Patronymic name format is incorrent')
+        if is_valid_phone(phone_number) is False:
+            raise ValueError('Phone format is incorrent')
+        # 'email' is optional
+        if (len(email) != 0) and (is_valid_email(email) is False):
+            raise ValueError('Email format is incorrent')
+
         user = self.model(
             email = self.normalize_email(email),
             first_name = first_name,
