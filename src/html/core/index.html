@@ -1,0 +1,63 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Сайт студсовета</title>
+    <meta charset="UTF-8">
+    <!-- <meta name="viewport" content="initial-scale=1.0"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+    <!-- Bootstrap core CSS -->
+    <link type="text/css" rel="stylesheet" href="http://unpkg.com/bootstrap@next/dist/css/bootstrap.min.css" />
+
+    <link type="text/css" rel="stylesheet" href="main.css" />
+</head>
+
+<body>
+    <div class="page">
+        <aside id="header">
+            <section id="vk-header">
+                <img src="img/vk.svg" />
+                <p>Привет, {{ stranger }}</p>
+                <a href="" class="btn btn-danger">Войти через ВК</a>
+                <a href="" class="btn btn-danger">Перейти в ЛК</a>
+                <a href="" class="btn btn-danger">Выйти</a>
+            </section>
+            <nav id="nav" class="link-underline">
+                <ul>
+                    <li><a href="index" id="home-link" class="skel-layers-ignoreHref active"><span class="icon home">Главная|Новости</span></a></li>
+                    <li><a href="survey" id="survey-link" class="skel-layers-ignoreHref"><span class="icon survey">Опросы</span></a></li>
+                    <li><a href="services/stirka" id="stirka-link" class="skel-layers-ignoreHref"><span class="icon stirka">Стиралка</span></a></li>
+                    <li><a href="services" id="services-link" class="skel-layers-ignoreHref"><span class="icon services">Другие сервисы</span></a></li>
+                    <li><a href="services" id="contact-link" class="skel-layers-ignoreHref"><span class="icon user">Профиль</span></a></li>
+                    <li><a href="about" id="about-link" class="skel-layers-ignoreHref"><span class="icon about">О сайте</span></a></li>
+                </ul>
+            </nav>
+            <section class="copyright">&copy; СтудСовет ФРТК 2017</section>
+        </aside>
+
+        <div id="main">
+            <div>
+                <article class="top">
+                    <div class="containerbefore"></div>
+                    <div class="container">
+                        <h1>
+                            Добро пожаловать на сайт ФРТК!
+                        </h1>
+                    </div>
+                </article>
+                <article id="news" class="container">
+                        {% block content %}
+                        {% endblock %}
+                </article>
+                <footer></footer>
+            </div>
+        </div>
+    </div>
+    <div id="headerToggle">
+        <a href="#header" onclick="document.body.style.toggle('active');" id="toggle"></a>
+    </div>
+</body>
+
+</html>
