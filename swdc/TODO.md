@@ -1,17 +1,17 @@
 # Site main points
 
-- [x] Main css (main.css) (in process)
- - [x] Primary code
- - [ ] Mobile menu opening (z-index problems)
-- [x] Index page (in process)
- - [x] Primary code
+- [ ] Main css (main.css) (in process)
+- - [x] Primary code
+- - [ ] Mobile menu opening (z-index problems)
+- [ ] Index page (in process)
+- - [x] Primary code
 - [ ] Survey page
- - [ ] Primary code
+- - [ ] Primary code
 - [ ] Household services main page
- - [ ] Primary code
+- - [ ] Primary code
 - [ ] Household services pages
- - [ ] Primary code
+- - [ ] Primary code
 - [ ] Profile page
- - [ ] Primary code
+- - [ ] Primary code
 - [ ] About page
- - [ ] Primary code
+- - [ ] Primary code
