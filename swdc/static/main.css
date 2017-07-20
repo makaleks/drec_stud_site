@@ -45,12 +45,17 @@ body {
  * Sidepanel Style Block
  */
 
-#header {
+#header .box {
+    -moz-transition: -moz-transform 2s ease;
+    -webkit-transition: -webkit-transform 2s ease;
+    -ms-transition: -ms-transform 2s ease;
+    transition: transform 2s ease;
     display: -moz-flex;
     display: -webkit-flex;
     display: -ms-flex;
     display: -o-flex;
     display: flex;
+	flex: 1;
     -moz-flex-direction: column;
     -webkit-flex-direction: column;
     -ms-flex-direction: column;
@@ -61,11 +66,35 @@ body {
     -ms-justify-content: space-between;
     -o-justify-content: space-between;
     justify-content: space-between;
+	min-height: min-content;
+	max-height: 100%;
     background: #290000;
     color: #fff;
     bottom: 0;
     left: 0;
-    overflow-y: scroll;
+    position: relative;
+    text-align: right;
+    top: 0;
+    width: 300px;
+    z-index: 1000;
+}
+
+#header {
+    -moz-transition: -moz-transform 2s ease;
+    -webkit-transition: -webkit-transform 2s ease;
+    -ms-transition: -ms-transform 2s ease;
+    transition: transform 2s ease;
+    display: -moz-flex;
+    display: -webkit-flex;
+    display: -ms-flex;
+    display: -o-flex;
+    display: flex;
+	flex: 1;
+    background: #290000;
+    color: #fff;
+    bottom: 0;
+    left: 0;
+    overflow-y: auto;
     position: fixed;
     text-align: right;
     top: 0;
@@ -142,7 +171,7 @@ body {
  */
 
 #main {
-    width: calc(100%-300px);
+    width: calc(100% - 300px);
     margin-left: 300px;
     z-index: 100;
 }
@@ -229,40 +258,47 @@ body {
     border: 0;
 }
 
-#headerToggle .toggle:before {
-    font-family: FontAwesome;
+#headerToggle .toggle::before {
     text-decoration: none;
     font-style: normal;
     font-weight: normal;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    content: '\f0c9';
+    content: '\2261';
     color: #fff;
-    font-size: 18px;
-    line-height: 2.25em;
+    font-size: 1.5rem;
+    line-height: 2.25rem;
     background: rgba(128, 136, 144, 0.5);
-    border-radius: 0.35em;
+    border-radius: 0.35rem;
     text-align: center;
     position: absolute;
-    left: 0.5em;
-    top: 0.5em;
+    left: 0.5rem;
+    top: 0.5rem;
     display: block;
-    width: 3.25em;
-    height: 2.25em;
-    line-height: 2.25em;
+    width: 3.25rem;
+    height: 2.25rem;
+    line-height: 2.25rem;
 }
 
 @media(max-width: 768px) {
+	.activeSide* {
+		overflow: hidden;
+	}
     #header {
         left: calc(3.25em - 100vw);
         width: calc(100vw - 3.25em);
+		text-align: center;
     }
-    .active #header {
+    .activeSide #header {
         left: 0;
-        width: calc(100vw - 3.25em);
+        width: 100vw; //calc(100vw - 3.25em);
     }
     #headerToggle {
         display: block;
+    }
+    .activeSide #headerToggle .toggle::before {
+        display: block;
+        content: '\274C';
     }
     #main {
         margin: auto;
