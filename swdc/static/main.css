@@ -55,7 +55,7 @@ body {
     display: -ms-flex;
     display: -o-flex;
     display: flex;
-	flex: 1;
+    flex: 1;
     -moz-flex-direction: column;
     -webkit-flex-direction: column;
     -ms-flex-direction: column;
@@ -66,8 +66,8 @@ body {
     -ms-justify-content: space-between;
     -o-justify-content: space-between;
     justify-content: space-between;
-	min-height: min-content;
-	max-height: 100%;
+    min-height: min-content;
+    max-height: 100%;
     background: #290000;
     color: #fff;
     bottom: 0;
@@ -77,54 +77,6 @@ body {
     top: 0;
     width: 300px;
     z-index: 1000;
-}
-
-#header {
-    -moz-transition: -moz-transform 2s ease;
-    -webkit-transition: -webkit-transform 2s ease;
-    -ms-transition: -ms-transform 2s ease;
-    transition: transform 2s ease;
-    display: -moz-flex;
-    display: -webkit-flex;
-    display: -ms-flex;
-    display: -o-flex;
-    display: flex;
-	flex: 1;
-    background: #290000;
-    color: #fff;
-    bottom: 0;
-    left: 0;
-    overflow-y: auto;
-    position: fixed;
-    text-align: right;
-    top: 0;
-    width: 300px;
-    z-index: 1000;
-}
-
-#nav ul {
-    margin-bottom: 0;
-    list-style: none;
-    padding-left: 0;
-}
-
-#nav ul li a {
-    display: block;
-    padding: 0.5em 1.5em;
-    color: rgba(255, 255, 255, 0.5);
-    text-decoration: none;
-    outline: 0;
-    border: 0;
-    -moz-transition: none;
-    -webkit-transition: none;
-    -ms-transition: none;
-    transition: none;
-}
-
-@media (min-width: 991px) {
-    #header {
-        max-width: 300px;
-    }
 }
 
 .card-columns {
@@ -186,7 +138,7 @@ body {
 
 #main .top {
     z-index: 120;
-	background: url(img/background.svg) center center no-repeat;
+    background: url(img/background.svg) center center no-repeat;
     background-size: cover;
 }
 
@@ -281,13 +233,13 @@ body {
 }
 
 @media(max-width: 768px) {
-	.activeSide* {
-		overflow: hidden;
-	}
+    .activeSide* {
+        overflow: hidden;
+    }
     #header {
         left: calc(3.25em - 100vw);
         width: calc(100vw - 3.25em);
-		text-align: center;
+        text-align: center;
     }
     .activeSide #header {
         left: 0;

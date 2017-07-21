@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Сайт студсовета</title>
+    <meta charset="UTF-8" />
+    <!-- <meta name="viewport" content="initial-scale=1.0"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+
+    <link type="text/css" rel="stylesheet" href="https://unpkg.com/normalize.css" />
+    <link type="text/css" rel="stylesheet" href="../static/base.css" />
+</head>
+
+<body>
+    <aside id="header">
+        <div class="box">
+            <section id="vk-header">
+                <img src="../static/img/vk.svg" />
+                <p>Привет, {{ stranger }}</p>
+                <a href="" class="btn btn-danger">Войти через ВК</a>
+                <a href="" class="btn btn-danger">Перейти в ЛК</a>
+                <a href="" class="btn btn-danger">Выйти</a>
+            </section>
+            <nav id="nav" class="link-underline">
+                <ul>
+                    <li><a href="index" class="active"><span>Главная|Новости</span></a></li>
+                    <li><a href="survey"><span>Опросы</span></a></li>
+                    <li><a href="services/stirka"><span>Стиралка</span></a></li>
+                    <li><a href="services"><span>Другие сервисы</span></a></li>
+                    <li><a href="services"><span>Профиль</span></a></li>
+                    <li><a href="about"><span>О сайте</span></a></li>
+                </ul>
+            </nav>
+            <section class="copyright">&copy; СтудСовет ФРТК 2017</section>
+        </div>
+    </aside>
+    <div id="headerToggle">
+        <a href="#header" onclick="document.body.classList.toggle('activeSide');" class="toggle"></a>
+    </div>
+</body>
+
+</html>
