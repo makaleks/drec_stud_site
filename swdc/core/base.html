@@ -14,11 +14,11 @@
 </head>
 
 <body>
-    <aside id="header">
-        <div class="box">
-            <section id="vk-header">
+    <aside id="header" data-style="display: flex;">
+        <div class="box" data-style="display: flex;">
+            <section id="vk-header" data-style="display: flex;">
                 <img src="../static/img/vk.svg" />
-                <article>
+                <article data-style="display: flex;">
                     <p>Привет, {{ stranger }}</p>
                     <a href="" class="btn btn-vk hidden">Войти через ВК</a>
                     <a href="" class="btn btn-vk">Перейти в ЛК</a>
@@ -39,7 +39,7 @@
         </div>
     </aside>
 
-    <div id="main">
+    <div id="main" data-style="display: flex;">
         <article class="top">
             <div>
                 <h1>
@@ -60,6 +60,11 @@
     <div id="headerToggle">
         <a href="#header" onclick="document.body.classList.toggle('activeSide');" class="toggle"></a>
     </div>
+    <script src="https://unpkg.com/flexibility"></script>
+    <script>
+        flexibility(document.documentElement);
+
+    </script>
 </body>
 
 </html>
