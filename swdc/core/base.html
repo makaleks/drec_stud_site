@@ -7,6 +7,7 @@
     <!-- <meta name="viewport" content="initial-scale=1.0"> -->
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 
+    <link href="https://fonts.googleapis.com/css?family=Noto+Sans|Noto+Serif&amp;subset=cyrillic" rel="stylesheet">
     <link type="text/css" rel="stylesheet" href="https://unpkg.com/normalize.css" />
     <link type="text/css" rel="stylesheet" href="../static/base.css" />
 </head>
@@ -17,9 +18,9 @@
             <section id="vk-header">
                 <img src="../static/img/vk.svg" />
                 <p>Привет, {{ stranger }}</p>
-                <a href="" class="btn btn-danger">Войти через ВК</a>
-                <a href="" class="btn btn-danger">Перейти в ЛК</a>
-                <a href="" class="btn btn-danger">Выйти</a>
+                <a href="" class="btn btn-vk">Войти через ВК</a>
+                <a href="" class="btn btn-vk hidden">Перейти в ЛК</a>
+                <a href="" class="btn btn-vk hidden">Выйти</a>
             </section>
             <nav id="nav" class="link-underline">
                 <ul>
@@ -31,9 +32,28 @@
                     <li><a href="about"><span>О сайте</span></a></li>
                 </ul>
             </nav>
-            <section class="copyright">&copy; СтудСовет ФРТК 2017</section>
+            <footer class="copyright">&copy; СтудСовет ФРТК 2017</footer>
         </div>
     </aside>
+
+    <div id="main">
+        <article class="top">
+            <div class="container">
+                <h1>
+                    Добро пожаловать на сайт ФРТК!
+                </h1>
+            </div>
+        </article>
+
+        <article id="content" class="container">
+            {{ content }}
+        </article>
+
+        <footer>
+            <section class="container">&copy; СтудСовет ФРТК 2017</section>
+        </footer>
+    </div>
+
     <div id="headerToggle">
         <a href="#header" onclick="document.body.classList.toggle('activeSide');" class="toggle"></a>
     </div>
