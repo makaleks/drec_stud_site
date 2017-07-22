@@ -1,11 +1,16 @@
 # Site main points
 
-- [ ] Main css (main.css) (in process)
+- [x] Main css [static/base.css](static/base.css)
+- [x] Content css [static/content.css](static/content.css)
+- [x] Base page [core/base.html](core/base.html)
+- [ ] Index page content [core/index.html](core/index.html)
 - - [x] Primary code
-- - [ ] Mobile menu opening (z-index problems)
-- [ ] Index page (in process)
+- - [ ] Cuting big news
+- [ ] Surveys list page content [core/surveys_list.html](core/surveys_list.html)
 - - [x] Primary code
-- [ ] Survey page
+- - [ ] Redesign
+- - [ ] Add tags support
+- [ ] Survey page content
 - - [ ] Primary code
 - [ ] Household services main page
 - - [ ] Primary code
