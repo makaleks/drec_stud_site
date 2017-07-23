@@ -17,7 +17,7 @@ class User(AbstractBaseUser):
     USERNAME_FIELD  = 'phone_number'
     EMAIL_FIELD     = 'email'
     # USERNAME_FIELD and password are always required
-    REQUIRED_FIELDS = ['last_name', 'first_name', 'patronymic_name', 'account_url']
+    REQUIRED_FIELDS = ['last_name', 'first_name', 'patronymic_name', 'account_url', 'email']
     is_superuser    = models.BooleanField(default = False)
     is_staff        = models.BooleanField(default = False)
     is_active       = models.BooleanField(default = True)

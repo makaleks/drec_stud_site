@@ -8,11 +8,19 @@ from utils.validators import is_valid_name, is_valid_phone, is_valid_email
 from utils.utils import check_unique
 from .models import User
 
+#import logging
+#logging.basicConfig(filename='myapp.log', level=logging.INFO)
+#log = logging.getLogger(__name__)
+#from django.utils.encoding import force_text
+
 # Register your models here.
 
-class CustomUserCreationForm(forms.ModelForm):
+class UserCreationForm(forms.ModelForm):
     password1 = forms.CharField(label = 'Password', widget = forms.PasswordInput)
     password2 = forms.CharField(label = 'Password confirmation', widget = forms.PasswordInput)
+    #def is_valid(self):
+    #    log.info(force_text(self.errors))
+    #    return super(UserCreationForm, self).is_valid()
 
     def clean(self):
         phone_number    = self.cleaned_data.get('phone_number')
@@ -81,12 +89,15 @@ class UserChangeForm(forms.ModelForm):
         if (len(email) != 0) and (is_valid_email(email) is False):
             raise forms.ValidationError('Неверный формат почты')
 
-        if check_unique(User, 'phone_number', phone_number) is False:
+        if ((check_unique(User, 'phone_number', phone_number) is False)
+            and (phone_number != self.instance.phone_number)):
             raise forms.ValidationError('Этот номер телефона уже зарегистрирован')
-        if check_unique(User, 'account_url', account_url) is False:
+        if ((check_unique(User, 'account_url', account_url) is False)
+            and (account_url != self.instance.account_url)):
             raise forms.ValidationError('Эта ссылка на аккаунт уже зарегистрирована')
         if (len(email) != 0) and (check_unique(User, 'email', email) is False):
             raise forms.ValidationError('Эта почта уже зарегистрирована')
+        self.cleaned_data['password'] = self.instance.password
         return self.cleaned_data
 
     class Meta:
@@ -101,7 +112,7 @@ class UserChangeForm(forms.ModelForm):
 
 class UserAdmin(BaseUserAdmin):
     form = UserChangeForm
-    add_form = UserChangeForm
+    add_form = UserCreationForm
     list_display = ('last_name', 'first_name', 'patronymic_name', 'phone_number', 'is_superuser')
     list_filter = ('is_superuser',)
     fieldsets = (
@@ -114,11 +125,11 @@ class UserAdmin(BaseUserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('phone_number', 'last_name', 'first_name', 'patronymic_name', 'account_url', 'email', 'is_staff',)}
+            'fields': ('phone_number', 'last_name', 'first_name', 'patronymic_name', 'account_url', 'email', 'is_staff', 'password1', 'password2')}
         ),
     )
     search_fields = ('last_name', 'phone_number', 'account_url', 'first_name', 'patronymic_name', 'email',)
-    ordering = ('last_name', 'first_name', 'is_staff',)
+    ordering = ('last_name', 'first_name', 'is_staff')
     filter_horizontal = ()
 
 # Register the new UserAdmin
