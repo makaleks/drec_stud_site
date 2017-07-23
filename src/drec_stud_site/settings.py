@@ -145,4 +145,27 @@ AUTHENTICATION_BACKENDS = (
 )
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
 SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = ['last_name', 'first_name', 'patronymic_name']
+# The chain of functions that will bring us to user
+SOCIAL_AUTH_PIPELINE = (
+    # Get the information we can about the user and return it.
+    # On some cases the details are already part of the auth response
+    # from the provider, but sometimes this could hit a provider API.
+    'social_core.pipeline.social_auth.social_details',
+    # Get the social uid from whichever service we're authing thru.
+    # The uid is the unique identifier of the given user in the provider.
+    'social_core.pipeline.social_auth.social_uid',
+    # Verifies that the current auth process is valid within the current
+    # project, this is where emails and domains whitelists are applied (if
+    # defined).
+    'social_core.pipeline.social_auth.auth_allowed',
+    # Check that social uid meets requirements
+    'user.pipeline.load_user',
+    # Checks if the current social-account is already
+    # associated in the site.
+    'social_core.pipeline.social_auth.social_user',
+    # Create the record that associates the social account with the user.
+    'social_core.pipeline.social_auth.associate_user',
+    # Force login, so you will be reloginned (not done by default)
+    #'user.pipeline.force_login',
+)
 LOGIN_REDIRECT_URL = '/login_success'

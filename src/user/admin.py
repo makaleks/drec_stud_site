@@ -8,26 +8,18 @@ from utils.validators import is_valid_name, is_valid_phone, is_valid_email
 from utils.utils import check_unique
 from .models import User
 
-#import logging
-#logging.basicConfig(filename='myapp.log', level=logging.INFO)
-#log = logging.getLogger(__name__)
-#from django.utils.encoding import force_text
-
 # Register your models here.
 
 class UserCreationForm(forms.ModelForm):
     password1 = forms.CharField(label = 'Password', widget = forms.PasswordInput)
     password2 = forms.CharField(label = 'Password confirmation', widget = forms.PasswordInput)
-    #def is_valid(self):
-    #    log.info(force_text(self.errors))
-    #    return super(UserCreationForm, self).is_valid()
 
     def clean(self):
         phone_number    = self.cleaned_data.get('phone_number')
         last_name       = self.cleaned_data.get('last_name')
         first_name      = self.cleaned_data.get('first_name')
         patronymic_name = self.cleaned_data.get('patronymic_name')
-        account_url     = self.cleaned_data.get('account_url')
+        account_id     = self.cleaned_data.get('account_id')
         email           = self.cleaned_data.get('email')
         if is_valid_phone(phone_number) is False:
             raise forms.ValidationError('Неверный формат телефонного номера')
@@ -43,7 +35,7 @@ class UserCreationForm(forms.ModelForm):
 
         if check_unique(User, 'phone_number', phone_number) is False:
             raise forms.ValidationError('Этот номер телефона уже зарегистрирован')
-        if check_unique(User, 'account_url', account_url) is False:
+        if check_unique(User, 'account_id', account_id) is False:
             raise forms.ValidationError('Эта ссылка на аккаунт уже зарегистрирована')
         if (len(email) != 0) and (check_unique(User, 'email', email) is False):
             raise forms.ValidationError('Эта почта уже зарегистрирована')
@@ -51,7 +43,7 @@ class UserCreationForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('last_name', 'first_name', 'patronymic_name', 'account_url', 'email')
+        fields = ('last_name', 'first_name', 'patronymic_name', 'account_id', 'email')
     def clean_password2(self):
         # Check if 2 passwords are the same
         password1 = self.cleaned_data.get('password1')
@@ -75,7 +67,7 @@ class UserChangeForm(forms.ModelForm):
         last_name       = self.cleaned_data.get('last_name')
         first_name      = self.cleaned_data.get('first_name')
         patronymic_name = self.cleaned_data.get('patronymic_name')
-        account_url     = self.cleaned_data.get('account_url')
+        account_id     = self.cleaned_data.get('account_id')
         email           = self.cleaned_data.get('email')
         if is_valid_phone(phone_number) is False:
             raise forms.ValidationError('Неверный формат телефонного номера')
@@ -92,8 +84,8 @@ class UserChangeForm(forms.ModelForm):
         if ((check_unique(User, 'phone_number', phone_number) is False)
             and (phone_number != self.instance.phone_number)):
             raise forms.ValidationError('Этот номер телефона уже зарегистрирован')
-        if ((check_unique(User, 'account_url', account_url) is False)
-            and (account_url != self.instance.account_url)):
+        if ((check_unique(User, 'account_id', account_id) is False)
+            and (account_id != self.instance.account_id)):
             raise forms.ValidationError('Эта ссылка на аккаунт уже зарегистрирована')
         if (len(email) != 0) and (check_unique(User, 'email', email) is False):
             raise forms.ValidationError('Эта почта уже зарегистрирована')
@@ -102,7 +94,7 @@ class UserChangeForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('last_name', 'first_name', 'patronymic_name', 'account_url', 'email')
+        fields = ('last_name', 'first_name', 'patronymic_name', 'account_id', 'email')
     def clean_password2(self):
         # Regardless of what the user provides, return the initial value.
         # This is done here, rather than on the field, because the
@@ -118,17 +110,17 @@ class UserAdmin(BaseUserAdmin):
     fieldsets = (
         (None, {'fields': ('phone_number', 'password')}),
         ('Personal info', {'fields': ('last_name', 'first_name', 'patronymic_name')}),
-        ('Contacts', {'fields': ('account_url', 'email')}),
+        ('Contacts', {'fields': ('account_id', 'email')}),
         ('Permissions', {'fields': ('is_superuser','is_staff',)}),
     )
     # Superuser can be created only from tty
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('phone_number', 'last_name', 'first_name', 'patronymic_name', 'account_url', 'email', 'is_staff', 'password1', 'password2')}
+            'fields': ('phone_number', 'last_name', 'first_name', 'patronymic_name', 'account_id', 'email', 'is_staff', 'password1', 'password2')}
         ),
     )
-    search_fields = ('last_name', 'phone_number', 'account_url', 'first_name', 'patronymic_name', 'email',)
+    search_fields = ('last_name', 'phone_number', 'account_id', 'first_name', 'patronymic_name', 'email',)
     ordering = ('last_name', 'first_name', 'is_staff')
     filter_horizontal = ()
 
