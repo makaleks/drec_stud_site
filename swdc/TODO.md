@@ -1,7 +1,9 @@
 # Site main points
 
 - [x] Main css [static/base.css](static/base.css)
+- - [x] not prefixed Main css [static/base-np.css](static/base-np.css)
 - [x] Content css [static/content.css](static/content.css)
+- - [ ] not prefixed Content css [static/content-np.css](static/content-np.css)
 - [x] Base page [core/base.html](core/base.html)
 - [ ] Index page content [core/index.html](core/index.html)
 - - [x] Primary code
