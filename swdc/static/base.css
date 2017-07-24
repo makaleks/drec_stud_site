@@ -142,7 +142,7 @@ footer {
     border-radius: 50px;
 }
 
-#vk-header>article {
+#vk-header>section {
     display: -webkit-box;
     display: -webkit-flex;
     display: -moz-box;
