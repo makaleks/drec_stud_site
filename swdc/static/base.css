@@ -7,6 +7,15 @@ html {
     font-family: 'Noto Sans', sans-serif;
 }
 
+header,
+nav,
+section,
+article,
+aside,
+footer {
+    display: block;
+}
+
 
 /* Styled Link */
 
