@@ -10,6 +10,7 @@ html {
 header,
 nav,
 section,
+main,
 article,
 aside,
 footer {
@@ -49,16 +50,7 @@ footer {
  */
 
 #header {
-    display: -webkit-box;
-    display: -webkit-flex;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-flex: 1;
-    -webkit-flex: 1;
-    -moz-box-flex: 1;
-    -ms-flex: 1;
-    flex: 1;
+    display: block;
     background: #290000;
     color: #fff;
     bottom: 0;

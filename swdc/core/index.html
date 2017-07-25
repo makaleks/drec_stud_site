@@ -11,18 +11,31 @@
     <link type="text/css" rel="stylesheet" href="https://unpkg.com/normalize.css" />
     <link type="text/css" rel="stylesheet" href="../static/base.css" />
     <link type="text/css" rel="stylesheet" href="../static/content.css" />
+    <!--[if lt IE 9]>
+        <script>
+            document.createElement('header');
+            document.createElement('nav');
+            document.createElement('main');
+            document.createElement('section');
+            document.createElement('article');
+            document.createElement('aside');
+            document.createElement('footer');
+        </script>
+    <![endif]-->
 </head>
 
 <body>
     <aside id="header">
         <div class="box">
-            <section id="vk-header">
+            <article id="vk-header">
                 <img src="../static/img/vk.svg" />
-                <p>Привет, {{ stranger }}</p>
-                <a href="" class="btn btn-vk">Войти через ВК</a>
-                <a href="" class="btn btn-vk hidden">Перейти в ЛК</a>
-                <a href="" class="btn btn-vk hidden">Выйти</a>
-            </section>
+                <section>
+                    <p>Привет, {{ stranger }}</p>
+                    <a href="" class="btn btn-vk hidden">Войти через ВК</a>
+                    <a href="" class="btn btn-vk">Перейти в ЛК</a>
+                    <a href="" class="btn btn-vk">Выйти</a>
+                </section>
+            </article>
             <nav id="nav" class="link-underline red">
                 <ul>
                     <li><a href="index" class="active"><span>Главная|Новости</span></a></li>
@@ -37,7 +50,7 @@
         </div>
     </aside>
 
-    <div id="main">
+    <main id="main">
         <article class="top">
             <div>
                 <h1>
@@ -50,15 +63,21 @@
             <section class="card">
                 <img src="../static/img/FRTK.png" class="card-img" />
                 <h2>{{ title }}</h2>
-                <p class="card-maintext">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer a laoreet sapien. Cras gravida malesuada eros sit amet feugiat. Phasellus non orci nibh. Suspendisse potenti. Donec lacinia, purus sit amet ullamcorper faucibus, enim turpis accumsan lacus, id mattis mi massa vel odio. Phasellus mollis dui diam, sit amet porta justo posuere in. Aliquam felis ante, vulputate quis massa vel, sagittis facilisis dolor. Suspendisse posuere consequat tristique. Suspendisse ultrices sollicitudin dignissim. Aliquam orci odio, tincidunt nec lectus sit amet, aliquam elementum felis. Sed laoreet felis a lobortis placerat. Duis nec est non neque gravida condimentum a ut nibh. Cras libero nisi, eleifend quis nisl porta, dapibus placerat purus. Quisque venenatis elit ac ultrices consequat.</p>
+                <p class="card-maintext">{{ main.content }}</p>
                 <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+            </section>
+            <section class="card">
+                <img src="../static/img/FRTK.png" class="card-img" />
+                <h2>{{ title }}</h2>
+                <p class="card-maintext">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer a laoreet sapien. Cras gravida malesuada eros sit amet feugiat. Phasellus non orci nibh. Suspendisse potenti. Donec lacinia, purus sit amet ullamcorper faucibus, enim turpis accumsan lacus, id mattis mi massa vel odio. Phasellus mollis dui diam, sit amet porta justo posuere in. Aliquam felis ante, vulputate quis massa vel, sagittis facilisis dolor. Suspendisse posuere consequat tristique. Suspendisse ultrices sollicitudin dignissim. Aliquam orci odio, tincidunt nec lectus sit amet, aliquam elementum felis. Sed laoreet felis a lobortis placerat. Duis nec est non neque gravida condimentum a ut nibh. Cras libero nisi, eleifend quis nisl porta, dapibus placerat purus. Quisque venenatis elit ac ultrices consequat.</p>
+                <p class="card-text"><small class="text-muted">Last updated {{ main.time }}</small></p>
             </section>
         </article>
 
         <footer>
             <section class="container">&copy; СтудСовет ФРТК 2017</section>
         </footer>
-    </div>
+    </main>
 
     <div id="headerToggle">
         <a href="#header" onclick="document.body.classList.toggle('activeSide');" class="toggle"></a>

@@ -1,7 +1,5 @@
 .container {
     position: relative;
-    margin-left: auto;
-    margin-right: auto;
     padding-right: 15px;
     padding-left: 15px;
     max-width: 700px;
@@ -10,18 +8,24 @@
 
 .card {
     background: #fff;
+    -moz-border-radius: 2px;
     border-radius: 2px;
     display: inline-block;
-    margin: 1rem;
     position: relative;
     padding: 1rem;
-    max-width: 100%;
-    width: 100%;
+    margin: 1rem;
+    -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    -webkit-transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
+    -o-transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
+    -moz-transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
     transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
 }
 
 .card:hover {
+    -webkit-box-shadow: 0 2px 2px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+    -moz-box-shadow: 0 2px 2px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
     box-shadow: 0 2px 2px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
 }
 
@@ -39,6 +43,8 @@
 
 .link-underline.red a {
     border-bottom: 3px solid #800000;
+    -webkit-box-shadow: inset 0 -4px 0 #800000;
+    -moz-box-shadow: inset 0 -4px 0 #800000;
     box-shadow: inset 0 -4px 0 #800000;
 }
 
