@@ -6,7 +6,8 @@
 - - [ ] Think about safari 8.0 background bug
 - [ ] Index page content [core/index.html](core/index.html)
 - - [x] Primary code
-- - [ ] Cuting big news
+- - [x] Cuting big news by symbols
+- - [ ] Cuting big news by lines
 - [ ] Surveys list page content [core/surveys_list.html](core/surveys_list.html)
 - - [x] Primary code
 - - [ ] Redesign

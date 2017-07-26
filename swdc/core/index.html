@@ -71,17 +71,10 @@
             <section class="card">
                 <img src="../static/img/FRTK.png" class="card-img" />
                 <h2>{{ title }}</h2>
-                <p class="card-maintext txt1">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer a laoreet sapien. Cras gravida malesuada eros sit amet feugiat. Phasellus non orci nibh. Suspendisse potenti. Donec lacinia, purus sit amet ullamcorper faucibus, enim turpis accumsan lacus, id mattis mi massa vel odio. Phasellus mollis dui diam, sit amet porta justo posuere in. Aliquam felis ante, vulputate quis massa vel, sagittis facilisis dolor. Suspendisse posuere consequat tristique. Suspendisse ultrices sollicitudin dignissim. Aliquam orci odio, tincidunt nec lectus sit amet, aliquam elementum felis. Sed laoreet felis a lobortis placerat. Duis nec est non neque gravida condimentum a ut nibh. Cras libero nisi, eleifend quis nisl porta, dapibus placerat purus. Quisque venenatis elit ac ultrices consequat.</p>
-                <script>
-                    $(function() {
-                        $('.txt1').succinct({
-                            size: 200,
-                            omission: '... <a href="">Read more</a>',
-                            ignore: true
-                        });
-                    });
-
-                </script>
+                <div>
+                    <p class="card-maintext truncate">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer a laoreet sapien. Cras gravida malesuada eros sit amet feugiat. Phasellus non orci nibh. Suspendisse potenti. Donec lacinia, purus sit amet ullamcorper faucibus, enim turpis accumsan lacus, id mattis mi massa vel odio. Phasellus mollis dui diam, sit amet porta justo posuere in. Aliquam felis ante, vulputate quis massa vel, sagittis facilisis dolor. Suspendisse posuere consequat tristique. Suspendisse ultrices sollicitudin dignissim. Aliquam orci odio, tincidunt nec lectus sit amet, aliquam elementum felis. Sed laoreet felis a lobortis placerat. Duis nec est non neque gravida condimentum a ut nibh. Cras libero nisi, eleifend quis nisl porta, dapibus placerat purus. Quisque venenatis elit ac ultrices consequat.</p>
+                    <p class="card-maintext orig">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer a laoreet sapien. Cras gravida malesuada eros sit amet feugiat. Phasellus non orci nibh. Suspendisse potenti. Donec lacinia, purus sit amet ullamcorper faucibus, enim turpis accumsan lacus, id mattis mi massa vel odio. Phasellus mollis dui diam, sit amet porta justo posuere in. Aliquam felis ante, vulputate quis massa vel, sagittis facilisis dolor. Suspendisse posuere consequat tristique. Suspendisse ultrices sollicitudin dignissim. Aliquam orci odio, tincidunt nec lectus sit amet, aliquam elementum felis. Sed laoreet felis a lobortis placerat. Duis nec est non neque gravida condimentum a ut nibh. Cras libero nisi, eleifend quis nisl porta, dapibus placerat purus. Quisque venenatis elit ac ultrices consequat.</p>
+                </div>
                 <p class="card-text"><small class="text-muted">Last updated {{ main.time }}</small></p>
             </section>
         </article>
@@ -94,6 +87,17 @@
     <div id="headerToggle">
         <a href="#header" onclick="document.body.classList.toggle('activeSide');" class="toggle"></a>
     </div>
+    <script>
+        $(function() {
+            document.body.width();
+            $('.truncate').succinct({
+                size: 200,
+                omission: '... <a onclick="this.parent.parent.">Read more</a>',
+                ignore: true
+            });
+        });
+
+    </script>
 </body>
 
 </html>
