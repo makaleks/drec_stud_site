@@ -6,6 +6,10 @@
 - auth - authorization
 - master - united result
 
+### Design
+[swdc](swdc/README.md) - Site Without Django layout Code (only html, css, js and media)
+[TODO list](swdc/TODO.md)
+
 ### Development
 
 1. Clone the repository:
