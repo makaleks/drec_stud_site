@@ -23,7 +23,7 @@ class UserManager(BaseUserManager):
             raise ValueError('This phone number has been already registered')
         if check_unique(self.model, 'account_id', account_id) is False:
             raise ValueError('This account url has been already registered')
-        if (len(email) != 0) and (check_unique(User, 'email', email) is False):
+        if (len(email) != 0) and (check_unique(self.model, 'email', email) is False):
             raise ValueError('This email has been already registered')
 
         user = self.model(

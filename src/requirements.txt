@@ -2,3 +2,5 @@ Django==1.11.3
 gunicorn==19.7.1
 psycopg2==2.7.1
 social-auth-app-django==1.2.0
+Pillow==4.2.1
+django-cleanup==1.0.1

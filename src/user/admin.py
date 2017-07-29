@@ -87,7 +87,7 @@ class UserChangeForm(forms.ModelForm):
         if ((check_unique(User, 'account_id', account_id) is False)
             and (account_id != self.instance.account_id)):
             raise forms.ValidationError('Эта ссылка на аккаунт уже зарегистрирована')
-        if (len(email) != 0) and (check_unique(User, 'email', email) is False):
+        if (len(email) != 0) and (check_unique(User, 'email', email) is False) and email != self.instance.email:
             raise forms.ValidationError('Эта почта уже зарегистрирована')
         self.cleaned_data['password'] = self.instance.password
         return self.cleaned_data

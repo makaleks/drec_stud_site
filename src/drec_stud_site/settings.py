@@ -41,8 +41,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'social_django',
+    # disable to save media on delete/update
+    'django_cleanup',
     'utils',
     'user',
+    'news',
 ]
 
 MIDDLEWARE = [
@@ -130,6 +133,8 @@ STATIC_ROOT = os.path.join(PROJECT_ROOT, 'collected_static')
 STATICFILES_DIRS = (
         os.path.join(BASE_DIR, 'static'),
 )
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'media')
 
 AUTH_USER_MODEL = 'user.User'
 
@@ -168,4 +173,10 @@ SOCIAL_AUTH_PIPELINE = (
     # Force login, so you will be reloginned (not done by default)
     #'user.pipeline.force_login',
 )
-LOGIN_REDIRECT_URL = '/login_success'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
+SOCIAL_AUTH_SANITIZE_REDIRECTS = False
+# So social-auth will not set redirect-url with post
+# needs in nginx server settings: 'proxy_set_header Host $host;'
+USE_X_FORWARDED_HOST = True
