@@ -6,6 +6,10 @@
 - auth - authorization
 - master - united result
 
+### Design
+[swdc](swdc/README.md) - Site Without Django layout Code (only html, css, js and media)
+[TODO list](swdc/TODO.md)
+
 ### Development
 
 1. Clone the repository:
@@ -24,8 +28,6 @@ pip install -r src/requirements.txt
 ```
 4. To serve static files install Nginx. You must have in /etc/nginx/nginx.conf inside 'server{}':
 ```nginx configuration file
-# So files > 20M can be loaded.
-client_max_body_size 10m;
 # Check the port - it should be similar to mentioned in gunicorn
 # Check you've commented previous 'location /'
 http {
@@ -36,6 +38,11 @@ http {
     server {
         listen       80;
         server_name  localhost;
+
+        # So files > 20M can be loaded.
+        client_max_body_size 10m;
+        # Always set header to the current host (no url)
+        proxy_set_header Host $host;
 
         location / {
             proxy_pass http://localhost:8080;

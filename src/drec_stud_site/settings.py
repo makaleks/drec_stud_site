@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+from importlib import util
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -39,8 +40,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'social_django',
+    # disable to save media on delete/update
+    'django_cleanup',
     'utils',
     'user',
+    'news',
 ]
 
 MIDDLEWARE = [
@@ -58,7 +63,7 @@ ROOT_URLCONF = 'drec_stud_site.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'html')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -128,5 +133,50 @@ STATIC_ROOT = os.path.join(PROJECT_ROOT, 'collected_static')
 STATICFILES_DIRS = (
         os.path.join(BASE_DIR, 'static'),
 )
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'media')
 
 AUTH_USER_MODEL = 'user.User'
+
+spec = util.spec_from_file_location('setting_additions', os.path.join(PROJECT_ROOT, 'setting_additions.py'))
+module = util.module_from_spec(spec)
+spec.loader.exec_module(module)
+SOCIAL_AUTH_VK_OAUTH2_KEY = module.SOCIAL_AUTH_VK_OAUTH2_KEY
+SOCIAL_AUTH_VK_OAUTH2_SECRET = module.SOCIAL_AUTH_VK_OAUTH2_SECRET
+
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.vk.VKOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
+SOCIAL_AUTH_URL_NAMESPACE = 'social'
+SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = ['last_name', 'first_name', 'patronymic_name']
+# The chain of functions that will bring us to user
+SOCIAL_AUTH_PIPELINE = (
+    # Get the information we can about the user and return it.
+    # On some cases the details are already part of the auth response
+    # from the provider, but sometimes this could hit a provider API.
+    'social_core.pipeline.social_auth.social_details',
+    # Get the social uid from whichever service we're authing thru.
+    # The uid is the unique identifier of the given user in the provider.
+    'social_core.pipeline.social_auth.social_uid',
+    # Verifies that the current auth process is valid within the current
+    # project, this is where emails and domains whitelists are applied (if
+    # defined).
+    'social_core.pipeline.social_auth.auth_allowed',
+    # Check that social uid meets requirements
+    'user.pipeline.load_user',
+    # Checks if the current social-account is already
+    # associated in the site.
+    'social_core.pipeline.social_auth.social_user',
+    # Create the record that associates the social account with the user.
+    'social_core.pipeline.social_auth.associate_user',
+    # Force login, so you will be reloginned (not done by default)
+    #'user.pipeline.force_login',
+)
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
+SOCIAL_AUTH_SANITIZE_REDIRECTS = False
+# So social-auth will not set redirect-url with post
+# needs in nginx server settings: 'proxy_set_header Host $host;'
+USE_X_FORWARDED_HOST = True

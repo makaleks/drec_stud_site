@@ -1,0 +1,16 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+    {% for post in news_list %}
+        <section class='card'>
+            {% if post.image %}
+                <img src='{{ post.image.url }}' class='card-img' />
+            {% endif %}
+            <h2>{{ post.title }}</h2>
+            {% if post.text %}
+                <p class='card-maintext'>{{ post.text }}</p>
+            {% endif %}
+            <p class='card-text'><small class='text-muted'>Last updated {{ post.edited }}</small></p>
+        </section>
+    {% endfor %}
+{% endblock %}
