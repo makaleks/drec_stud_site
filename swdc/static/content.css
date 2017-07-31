@@ -2,6 +2,7 @@
     position: relative;
     padding-right: 15px;
     padding-left: 15px;
+    margin: auto;
     max-width: 700px;
     font-family: 'Noto Serif', serif;
 }
@@ -33,15 +34,12 @@
 
 .card-img {
     max-width: 100%;
+    width: 100%;
     border-bottom: #ccc solid 1px;
     padding-bottom: 1rem;
 }
 
-.card-maintext {
-    max-height: 6.9rem;
-    overflow-y: hidden;
-    text-overflow: ellipsis;
-}
+.card-maintext {}
 
 .link-underline.red a {
     border-bottom: 3px solid #800000;
@@ -58,6 +56,40 @@
 .link-underline.red a:focus,
 .link-underline.red a:active {
     background: #800000;
+}
+
+.link-underline a.lightblue {
+    border-bottom: 3px solid #81D4FA;
+    -webkit-box-shadow: inset 0 -4px 0 #81D4FA;
+    -moz-box-shadow: inset 0 -4px 0 #81D4FA;
+    box-shadow: inset 0 -4px 0 #81D4FA;
+}
+
+.link-underline a.lightblue.active {
+    background: #0277BD;
+}
+
+.link-underline a.lightblue:hover,
+.link-underline a.lightblue:focus,
+.link-underline a.lightblue:active {
+    background: #81D4FA;
+    color: #fff;
+}
+
+.cuted {
+    display: block;
+}
+
+.full {
+    display: none;
+}
+
+.shownews .cuted {
+    display: none;
+}
+
+.shownews .full {
+    display: block;
 }
 
 .tag {

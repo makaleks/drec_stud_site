@@ -3,11 +3,11 @@
 - [x] Main css [static/base.css](static/base.css)
 - [x] Content css [static/content.css](static/content.css)
 - [x] Base page [core/base.html](core/base.html)
-- - [ ] Think about safari 8.0 background bug
+- - [x] Think about safari 8.0 background bug
+- - [x] Add support notification panel
 - [ ] Index page content [core/index.html](core/index.html)
 - - [x] Primary code
-- - [x] Cuting big news by symbols
-- - [ ] Cuting big news by lines
+- - [x] Cuting big news # cutted in server or by cut tag when writing
 - [ ] Surveys list page content [core/surveys_list.html](core/surveys_list.html)
 - - [x] Primary code
 - - [ ] Redesign
