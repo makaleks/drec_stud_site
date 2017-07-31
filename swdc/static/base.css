@@ -261,6 +261,7 @@ footer {
 
 #main>.top {
     z-index: 120;
+    background-color: #000;
     background-image: url(img/background.svg);
     background-position: center center;
     background-repeat: no-repeat;
