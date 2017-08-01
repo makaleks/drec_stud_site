@@ -297,9 +297,6 @@ footer {
 }
 
 @media(max-width: 768px) {
-    .activeSide* {
-        overflow: hidden;
-    }
     #header {
         left: -webkit-calc(3.25em - 100vw);
         left: -moz-calc(3.25em - 100vw);
@@ -309,14 +306,15 @@ footer {
         width: calc(100vw - 3.25em);
         text-align: center;
     }
-    .activeSide #header {
+    #showside:checked~#header {
         left: 0;
         width: 100vw;
     }
     #headerToggle {
+        overflow: visible;
         display: block;
     }
-    .activeSide #headerToggle .toggle::before {
+    #showside:checked~#headerToggle .toggle::before {
         display: block;
         content: '\274C';
     }

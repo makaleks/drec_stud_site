@@ -5,13 +5,13 @@
 - [x] Base page [core/base.html](core/base.html)
 - - [x] Think about safari 8.0 background bug
 - - [x] Add support notification panel
-- [ ] Index page content [core/index.html](core/index.html)
+- [x] Index page content [core/index.html](core/index.html)
 - - [x] Primary code
 - - [x] Cuting big news # cutted in server or by cut tag when writing
 - [ ] Surveys list page content [core/surveys_list.html](core/surveys_list.html)
 - - [x] Primary code
-- - [ ] Redesign
-- - [ ] Add tags support
+- - [ ] Redesign (1/2)
+- - [x] Add tags support !Added in css
 - [ ] Survey page content
 - - [ ] Primary code
 - [ ] Household services main page
