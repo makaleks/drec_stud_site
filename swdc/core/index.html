@@ -148,8 +148,8 @@
                 <div>
                     <!--!!!! Важно: необходим уникальный id внутри блока для input и label -->
                     <input id="show_{{id}}" type="checkbox" class="hidden shownews" />
-                    <p class="card-maintext link-underline cuted">{{ cuted text }} <label for="show_{{id}}"><a>Читать далее</a></label></p>
-                    <p class="card-maintext full">{{ full text }} <label for="show_{{id}}"><a>Скрыть</a></label></p>
+                    <p class="card-maintext cuted">{{ cuted text }} <label class="link-underline" for="show_{{id}}"><a class="lightblue">Читать далее</a></label></p>
+                    <p class="card-maintext full">{{ full text }} <label class="link-underline" for="show_{{id}}"><a class="lightblue">Скрыть</a></label></p>
 
                 </div>
                 <p class="card-text"><small class="text-muted">Last updated {{ main.time }}</small></p>
