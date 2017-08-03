@@ -19,7 +19,8 @@ class UserCreationForm(forms.ModelForm):
         last_name       = self.cleaned_data.get('last_name')
         first_name      = self.cleaned_data.get('first_name')
         patronymic_name = self.cleaned_data.get('patronymic_name')
-        account_id     = self.cleaned_data.get('account_id')
+        group_number    = self.cleaned_data.get('group_number')
+        account_id      = self.cleaned_data.get('account_id')
         email           = self.cleaned_data.get('email')
         if is_valid_phone(phone_number) is False:
             raise forms.ValidationError('Неверный формат телефонного номера')
@@ -29,6 +30,8 @@ class UserCreationForm(forms.ModelForm):
             raise forms.ValidationError('Неверный формат имени')
         if is_valid_name(patronymic_name) is False:
             raise forms.ValidationError('Неверный формат отчества')
+        if is_valid_group(group_number) is False:
+            raise forms.ValidationError('Неверный формат группы')
         # 'email' is optional
         if (len(email) != 0) and (is_valid_email(email) is False):
             raise forms.ValidationError('Неверный формат почты')
@@ -43,7 +46,7 @@ class UserCreationForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('last_name', 'first_name', 'patronymic_name', 'account_id', 'email')
+        fields = ('last_name', 'first_name', 'patronymic_name', 'group_number', 'account_id', 'email')
     def clean_password2(self):
         # Check if 2 passwords are the same
         password1 = self.cleaned_data.get('password1')
@@ -67,7 +70,8 @@ class UserChangeForm(forms.ModelForm):
         last_name       = self.cleaned_data.get('last_name')
         first_name      = self.cleaned_data.get('first_name')
         patronymic_name = self.cleaned_data.get('patronymic_name')
-        account_id     = self.cleaned_data.get('account_id')
+        group_number    = self.cleaned_data.get('group_number')
+        account_id      = self.cleaned_data.get('account_id')
         email           = self.cleaned_data.get('email')
         if is_valid_phone(phone_number) is False:
             raise forms.ValidationError('Неверный формат телефонного номера')
@@ -77,6 +81,8 @@ class UserChangeForm(forms.ModelForm):
             raise forms.ValidationError('Неверный формат имени')
         if is_valid_name(patronymic_name) is False:
             raise forms.ValidationError('Неверный формат отчества')
+        if is_valid_group(group_number) is False:
+            raise forms.ValidationError('Неверный формат группы')
         # 'email' is optional
         if (len(email) != 0) and (is_valid_email(email) is False):
             raise forms.ValidationError('Неверный формат почты')
@@ -94,7 +100,7 @@ class UserChangeForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('last_name', 'first_name', 'patronymic_name', 'account_id', 'email')
+        fields = ('last_name', 'first_name', 'patronymic_name', 'group_number', 'account_id', 'email')
     def clean_password2(self):
         # Regardless of what the user provides, return the initial value.
         # This is done here, rather than on the field, because the
@@ -105,11 +111,11 @@ class UserChangeForm(forms.ModelForm):
 class UserAdmin(BaseUserAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
-    list_display = ('last_name', 'first_name', 'patronymic_name', 'phone_number', 'is_superuser')
+    list_display = ('last_name', 'first_name', 'patronymic_name', 'group_number', 'is_superuser')
     list_filter = ('is_superuser',)
     fieldsets = (
         (None, {'fields': ('phone_number', 'password')}),
-        ('Personal info', {'fields': ('last_name', 'first_name', 'patronymic_name')}),
+        ('Personal info', {'fields': ('last_name', 'first_name', 'patronymic_name', 'group_number')}),
         ('Contacts', {'fields': ('account_id', 'email')}),
         ('Permissions', {'fields': ('is_superuser','is_staff',)}),
     )
@@ -117,10 +123,10 @@ class UserAdmin(BaseUserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('phone_number', 'last_name', 'first_name', 'patronymic_name', 'account_id', 'email', 'is_staff', 'password1', 'password2')}
+            'fields': ('phone_number', 'last_name', 'first_name', 'patronymic_name', 'group_number', 'account_id', 'email', 'is_staff', 'password1', 'password2')}
         ),
     )
-    search_fields = ('last_name', 'phone_number', 'account_id', 'first_name', 'patronymic_name', 'email',)
+    search_fields = ('last_name', 'phone_number', 'group_number', 'account_id', 'first_name', 'patronymic_name', 'email',)
     ordering = ('last_name', 'first_name', 'is_staff')
     filter_horizontal = ()
 
