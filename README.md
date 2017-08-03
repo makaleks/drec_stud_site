@@ -70,25 +70,33 @@ CREATE DATABASE drec_stud_site;
 CREATE USER drec_stud_site_admin;
 GRANT ALL PRIVILEGES ON DATABASE drec_stud_site TO drec_stud_site_admin;
 ```
-7. Migrate all your models:
+7. Migrate all your models (don`t forget moving to src/):
 ```bash
-src/manage.py makemigrations
-src/manage.py migrate
+cd src/
+manage.py makemigrations
+manage.py migrate
 ```
 > If you got errors during 'migrate', try detecting Django apps separately:
-> "src/manage.py makemigrations user_info"
+> "manage.py makemigrations user_info"
 8. (Optional) If you wish to insert some data for demonstration, run:
 ```bash
 ./postgresql_helper.py -r
 ```
 > run with --help argument to show all arguments
-9. If you restore database from demonstration backup the default cretentials are "admin, password123". If you did`t, create a Django superuser:
+9. Create a Django superuser:
 ``` bash
-src/manage.py createsuperuser
+manage.py shell
+from user.managers import UserManager
+from user.models import User
+m = UserManager()
+m.model = User
+m.create_superuser('Lastname', 'Firstname', 'Patronymicname', *drec group number*, '*phone number*', '*vk-id number*', '*email (optional)*')
 ```
+> We don`t use any passwords, so simple way doesn`t work:
+> "manage.py createsuperuser"
 10. Don`t forget to collect static files from all applications:
 ```bash
-src/manage.py collectstatic
+manage.py collectstatic
 ```
 11. Start gunicorn to run Gunicorn server:
 ```bash
