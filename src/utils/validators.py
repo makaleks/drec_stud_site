@@ -31,6 +31,6 @@ def is_valid_email(s):
     _email_valid = re.compile(r"^[0-9a-z]+([-.]?[0-9a-z]+)*@[0-9a-z]+\.[a-z]+$")
     return _check_valid(_email_valid, s = s)
 
-def is_valid_group(s):
+def is_valid_group(n):
     # DREC-only groups
-    return s > 110 and s < 920
+    return n > 110 and n < 920
