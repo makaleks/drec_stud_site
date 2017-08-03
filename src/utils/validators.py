@@ -33,5 +33,5 @@ def is_valid_email(s):
 
 def is_valid_group(n):
     # DREC-only groups
-    second_num = (n // 10) % 10
-    return n > 110 and n < 920 and second_num == 1
+    _group_valid = re.compile(r"^[1-9]1[1-9]$")
+    return _check_valid(_group_valid, s = str(n))
