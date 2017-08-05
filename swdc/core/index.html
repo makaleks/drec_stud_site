@@ -134,12 +134,13 @@
     <div id="back"></div>
 
     <aside id="header">
-        <div class="box">
+        <div class="box link-underline">
             <article id="vk-header">
                 <img src="../static/img/vk.svg" />
                 <section>
                     <p>Привет, {{ stranger }}</p>
-                    <a href="" class="btn btn-vk hidden">Войти через ВК</a>
+                    <a href="" class="btn btn-vk">Войти через ВК</a>
+                    <!-- for hide add "hidden" class -->
                     <a href="" class="btn btn-vk">Выйти</a>
                 </section>
             </article>
@@ -153,6 +154,10 @@
                     <li><a href="about"><span>О сайте</span></a></li>
                 </ul>
             </nav>
+
+            <a href="#" id="goup" class="lightblue">
+                    Вверх
+            </a>
         </div>
     </aside>
 
@@ -164,8 +169,8 @@
                 <div>
                     <!--!!!! Важно: необходим уникальный id внутри блока для input и label -->
                     <input id="show_{{id}}" type="checkbox" class="hidden shownews" />
-                    <p class="card-maintext cuted">{{ cuted text }} <label class="link-underline" for="show_{{id}}"><a class="lightblue">Читать далее</a></label></p>
-                    <p class="card-maintext full">{{ full text }} <label class="link-underline" for="show_{{id}}"><a class="lightblue">Скрыть</a></label></p>
+                    <p class="card-maintext cuted">{{ cuted text }} <label class="link-underline" for="show_{{id}}"><a class="lightblue">&nbsp;Читать&nbsp;далее&nbsp;</a></label></p>
+                    <p class="card-maintext full">{{ full text }} <label class="link-underline" for="show_{{id}}"><a class="lightblue">&nbsp;Скрыть&nbsp;</a></label></p>
                 </div>
                 <p class="card-text"><small class="text-muted">Last updated {{ main.time }}</small></p>
             </section>

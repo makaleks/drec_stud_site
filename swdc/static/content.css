@@ -83,7 +83,7 @@
     background: #fff;
     -moz-border-radius: 2px;
     border-radius: 2px;
-    display: inline-block;
+    display: block;
     width: -webkit-calc(100% - 60px);
     width: -moz-calc(100% - 60px);
     width: calc(100% - 60px);
