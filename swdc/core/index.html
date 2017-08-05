@@ -9,8 +9,8 @@
 
     <link href="https://fonts.googleapis.com/css?family=Noto+Sans|Noto+Serif&amp;subset=cyrillic" rel="stylesheet">
     <link type="text/css" rel="stylesheet" href="https://unpkg.com/normalize.css" />
-    <link type="text/css" rel="stylesheet" href="../static/base.css" />
     <link type="text/css" rel="stylesheet" href="../static/content.css" />
+    <link type="text/css" rel="stylesheet" href="../static/base.css" />
     <!--[if lt IE 9]>
         <script>
             document.createElement('header');
@@ -26,6 +26,7 @@
 
 <body>
     <input id="showside" type="checkbox" class="hidden" />
+
     <script>
         var $buoop = {
             vs: {
@@ -74,12 +75,12 @@
                     font: 17px Calibri, Helvetica, Arial, sans-serif;
                     box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
                 }
-            
+
                 .buorg div {
                     padding: 11px 12px 11px 30px;
                     line-height: 1.7em;
                 }
-            
+
                 .buorg div a,
                 .buorg div a:visited {
                     text-indent: 0;
@@ -94,7 +95,7 @@
                     margin: 0 2px;
                     display: inline-block;
                 }
-                
+
                 @media only screen and (max-width: 700px) {
                     .buorg div {
                         padding: 5px 12px 5px 9px;
@@ -102,10 +103,35 @@
                         line-height: 1.3em;
                     }
                 }
-    
+
             </style>
         </div>
     </noscript>
+
+    <article id="top">
+        <div>
+            <div>
+                <h1>
+                    Добро пожаловать на сайт ФРТК!
+                    <br />
+                    Листай вниз!)
+                </h1>
+            </div>
+        </div>
+        <div id="bottom_menu">
+            <div class="link-underline red">
+                <ul>
+                    <li><a href="index" class="active"><span>Главная|Новости</span></a></li>
+                    <li><a href="survey"><span>Опросы</span></a></li>
+                    <li><a href="services/stirka"><span>Стиралка</span></a></li>
+                    <li><a href="services"><span>Другие сервисы</span></a></li>
+                    <li><a href="services"><span>Профиль</span></a></li>
+                    <li><a href="about"><span>О сайте</span></a></li>
+                </ul>
+            </div>
+        </div>
+    </article>
+    <div id="back"></div>
 
     <aside id="header">
         <div class="box">
@@ -114,7 +140,6 @@
                 <section>
                     <p>Привет, {{ stranger }}</p>
                     <a href="" class="btn btn-vk hidden">Войти через ВК</a>
-                    <a href="" class="btn btn-vk">Перейти в кабинет</a>
                     <a href="" class="btn btn-vk">Выйти</a>
                 </section>
             </article>
@@ -128,20 +153,11 @@
                     <li><a href="about"><span>О сайте</span></a></li>
                 </ul>
             </nav>
-            <footer class="copyright">&copy; СтудСовет ФРТК 2017</footer>
         </div>
     </aside>
 
-    <main id="main">
-        <article class="top">
-            <div>
-                <h1>
-                    Добро пожаловать на сайт ФРТК!
-                </h1>
-            </div>
-        </article>
-
-        <article id="content" class="container">
+    <div id="wrapper">
+        <main id="content" class="container">
             <section class="card">
                 <img src="../static/img/FRTK.png" class="card-img" />
                 <h2>{{ title }}</h2>
@@ -150,7 +166,6 @@
                     <input id="show_{{id}}" type="checkbox" class="hidden shownews" />
                     <p class="card-maintext cuted">{{ cuted text }} <label class="link-underline" for="show_{{id}}"><a class="lightblue">Читать далее</a></label></p>
                     <p class="card-maintext full">{{ full text }} <label class="link-underline" for="show_{{id}}"><a class="lightblue">Скрыть</a></label></p>
-
                 </div>
                 <p class="card-text"><small class="text-muted">Last updated {{ main.time }}</small></p>
             </section>
@@ -159,16 +174,15 @@
                 <h2>{{ title }}</h2>
                 <div>
                     <p class="card-maintext link-underline">{{ text without cutting }}</p>
-
                 </div>
                 <p class="card-text"><small class="text-muted">Last updated {{ main.time }}</small></p>
             </section>
-        </article>
+        </main>
 
         <footer>
             <section class="container">&copy; СтудСовет ФРТК 2017</section>
         </footer>
-    </main>
+    </div>
 
     <label id="headerToggle" for="showside">
         <a class="toggle"></a>
