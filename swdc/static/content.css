@@ -2,10 +2,6 @@
     position: relative;
     padding-right: 15px;
     padding-left: 15px;
-    margin-left: auto;
-    margin-right: auto;
-    width: 700px;
-    max-width: 700px;
     font-family: 'Noto Serif', serif;
 }
 
@@ -84,11 +80,8 @@
     -moz-border-radius: 2px;
     border-radius: 2px;
     display: block;
-    width: -webkit-calc(100% - 60px);
-    width: -moz-calc(100% - 60px);
-    width: calc(100% - 60px);
     padding: 1rem;
-    margin: 1.5rem auto;
+    margin: 1.5rem 0;
     -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
     -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);

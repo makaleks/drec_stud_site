@@ -18,38 +18,31 @@ footer {
     display: block;
 }
 
-
 /*
  ***### TOP, HEADER and TOGGLER styles
  */
 
 #back {
-     position: absolute;
-     top: 0;
-     left: 0;
-     width: 100%;
-     height: 100vh;
-     background: #fff;
-     z-index: 1500;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    opacity: 0.65;
+    bottom: 0;
+    width: 100%;
+    height: 100vh;
+    background: url(img/back.jpg) center center fixed;
+    background-size: cover;
 }
 
 #top {
-    opacity: 0.65;
-    z-index: 2000;
-    position: absolute;
+    z-index: 50;
+    position: relative;
     width: 100%;
     top: 0;
     left: 0;
     right: 0;
-    background-color: #000;
-    background-image: url(img/back.jpg);
-    background-position: center center;
-    background-repeat: no-repeat;
-    -moz-background-size: cover;
-    background-size: cover;
-    background-attachment: fixed;
-    background-color: #fff;
-    height: 100vh;
+    max-height: 700px;
     margin: 0;
     color: #fff;
     text-align: center;
@@ -57,24 +50,26 @@ footer {
 }
 
  #top>div:first-child {
-    padding: 4rem;
-}
-
-#top>div:first-child>div {
-    background: rgba(0, 0, 0, 0.65);
-    padding: 4em 1em;
-    text-shadow: 3px 3px 3px #000;
+     background: rgba(0, 0, 0, 0.5);
+     padding: 1.33rem;
+     text-shadow: 3px 3px 3px #000;
+     margin: 2rem;
+     border-radius: 5px;
+     margin-bottom: 1rem;
 }
 
 #bottom_menu {
     display: inline;
-    position: absolute;
+    position: relative;
     left: 0;
     bottom: 0;
     background: #2c0303;
     width: 100%;
     max-width: 100%;
     clear: none;
+}
+#bottom_menu>div {
+    background: #2c0303;
 }
 
 #bottom_menu ul {
@@ -106,19 +101,20 @@ footer {
     background: #290000;
     color: #fff;
     display: block;
-    position: fixed;
+    position: absolute;
     bottom: 0;
     left: -webkit-calc(50vw - 665px);
     left: -moz-calc(50vw - 665px);
     left: calc(50vw - 665px);
     top: 0;
-    height: 100%;
+    min-height: 100vh;
+    height: 100vh;
     min-width: 300px;
     max-width: -webkit-calc(50vw - 350px);
     max-width: -moz-calc(50vw - 350px);
     max-width: calc(50vw - 350px);
     text-align: right;
-    z-index: 1000;
+    z-index: 400;
     overflow-y: auto;
 
 }
@@ -155,6 +151,22 @@ footer {
     align-items: center;
 }
 
+#filterToggler {
+    display: none;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 100%;
+    width: 0;
+    height: 100%;
+    min-width: 0;
+    min-height: 100%;
+    background-color: #000;
+    opacity: 0;
+    z-index: 500;
+    transition: opacity .4s cubic-bezier(1,0,0,1);
+}
 
 /* VK block styles */
 
@@ -176,6 +188,7 @@ footer {
     -moz-box-pack: center;
     -ms-flex-pack: center;
     justify-content: center;
+    margin-left: 10px;
 }
 
 #vk-header * {
@@ -184,10 +197,12 @@ footer {
 
 #vk-header>img {
     margin: auto;
-    max-height: 100px;
-    max-width: 100px;
     height: 100px;
     width: 100px;
+    max-height: 100px;
+    min-height: 100px;
+    max-width: 100px;
+    min-width: 100px;
     -moz-border-radius: 50px;
     border-radius: 50px;
 }
@@ -254,7 +269,7 @@ footer {
     left: 0;
     top: 0;
     width: 3.25em;
-    z-index: 10001;
+    z-index: 9999;
 }
 
 #headerToggle .toggle {
@@ -293,11 +308,8 @@ footer {
  * MAIN styles
  */
 
-
-
 #wrapper {
     position: relative;
-    top: 100vh;
     display: -webkit-box;
     display: -webkit-flex;
     display: -moz-box;
@@ -317,20 +329,36 @@ footer {
     flex-direction: column;
     width: 100%;
     min-height: 100vh;
+    max-height: 100vh;
     height: 100%;
-    background: url(img/RT_mini.png) repeat #FFEBEE;
-    background-attachment: fixed;
+    z-index: 100;
+}
+
+main.container,
+footer .container {
+    margin-left: auto;
+    margin-right: auto;
+    width: 700px;
+    max-width: 700px;
+}
+
+main>.card {
+    width: calc(100% - 30px);
+    max-width: calc(100% - 30px);
 }
 
 footer {
     width: 100%;
     height: 45px;
     background: #ccc;
-    z-index: 1500;
+    z-index: 450;
+    position: relative;
+    bottom: 0;
 }
 
 footer>section {
     line-height: 45px;
+    margin: 0;
 }
 
 
@@ -338,14 +366,15 @@ footer>section {
  * ALL media styles
  */
 
-@media (max-width: 1600px) {
+@media (max-width: 1400px) {
     #header {
         left: 0;
         width: 300px;
     }
-    .container {
-        margin-left: initial;
-        margin-right: initial;
+    main.container,
+    footer .container {
+        margin-left: 0;
+        margin-right: 0;
         left: 300px;
         width: 700px;
         max-width: -webkit-calc(100% - 330px);
@@ -361,28 +390,41 @@ footer>section {
         text-shadow: 3px 3px 3px #000;
     }
     #header {
+        position: fixed;
         left: -100%;
-        min-width: 50vw;
         width: 50vh;
+        min-width: 50vw;
         max-width: 100%;
-        z-index: 2500;
         text-align: center;
-        transition: left .4s cubic-bezier(1,0,0,1);
+        transition: left .4s .1s cubic-bezier(1,0,0,1);
+        z-index: 1000;
+    }
+    #filterToggler {
+        display: block;
     }
     #goup {
         display: none;
     }
-    .container {
-        margin-right: 0;
-        margin-left: 0;
+    main.container,
+    footer .container {
+        margin-right: auto;
+        margin-left: auto;
         left: 0;
-        max-width: -webkit-calc(100% - 30px);
-        max-width: -moz-calc(100% - 30px);
+        width: calc(100% - 30px);
         max-width: calc(100% - 30px);
     }
-    #showside:checked~#header {
+    #showside:checked~div>#header {
         left: 0;
         transition: left .4s cubic-bezier(1,0,0,1);
+    }
+    #showside:checked~div>#filterToggler {
+        position: fixed;
+        right: 0;
+        width: 100%;
+        min-width: 100%;
+        opacity: 0.75;
+        transition: opacity .4s cubic-bezier(1,0,0,1);
+        z-index: 500;
     }
     #headerToggle {
         overflow: visible;
@@ -394,14 +436,6 @@ footer>section {
     }
 }
 
-@media(max-width: 768px) {
-
-    #wrapper {
-        left: auto;
-        width: 100%;
-    }
-}
-
 
 /*
  ***### ALLPAGE styles prefered
@@ -410,4 +444,8 @@ footer>section {
 
 .hidden {
     display: none;
+}
+
+.fixed {
+   position: fixed !important;
 }
