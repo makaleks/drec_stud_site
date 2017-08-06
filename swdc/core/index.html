@@ -194,41 +194,21 @@
         <a class="toggle"></a>
     </label>
     <script>
-    var cbpAnimatedHeader = (function() {
-    var docElem = document.documentElement,
-        header = document.querySelector('#header'),
-        didCalc = false,
-        didScroll = false,
-        changeHeaderOn = 0;
+        (function() {
+            var header = document.querySelector('#header'),
+                wrapper = document.querySelector('#wrapper');
+            window.addEventListener('scroll', scrollPage, false);
+            document.body.addEventListener('scroll', scrollPage, false);
 
-    function init() {
-        window.addEventListener('scroll', function(event) {
-            if( !didScroll ) {
-                didScroll = true;
-                setTimeout( scrollPage, 250 );
+            function scrollPage() {
+                if (wrapper.getBoundingClientRect().top <= 0) {
+                    header.classList.add('sticky');
+                } else {
+                    header.classList.remove('sticky');
+                }
             }
-        }, false );
-    }
-    function scrollPage() {
-        if(!didCalc)
-        {
-            changeHeaderOn = document.getElementById("top").offsetTop + document.getElementById("top").offsetHeight;
-            didCalc = true;
-        }
-        var sy = scrollY();
-        if ( sy >= changeHeaderOn ) {
-            header.classList.add('fixed');
-        }
-        else {
-            header.classList.remove('fixed');
-        }
-        didScroll = false;
-    }
-    function scrollY() {
-        return window.pageYOffset || docElem.scrollTop;
-    }
-    init();
-    })();
+        })();
+
     </script>
 </body>
 
