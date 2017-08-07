@@ -1,0 +1,15 @@
+{% extends 'core/base.html' %}
+
+{% load markdown_deux_tags %}
+
+{% block content %}
+    <section class='card'>
+{% markdown STYLE %}
+Над сайтом работали:
+
+- Дмитрий Попов, 618 - дизайн, frontend, каждая страница.  
+- Максимов Алексей, 419 - backend, данные, каждая ссылка.  
+- Неварко Александр, 613 - куратор, контакты, каждое требование.  
+{% endmarkdown %}
+    </section>
+{% endblock %}

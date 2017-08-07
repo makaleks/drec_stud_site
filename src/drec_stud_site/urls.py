@@ -16,13 +16,15 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from django.contrib.auth.views import LogoutView
-#from django.views.generic import TemplateView
+from django.views.generic import TemplateView
 #from user.views import render_login_success
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^social/', include('social_django.urls', namespace='social')),
     url(r'^logout/$', LogoutView.as_view()),
+    url(r'^faq/$', TemplateView.as_view(template_name = 'faq.html')),
+    url(r'^about/$', TemplateView.as_view(template_name = 'about.html')),
     url(r'^', include('news.urls')),
     #url(r'^login_success/', render_login_success),
     #url(r'^login/', TemplateView.as_view(template_name='login.html')),
