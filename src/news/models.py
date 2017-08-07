@@ -10,6 +10,9 @@ class News(models.Model):
     text_preview = models.TextField(blank = True, verbose_name = 'Превью')
     text = models.TextField(blank = True, verbose_name = 'Текст')
     image = models.ImageField(blank = True)
+    # Useful + 'view on site' in /admin available
+    def get_absolute_url(self):
+        return '/?news={}'.format(self.id)
     class Meta:
         verbose_name_plural = 'News'
         ordering = ['-edited']
