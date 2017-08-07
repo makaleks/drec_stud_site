@@ -130,7 +130,7 @@
     <div id="back"></div>
 
     <div id="wrapper">
-        <aside id="header">
+        <aside id="header" class="sticky">
             <div class="box link-underline">
                 <article id="vk-header">
                     <img src="../static/img/vk.svg" />
@@ -193,23 +193,6 @@
     <label id="headerToggle" for="showside">
         <a class="toggle"></a>
     </label>
-    <script>
-        (function() {
-            var header = document.querySelector('#header'),
-                wrapper = document.querySelector('#wrapper');
-            window.addEventListener('scroll', scrollPage, false);
-            document.body.addEventListener('scroll', scrollPage, false);
-
-            function scrollPage() {
-                if (wrapper.getBoundingClientRect().top <= 0) {
-                    header.classList.add('sticky');
-                } else {
-                    header.classList.remove('sticky');
-                }
-            }
-        })();
-
-    </script>
 </body>
 
 </html>

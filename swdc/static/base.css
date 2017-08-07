@@ -108,9 +108,7 @@ footer {
     display: block;
     position: absolute;
     bottom: 0;
-    left: -webkit-calc(50vw - 665px);
-    left: -moz-calc(50vw - 665px);
-    left: calc(50vw - 665px);
+    left: -100%;
     top: 0;
     min-height: 100vh;
     height: 100vh;
@@ -119,8 +117,12 @@ footer {
     max-width: -moz-calc(50vw - 350px);
     max-width: calc(50vw - 350px);
     text-align: right;
-    z-index: 400;
+    z-index: 1000;
     overflow-y: auto;
+    -webkit-transition: left .4s .1s cubic-bezier(1, 0, 0, 1);
+    -o-transition: left .4s .1s cubic-bezier(1, 0, 0, 1);
+    -moz-transition: left .4s .1s cubic-bezier(1, 0, 0, 1);
+    transition: left .4s .1s cubic-bezier(1, 0, 0, 1);
 }
 
 #header>.box {
@@ -156,7 +158,7 @@ footer {
 }
 
 #filterToggler {
-    display: none;
+    display: block;
     position: absolute;
     top: 0;
     bottom: 0;
@@ -265,13 +267,42 @@ footer {
     width: -moz-calc(100% - 2rem);
     width: calc(100% - 2rem);
     color: #fff;
+    display: none;
     padding: 1rem;
 }
 
+#showside:checked~div>#header {
+    left: -webkit-calc(50vw - 665px);
+    left: -moz-calc(50vw - 665px);
+    left: calc(50vw - 665px);
+    -webkit-transition: left .4s cubic-bezier(1, 0, 0, 1);
+    -o-transition: left .4s cubic-bezier(1, 0, 0, 1);
+    -moz-transition: left .4s cubic-bezier(1, 0, 0, 1);
+    transition: left .4s cubic-bezier(1, 0, 0, 1);
+}
+
+#showside:checked~div>#filterToggler {
+    position: fixed;
+    right: 0;
+    width: 100%;
+    min-width: 100%;
+    opacity: 0.75;
+    -webkit-transition: opacity .4s cubic-bezier(1, 0, 0, 1);
+    -o-transition: opacity .4s cubic-bezier(1, 0, 0, 1);
+    -moz-transition: opacity .4s cubic-bezier(1, 0, 0, 1);
+    transition: opacity .4s cubic-bezier(1, 0, 0, 1);
+    z-index: 500;
+}
+
+#showside:checked~#headerToggle .toggle::before {
+    display: block;
+    content: '\274C';
+}
+
 #headerToggle {
-    display: none;
     position: fixed;
     overflow: visible;
+    display: block;
     height: 2.25em;
     left: 0;
     top: 0;
@@ -379,14 +410,16 @@ footer>section {
 
 @media (max-width: 1400px) {
     #header {
-        left: 0;
+        left: -100%;
         width: 300px;
+    }
+    #showside:checked~div>#header {
+        left: 0;
     }
     main.container,
     footer .container {
-        margin-left: 0;
-        margin-right: 0;
-        left: 300px;
+        margin-left: auto;
+        margin-right: auto;
         width: 700px;
         max-width: -webkit-calc(100% - 330px);
         max-width: -moz-calc(100% - 330px);
@@ -407,17 +440,9 @@ footer>section {
         min-width: 50vw;
         max-width: 100%;
         text-align: center;
-        -webkit-transition: left .4s .1s cubic-bezier(1, 0, 0, 1);
-        -o-transition: left .4s .1s cubic-bezier(1, 0, 0, 1);
-        -moz-transition: left .4s .1s cubic-bezier(1, 0, 0, 1);
-        transition: left .4s .1s cubic-bezier(1, 0, 0, 1);
-        z-index: 1000;
     }
-    #filterToggler {
-        display: block;
-    }
-    #goup {
-        display: none;
+    #showside:checked~div>#header {
+        left: 0;
     }
     main.container,
     footer .container {
@@ -430,33 +455,6 @@ footer>section {
         max-width: -webkit-calc(100% - 30px);
         max-width: -moz-calc(100% - 30px);
         max-width: calc(100% - 30px);
-    }
-    #showside:checked~div>#header {
-        left: 0;
-        -webkit-transition: left .4s cubic-bezier(1, 0, 0, 1);
-        -o-transition: left .4s cubic-bezier(1, 0, 0, 1);
-        -moz-transition: left .4s cubic-bezier(1, 0, 0, 1);
-        transition: left .4s cubic-bezier(1, 0, 0, 1);
-    }
-    #showside:checked~div>#filterToggler {
-        position: fixed;
-        right: 0;
-        width: 100%;
-        min-width: 100%;
-        opacity: 0.75;
-        -webkit-transition: opacity .4s cubic-bezier(1, 0, 0, 1);
-        -o-transition: opacity .4s cubic-bezier(1, 0, 0, 1);
-        -moz-transition: opacity .4s cubic-bezier(1, 0, 0, 1);
-        transition: opacity .4s cubic-bezier(1, 0, 0, 1);
-        z-index: 500;
-    }
-    #headerToggle {
-        overflow: visible;
-        display: block;
-    }
-    #showside:checked~#headerToggle .toggle::before {
-        display: block;
-        content: '\274C';
     }
 }
 
