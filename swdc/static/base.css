@@ -301,6 +301,34 @@ footer {
     content: '\274C';
 }
 
+#showside:checked~div>#header {
+    left: -webkit-calc(50vw - 665px);
+    left: -moz-calc(50vw - 665px);
+    left: calc(50vw - 665px);
+    -webkit-transition: left .4s cubic-bezier(1, 0, 0, 1);
+    -o-transition: left .4s cubic-bezier(1, 0, 0, 1);
+    -moz-transition: left .4s cubic-bezier(1, 0, 0, 1);
+    transition: left .4s cubic-bezier(1, 0, 0, 1);
+}
+
+#showside:checked~div>#filterToggler {
+    position: fixed;
+    right: 0;
+    width: 100%;
+    min-width: 100%;
+    opacity: 0.75;
+    -webkit-transition: opacity .4s cubic-bezier(1, 0, 0, 1);
+    -o-transition: opacity .4s cubic-bezier(1, 0, 0, 1);
+    -moz-transition: opacity .4s cubic-bezier(1, 0, 0, 1);
+    transition: opacity .4s cubic-bezier(1, 0, 0, 1);
+    z-index: 500;
+}
+
+#showside:checked~#headerToggle .toggle::before {
+    display: block;
+    content: '\274C';
+}
+
 #headerToggle {
     position: fixed;
     overflow: visible;
