@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from django.views.generic.list import ListView
 from django.shortcuts import redirect
-from django.http import HttpResponse
 import datetime
 
 from .models import News
