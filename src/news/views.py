@@ -16,13 +16,17 @@ class NewsListView(ListView):
     def get_queryset(self):
         queryset = News.objects.all()
         years = self.request.GET.get('years')
-        if not years:
+        news = self.request.GET.get('news')
+        if not years and not news:
             now = datetime.datetime.now()
             last = now.replace(year = now.year if now.month > 1 else now.year - 1,
             month = now.month - 1 if now.month > 1 else 12)
             queryset = queryset.filter(edited__gt = last).order_by('-created')
         else:
-            queryset = queryset.filter(created__year__in = years.split('-')).order_by('-created')
+            if years:
+                queryset = queryset.filter(created__year__in = years.split('-')).order_by('-created')
+            if news:
+                queryset = queryset.filter(pk__in = news.split('-')).order_by('-created')
         return queryset
 
 def archive_draw(request):
