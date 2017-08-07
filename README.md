@@ -73,8 +73,8 @@ GRANT ALL PRIVILEGES ON DATABASE drec_stud_site TO drec_stud_site_admin;
 7. Migrate all your models (don`t forget moving to src/):
 ```bash
 cd src/
-manage.py makemigrations
-manage.py migrate
+./manage.py makemigrations
+./manage.py migrate
 ```
 > If you got errors during 'migrate', try detecting Django apps separately:
 > "manage.py makemigrations user_info"
@@ -85,7 +85,7 @@ manage.py migrate
 > run with --help argument to show all arguments
 9. Create a Django superuser:
 ``` bash
-manage.py shell
+./manage.py shell
 from user.managers import UserManager
 from user.models import User
 m = UserManager()

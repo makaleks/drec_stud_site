@@ -31,5 +31,6 @@ def archive_draw(request):
 def archive_process(request):
     # use 'name' from urls.py
     lst = request.GET.getlist('vals')
+    if '-1' in lst: lst.remove('-1')
     s = '/{}'.format('' if not lst else '?years={}'.format('-'.join(lst)))
     return redirect(s)
