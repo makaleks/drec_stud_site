@@ -16,7 +16,9 @@
             <p class='card-text'><small class='text-muted'>Last updated {{ post.edited }}</small></p>
         </section>
     {% endfor %}
-    <section class='card'>
-        <a href='archive'>Архив</a>
-    </section>
+    {% if render_archive %}
+        <section class='card'>
+            <a href='archive'>Архив</a>
+        </section>
+    {% endif %}
 {% endblock %}

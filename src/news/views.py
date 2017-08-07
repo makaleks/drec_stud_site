@@ -12,6 +12,8 @@ from .forms import ArchiveSelectForm
 class NewsListView(ListView):
     template_name = 'news_list.html'
     model = News
+    render_archive = True
+    show_hidden = False
     # get for last month
     def get_queryset(self):
         queryset = News.objects.all()
@@ -27,7 +29,16 @@ class NewsListView(ListView):
                 queryset = queryset.filter(created__year__in = years.split('-')).order_by('-created')
             if news:
                 queryset = queryset.filter(pk__in = news.split('-')).order_by('-created')
+                # Show like DetailView list
+                self.render_archive = False
+                self.show_hidden = True
         return queryset
+    # Template context
+    def get_context_data(self, **kwargs):
+        context = super(NewsListView, self).get_context_data(**kwargs)
+        context['render_archive'] = self.render_archive
+        context['show_hidden'] = self.show_hidden
+        return context
 
 def archive_draw(request):
     return render(request, 'archive_select.html', {'form': ArchiveSelectForm()})
