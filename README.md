@@ -1,9 +1,12 @@
 # Department of Radio Electronics and Cybernetics student site
 
+More or less fresh preview can be found at [drec-stud.tk](http://drec-stud.tk).
+
 ### Branch review
 
 - pda11111 - design
 - auth - authorization
+- news - news
 - master - united result
 
 ### Design
@@ -77,7 +80,7 @@ cd src/
 ./manage.py migrate
 ```
 > If you got errors during 'migrate', try detecting Django apps separately:
-> "manage.py makemigrations user_info"
+> "manage.py makemigrations user"
 8. (Optional) If you wish to insert some data for demonstration, run:
 ```bash
 ./postgresql_helper.py -r
@@ -92,7 +95,7 @@ m = UserManager()
 m.model = User
 m.create_superuser('Lastname', 'Firstname', 'Patronymicname', *drec group number*, '*phone number*', '*vk-id number*', '*email (optional)*')
 ```
-> We don`t use any passwords, so simple way doesn`t work:
+> We don\`t use any passwords, so simple way doesn\`t work:
 > "manage.py createsuperuser"
 10. Don`t forget to collect static files from all applications:
 ```bash
