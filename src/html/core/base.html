@@ -44,7 +44,7 @@
                 {% else %}
                     <img src='{{ STATIC_URL }}/img/vk.svg' />
                     <section>
-                        <p>Привет, анон</p>
+                        <p>Привет, гость</p>
                         <a href='{% url 'social:begin' 'vk-oauth2' %}' class='btn btn-vk'>Войти через ВК</a>
                     </section>
                 {% endif %}
