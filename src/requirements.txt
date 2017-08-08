@@ -1,6 +1,20 @@
+# Framework
 Django==1.11.3
+
+# Python server
 gunicorn==19.7.1
+
+# PostgreSQL library
 psycopg2==2.7.1
+
+# Social network authorization
 social-auth-app-django==1.2.0
+
+# Image library
 Pillow==4.2.1
+
+# Deletes from /media when object deleted (not done by default)
 django-cleanup==1.0.1
+
+# Markdown in templates
+django-markdown-deux==1.0.5

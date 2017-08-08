@@ -6,4 +6,4 @@ from .models import News
 # Use __unicode__() on model to show only title
 @admin.register(News)
 class NewsAdmin(admin.ModelAdmin):
-    list_display = ('title', 'edited', 'created')
+    list_display = ('title', 'id', 'edited', 'created')

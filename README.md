@@ -1,9 +1,12 @@
 # Department of Radio Electronics and Cybernetics student site
 
+More or less fresh preview can be found at [drec-stud.tk](http://drec-stud.tk).
+
 ### Branch review
 
 - pda11111 - design
 - auth - authorization
+- news - news
 - master - united result
 
 ### Design
@@ -73,11 +76,11 @@ GRANT ALL PRIVILEGES ON DATABASE drec_stud_site TO drec_stud_site_admin;
 7. Migrate all your models (don`t forget moving to src/):
 ```bash
 cd src/
-manage.py makemigrations
-manage.py migrate
+./manage.py makemigrations
+./manage.py migrate
 ```
 > If you got errors during 'migrate', try detecting Django apps separately:
-> "manage.py makemigrations user_info"
+> "manage.py makemigrations user"
 8. (Optional) If you wish to insert some data for demonstration, run:
 ```bash
 ./postgresql_helper.py -r
@@ -85,14 +88,14 @@ manage.py migrate
 > run with --help argument to show all arguments
 9. Create a Django superuser:
 ``` bash
-manage.py shell
+./manage.py shell
 from user.managers import UserManager
 from user.models import User
 m = UserManager()
 m.model = User
 m.create_superuser('Lastname', 'Firstname', 'Patronymicname', *drec group number*, '*phone number*', '*vk-id number*', '*email (optional)*')
 ```
-> We don`t use any passwords, so simple way doesn`t work:
+> We don\`t use any passwords, so simple way doesn\`t work:
 > "manage.py createsuperuser"
 10. Don`t forget to collect static files from all applications:
 ```bash
