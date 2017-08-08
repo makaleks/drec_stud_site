@@ -31,7 +31,11 @@
         <div class='box'>
             <article id='vk-header'>
                 {% if user.is_authenticated %}
-                    <img src='{{ STATIC_URL }}/img/vk.svg' />
+                    {% if user.avatar_url %}
+                        <img src='{{ user.avatar_url }}' />
+                    {% else %}
+                        <img src='{{ STATIC_URL }}/img/vk.svg' />
+                    {% endif %}
                     <section>
                         <p>Привет, {{ user.get_short_name }}</p>
                         <a href='' class='btn btn-vk'>Перейти в ЛК</a>
