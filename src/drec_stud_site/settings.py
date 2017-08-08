@@ -145,6 +145,7 @@ module = util.module_from_spec(spec)
 spec.loader.exec_module(module)
 SOCIAL_AUTH_VK_OAUTH2_KEY = module.SOCIAL_AUTH_VK_OAUTH2_KEY
 SOCIAL_AUTH_VK_OAUTH2_SECRET = module.SOCIAL_AUTH_VK_OAUTH2_SECRET
+SOCIAL_AUTH_VK_OAUTH2_EXTRA_DATA = ['photo_100']
 
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.vk.VKOAuth2',

@@ -16,8 +16,9 @@ def load_user (uid, backend, response = {}, **kwargs):
     if user is None:
         raise LoginDeniedException('This user is unregistered.')
     if isinstance(backend, VKOAuth2):
-        if not user.avatar_url:
-            user.avatar_url = response['user_photo']
+        url = response['photo_100']
+        if not user.avatar_url or user.avatar_url != url:
+            user.avatar_url = url
             user.save(update_fields=['avatar_url'])
     return {'user': user}
 
