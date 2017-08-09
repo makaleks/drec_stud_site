@@ -9,8 +9,8 @@ from .forms import ArchiveSelectForm
 # Create your views here.
 
 class NewsListView(ListView):
-    template_name = 'news_list.html'
     model = News
+    template_name = 'news_list.html'
     render_archive = True
     show_hidden = False
     # get for last month
