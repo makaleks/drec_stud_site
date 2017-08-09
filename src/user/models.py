@@ -45,5 +45,5 @@ class User(models.Model):
     def has_module_perms(self, app_label):
         return True
     class Meta:
-        verbose_name        = 'Пользователь'
+        verbose_name        = 'Пользователя'
         verbose_name_plural = 'Пользователи'
