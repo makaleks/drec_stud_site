@@ -38,7 +38,7 @@ footer {
 }
 
 #top {
-    z-index: 50;
+    z-index: 150;
     position: relative;
     width: 100%;
     top: 0;
@@ -102,10 +102,21 @@ footer {
     color: #fff;
 }
 
+#vk-menu img {
+    width: 3rem;
+    vertical-align: middle;
+}
+
+#bottom_menu ul>li#vk-menu>a {
+    border-bottom: none;
+    padding: 5px;
+    line-height: inherit;
+}
+
 #header {
     background: #290000;
     color: #fff;
-    display: block;
+    display: none;
     position: absolute;
     bottom: 0;
     left: -100%;
@@ -262,16 +273,7 @@ footer {
     transition: none;
 }
 
-#header #goup {
-    width: -webkit-calc(100% - 2rem);
-    width: -moz-calc(100% - 2rem);
-    width: calc(100% - 2rem);
-    color: #fff;
-    display: none;
-    padding: 1rem;
-}
-
-#showside:checked~div>#header {
+#showside:checked~article>#header {
     left: -webkit-calc(50vw - 665px);
     left: -moz-calc(50vw - 665px);
     left: calc(50vw - 665px);
@@ -281,7 +283,7 @@ footer {
     transition: left .4s cubic-bezier(1, 0, 0, 1);
 }
 
-#showside:checked~div>#filterToggler {
+#showside:checked~article>#filterToggler {
     position: fixed;
     right: 0;
     width: 100%;
@@ -302,7 +304,7 @@ footer {
 #headerToggle {
     position: fixed;
     overflow: visible;
-    display: block;
+    display: none;
     height: 2.25em;
     left: 0;
     top: 0;
@@ -409,13 +411,6 @@ footer>section {
  */
 
 @media (max-width: 1400px) {
-    #header {
-        left: -100%;
-        width: 300px;
-    }
-    #showside:checked~div>#header {
-        left: 0;
-    }
     main.container,
     footer .container {
         margin-left: auto;
@@ -433,7 +428,14 @@ footer>section {
         padding: 1em;
         text-shadow: 3px 3px 3px #000;
     }
+    #bottom_menu {
+        display: none;
+    }
+    #headerToggle {
+        display: block;
+    }
     #header {
+        display: block;
         position: fixed;
         left: -100%;
         width: 50vh;
@@ -441,7 +443,7 @@ footer>section {
         max-width: 100%;
         text-align: center;
     }
-    #showside:checked~div>#header {
+    #showside:checked~article>#header {
         left: 0;
     }
     main.container,
@@ -471,4 +473,5 @@ footer>section {
 .sticky {
     position: fixed !important;
     top: 0;
+    bottom: auto !important;
 }
