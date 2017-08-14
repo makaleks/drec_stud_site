@@ -1,6 +1,5 @@
 /*
  ***### ALLPAGE styles not prefered
-    font-family: 'Noto Serif', serif;
  */
 
 html,
@@ -102,15 +101,28 @@ footer {
     color: #fff;
 }
 
+#vk-menu div {
+    display: inline-block;
+    vertical-align: middle;
+}
+
 #vk-menu img {
+    height: 3rem;
     width: 3rem;
     vertical-align: middle;
+    border-radius: 100%;
+    margin-bottom: 5px;
 }
 
 #bottom_menu ul>li#vk-menu>a {
     border-bottom: none;
     padding: 5px;
     line-height: inherit;
+    border-bottom: 5px solid #2c0303;
+}
+
+#bottom_menu .unhide_elem_1000 {
+    display: none;
 }
 
 #header {
@@ -226,6 +238,7 @@ footer {
     min-width: 100px;
     -moz-border-radius: 50px;
     border-radius: 50px;
+    background-image: url(img/vk.svg);
 }
 
 #vk-header>section {
@@ -284,34 +297,6 @@ footer {
 }
 
 #showside:checked~article>#filterToggler {
-    position: fixed;
-    right: 0;
-    width: 100%;
-    min-width: 100%;
-    opacity: 0.75;
-    -webkit-transition: opacity .4s cubic-bezier(1, 0, 0, 1);
-    -o-transition: opacity .4s cubic-bezier(1, 0, 0, 1);
-    -moz-transition: opacity .4s cubic-bezier(1, 0, 0, 1);
-    transition: opacity .4s cubic-bezier(1, 0, 0, 1);
-    z-index: 500;
-}
-
-#showside:checked~#headerToggle .toggle::before {
-    display: block;
-    content: '\274C';
-}
-
-#showside:checked~div>#header {
-    left: -webkit-calc(50vw - 665px);
-    left: -moz-calc(50vw - 665px);
-    left: calc(50vw - 665px);
-    -webkit-transition: left .4s cubic-bezier(1, 0, 0, 1);
-    -o-transition: left .4s cubic-bezier(1, 0, 0, 1);
-    -moz-transition: left .4s cubic-bezier(1, 0, 0, 1);
-    transition: left .4s cubic-bezier(1, 0, 0, 1);
-}
-
-#showside:checked~div>#filterToggler {
     position: fixed;
     right: 0;
     width: 100%;
@@ -450,7 +435,16 @@ footer>section {
     }
 }
 
-@media (max-width: 800px) {
+@media (max-width: 1020px) {
+    #bottom_menu .hide_elem_1000 {
+        display: none;
+    }
+    #bottom_menu .unhide_elem_1000 {
+        display: inline-block;
+    }
+}
+
+@media (max-width: 860px) {
     #top>div:first-child>div {
         background: rgba(0, 0, 0, 0.65);
         padding: 1em;
