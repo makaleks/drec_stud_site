@@ -1,6 +1,5 @@
 /*
  ***### ALLPAGE styles not prefered
-    font-family: 'Noto Serif', serif;
  */
 
 html,
@@ -102,15 +101,28 @@ footer {
     color: #fff;
 }
 
+#vk-menu div {
+    display: inline-block;
+    vertical-align: middle;
+}
+
 #vk-menu img {
+    height: 3rem;
     width: 3rem;
     vertical-align: middle;
+    border-radius: 100%;
+    margin-bottom: 5px;
 }
 
 #bottom_menu ul>li#vk-menu>a {
     border-bottom: none;
     padding: 5px;
     line-height: inherit;
+    border-bottom: 5px solid #2c0303;
+}
+
+#bottom_menu .unhide_elem_1000 {
+    display: none;
 }
 
 #header {
@@ -226,6 +238,7 @@ footer {
     min-width: 100px;
     -moz-border-radius: 50px;
     border-radius: 50px;
+    background-image: url(img/vk.svg);
 }
 
 #vk-header>section {
@@ -422,7 +435,16 @@ footer>section {
     }
 }
 
-@media (max-width: 800px) {
+@media (max-width: 1020px) {
+    #bottom_menu .hide_elem_1000 {
+        display: none;
+    }
+    #bottom_menu .unhide_elem_1000 {
+        display: inline-block;
+    }
+}
+
+@media (max-width: 860px) {
     #top>div:first-child>div {
         background: rgba(0, 0, 0, 0.65);
         padding: 1em;

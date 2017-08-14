@@ -7,7 +7,7 @@
     <meta charset='UTF-8' />
     <meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' />
 
-    <link href='https://fonts.googleapis.com/css?family=Noto+Sans|Noto+Serif&amp;subset=cyrillic' rel='stylesheet'>
+    <link href='https://fonts.googleapis.com/css?family=Noto+Sans&amp;subset=cyrillic' rel='stylesheet'>
     <link type='text/css' rel='stylesheet' href='https://unpkg.com/normalize.css' />
     <link type='text/css' rel='stylesheet' href='{{ STATIC_URL }}/content.css' />
     <link type='text/css' rel='stylesheet' href='{{ STATIC_URL }}/base.css' />
@@ -110,6 +110,19 @@
         </div>
     </noscript>
 
+    <div id='back'></div>
+    <input id='modal_check' type='checkbox' class='hidden' />
+    <div class='card' id='modal'>
+        <div class='container'>
+            <h3>
+                <span class='info'>&#128712;</span> {{ text }}
+            </h3>
+            <label for='modal_check' class='m_close'>
+                <h3 class='m_close'>&#10060;</h3>
+            </label>
+        </div>
+    </div>
+
     <article id='top'>
         <div>
             <h1>
@@ -118,16 +131,17 @@
         </div>
         <div style='padding-left:10px;padding-right:10px'>
             <div id='bottom_menu'>
-                <div class='link-underline red'>
+                <div>
                     <ul>
-                        <li><a href='index' class='active'><span>Главная|Новости</span></a></li>
-                        <li><a href='survey'><span>Опросы</span></a></li>
-                        <li><a href='services/stirka'><span>Стиралка</span></a></li>
-                        <li><a href='services'><span>Другие сервисы</span></a></li>
-                        <li><a href='services'><span>Профиль</span></a></li>
-                        <li><a href='about'><span>О сайте</span></a></li>
+                        <li class='link-underline red'><a href='index' class='active'><span>Главная|Новости</span></a></li>
+                        <li class='link-underline red'><a href='survey'><span>Опросы</span></a></li>
+                        <li class='link-underline red hide_elem_1000'><a href='services/stirka'><span>Стиралка</span></a></li>
+                        <li class='link-underline red hide_elem_1000'><a href='services'><span>Другие сервисы</span></a></li>
+                        <li class='link-underline red unhide_elem_1000'><a href='services'><span>Бытовые сервисы</span></a></li>
+                        <li class='link-underline red'><a href='notes/faq'><span>ЧаВо</span></a></li>
+                        <li class='link-underline red'><a href='notes/about'><span>О сайте</span></a></li>
                         <li id='vk-menu'>
-                            <img src='{{ STATIC_URL }}/img/vk.svg' />
+                            <img src='{{ STATIC_URL }}/img/vk.svg' class='hide_elem_1000' />
                             <a href='' class='btn btn-vk'>
                                 <span>Привет, {{ stranger }}</span>
                                 <br />
@@ -144,8 +158,7 @@
                     <img src='{{ STATIC_URL }}/img/vk.svg' />
                     <section>
                         <p>Привет, {{ stranger }}</p>
-                        <a href='' class='btn btn-vk hidden'>Войти через ВК</a>
-                        <a href='' class='btn btn-vk'>Выйти</a>
+                        <a href='' class='btn btn-vk'>Войти через ВК</a>
                     </section>
                 </article>
                 <nav id='nav' class='link-underline red'>
@@ -154,7 +167,7 @@
                         <li><a href='survey'><span>Опросы</span></a></li>
                         <li><a href='services/stirka'><span>Стиралка</span></a></li>
                         <li><a href='services'><span>Другие сервисы</span></a></li>
-                        <li><a href='services'><span>Профиль</span></a></li>
+                        <li><a href='services'><span>ЧаВо</span></a></li>
                         <li><a href='about'><span>О сайте</span></a></li>
                     </ul>
                 </nav>
@@ -162,13 +175,12 @@
         </aside>
         <label for='showside' id='filterToggler'></label>
     </article>
-    <div id='back'></div>
 
     <div id='wrapper'>
 
         <main id='content' class='container'>
-            <!--{% block content %}
-            {% endblock %}-->
+            <!--{% block content %}-->
+            <!--{% endblock %}-->
         </main>
 
         <footer>
