@@ -309,11 +309,6 @@ footer {
     z-index: 500;
 }
 
-#showside:checked~#headerToggle .toggle::before {
-    display: block;
-    content: '\274C';
-}
-
 #headerToggle {
     position: fixed;
     overflow: visible;
@@ -333,13 +328,9 @@ footer {
     top: 0;
     outline: 0;
     border: 0;
-}
-
-#headerToggle .toggle::before {
     text-decoration: none;
     font-style: normal;
     font-weight: normal;
-    content: '\2261';
     color: #fff;
     font-size: 1.5rem;
     line-height: 2.25rem;
@@ -355,6 +346,19 @@ footer {
     height: 2.25rem;
     line-height: 2.25rem;
 }
+
+.hamburger {
+    height: 100%;
+    cursor: pointer;
+}
+.hamburger path {
+    stroke: currentcolor;
+    transition: .2s;
+    stroke-width: 0.5px;
+}
+#showside:checked~#headerToggle .hamburger .p1 { d: path("M2,8 L8,2"); }
+#showside:checked~#headerToggle .hamburger .p2 { d: path("M5,5 L5,5"); }
+#showside:checked~#headerToggle .hamburger .p3 { d: path("M2,2 L8,8"); }
 
 
 /*
