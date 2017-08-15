@@ -1,99 +1,24 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-    <title>Сайт студсовета</title>
-    <meta charset="UTF-8" />
-    <!-- <meta name="viewport" content="initial-scale=1.0"> -->
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-
-    <link href="https://fonts.googleapis.com/css?family=Noto+Sans|Noto+Serif&amp;subset=cyrillic" rel="stylesheet">
-    <link type="text/css" rel="stylesheet" href="https://unpkg.com/normalize.css" />
-    <link type="text/css" rel="stylesheet" href="../static/base.css" />
-    <link type="text/css" rel="stylesheet" href="../static/content.css" />
-    <!--[if lt IE 9]>
-        <script>
-            document.createElement('header');
-            document.createElement('nav');
-            document.createElement('main');
-            document.createElement('section');
-            document.createElement('article');
-            document.createElement('aside');
-            document.createElement('footer');
-        </script>
-    <![endif]-->
-</head>
-
-<body>
-    <script src="https://unpkg.com/jquery@3.2.1/dist/jquery.slim.min.js"></script>
-    <script src="../static/succinct.js"></script>
-    <aside id="header">
-        <div class="box">
-            <article id="vk-header">
-                <img src="../static/img/vk.svg" />
-                <section>
-                    <p>Привет, {{ stranger }}</p>
-                    <a href="" class="btn btn-vk hidden">Войти через ВК</a>
-                    <a href="" class="btn btn-vk">Перейти в ЛК</a>
-                    <a href="" class="btn btn-vk">Выйти</a>
-                </section>
-            </article>
-            <nav id="nav" class="link-underline red">
-                <ul>
-                    <li><a href="index" class="active"><span>Главная|Новости</span></a></li>
-                    <li><a href="survey"><span>Опросы</span></a></li>
-                    <li><a href="services/stirka"><span>Стиралка</span></a></li>
-                    <li><a href="services"><span>Другие сервисы</span></a></li>
-                    <li><a href="services"><span>Профиль</span></a></li>
-                    <li><a href="about"><span>О сайте</span></a></li>
-                </ul>
-            </nav>
-            <footer class="copyright">&copy; СтудСовет ФРТК 2017</footer>
-        </div>
-    </aside>
-
-    <main id="main">
-        <article class="top">
-            <div>
-                <h1>
-                    Добро пожаловать на сайт ФРТК!
-                </h1>
-            </div>
-        </article>
-
-        <article id="content" class="container">
-            <section class="card">
-                <img src="../static/img/FRTK.png" class="card-img" />
-                <h2>{{ title }}</h2>
-                <p class="card-maintext">{{ main.content }}</p>
-                <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
-            </section>
-            <section class="card">
-                <img src="../static/img/FRTK.png" class="card-img" />
-                <h2>{{ title }}</h2>
-                <p class="card-maintext txt1">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer a laoreet sapien. Cras gravida malesuada eros sit amet feugiat. Phasellus non orci nibh. Suspendisse potenti. Donec lacinia, purus sit amet ullamcorper faucibus, enim turpis accumsan lacus, id mattis mi massa vel odio. Phasellus mollis dui diam, sit amet porta justo posuere in. Aliquam felis ante, vulputate quis massa vel, sagittis facilisis dolor. Suspendisse posuere consequat tristique. Suspendisse ultrices sollicitudin dignissim. Aliquam orci odio, tincidunt nec lectus sit amet, aliquam elementum felis. Sed laoreet felis a lobortis placerat. Duis nec est non neque gravida condimentum a ut nibh. Cras libero nisi, eleifend quis nisl porta, dapibus placerat purus. Quisque venenatis elit ac ultrices consequat.</p>
-                <script>
-                    $(function() {
-                        $('.txt1').succinct({
-                            size: 200,
-                            omission: '... <a href="">Read more</a>',
-                            ignore: true
-                        });
-                    });
-
-                </script>
-                <p class="card-text"><small class="text-muted">Last updated {{ main.time }}</small></p>
-            </section>
-        </article>
-
-        <footer>
-            <section class="container">&copy; СтудСовет ФРТК 2017</section>
-        </footer>
-    </main>
-
-    <div id="headerToggle">
-        <a href="#header" onclick="document.body.classList.toggle('activeSide');" class="toggle"></a>
+<section class="card">
+    <img src="../static/img/FRTK.png" class="card-img" />
+    <h2>{{ title }}</h2>
+    <div>
+        <!--!!!! Важно: необходим уникальный id внутри блока для input и label -->
+        <input id="show_{{id}}" type="checkbox" class="hidden shownews" />
+        <p class="card-maintext cutted">{{ cutted text }} <label class="link-underline" for="show_{{id}}"><a class="lightblue">&nbsp;Читать&nbsp;далее&nbsp;</a></label></p>
+        <p class="card-maintext full">{{ full text }} <label class="link-underline" for="show_{{id}}"><a class="lightblue">&nbsp;Скрыть&nbsp;</a></label></p>
     </div>
-</body>
-
-</html>
+    <p class="card-text"><small class="text-muted">Last updated {{ main.time }}</small></p>
+</section>
+<section class="card">
+    <img src="../static/img/FRTK.png" class="card-img" />
+    <h2>{{ title }}</h2>
+    <div>
+        <p class="card-maintext">{{ text without cutting }}</p>
+    </div>
+    <p class="card-text"><small class="text-muted">Last updated {{ main.time }}</small></p>
+</section>
+<section class="card" onclick="alert('Пока в разработке')">
+    <div>
+        <span class="card-maintext">Загрузить ещё...</span>
+    </div>
+</section>
