@@ -110,19 +110,21 @@
         </div>
     </noscript>
 
-        <!-- Пустой div - фон с единичкой -->
-        <div id='back'></div>
-        <input id='modal_check' type='checkbox' class='hidden' />
-        <div class='card {% if not notification.enabled %}hidden{% endif %}' id='modal'>
-            <div class='container'>
-                <h3>
-                    <span class='{{ notification.type }}'>&#128712;</span> {{ notification.text }}
-                </h3>
-                <label for='modal_check' class='m_close'>
-                    <h3 class='m_close'>&#10060;</h3>
-                </label>
-            </div>
+    <!-- Пустой div - фон с единичкой -->
+    <div id='back'></div>
+    <input id='modal_check' type='checkbox' class='hidden' />
+    <div class='card {{ notification.type }} {% if not notification.enabled %}hidden{% endif %}' id='modal'>
+        <div class='container'>
+            <h3>
+                 {{ notification.text }}
+            </h3>
+            <label for='modal_check' class='m_close'>
+                <svg class="close" viewBox="0 0 10 10">
+                    <path d="M2 8l6-6M2 2l6 6"/>
+                </svg>
+            </label>
         </div>
+    </div>
 
     <article id='top'>
         <div>
@@ -211,7 +213,11 @@
     </div>
 
     <label id='headerToggle' for='showside'>
-        <a class='toggle'></a>
+        <svg viewBox="0 0 10 10" class="toggle hamburger">
+            <path d="M8,3 L2,3" class="p1"/>
+            <path d="M2,5 L8,5" class="p2"/>
+            <path d="M8,7 L2,7" class="p3"/>
+        </svg>
     </label>
     <script>
         (function() {

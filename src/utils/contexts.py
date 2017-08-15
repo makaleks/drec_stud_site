@@ -5,7 +5,10 @@ def custom_context(request):
         'notification': {
             'enabled': False,
             'text': 'Разработчик забыл установить текст :)',
-            # Possible: info (blue), danger (red), alert (yellow)
-            'type': 'info'
+            # Bootstrap-like colors
+            # Possible: info (light blue), danger (red), dark (black),
+            #           primary (blue), secondary (gray), success (green),
+            #           warning (red-yellow), light (white)
+            'type': 'light'
         }
     }
