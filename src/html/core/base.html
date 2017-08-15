@@ -112,19 +112,17 @@
 
         <!-- Пустой div - фон с единичкой -->
         <div id='back'></div>
-    {% if notification_text %}
         <input id='modal_check' type='checkbox' class='hidden' />
-        <div class='card' id='modal'>
+        <div class='card {% if not notification.enabled %}hidden {% endif %}' id='modal'>
             <div class='container'>
                 <h3>
-                    <span class='info'>&#128712;</span> {{ notification_text }}
+                    <span class='{{ notification.type }}'>&#128712;</span> {{ notification.text }}
                 </h3>
                 <label for='modal_check' class='m_close'>
                     <h3 class='m_close'>&#10060;</h3>
                 </label>
             </div>
         </div>
-    {% endif %}
 
     <article id='top'>
         <div>

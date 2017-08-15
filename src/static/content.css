@@ -109,7 +109,6 @@
 #modal {
     z-index: 1000;
     margin: 0;
-    display: block;
     position: fixed;
     padding-bottom: 2.5rem;
     left: 0;

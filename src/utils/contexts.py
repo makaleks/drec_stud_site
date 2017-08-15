@@ -2,5 +2,10 @@
 
 def custom_context(request):
     return {
-        'notification_text': '',
+        'notification': {
+            'enabled': False,
+            'text': 'Разработчик забыл установить текст :)',
+            # Possible: info (blue), danger (red), alert (yellow)
+            'type': 'info'
+        }
     }
