@@ -154,12 +154,14 @@
 #modal.danger,
 #modal.dark {
     color: #fff;
+    text-shadow: 1px 1px 100px #000;
 }
 
 
 #modal.light,
 #modal.white {
     color: #000;
+    text-shadow: 1px 1px 100px #fff;
 }
 
 #modal.primary .container::before,
