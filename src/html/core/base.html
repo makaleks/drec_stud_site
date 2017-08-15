@@ -7,7 +7,7 @@
     <meta charset='UTF-8' />
     <meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' />
 
-    <link href='https://fonts.googleapis.com/css?family=Noto+Sans|Noto+Serif&amp;subset=cyrillic' rel='stylesheet'>
+    <link href='https://fonts.googleapis.com/css?family=Noto+Sans&amp;subset=cyrillic' rel='stylesheet'>
     <link type='text/css' rel='stylesheet' href='https://unpkg.com/normalize.css' />
     <link type='text/css' rel='stylesheet' href='{{ STATIC_URL }}/content.css' />
     <link type='text/css' rel='stylesheet' href='{{ STATIC_URL }}/base.css' />
@@ -110,6 +110,22 @@
         </div>
     </noscript>
 
+        <!-- Пустой div - фон с единичкой -->
+        <div id='back'></div>
+    {% if notification_text %}
+        <input id='modal_check' type='checkbox' class='hidden' />
+        <div class='card' id='modal'>
+            <div class='container'>
+                <h3>
+                    <span class='info'>&#128712;</span> {{ notification_text }}
+                </h3>
+                <label for='modal_check' class='m_close'>
+                    <h3 class='m_close'>&#10060;</h3>
+                </label>
+            </div>
+        </div>
+    {% endif %}
+
     <article id='top'>
         <div>
             <h1>
@@ -118,30 +134,31 @@
         </div>
         <div style='padding-left:10px;padding-right:10px'>
             <div id='bottom_menu'>
-                <div class='link-underline red'>
+                <div>
                     <ul>
-                        <li><a href='index' class='active'><span>Главная|Новости</span></a></li>
-                        <li><a href='survey'><span>Опросы</span></a></li>
-                        <li><a href='services/stirka'><span>Стиралка</span></a></li>
-                        <li><a href='services'><span>Другие сервисы</span></a></li>
-                        <li><a href='services'><span>Профиль</span></a></li>
-                        <li><a href='about'><span>О сайте</span></a></li>
+                        <li class='link-underline red'><a href='/' class='active'><span>Главная|Новости</span></a></li>
+                        <li class='link-underline red'><a href='/surveys/'><span>Опросы</span></a></li>
+                        <li class='link-underline red hide_elem_1000'><a href='services/stirka'><span>Стиралка</span></a></li>
+                        <li class='link-underline red hide_elem_1000'><a href='services'><span>Другие сервисы</span></a></li>
+                        <li class='link-underline red unhide_elem_1000'><a href='services'><span>Бытовые сервисы</span></a></li>
+                        <li class='link-underline red'><a href='/notes/faq'><span>ЧаВо</span></a></li>
+                        <li class='link-underline red'><a href='/notes/about'><span>О сайте</span></a></li>
                         <li id='vk-menu'>
                             {% if user.is_authenticated %}
                                 {% if user.avatar_url %}
-                                    <img src='{{ user.avatar_url }}' />
+                                    <img src='{{ user.avatar_url }}' class='hide_elem_1000' />
                                 {% else %}
-                                    <img src='{{ STATIC_URL }}/img/vk.svg' />
+                                    <img src='{{ STATIC_URL }}/img/vk.svg' class='hide_elem_1000' />
                                 {% endif %}
                                 <a href='/logout' class='btn btn-vk'>
                                     <span>Привет, {{ user.get_short_name }}</span>
                                 </a>
                             {% else %}
-                                <img src='{{ STATIC_URL }}/img/vk.svg' /через css3 >
-                                <a href='{% url 'social:begin' 'vk-oauth2' %}' class='btn btn-vk'>
-                                    <small>(Войти через ВК)</small>
+                                <img src='{{ STATIC_URL }}/img/vk.svg' class='hide_elem_1000' />
+                                <a href='{% url "social:begin" "vk-oauth2" %}' class='btn btn-vk'>
+                                    <span>Войти через ВК</span>
                                 </a>
-                            {% endif %}   
+                            {% endif %}
                         </li>
                     </ul>
                 </div>
@@ -152,9 +169,9 @@
                 <article id='vk-header'>
                     {% if user.is_authenticated %}
                         {% if user.avatar_url %}
-                            <img src='{{ user.avatar_url }}' />
+                            <img src='{{ user.avatar_url }}' class='hide_elem_1000' />
                         {% else %}
-                            <img src='{{ STATIC_URL }}/img/vk.svg' />
+                            <img src='{{ STATIC_URL }}/img/vk.svg' class='hide_elem_1000' />
                         {% endif %}
                         <section>
                             <p>Привет, {{ user.get_short_name }}</p>
@@ -164,25 +181,24 @@
                         <img src='{{ STATIC_URL }}/img/vk.svg' />
                         <section>
                             <p>Привет, гость</p>
-                            <a href='{% url 'social:begin' 'vk-oauth2' %}' class='btn btn-vk'>Войти через ВК</a>
+                            <a href='{% url "social:begin" "vk-oauth2" %}' class='btn btn-vk'>Войти через ВК</a>
                         </section>
-                    {% endif %}   
+                    {% endif %}
                 </article>
                 <nav id='nav' class='link-underline red'>
                     <ul>
-                        <li><a href='index' class='active'><span>Главная|Новости</span></a></li>
-                        <li><a href='survey'><span>Опросы</span></a></li>
+                        <li><a href='/' class='active'><span>Главная|Новости</span></a></li>
+                        <li><a href='/surveys/'><span>Опросы</span></a></li>
                         <li><a href='services/stirka'><span>Стиралка</span></a></li>
                         <li><a href='services'><span>Другие сервисы</span></a></li>
-                        <li><a href='services'><span>Профиль</span></a></li>
-                        <li><a href='about'><span>О сайте</span></a></li>
+                        <li><a href='/notes/faq/'><span>ЧаВо</span></a></li>
+                        <li><a href='/notes/about/'><span>О сайте</span></a></li>
                     </ul>
                 </nav>
             </div>
         </aside>
         <label for='showside' id='filterToggler'></label>
     </article>
-    <div id='back'></div>
 
     <div id='wrapper'>
 

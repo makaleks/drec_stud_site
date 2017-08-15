@@ -6,4 +6,4 @@ from .models import Note
 @admin.register(Note)
 class NoteAdmin(admin.ModelAdmin):
     list_display = ('name', 'edited')
-    readonly_fields = ('name',)
+    #readonly_fields = ('name',)

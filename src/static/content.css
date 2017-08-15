@@ -106,7 +106,57 @@
 
 .card-maintext {}
 
-.cuted {
+#modal {
+    z-index: 1000;
+    margin: 0;
+    display: block;
+    position: fixed;
+    padding-bottom: 2.5rem;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-top: 3px solid #de2921;
+    transition: bottom .4s cubic-bezier(1, 0, 0, 1);
+}
+
+#modal_check:checked~#modal {
+    bottom: -100%;
+}
+
+#modal>.container {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 700px;
+}
+
+#modal h3 {
+    display: inline;
+}
+
+#modal>.container>.m_close {
+    float: right;
+    margin: 0;
+}
+
+#modal .info {
+    color: #29B6F6;
+    padding: 5px;
+    font-size: 2rem;
+}
+
+#modal .alert {
+    color: #FFEE58;
+    padding: 5px;
+    font-size: 2rem;
+}
+
+#modal .danger {
+    color: #ef5350;
+    padding: 5px;
+    font-size: 2rem;
+}
+
+.cutted {
     display: block;
 }
 
@@ -114,7 +164,7 @@
     display: none;
 }
 
-.shownews:checked~.cuted {
+.shownews:checked~.cutted>label {
     display: none;
 }
 
