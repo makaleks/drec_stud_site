@@ -2,7 +2,6 @@
     position: relative;
     padding-right: 15px;
     padding-left: 15px;
-    font-family: 'Noto Serif', serif;
 }
 
 .link-underline a {
@@ -109,13 +108,13 @@
 #modal {
     z-index: 1000;
     margin: 0;
-    display: block;
     position: fixed;
     padding-bottom: 2.5rem;
     left: 0;
     right: 0;
     bottom: 0;
     border-top: 3px solid #de2921;
+    stroke: currentcolor; /* Color for svg written */
     transition: bottom .4s cubic-bezier(1, 0, 0, 1);
 }
 
@@ -133,27 +132,95 @@
     display: inline;
 }
 
+#modal svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    stroke-width: 2px;
+}
+
 #modal>.container>.m_close {
     float: right;
     margin: 0;
+    position: absolute;
+    top: 0;
+    right: 0;
 }
 
-#modal .info {
-    color: #29B6F6;
-    padding: 5px;
-    font-size: 2rem;
+#modal.primary,
+#modal.secondary,
+#modal.success,
+#modal.info,
+#modal.warning,
+#modal.danger,
+#modal.dark {
+    color: #fff;
 }
 
-#modal .alert {
-    color: #FFEE58;
-    padding: 5px;
-    font-size: 2rem;
+
+#modal.light,
+#modal.white {
+    color: #000;
 }
 
-#modal .danger {
-    color: #ef5350;
-    padding: 5px;
-    font-size: 2rem;
+#modal.primary .container::before,
+#modal.secondary .container::before,
+#modal.success .container::before,
+#modal.info .container::before,
+#modal.warning .container::before,
+#modal.danger .container::before,
+#modal.light .container::before,
+#modal.dark .container::before,
+#modal.white .container::before {
+    font-size: 1.3rem;
+    content: '\1F6C8\00A0';
+}
+
+#modal.primary {
+    background-color: #007bff;
+}
+
+#modal.secondary {
+    background-color: #868e96;
+}
+
+#modal.success {
+    background-color: #28a745;
+}
+
+#modal.info {
+    background-color: #17a2b8;
+}
+
+#modal.info .container::before {
+    content: '\1F6C8\00A0Инфо:';
+}
+
+#modal.warning {
+    background-color: #ffc107;
+}
+
+#modal.warning .container::before {
+    content: '\1F6C8\00A0Внимание:';
+}
+
+#modal.danger {
+    background-color: #dc3545;
+}
+
+#modal.danger .container::before {
+    content: '\1F6C8\00A0Внимание:';
+}
+
+#modal.light {
+    background-color: #f8f9fa;
+}
+
+#modal.dark {
+    background-color: #343a40;
+}
+
+#modal.white {
+    background-color: #fff;
 }
 
 .cutted {
