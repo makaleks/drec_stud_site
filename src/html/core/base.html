@@ -113,7 +113,7 @@
         <!-- Пустой div - фон с единичкой -->
         <div id='back'></div>
         <input id='modal_check' type='checkbox' class='hidden' />
-        <div class='card {% if not notification.enabled %}hidden {% endif %}' id='modal'>
+        <div class='card {% if not notification.enabled %}hidden{% endif %}' id='modal'>
             <div class='container'>
                 <h3>
                     <span class='{{ notification.type }}'>&#128712;</span> {{ notification.text }}
@@ -139,8 +139,8 @@
                         <li class='link-underline red hide_elem_1000'><a href='services/stirka'><span>Стиралка</span></a></li>
                         <li class='link-underline red hide_elem_1000'><a href='services'><span>Другие сервисы</span></a></li>
                         <li class='link-underline red unhide_elem_1000'><a href='services'><span>Бытовые сервисы</span></a></li>
-                        <li class='link-underline red'><a href='/notes/faq'><span>ЧаВо</span></a></li>
-                        <li class='link-underline red'><a href='/notes/about'><span>О сайте</span></a></li>
+                        <li class='link-underline red'><a href='/notes/faq/'><span>ЧаВо</span></a></li>
+                        <li class='link-underline red'><a href='/notes/about/'><span>О сайте</span></a></li>
                         <li id='vk-menu'>
                             {% if user.is_authenticated %}
                                 {% if user.avatar_url %}
@@ -148,7 +148,7 @@
                                 {% else %}
                                     <img src='{{ STATIC_URL }}/img/vk.svg' class='hide_elem_1000' />
                                 {% endif %}
-                                <a href='/logout' class='btn btn-vk'>
+                                <a href='/logout/' class='btn btn-vk'>
                                     <span>Привет, {{ user.get_short_name }}</span>
                                 </a>
                             {% else %}
@@ -173,7 +173,7 @@
                         {% endif %}
                         <section>
                             <p>Привет, {{ user.get_short_name }}</p>
-                            <a href='/logout' class='btn btn-vk'>Выйти</a>
+                            <a href='/logout/' class='btn btn-vk'>Выйти</a>
                         </section>
                     {% else %}
                         <img src='{{ STATIC_URL }}/img/vk.svg' />

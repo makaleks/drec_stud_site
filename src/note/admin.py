@@ -6,4 +6,8 @@ from .models import Note
 @admin.register(Note)
 class NoteAdmin(admin.ModelAdmin):
     list_display = ('name', 'edited')
-    #readonly_fields = ('name',)
+    def get_readonly_fields(self, request, obj=None):
+        if obj:
+            return ['name']
+        else:
+            return []
