@@ -1,0 +1,43 @@
+<section class='card'>
+    <h2>Заказ стиральной машины</h2>
+    <div>
+        <input id='show_help' type='checkbox' class='hidden' />
+        <label class='link-underline' for='show_help'><a class='lightblue'>&nbsp; &nbsp; &nbsp;</a></label>
+        <p class='card-maintext full'>{{ full text }}</p>
+    </div>
+    <p class='card-text'><small class='text-muted'>Last updated {{ main.time }}</small></p>
+</section>
+<section class='card'>
+    <h2>{{ title }}</h2>
+    <table class=''>
+        <thead>
+            <tr>
+                <th>Интервалы</th>
+                <th>Машина №1<small>(10 руб.)</small></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>9:00</th>
+                <th class='gone'></th>
+            </tr>
+            <tr>
+                <th>9:00</th>
+                <th class='started'></th>
+            </tr>
+            <tr>
+                <th>9:30</th>
+                <th class=''></th>
+            </tr>
+            <tr>
+                <th>10:00</th>
+                <th class=''></th>
+            </tr>
+        </tbody>
+    </table>
+</section>
+<section class='card' onclick='alert("Пока в разработке")'>
+    <div>
+        <span class='card-maintext'>Загрузить ещё...</span>
+    </div>
+</section>

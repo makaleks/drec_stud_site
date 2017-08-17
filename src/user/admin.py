@@ -126,7 +126,7 @@ class UserAdmin(BaseUserAdmin):
         # Replace next string with this one to enable #passwordAuth
         #('Contacts', {'fields': ('account_id', 'email')}),
         ('Contacts', {'fields': ('account_id', 'phone_number', 'email')}),
-        ('Permissions', {'fields': ('is_superuser','is_staff',)}),
+        ('Permissions', {'fields': ('is_active','is_staff',)}),
     )
     # Superuser can be created only from tty
     add_fieldsets = (
