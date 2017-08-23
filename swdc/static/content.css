@@ -1,5 +1,4 @@
 .container {
-    position: relative;
     padding-right: 15px;
     padding-left: 15px;
 }
@@ -114,7 +113,8 @@
     right: 0;
     bottom: 0;
     border-top: 3px solid #de2921;
-    stroke: currentcolor; /* Color for svg written */
+    stroke: currentcolor;
+    /* Color for svg written */
     transition: bottom .4s cubic-bezier(1, 0, 0, 1);
 }
 
@@ -126,6 +126,7 @@
     margin-left: auto;
     margin-right: auto;
     max-width: 700px;
+    position: relative;
 }
 
 #modal h3 {
@@ -156,7 +157,6 @@
     color: #fff;
     text-shadow: 1px 1px 100px #000;
 }
-
 
 #modal.light,
 #modal.white {
@@ -241,74 +241,12 @@
     display: block;
 }
 
-.tagspace {
-    background-color: #EEEEEE;
+.table_aside {
+    position: absolute;
+    width: 150px;
+    background: aliceblue;
 }
 
-.tag {
-    margin: 2px;
-    padding: 5px;
-    -moz-border-radius: 1em;
-    border-radius: 1em;
-}
-
-.tag.white {
-    background: #FFF;
-    color: #000;
-}
-
-.tag.yellow {
-    background: #FFEB3B;
-    color: #F57F17;
-}
-
-.tag.blue {
-    background: #2196F3;
-    color: #E3F2FD;
-}
-
-.tag.red {
-    background: #F44336;
-    color: #FFEBEE;
-}
-
-.tag.green {
-    background: #4CAF50;
-    color: #E8F5E9;
-}
-
-.tagged {
-    display: none;
-}
-
-#tag_all:checked~* .tagged {
-    display: block;
-}
-
-#tag_gotit:checked~* .tag_gotit {
-    display: block;
-}
-
-#tag_1course:checked~* .tag_1course {
-    display: block;
-}
-
-#tag_618:checked~* .tag_618 {
-    display: block;
-}
-
-#tag_sport:checked~* .tag_sport {
-    display: block;
-}
-
-#tag_hostel:checked~* .tag_hostel {
-    display: block;
-}
-
-#tag_lecture:checked~* .tag_lecture {
-    display: block;
-}
-
-#tag_site:checked~* .tag_site {
-    display: block;
+.table_main {
+    margin-left: 200px;
 }
