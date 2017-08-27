@@ -8,8 +8,11 @@
 - [x] Index page content [core/index.html](core/index.html)
 - - [x] Primary code
 - - [x] Cuting big news # cutted in server or by cut tag when writing
-- [ ] Surveys list page content [core/surveys_list.html](core/surveys_list.html)
+- [x] Washing service page [core/washing.html](core/washing.html)
 - - [x] Primary code
+- - [x] Alpha design
+- [ ] Surveys list page content [core/surveys_list.html](core/surveys_list.html)
+- - [x] Primary code //Temorary stopped
 - - [ ] Redesign (1/2)
 - - [x] Add tags support !Added in css
 - [ ] Survey page content

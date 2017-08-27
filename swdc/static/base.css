@@ -121,10 +121,6 @@ footer {
     border-bottom: 5px solid #2c0303;
 }
 
-#bottom_menu .unhide_elem_1000 {
-    display: none;
-}
-
 #header {
     background: #290000;
     color: #fff;
@@ -445,15 +441,6 @@ footer>section {
         max-width: -webkit-calc(100% - 330px);
         max-width: -moz-calc(100% - 330px);
         max-width: calc(100% - 330px);
-    }
-}
-
-@media (max-width: 1020px) {
-    #bottom_menu .hide_elem_1000 {
-        display: none;
-    }
-    #bottom_menu .unhide_elem_1000 {
-        display: inline-block;
     }
 }
 

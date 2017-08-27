@@ -225,6 +225,9 @@
     background-color: #fff;
 }
 
+
+/* NEWS */
+
 .cutted {
     display: block;
 }
@@ -241,12 +244,105 @@
     display: block;
 }
 
+
+/* WASHING */
+
 .table_aside {
     position: absolute;
-    width: 150px;
+    width: 100px;
     background: aliceblue;
 }
 
+.preview {
+    min-width: 1em;
+    min-height: 1em;
+    width: 1em;
+    height: 1em;
+    max-width: 1em;
+    max-height: 1em;
+    display: inline-block;
+}
+
 .table_main {
-    margin-left: 200px;
+    margin-left: 100px;
+    display: block;
+    overflow-x: auto;
+}
+
+.table_main tr,
+.table_aside tr {
+    height: 50px;
+}
+
+.table_main td {
+    min-width: 100px;
+    position: relative;
+}
+
+
+/* WASHING COLORS */
+
+.table_main>tbody>tr>td,
+.preview {
+    background-color: #8BC34A;
+}
+
+.table_main>tbody>tr>td.started,
+.preview.started {
+    background-color: #00BCD4;
+}
+
+.table_main>tbody>tr>td.choisen,
+.preview.choisen {
+    background-color: #9C27B0;
+}
+
+.table_main>tbody>tr>td.selected,
+.preview.selected {
+    background-color: #E91E63;
+    color: white;
+}
+
+.table_main>tbody>tr>td.ended,
+.preview.ended {
+    background-color: #607D8B;
+}
+
+
+/* CHECKBOX cutomization */
+
+.table_main span,
+.table_main label {
+    position: absolute;
+    top: 1px;
+    bottom: 1px;
+    width: 99%;
+    overflow: hidden;
+    display: block;
+    margin: 0 auto;
+}
+
+.table_main span {
+    opacity: 0;
+    background: #FF9800;
+    color: #FFF;
+    font-size: 2em;
+    transition: opacity .4s linear;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 2rem;
+}
+
+.table_main input:checked~span {
+    opacity: 1;
+    transition: opacity .4s linear;
+}
+
+#washing>input[type=submit] {
+    display: block;
+    vertical-align: middle;
+    margin: 5px auto;
+    padding: 5px 15px;
+    background: #ccc;
+    border: 0 none;
 }
