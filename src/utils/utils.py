@@ -1,5 +1,7 @@
 from django.db import models
+import datetime
 
+# Check that some field is unique for now
 def check_unique(model, field_name, value):
     try:
         field = getattr(model, field_name)
@@ -12,3 +14,4 @@ def check_unique(model, field_name, value):
     except Exception as e:
         print(e)
         return False
+

@@ -1,29 +1,55 @@
 from django.contrib import admin
 from .models import WorkingTime, WorkingTimeException, Service, Item, Order
+from django.contrib.contenttypes.admin import *
+from django import forms
 
 # Register your models here.
 
+class ItemInline(admin.StackedInline):
+    model = Item
+    extra = 0
+    verbose_name = 'Элемент'
+    ordering = ['location', 'price']
+
+class WorkingTimeInline(GenericStackedInline):
+    model = WorkingTime
+    extra = 0
+    verbose_name = 'Элемент'
+    ordering = ['weekday', 'works_from', 'works_to']
+
+class WorkingTimeExceptionInline(GenericStackedInline):
+    model = WorkingTimeException
+    extra = 0
+    verbose_name = 'Элемент'
+    ordering = ['is_annual', 'date_start', 'date_end', 'works_from', 'works_to']
+
 @admin.register(WorkingTime)
 class WorkingTimeAdmin(admin.ModelAdmin):
-    list_display = ('service', 'weekday', 'works_from', 'works_to')
-    list_filter = ['service']
+    list_display = ('weekday', 'works_from', 'works_to')
+    ordering = ['weekday', 'works_from', 'works_to']
 
 @admin.register(WorkingTimeException)
 class WorkingTimeExceptionAdmin(admin.ModelAdmin):
-    list_display = ('service', 'day_start', 'duration', 'works_from', 'works_to')
-    list_filter = ['service']
+    list_display = ('date_start', 'date_end', 'works_from', 'works_to')
+    ordering = ['is_annual', 'date_start', 'date_end', 'works_from', 'works_to']
 
 @admin.register(Service)
 class ServiceAdmin(admin.ModelAdmin):
-    list_display = ('name', 'default_price', 'time_step', 'edited')
+    list_display = ('name', 'default_price', 'time_step', 'is_active','edited')
+    inlines = [ItemInline, WorkingTimeInline, WorkingTimeExceptionInline]
+    list_filter = ['name']
 
 @admin.register(Item)
 class ItemAdmin(admin.ModelAdmin):
     list_display = ('id', 'location', 'is_active', 'created')
     list_filter = ['location', 'is_active']
+    inlines = [WorkingTimeInline, WorkingTimeExceptionInline]
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'get_user_info', 'item', 'time_start', 'time_end')
-    def get_user_info(self, obj):
-        return '{0}, {1}'.format(obj.get_full_name(), obj.group_number)
+    list_display = ('id', 'user_info', 'item_id', 'date_start', 'time_start', 'time_end')
+    list_filter = ['date_start', 'item_id']
+    def user_info(self, obj):
+        return '{0}, {1}'.format(obj.user.group_number, obj.user.get_full_name())
+    def item_id(self, obj):
+        return obj.item.id

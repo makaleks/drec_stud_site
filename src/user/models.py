@@ -18,7 +18,6 @@ class User(models.Model):
     account_id      = models.CharField(max_length = 64, blank = False, null = False, unique = True, verbose_name = 'Аккаунт')
     group_number    = models.IntegerField(blank = False, null = False, verbose_name = 'Номер группы')
     avatar_url      = models.URLField(null = True, blank = True)
-    responsible_for = models.ForeignKey(Service, on_delete = models.SET_NULL, null = True, default = None)
     # Two 'blank' (unrequired) values can`t be unique
     email           = models.CharField(max_length = 64, blank = True, null = False, unique = False, verbose_name = 'Почта')
     USERNAME_FIELD  = 'phone_number'
@@ -46,6 +45,8 @@ class User(models.Model):
         return True
     def has_module_perms(self, app_label):
         return True
+    def __str__(self):
+        return self.get_full_name()
     class Meta:
         verbose_name        = 'Пользователя'
         verbose_name_plural = 'Пользователи'
