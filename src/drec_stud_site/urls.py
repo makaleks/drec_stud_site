@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^social/', include('social_django.urls', namespace='social')),
     url(r'^logout/$', LogoutView.as_view()),
+    url(r'^service/', include('service.urls')),
     url(r'^notes/', include('note.urls')),
     url(r'^', include('news.urls')),
     #url(r'^login_success/', render_login_success),

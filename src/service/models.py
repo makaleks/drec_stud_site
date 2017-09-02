@@ -112,7 +112,7 @@ class Service(models.Model):
     # no save() by default
     def save(self, *args, **kwargs):
         self.full_clean()
-        return super(Order, self).save(*args, **kwargs)
+        return super(Service, self).save(*args, **kwargs)
     class Meta:
         verbose_name = 'Сервис'
         verbose_name_plural = 'Сервисы'
