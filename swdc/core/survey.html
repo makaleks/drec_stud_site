@@ -1,0 +1,74 @@
+<link type='text/css' rel='stylesheet' href='https://surveyjs.azureedge.net/0.12.23/survey.css' />
+<section class='card' id='survey'>
+    <div id="surveyContainer">Loading, please wait</div>
+</section>
+<script src='https://unpkg.com/jquery@3.2.1/dist/jquery.slim.min.js'></script>
+<script src='https://cdn.rawgit.com/mgalante/jquery.redirect/master/jquery.redirect.js'></script>
+<script src='https://surveyjs.azureedge.net/0.12.23/survey.jquery.min.js'></script>
+<script>
+    window.addEventListener('load', function() {
+        var surveyJSON = {
+            title: 'Hello world!',
+            completedHtml: 'Спасибо, что выполнил(-а), {{ username }}<br />Сейчас мы вернемся к списку опросов',
+            questions: [{
+                type: "matrix",
+                name: "Quality",
+                title: "Please indicate if you agree or disagree with the following statements",
+                columns: [{
+                        value: 1,
+                        text: "Strongly Disagree"
+                    },
+                    {
+                        value: 2,
+                        text: "Disagree"
+                    },
+                    {
+                        value: 3,
+                        text: "Neutral"
+                    },
+                    {
+                        value: 4,
+                        text: "Agree"
+                    },
+                    {
+                        value: 5,
+                        text: "Strongly Agree"
+                    }
+                ],
+                rows: [{
+                        value: "affordable",
+                        text: "Product is affordable"
+                    },
+                    {
+                        value: "does what it claims",
+                        text: "Product does what it claims"
+                    },
+                    {
+                        value: "better then others",
+                        text: "Product is better than other products on the market"
+                    },
+                    {
+                        value: "easy to use",
+                        text: "Product is easy to use"
+                    }
+                ]
+            }]
+        };
+
+        var survey = new Survey.Model(surveyJSON);
+        $("#surveyContainer").Survey({
+            model: survey,
+            onComplete: sendDataToServer
+        });
+
+        function sendDataToServer(survey) {
+            var resultAsString = JSON.stringify(survey.data);
+
+            function sendData() {
+                $.redirect('http://httpbin.org/post', survey.data);
+            };
+            setTimeout(sendData, 2000);
+        }
+    });
+
+</script>

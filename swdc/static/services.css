@@ -1,0 +1,6 @@
+.service_card {
+    width: calc(50% - 2rem);
+    border: dashed 1.6px red;
+    margin: .25rem;
+    display: inline-block;
+}
