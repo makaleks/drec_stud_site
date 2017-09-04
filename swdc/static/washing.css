@@ -1,0 +1,198 @@
+
+
+/* WASHING */
+
+.table_aside {
+    position: absolute;
+    width: 100px;
+    background: aliceblue;
+}
+
+.preview {
+    min-width: 1em;
+    min-height: 1em;
+    width: 1em;
+    height: 1em;
+    max-width: 1em;
+    max-height: 1em;
+    display: inline-block;
+}
+
+.table_main {
+    margin-left: 100px;
+    display: block;
+    overflow-x: auto;
+}
+
+.table_main tr,
+.table_aside tr {
+    height: 50px;
+    cursor: pointer;
+}
+
+.table_main td {
+    min-width: 100px;
+    position: relative;
+}
+
+
+/* WASHING COLORS */
+
+.table_main>tbody>tr>td,
+.preview {
+    background-color: #8BC34A;
+}
+
+.table_main>tbody>tr>td.started,
+.preview.started {
+    background-color: #00BCD4;
+}
+
+.table_main>tbody>tr>td.choisen,
+.preview.choisen {
+    background-color: #9C27B0;
+}
+
+.table_main>tbody>tr>td.selected,
+.preview.selected {
+    background-color: #E91E63;
+    color: white;
+}
+
+.table_main>tbody>tr>td.ended,
+.preview.ended {
+    background-color: #607D8B;
+}
+
+
+/* CHECKBOX cutomization */
+
+.table_main span,
+.table_main label {
+    position: absolute;
+    top: 1px;
+    bottom: 1px;
+    width: 99%;
+    overflow: hidden;
+    display: block;
+    margin: 0 auto;
+}
+
+.table_main span {
+    opacity: 0;
+    background: #FF9800;
+    color: #FFF;
+    font-size: 2em;
+    transition: opacity .4s linear;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 2rem;
+}
+
+.table_main input:checked~span {
+    opacity: 1;
+    transition: opacity .4s linear;
+}
+
+
+/* USERINFO STYLES */
+
+.table_main label.userinfo {
+    background: #FF9800;
+    color: #FFF;
+    font-size: 2em;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 2rem;
+    background: url(img/userinfo.svg) center center no-repeat;
+}
+
+#modal_userinfo {
+    display: none;
+    z-index: 1100;
+    margin: 3em calc(50% - 350px);
+    padding: 0;
+    padding-bottom: 2.5rem;
+    bottom: 0;
+    width: 700px;
+    color: #000;
+    stroke: currentcolor;
+    position: fixed;
+}
+
+#modal_userinfo .m_close {
+    top: 2em;
+}
+
+@media (max-width: 860px) {
+    #modal_userinfo {
+        margin: 3em 15px;
+        width: -webkit-calc(100% - 30px);
+        width: -moz-calc(100% - 30px);
+        width: calc(100% - 30px);
+    }
+}
+
+#modal_userinfo_back {
+    display: none;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 0;
+    height: 100%;
+    min-width: 100%;
+    min-height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    position: fixed;
+    z-index: 1050;
+}
+
+#modal_userinfo_check:checked~#modal_userinfo_back,
+#modal_userinfo_check:checked~#modal_userinfo {
+    display: block;
+}
+
+#preresult {
+    position: fixed;
+    bottom: 0;
+    margin-bottom: 0;
+    padding: 0 15px;
+    width: calc(100vw - 60px);
+    z-index: 75;
+}
+
+@media (min-width: 860px) {
+    #preresult {
+        min-width: 670px;
+        width: 670px;
+        max-width: -webkit-calc(100% - 330px);
+        max-width: -moz-calc(100% - 330px);
+        max-width: calc(100% - 330px);
+    }
+}
+
+@media (max-width: 480px) {
+    #preresult {
+        min-width: -webkit-calc(100% - 330px);
+        min-width: -moz-calc(100% - 30px);
+        min-width: calc(100% - 30px);
+        max-width: -webkit-calc(100% - 330px);
+        max-width: -moz-calc(100% - 30px);
+        max-width: calc(100% - 30px);
+    }
+}
+
+#finalresult {
+    position: relative;
+    z-index: 100;
+    margin-bottom: 0;
+}
+
+#washing>div#finalresult>input {
+    display: inline;
+    vertical-align: end;
+    padding: 5px 15px;
+    background: #ccc;
+    border: 0 none;
+}
