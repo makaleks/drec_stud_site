@@ -289,9 +289,9 @@ class Item(models.Model):
 
 
 class Order(models.Model):
-    date_start  = models.DateField(default = datetime.date.today(), blank = False, null = False, verbose_name = 'Дата')
-    time_start  = models.TimeField(blank = False, null = False, unique = True, verbose_name = 'Время начала')
-    time_end    = models.TimeField(blank = False, null = False, unique = True, verbose_name = 'Время конца')
+    date_start  = models.DateField(default = datetime.date.today, blank = False, null = False, verbose_name = 'Дата')
+    time_start  = models.TimeField(blank = False, null = False, verbose_name = 'Время начала')
+    time_end    = models.TimeField(blank = False, null = False, verbose_name = 'Время конца')
     item        = models.ForeignKey(Item, on_delete = models.CASCADE, related_name = 'orders', blank = False, null = False, verbose_name = 'Предмет сервиса')
     user        = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.CASCADE, related_name = 'orders', blank = False, null = False, verbose_name = 'Пользователь')
     # time_start > time_end is normal, we say it means 'finish next day'
@@ -343,3 +343,4 @@ class Order(models.Model):
     class Meta:
         verbose_name = 'Заказ'
         verbose_name_plural = 'Заказы'
+        unique_together = (('date_start', 'time_start'), ('date_start', 'time_end'),)
