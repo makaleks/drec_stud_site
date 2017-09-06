@@ -35,9 +35,14 @@ class WorkingTimeExceptionAdmin(admin.ModelAdmin):
 
 @admin.register(Service)
 class ServiceAdmin(admin.ModelAdmin):
-    list_display = ('name', 'default_price', 'time_step', 'is_active','edited')
+    list_display = ('slug', 'default_price', 'time_step', 'is_active','edited')
     inlines = [ItemInline, WorkingTimeInline, WorkingTimeExceptionInline]
     list_filter = ['name']
+    def get_readonly_fields(self, request, obj=None):
+        if obj:
+            return ['slug']
+        else:
+            return []
 
 @admin.register(Item)
 class ItemAdmin(admin.ModelAdmin):

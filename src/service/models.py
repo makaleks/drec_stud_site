@@ -5,8 +5,9 @@ from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.fields import GenericRelation
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, FileExtensionValidator
 from django.core.exceptions import ValidationError
+from math import gcd
 import datetime
 
 # Create your models here.
@@ -33,7 +34,7 @@ class WorkingTime(models.Model):
         )
     )
     works_from  = models.TimeField(blank = False, null = False, default = datetime.time(0,0,0), verbose_name = 'Начало рабочего времени')
-    works_to    = models.TimeField(blank = False, null = False, default = datetime.time(23,59,59), verbose_name = 'Конец рабочего времени')
+    works_to    = models.TimeField(blank = False, null = False, default = datetime.time(0,0,0), verbose_name = 'Конец рабочего времени')
     weekend     = models.BooleanField(default = False, blank = False, null = False, verbose_name = 'Выходной')
     description = models.CharField(max_length = 64, blank = True, null = True, verbose_name = 'Описание')
     # Set possible only to Item & Service
@@ -82,18 +83,45 @@ class WorkingTimeException(models.Model):
         ordering = ['object_id', 'is_annual', 'date_start', 'date_end', 'works_from']
 
 
+def get_working_time_exception_query(source, day):
+    # remember, that exceptions may be annual (weekends)
+    return (source.working_time_exceptions.all().filter(
+        # Remember [X, Y)
+        # day & month
+        models.Q(date_start__day__lte = day.day, 
+            date_end__day__gt = day.day, 
+            date_start__month__lte = day.month, 
+            date_end__month__gte = day.month) 
+        # year | is_annual
+        & (
+            models.Q(date_start__year__lte = day.year, 
+                date_end__year__gte = day.year) 
+            | models.Q(is_annual = True)
+        )
+    ))
+def get_working_time_query(source, day):
+    return (source.working_times.all().filter(
+        # everyday
+        models.Q(weekday = WorkingTime.EVERYDAY)
+        # weekday returns [0,6], but we have [1,7]
+        | models.Q(weekday = day.weekday() + 1)
+    ))
+
+
 class Service(models.Model):
-    url_id      = models.CharField(max_length = 16, blank = False, null = False, unique = True, verbose_name = 'Фрагмент URL на английском')
+    # URL part. Django accepts only exactly 'slug' field in urls.py
+    slug        = models.SlugField(max_length = 16, blank = False, null = False, unique = True, verbose_name = 'Фрагмент URL на английском (навсегда)')
     name        = models.CharField(max_length = 64, blank = False, null = False, unique = True, verbose_name = 'Название')
     description = models.CharField(max_length = 124, blank = False, null = False, verbose_name = 'Краткое описание')
     instruction = models.TextField(blank = True, null = True, verbose_name = 'Инструкция и подробное описание')    
+    image       = models.FileField(validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'gif', 'svg'])], blank = False, null = False, verbose_name = 'Картинка')
     time_step   = models.TimeField(blank = False, null = False, verbose_name = 'Минимальное время использования (шаг времени)')
     max_time_steps  = models.PositiveSmallIntegerField(blank = False, null = False, default = 1, verbose_name = 'Максимальное число шагов времени непрерывного использования')
     default_price   = models.PositiveSmallIntegerField(blank = True, null = True, verbose_name = 'Цена по-умолчанию за шаг времени', default = 0)
     edited      = models.DateTimeField(auto_now = True, verbose_name = 'Последнее редактирование этих данных')
     is_active   = models.BooleanField(default = True, blank = False, null = False, verbose_name = 'Работает')
     default_works_from  = models.TimeField(blank = False, null = False, default = datetime.time(0,0,0), verbose_name = 'Начало рабочего времени по-умолчанию')
-    default_works_to    = models.TimeField(blank = False, null = False, default = datetime.time(23,59,59), verbose_name = 'Конец рабочего времени по-умолчанию')
+    default_works_to    = models.TimeField(blank = False, null = False, default = datetime.time(00,00,00), verbose_name = 'Конец рабочего времени по-умолчанию')
     days_to_show        = models.PositiveSmallIntegerField(default = 3, validators = [MinValueValidator(1)], blank = False, null = False, verbose_name = 'Дней на заказ')
     time_after_now      = models.TimeField(blank = False, null = False, default = datetime.time(0,20,0), verbose_name = 'Времени на запись после начала')
     working_times       = GenericRelation(WorkingTime, content_type_field = 'content_type', object_id_field = 'object_id')
@@ -103,8 +131,77 @@ class Service(models.Model):
         return self.name
     def get_timetable_list(self):
         items = {}
-        for item in list(self.items.all()):
-            items[item.id] = item.get_available_time()
+        for item in list(self.items.all().order_by('name')):
+            items[item.name] = item.get_available_time()
+        weekdays = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье']
+        # timedelta is available for datetime only
+        now = datetime.datetime.now()
+        result_lst = []
+        most_frequent = ''
+        for i in range(self.days_to_show):
+            result_lst.append({
+                'day': '{0} {1}'.format(weekdays[(now + datetime.timedelta(days = i)).date().weekday()], (now + datetime.timedelta(days = i)).strftime('%d.%m')),
+                'items': {},
+                'time_layout': []
+            })
+            tmp_lst = []
+            for name, value in items.items():
+                result_lst[i]['items'][name] = {}
+                result_lst[i]['items'][name]['time'] = items[name][i]
+                if 'weekend' not in items[name][i][0].keys():
+                    tmp_lst.append(name)
+            if not tmp_lst:
+                result_lst[i]['time_layout'] = [{'time_start': 'Отгул', 'time_end': 'Отгул'}]
+                for it in result_lst[i]['items']:
+                    it['rowspan'] = 1
+            else:
+                tmp_lst = list(self.items.all().filter(name__in = tmp_lst))
+                res = tmp_lst[0].t_steps_per_order
+                for c in tmp_lst[1:]:
+                    res = gcd(res, c.t_steps_per_order)
+                for it in tmp_lst:
+                    result_lst[i]['items'][it.name]['rowspan'] = it.t_steps_per_order / res
+                td = (datetime.datetime.combine(datetime.date.min, self.time_step) - datetime.datetime.min)*res
+                time_start_end = {}
+                queryset = get_working_time_exception_query(self, (now + datetime.timedelta(days = i)).date())
+                if queryset.exists():
+                    time_start_end = {
+                        'time_start': queryset.first().works_from,
+                        'time_end': queryset.first().works_to
+                    }
+                else:
+                    queryset = get_working_time_query(self, (now + datetime.timedelta(days = i)).date())
+                    if queryset.exists():
+                        time_start_end = {
+                            'time_start': queryset.first().works_from,
+                            'time_end': queryset.first().works_to
+                        }
+                    else:
+                        time_start_end = {
+                            'time_start': self.default_works_from,
+                            'time_end': self.default_works_to
+                        }
+                t_start = datetime.datetime.combine(datetime.date.min, time_start_end['time_start'])
+                t_end = datetime.datetime.combine(datetime.date.min, time_start_end['time_end'])
+                if t_end.time() == datetime.time(0,0,0):
+                    t_end += datetime.timedelta(days = 1)
+                tmp_lst = []
+                while t_start + td <= t_end:
+                    tmp_lst.append({
+                        'time_start': t_start.time(),
+                        'time_end': (t_start + td).time()
+                    })
+                    t_start += td
+                result_lst[i]['time_layout'] = tmp_lst
+        return result_lst
+    def get_item_info(self):
+        result_lst = {'price':{}}
+        for it in self.items.all():
+            if it.price:
+                result_lst['price'][it.name] = it.price
+            else:
+                result_lst['price'][it.name] = self.default_price
+        return result_lst
     def clean(self):
         if self.default_works_to < self.default_works_from:
             raise ValidationError('Please use time of single day')
@@ -137,58 +234,83 @@ class Item(models.Model):
             return {'works_from': datetime.time(0,0,0),
                     'works_to': datetime.time(0,0,0),
                     'weekend': True}
-        # 2 same code -> function (requires same class fields, if used)
-        def get_working_time_exception_query(source, day):
-            # remember, that exceptions may be annual (weekends)
-            return (source.working_time_exceptions.all().filter(
-                # Remember [X, Y)
-                # day & month
-                models.Q(date_start__day__lte = day.day, 
-                    date_end__day__gt = day.day, 
-                    date_start__month__lte = day.month, 
-                    date_end__month__gte = day.month) 
-                # year | is_annual
-                & (
-                    models.Q(date_start__year__lte = day.year, 
-                        date_end__year__gte = day.year) 
-                    | models.Q(is_annual = True)
-                )
-            ))
-        def get_working_time_query(source, day):
-            return (source.working_times.all().filter(
-                # everyday
-                models.Q(weekday = WorkingTime.EVERYDAY)
-                # weekday returns [0,6], but we have [1,7]
-                | models.Q(weekday = day.weekday() + 1)
-            ))
         # PRIORITY: Service < Item < WorkingTime < WorkingTimeException
         # working_time_exceptions
+        item_result = service_result = {}
         wte_item = get_working_time_exception_query(self, day)
         if wte_item.exists():
-            return {'works_from': wte_item.first().works_from,
-                    'works_to': wte_item.first().works_to,
-                    'weekend': wte_item.first().weekend}
+            item_result = wte_item.first()
         # same for service
         wte_service = get_working_time_exception_query(self.service, day)
         if wte_service.exists():
-            return {'works_from': wte_service.first().works_from,
-                    'works_to': wte_service.first().works_to,
-                    'weekend': wte_service.first().weekend}
+            service_result = wte_service.first()
         # working_times
         wt_item = get_working_time_query(self, day)
-        if wt_item.exists():
-            return {'works_from': wt_item.first().works_from,
-                    'works_to': wt_item.first().works_to,
-                    'weekend': wt_item.first().weekend}
+        if wt_item.exists() and not item_result:
+            item_result = wt_item.first()
         # same for service
         wt_service = get_working_time_query(self.service, day)
-        if wt_service.exists():
-            return {'works_from': wt_service.first().works_from,
-                    'works_to': wt_service.first().works_to,
-                    'weekend': wt_service.first().weekend}
-        return {'works_from': self.service.default_works_from,
+        if wt_service.exists() and not servise_result:
+            service_result = wt_service.first()
+        if not service_result:
+            service_result = {
+                'works_from': self.service.default_works_from,
                 'works_to': self.service.default_works_to,
-                'weekend': False}
+                'weekend': False
+            }
+        else:
+            service_result = {
+                'works_from': service_result.works_from,
+                'works_to': service_result.works_to,
+                'weekend': service_result.weekend
+            }
+        if not item_result:
+            item_result = service_result
+        else:
+            item_result = {
+                'works_from': item_result.works_from,
+                'works_to': item_result.works_to,
+                'weekend': item_result.weekend
+            }
+        td = datetime.datetime.combine(datetime.date.min, 
+            self.service.time_step) - datetime.datetime.min
+        # service time start/end
+        sts = datetime.datetime.combine(datetime.date.min, 
+            service_result['works_from'])
+        ste = datetime.datetime.combine(datetime.date.min, 
+            service_result['works_to'])
+        if ste.time() == datetime.time(0,0,0):
+            ste += datetime.timedelta(days = 1)
+        to_prepend = []
+        to_append = []
+        t_start = datetime.datetime.combine(datetime.date.min, item_result['works_from'])
+        t_end = datetime.datetime.combine(datetime.date.min, item_result['works_to'])
+        if not item_result['weekend']:
+            if t_start < sts:
+                t_start = sts
+            elif t_start > sts:
+                while t_start > sts:
+                    to_prepend.append(
+                            {'time_start': sts.time(), 'time_end': (sts + td).time(), 'closed': True}
+                    )
+                    sts += td
+                t_start = sts
+            if t_end > ste and ste.time() != datetime.time(0,0,0) or t_end.time() == datetime.time(0,0,0):
+                t_end = ste
+            elif t_end < ste:
+                while t_end < ste:
+                    to_append.insert(0, 
+                            {'time_start': (ste - td).time(), 'time_end': ste.time(), 'closed': True}
+                    )
+                    ste -= td
+                t_end = ste
+        return {
+            'works_from': t_start.time(),
+            'works_to': t_end.time(),
+            'weekend': item_result['weekend'],
+            'to_prepend': to_prepend,
+            'to_append': to_append
+        }
     def get_orders(self, day):
         orders = list(self.orders.all().filter(
             models.Q(date_start = day)
@@ -218,16 +340,16 @@ class Item(models.Model):
         td = datetime.datetime.combine(datetime.date.min, 
             self.service.time_step) - datetime.datetime.min
         td *= self.t_steps_per_order
-        t_end = datetime.datetime.combine(datetime.date.min, time_start) + td
-        te = datetime.datetime.combine(datetime.date.min, time_end)
-        if te.time() == datetime.time(0,0,0):
-            te += datetime.timedelta(days = 1)
+        t_start = datetime.datetime.combine(datetime.date.min, time_start)
+        t_end = datetime.datetime.combine(datetime.date.min, time_end)
+        if t_end.time() == datetime.time(0,0,0):
+            t_end += datetime.timedelta(days = 1)
         result_lst = []
-        while t_end <= te:
+        while t_start + td <= t_end:
             result_lst.append(
-                    {'time_start': (t_end - td).time(), 'time_end': t_end.time()}
+                    {'time_start': t_start.time(), 'time_end': (t_start + td).time()}
             )
-            t_end += td
+            t_start += td
         return result_lst
     def get_available_time(self):
         def erase_from_order(in_lst, order):
@@ -261,23 +383,24 @@ class Item(models.Model):
                     #print(order['time_start'])
                     l['user'] = order['user']
 
-        orders = self.orders.all()
         result_time_list = []
         dtime = datetime.datetime.now()
         today = datetime.date.today()
         for i in range(self.service.days_to_show):
             day = today + datetime.timedelta(days = i)
-            from_to_or_weekend = self.get_working_time(day)
-            if from_to_or_weekend['weekend'] == True:
-                result_time_list[i] = []
+            time_sources = self.get_working_time(day)
+            if time_sources['weekend'] == True:
+                result_time_list[i] = [{'weekend': True}]
             else:
                 lst = self.gen_list_of_intervals(
-                        from_to_or_weekend['works_from'], 
-                        from_to_or_weekend['works_to']
+                        time_sources['works_from'], 
+                        time_sources['works_to']
                 )
                 orders = self.get_orders(day)
                 for o in orders:
                     erase_from_order(lst, o)
+                lst[:0] = time_sources['to_prepend']
+                lst.extend(time_sources['to_append'])
                 result_time_list.append(lst)
         return result_time_list
     def __str__(self):

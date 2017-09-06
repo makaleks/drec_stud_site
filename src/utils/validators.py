@@ -1,3 +1,4 @@
+import os
 import re
 
 def _check_valid(v, s):
@@ -31,7 +32,8 @@ def is_valid_email(s):
     _email_valid = re.compile(r"^[0-9a-z]+([-.]?[0-9a-z]+)*@[0-9a-z]+\.[a-z]+$")
     return _check_valid(_email_valid, s = s)
 
+# DREC-only groups
 def is_valid_group(n):
-    # DREC-only groups
     _group_valid = re.compile(r"^[1-9]1[1-9]$")
     return _check_valid(_group_valid, s = str(n))
+

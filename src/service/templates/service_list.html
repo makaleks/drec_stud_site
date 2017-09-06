@@ -1,0 +1,15 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+    {% for service in service_list %}
+        <section class='card'>
+            <h2 class='lightblue'>Доступные сервисы:</h2>
+            <a href='/service/{{ service.slug }}/'>
+                <div class='card service_card'>
+                    <img class='card-img' src='{{ service.image.url }}' />
+                    <p>{{ service.name }}</p>
+                </div>
+            </a>
+        </section>
+    {% endfor %}
+{% endblock %}

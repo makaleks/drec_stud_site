@@ -1,10 +1,12 @@
 from django.shortcuts import render
+from django.views.generic.list import ListView
+from django.views.generic.detail import DetailView
 from django.http import HttpResponse
 from django.db.models import Q
 import datetime
 import json
 import re
-from .models import Order
+from .models import Order, Service
 
 # Create your views here.
 
@@ -23,5 +25,15 @@ def to_H_M(t):
 
 def list_update(request, service_name):
     today = datetime.datetime.now()
-    orders = Order.objects.all().filter(Q(date_start = today.date()) & (Q(time_end__gt = today.time()) | Q(time_end = datetime.time(0,0,0))) | Q(date_start__gt = today.date())).order_by('date_start', 'time_end')
+    orders = Order.objects.all().filter(Q(date_start = today.date(), item__service__url_id = service_name) & (Q(time_end__gt = today.time()) | Q(time_end = datetime.time(0,0,0))) | Q(date_start__gt = today.date())).order_by('date_start', 'time_end')
     return HttpResponse(json.dumps([{'uid': o.user.uid, 'date_start': str(o.date_start), 'time_start': to_H_M(o.time_start), 'time_end': to_H_M(o.time_end)} for o in orders]))
+
+class ServiceListView(ListView):
+    model = Service
+    template_name = 'service_list.html'
+
+class ServiceDetailView(DetailView):
+    model = Service
+    template_name = 'service_timetable.html'
+    def post(self, request, *args, **kwargs):
+        return HttpResponse(str(request.POST.dict()))
