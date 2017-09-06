@@ -1,11 +1,10 @@
-
-
 /* WASHING */
 
 .table_aside {
-    position: absolute;
-    width: 100px;
+    width: 60px;
     background: aliceblue;
+    text-align: center;
+    display: inline-block;
 }
 
 .preview {
@@ -19,8 +18,8 @@
 }
 
 .table_main {
-    margin-left: 100px;
-    display: block;
+    display: inline-block;
+    max-width: calc(100% - 65px);
     overflow-x: auto;
 }
 

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-{% load staticfiles %}
+<!--{% load staticfiles %}-->
 
 <head>
     <title>Сайт студсовета</title>
@@ -10,7 +10,6 @@
     <link href='https://fonts.googleapis.com/css?family=Noto+Sans&amp;subset=cyrillic' rel='stylesheet'>
     <link type='text/css' rel='stylesheet' href='https://unpkg.com/normalize.css@7.0.0' />
     <link type='text/css' rel='stylesheet' href='{{ STATIC_URL }}/content.css' />
-    <link type='text/css' rel='stylesheet' href='{{ STATIC_URL }}/base.css' />
     <!--[if lt IE 9]>
         <script>
             document.createElement('header');
@@ -22,8 +21,8 @@
             document.createElement('footer');
         </script>
     <![endif]-->
-    <!--{% block head_extras %}
-    {% endblock %}-->
+    <!--{% block head_extras %}-->
+    {% endblock %}
 </head>
 
 <body>
@@ -112,10 +111,10 @@
 
     <div id='back'></div>
     <input id='modal_check' type='checkbox' class='hidden' checked />
-    <div class='card info' id='modal'>
+    <div class='card {{ notification.type }} {% if not notification.enabled %}hidden{% endif %}' id='modal'>
         <div class='container'>
             <h3>
-                {{ text }}
+                {{ notification.text }}
             </h3>
             <label for='modal_check' class='m_close'>
                 <svg class='close' viewBox='0 0 10 10'>
@@ -154,11 +153,11 @@
             <div id='bottom_menu'>
                 <div>
                     <ul>
-                        <li class='link-underline red'><a href='index' class='active'><span>Новости</span></a></li>
-                        <li class='link-underline red'><a href='survey'><span>Опросы</span></a></li>
-                        <li class='link-underline red'><a href='services/washing'><span>Стиралка</span></a></li>
-                        <li class='link-underline red'><a href='services'><span>Другие сервисы</span></a></li>
-                        <li class='link-underline red'><a href='notes'><span>FAQs</span></a></li>
+                        <li class='link-underline red'><a href='/' class='active'><span>Новости</span></a></li>
+                        <li class='link-underline red'><a href='/surveys/'><span>Опросы</span></a></li>
+                        <li class='link-underline red'><a href='/services/washing/'><span>Стиралка</span></a></li>
+                        <li class='link-underline red'><a href='/services/'><span>Другие сервисы</span></a></li>
+                        <li class='link-underline red'><a href='/notes/'><span>FAQs</span></a></li>
                         <li id='vk-menu'>
                             <img src='{{ STATIC_URL }}/img/vk.svg' />
                             <a href='' class='btn btn-vk'>
@@ -182,11 +181,11 @@
                 </article>
                 <nav id='nav' class='link-underline red'>
                     <ul>
-                        <li><a href='index' class='active'><span>Новости</span></a></li>
-                        <li><a href='survey'><span>Опросы</span></a></li>
-                        <li><a href='services/washing'><span>Стиралка</span></a></li>
-                        <li><a href='services'><span>Другие сервисы</span></a></li>
-                        <li><a href='notes'><span>FAQs</span></a></li>
+                        <li><a href='/' class='active'><span>Новости</span></a></li>
+                        <li><a href='surveys/'><span>Опросы</span></a></li>
+                        <li><a href='/services/washing/'><span>Стиралка</span></a></li>
+                        <li><a href='/services/'><span>Другие сервисы</span></a></li>
+                        <li><a href='/notes/'><span>FAQs</span></a></li>
                     </ul>
                 </nav>
             </div>
@@ -198,16 +197,16 @@
 
         <main id='content' class='container'>
             <!--{% block content %}-->
-            <!--{% endblock %}-->
+            {% endblock %}
         </main>
     </div>
 
     <label id='headerToggle' for='showside'>
-            <svg viewBox='0 0 10 10' class='toggle hamburger'>
-                <path d='M8,3 L2,3' class='p1'/>
-                <path d='M2,5 L8,5' class='p2'/>
-                <path d='M8,7 L2,7' class='p3'/>
-            </svg>
+        <svg viewBox='0 0 10 10' class='toggle hamburger'>
+            <path d='M8,3 L2,3' class='p1'/>
+            <path d='M2,5 L8,5' class='p2'/>
+            <path d='M8,7 L2,7' class='p3'/>
+        </svg>
     </label>
     <script>
         (function() {
@@ -231,6 +230,8 @@
         })();
 
     </script>
+    <!--{% block body_extras %}-->
+    {% endblock %}
 </body>
 
 </html>
