@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 {% load staticfiles %}
+
 <head>
     <title>Сайт студсовета</title>
     <meta charset='UTF-8' />
@@ -110,7 +111,7 @@
 
     <div id='back'></div>
     <input id='modal_check' type='checkbox' class='hidden' checked />
-    <div class='card {{ notification_type }} {% if not notification.enabled %}hidden{% endif %}' id='modal'>
+    <div class='card {{ notification.type }} {% if not notification.enabled %}hidden{% endif %}' id='modal'>
         <div class='container'>
             <h3>
                 {{ notification.text }}
@@ -154,25 +155,16 @@
                     <ul>
                         <li class='link-underline red'><a href='/' class='active'><span>Новости</span></a></li>
                         <li class='link-underline red'><a href='/surveys/'><span>Опросы</span></a></li>
-                        <li class='link-underline red'><a href='/service/washing/'><span>Стиралка</span></a></li>
-                        <li class='link-underline red'><a href='/service/'><span>Другие сервисы</span></a></li>
-                        <li class='link-underline red'><a href='/info/'><span>FAQs</span></a></li>
+                        <li class='link-underline red'><a href='/services/washing/'><span>Стиралка</span></a></li>
+                        <li class='link-underline red'><a href='/services/'><span>Другие сервисы</span></a></li>
+                        <li class='link-underline red'><a href='/notes/'><span>FAQs</span></a></li>
                         <li id='vk-menu'>
-                            {% if user.is_authenticated %}
-                                {% if user.avatar_url %}
-                                    <img src='{{ user.avatar_url }}' />
-                                {% else %}
-                                    <img src='{{ STATIC_URL }}/img/vk.svg' />
-                                {% endif %}
-                                <a href='/logout/' class='btn btn-vk'>
-                                    <span>Привет, {{ user.get_short_name }}</span>
-                                </a>
-                            {% else %}
-                                <img src='{{ STATIC_URL }}/img/vk.svg' />
-                                <a href='{% url "social:begin" "vk-oauth2" %}' class='btn btn-vk'>
-                                    <small>Войти через ВК</small>
-                                </a>
-                            {% endif %}
+                            <img src='{{ STATIC_URL }}/img/vk.svg' />
+                            <a href='' class='btn btn-vk'>
+                                <span>Привет, {{ stranger }}</span>
+                                <br />
+                                <small>(Войти через ВК)</small>
+                            </a>
                         </li>
                     </ul>
                 </div>
@@ -181,31 +173,19 @@
         <aside id='header'>
             <div class='box link-underline'>
                 <article id='vk-header'>
-                    {% if user.is_authenticated %}
-                        {% if user.avatar_url %}
-                            <img src='{{ user.avatar_url }}' />
-                        {% else %}
-                            <img src='{{ STATIC_URL }}/img/vk.svg' />
-                        {% endif %}
-                        <section>
-                            <p>Привет, {{ user.get_short_name }}</p>
-                            <a href='/logout/' class='btn btn-vk'>Выйти</a>
-                        </section>
-                    {% else %}
-                            <img src='{{ STATIC_URL }}/img/vk.svg' />
-                            <section>
-                                <p>Привет, гость</p>
-                                <a href='{% url "social:begin" "vk-oauth2" %}' class='btn btn-vk'>Войти через ВК</a>
-                            </section>
-                    {% endif %}
+                    <img src='{{ STATIC_URL }}/img/vk.svg' />
+                    <section>
+                        <p>Привет, {{ stranger }}</p>
+                        <a href='' class='btn btn-vk'>Войти через ВК</a>
+                    </section>
                 </article>
                 <nav id='nav' class='link-underline red'>
                     <ul>
                         <li><a href='/' class='active'><span>Новости</span></a></li>
-                        <li><a href='/surveys/'><span>Опросы</span></a></li>
-                        <li><a href='/service/washing/'><span>Стиралка</span></a></li>
-                        <li><a href='/service/'><span>Другие сервисы</span></a></li>
-                        <li><a href='/info/'><span>FAQs</span></a></li>
+                        <li><a href='surveys/'><span>Опросы</span></a></li>
+                        <li><a href='/services/washing/'><span>Стиралка</span></a></li>
+                        <li><a href='/services/'><span>Другие сервисы</span></a></li>
+                        <li><a href='/notes/'><span>FAQs</span></a></li>
                     </ul>
                 </nav>
             </div>

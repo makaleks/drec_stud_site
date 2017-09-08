@@ -153,14 +153,14 @@ class Service(models.Model):
             if not tmp_lst:
                 result_lst[i]['time_layout'] = [{'time_start': 'Отгул', 'time_end': 'Отгул'}]
                 for it in result_lst[i]['items']:
-                    it['rowspan'] = 1
+                    it['rowspan'] = int(1)
             else:
                 tmp_lst = list(self.items.all().filter(name__in = tmp_lst))
                 res = tmp_lst[0].t_steps_per_order
                 for c in tmp_lst[1:]:
                     res = gcd(res, c.t_steps_per_order)
                 for it in tmp_lst:
-                    result_lst[i]['items'][it.name]['rowspan'] = it.t_steps_per_order / res
+                    result_lst[i]['items'][it.name]['rowspan'] = int(it.t_steps_per_order / res)
                 td = (datetime.datetime.combine(datetime.date.min, self.time_step) - datetime.datetime.min)*res
                 time_start_end = {}
                 queryset = get_working_time_exception_query(self, (now + datetime.timedelta(days = i)).date())

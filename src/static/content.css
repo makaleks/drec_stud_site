@@ -767,14 +767,13 @@ footer>section {
         width: calc(50% - 2rem);
     }
 }
-
-
 /* WASHING */
 
 .table_aside {
-    position: absolute;
-    width: 100px;
+    width: 60px;
     background: aliceblue;
+    text-align: center;
+    display: inline-block;
 }
 
 .preview {
@@ -788,8 +787,8 @@ footer>section {
 }
 
 .table_main {
-    margin-left: 100px;
-    display: block;
+    display: inline-block;
+    max-width: calc(100% - 65px);
     overflow-x: auto;
 }
 
@@ -964,4 +963,17 @@ footer>section {
     padding: 5px 15px;
     background: #ccc;
     border: 0 none;
+}
+.tablabel {
+    display: inline-block;
+    margin: 3px;
+}
+
+.tablabel>h3 {
+    margin: 0;
+}
+
+.tab {
+    display: none;
+    z-index: 0;
 }

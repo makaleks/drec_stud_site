@@ -1,9 +1,7 @@
 {% extends 'core/base.html' %}
 {% load utils_extra_filters %}
 {% block head_extras %}
-    <link type='text/css' rel='stylesheet' href='https://unpkg.com/tippy.js@1.2.0/dist/tippy.css' />
-{% endblock %}
-
+<link type='text/css' rel='stylesheet' href='https://unpkg.com/tippy.js@1.2.0/dist/tippy.css' /> {% endblock %}
 {% block content %}
     <section class='card'>
         <h2 class='lightblue'>Заказ стиральной машины</h2>
@@ -27,7 +25,7 @@
             <h2>Понедельник 04.09</h2>
             <table class='table_aside'>
                 <tr>
-                    <th>Интервалы</th>
+                    <th>Время</th>
                 </tr>
                 <tr>
                     <td>9:00</td>
@@ -61,78 +59,78 @@
                     <td class='started selected'></td>
                     <td class='started'>
                         <label>
-                                <input type='checkbox' name='2-2' data-price='10' class='hidden' />
-                                <span>V</span>
-                            </label>
-                    </td    >
-                    <td     class='started selected'>
-                            <label class='userinfo' for='modal_userinfo_check' onclick='showuserinfo("Иванов Иван Иванович", "39333502", "+79777777777", "email@example.com");' title='Посмотреть инфо о заказавшем(-ей)'></label>
+                  <input type='checkbox' data-price='10' class='hidden' />
+                  <span>V</span>
+                </label>
+                    </td>
+                    <td class='started selected'>
+                        <label class='userinfo' for='modal_userinfo_check' onclick='showuserinfo("Иванов Иван Иванович", "39333502", "+79777777777", "email@example.com");' title='Посмотреть инфо о заказавшем(-ей)'></label>
                     </td>
                     <td class='started'>
                         <label>
-                                <input type='checkbox' name='2-4' data-price='10' class='hidden' />
-                                <span>V</span>
-                            </label>
+                  <input type='checkbox' data-price='10' class='hidden' />
+                  <span>V</span>
+                </label>
                     </td>
                     <td class='started selected'></td>
                 </tr>
                 <tr>
-                    <td class=''>
+                    <td>
                         <label>
-                                <input type='checkbox' name='3-1' data-price='10' class='hidden' />
-                                <span>V</span>
-                            </label>
+                  <input type='checkbox' data-price='10' class='hidden' />
+                  <span>V</span>
+                </label>
                     </td>
-                    <td class=''>
+                    <td>
                         <label>
-                                <input type='checkbox' name='3-2' data-price='10' class='hidden' />
-                                <span>V</span>
-                            </label>
+                  <input type='checkbox' data-price='10' class='hidden' />
+                  <span>V</span>
+                </label>
                     </td>
                     <td class='choisen'></td>
-                    <td class=''>
+                    <td>
                         <label>
-                                <input type='checkbox' name='3-4' data-price='10' class='hidden' />
-                                <span>V</span>
-                            </label>
+                  <input type='checkbox' data-price='10' class='hidden' />
+                  <span>V</span>
+                </label>
                     </td>
-                    <td class=''>
+                    <td>
                         <label>
-                                <input type='checkbox' name='3-5' data-price='10' class='hidden' />
-                                <span>V</span>
-                            </label>
+                  <input type='checkbox' data-price='10' class='hidden' />
+                  <span>V</span>
+                </label>
                     </td>
                 </tr>
                 <tr>
-                    <td class=''>
+                    <td>
                         <label>
-                                <input type='checkbox' name='4-1' data-price='10' class='hidden' />
-                                <span>V</span>
-                            </label>
+                  <input type='checkbox' data-price='10' class='hidden' />
+                  <span>V</span>
+                </label>
                     </td>
-                    <td class=''>
+                    <td>
                         <label>
-                                <input type='checkbox' name='4-2' data-price='10' class='hidden' />
-                                <span>V</span>
-                            </label>
+                  <input type='checkbox' data-price='10' class='hidden' />
+                  <span>V</span>
+                </label>
                     </td>
-                    <td class=''>
+                    <td>
                         <label>
-                                <input type='checkbox' name='4-3' data-price='10' class='hidden' />
-                                <span>V</span>
-                            </label>
+                  <input type='checkbox' data-price='10' class='hidden' />
+                  <span>V</span>
+                </label>
                     </td>
-                    <td class=''>
+                    <td>
                         <label>
-                                <input type='checkbox' name='4-4' data-price='10' class='hidden' />
-                                <span>V</span>
-                            </label>
+                  <input type='checkbox' data-price='10' class='hidden' />
+                  <span>V</span>
+                </label>
                     </td>
-                    <td class=''>
+                    <td>
                         <label>
-                                <input type='checkbox' name='4-5' data-price='10' class='hidden' />
-                                <span>V</span>
-                            </label>
+                  <input type='checkbox' data-price='10' class='hidden' />
+                  <span>V</span>
+                </label>
                     </td>
                 </tr>
             </table>
@@ -144,7 +142,7 @@
                     <h2>{{ day.day }}</h2>
                     <table class='table_aside'>
                         <tr>
-                            <th>Интервалы</th>
+                            <th>Время</th>
                         </tr>
                         {% for t in day.time_layout %}
                             <tr>{#|time:'H:M'#}
@@ -158,8 +156,8 @@
                                 <th>{{ machine }}<br /><small>({{ item_info.price|by_key:machine }} руб.)</small></th>
                             </tr>
                             {% for cell in m_value.time %}
-                                <tr>
-                                    <td rowspan='{{ m_value.rowspan }}'>
+                            <tr style='height: calc(52px*{{ m_value.rowspan }} - 2px);'>
+                                    <td >
                                         <label>
                                             <input type='checkbox' name='{{ machine }}&&{{ cell.time_start }}&&{{ cell.time_end }}' data-price='{{ item_info.price|by_key:machine }}' class='hidden' />
                                             <span>V</span>
@@ -180,11 +178,6 @@
             <p id='finaltext'>
                 Вы ничего не выбрали
             </p>
-                        <label>
-                                <input type='text' name='4-5' data-price='10' >
-                                <span>V</span>
-                                </input>
-                            </label>
             <input id='finalcancel' type='button' value='Сбросить' />
             <input id='finalsubmit' type='submit' value='Подтверждаю' />
         </div>
