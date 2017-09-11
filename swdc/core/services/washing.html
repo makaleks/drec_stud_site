@@ -1,3 +1,5 @@
+{% extends 'сore/base.html' %}
+{% load utils_extra_filters %}
 {% block head_extras %}
 <link type='text/css' rel='stylesheet' href='https://unpkg.com/tippy.js@1.2.0/dist/tippy.css' />
 <!---->
@@ -21,6 +23,7 @@
     </div>
 </section>
 <form action='' method='post' id='washing'>
+    {% csrf_token %}
     <div class='card'>
         <h2>Понедельник 04.09</h2>
         <table class='table_aside'>
@@ -119,21 +122,14 @@
                             </td>
                         </tr>
                         <tr>
-                            <td>
+                            <td rowspan='2'>
                                 <label>
                                     <input type='checkbox' data-price='10' class='hidden' />
                                     <span>V</span>
                                 </label>
                             </td>
                         </tr>
-                        <tr>
-                            <td>
-                                <label>
-                                    <input type='checkbox' data-price='10' class='hidden' />
-                                    <span>V</span>
-                                    </label>
-                            </td>
-                        </tr>
+                        <tr></tr>
                     </table>
                 </td>
                 <td>
@@ -493,9 +489,6 @@
                     </table>
                 </td>
             </tr>
-        </table>
-        </td>
-        </tr>
         </table>
     </div>
     <div class='card hidden' id='preresult'>

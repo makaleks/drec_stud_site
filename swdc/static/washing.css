@@ -1,4 +1,13 @@
+
 /* WASHING */
+
+#washing table {
+    border-spacing: 1px;
+}
+
+#washing td {
+    padding: 1px;
+}
 
 .table_aside {
     width: 60px;
@@ -9,10 +18,9 @@
 }
 
 .table_main {
-    display: inline-block;
     max-width: calc(100% - 65px);
     margin-left: 60px;
-    border-spacing: 0;
+    display: inline-block;
     overflow-x: auto;
 }
 
@@ -29,6 +37,15 @@
 .table_main tr,
 .table_aside tr {
     height: 42px;
+}
+
+.table_main td,
+.table_aside td {
+	empty-cells: show;
+}
+
+.table_main td[rowspan='22'] {
+    height: 84px;
 }
 
 .table_main td {
@@ -80,7 +97,6 @@
     bottom: 1px;
     width: 99%;
     overflow: hidden;
-    display: block;
     margin: 0 auto;
 }
 
