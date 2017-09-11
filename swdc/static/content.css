@@ -774,6 +774,15 @@ footer>section {
     background: aliceblue;
     text-align: center;
     display: inline-block;
+    position: absolute;
+}
+
+.table_main {
+    display: inline-block;
+    max-width: calc(100% - 65px);
+    margin-left: 60px;
+    border-spacing: 0;
+    overflow-x: auto;
 }
 
 .preview {
@@ -786,16 +795,9 @@ footer>section {
     display: inline-block;
 }
 
-.table_main {
-    display: inline-block;
-    max-width: calc(100% - 65px);
-    overflow-x: auto;
-}
-
 .table_main tr,
 .table_aside tr {
-    height: 50px;
-    cursor: pointer;
+    height: 42px;
 }
 
 .table_main td {
@@ -806,28 +808,33 @@ footer>section {
 
 /* WASHING COLORS */
 
-.table_main>tbody>tr>td,
+.table_main table tr>td,
 .preview {
     background-color: #8BC34A;
 }
 
-.table_main>tbody>tr>td.started,
+.table_main tr>td.empty,
+.preview.empty {
+    background-color: #00BCD4;
+}
+
+.table_main tr>td.started,
 .preview.started {
     background-color: #00BCD4;
 }
 
-.table_main>tbody>tr>td.choisen,
+.table_main tr>td.choisen,
 .preview.choisen {
     background-color: #9C27B0;
 }
 
-.table_main>tbody>tr>td.selected,
+.table_main tr>td.selected,
 .preview.selected {
     background-color: #E91E63;
     color: white;
 }
 
-.table_main>tbody>tr>td.ended,
+.table_main tr>td.ended,
 .preview.ended {
     background-color: #607D8B;
 }

@@ -34,7 +34,7 @@ for FILE in index survey survey_list note; do
                 while ( getline x < ("core/"FILE".html") > 0 )
                 {
                     if(x ~ /{% endblock %}/){i=2;}
-                    if(i == 1){print $0;}
+                    if(i == 1){print x;}
                     if(x ~ /{% block body_extras %}/){i=1;}
                 };
                 close("core/"FILE".html");
@@ -44,7 +44,7 @@ for FILE in index survey survey_list note; do
         else {print $0;}
     }' core/base.html > preview/$FILE.html;
     sed -i "s/{{ STATIC_URL }}/..\/static/" preview/$FILE.html;
-    sed -i "s/{% [ _\.a-z]* %}//g" preview/$FILE.html;
+    sed -i "s/{[\{\%] [ _\.a-z]* [\%\}]}//g" preview/$FILE.html;
 done
 for FILE in index washing; do
     echo "services/$FILE";
@@ -80,7 +80,7 @@ for FILE in index washing; do
                 while ( getline x < ("core/services/"FILE".html") > 0 )
                 {
                     if(x ~ /{% endblock %}/){i=2;}
-                    if(i == 1){print $0;}
+                    if(i == 1){print x;}
                     if(x ~ /{% block body_extras %}/){i=1;}
                 };
                 close("core/services/"FILE".html");

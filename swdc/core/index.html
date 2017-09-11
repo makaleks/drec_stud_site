@@ -8,19 +8,6 @@
         <p class="card-maintext cutted">{{ cutted text }} <label class="link-underline" for="show_{{id}}"><a class="lightblue">&nbsp;Читать&nbsp;далее&nbsp;</a></label></p>
         <p class="card-maintext full">{{ full text }} <label class="link-underline" for="show_{{id}}"><a class="lightblue">&nbsp;Скрыть&nbsp;</a></label></p>
     </div>
-    <p class="card-text"><small class="text-muted">Last updated {{ main.time }}</small></p>
-</section>
-<section class="card">
-    <img src="../static/img/FRTK.png" class="card-img" />
-    <h2>{{ title }}</h2>
-    <div>
-        <p class="card-maintext">{{ text without cutting }}</p>
-    </div>
-    <p class="card-text"><small class="text-muted">Last updated {{ main.time }}</small></p>
-</section>
-<section class="card" onclick="alert('Пока в разработке')">
-    <div>
-        <span class="card-maintext">Загрузить ещё...</span>
-    </div>
+    <p class="card-text"><small class="text-muted">Обновлено {{ main.time }} <a href='/?news={{id}}'>Ссылка</a></small></p>
 </section>
 {% endblock %}
