@@ -9,6 +9,7 @@ from django.core.validators import MinValueValidator, FileExtensionValidator
 from django.core.exceptions import ValidationError
 from math import gcd
 import datetime
+import types
 
 # Create your models here.
 
@@ -130,20 +131,55 @@ class Service(models.Model):
     def __str__(self):
         return self.name
     def get_timetable_list(self):
+        # cleans trailing 'closed' marks
+        def clean_starting(time_lst):
+            clean_flag = True
+            index = 0
+            result = {}
+            while clean_flag == True:
+                for it in time_lst.values():
+                    if 'closed' not in it['time'][index]:
+                        clean_flag = False
+                        if index == 0:
+                            result['time_start'] = it['time'][0]['time_start']
+                        else:
+                            result['time_end'] = it['time'][-1]['time_end']
+                if clean_flag == True:
+                    for it in time_lst.values():
+                        del it['time'][index]
+                else:
+                    if index == 0:
+                        # in Python [-1] returns last element
+                        index = -1
+                        clean_flag = True
+                    else:
+                        return result
+        def get_closed_for_gdc(lst, result_lst):
+            num = 0
+            for l in lst:
+                if 'closed' in l:
+                    num += 1
+                elif num != 0:
+                    result_lst.append(types.SimpleNamespace(t_steps_per_order = num))
+                    num = 0
+            if num != 0:
+                result_lst.append(types.SimpleNamespace(t_steps_per_order = num))
+        # collect available_time from all Items
         items = {}
         for item in list(self.items.all().order_by('name')):
             items[item.name] = item.get_available_time()
         weekdays = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье']
         # timedelta is available for datetime only
         now = datetime.datetime.now()
+        # start generating result
         result_lst = []
-        most_frequent = ''
         for i in range(self.days_to_show):
             result_lst.append({
                 'day': '{0} {1}'.format(weekdays[(now + datetime.timedelta(days = i)).date().weekday()], (now + datetime.timedelta(days = i)).strftime('%d.%m')),
                 'items': {},
                 'time_layout': []
             })
+            # time layout
             tmp_lst = []
             for name, value in items.items():
                 result_lst[i]['items'][name] = {}
@@ -155,32 +191,21 @@ class Service(models.Model):
                 for it in result_lst[i]['items']:
                     it['rowspan'] = int(1)
             else:
+                # get gcd
                 tmp_lst = list(self.items.all().filter(name__in = tmp_lst))
+                for m in result_lst[i]['items'].values():
+                    get_closed_for_gdc(m['time'], tmp_lst)
                 res = tmp_lst[0].t_steps_per_order
                 for c in tmp_lst[1:]:
                     res = gcd(res, c.t_steps_per_order)
                 for it in tmp_lst:
-                    result_lst[i]['items'][it.name]['rowspan'] = int(it.t_steps_per_order / res)
+                    # we have poisoned tmp_lst in get_closed_for_gcd
+                    if hasattr(it, 'name'):
+                        result_lst[i]['items'][it.name]['rowspan'] = int(it.t_steps_per_order / res)
+                # erase trailing 'closed'
+                time_start_end = clean_starting(result_lst[i]['items'])
+                # generate time_layout
                 td = (datetime.datetime.combine(datetime.date.min, self.time_step) - datetime.datetime.min)*res
-                time_start_end = {}
-                queryset = get_working_time_exception_query(self, (now + datetime.timedelta(days = i)).date())
-                if queryset.exists():
-                    time_start_end = {
-                        'time_start': queryset.first().works_from,
-                        'time_end': queryset.first().works_to
-                    }
-                else:
-                    queryset = get_working_time_query(self, (now + datetime.timedelta(days = i)).date())
-                    if queryset.exists():
-                        time_start_end = {
-                            'time_start': queryset.first().works_from,
-                            'time_end': queryset.first().works_to
-                        }
-                    else:
-                        time_start_end = {
-                            'time_start': self.default_works_from,
-                            'time_end': self.default_works_to
-                        }
                 t_start = datetime.datetime.combine(datetime.date.min, time_start_end['time_start'])
                 t_end = datetime.datetime.combine(datetime.date.min, time_start_end['time_end'])
                 if t_end.time() == datetime.time(0,0,0):
@@ -229,6 +254,36 @@ class Item(models.Model):
     created     = models.DateTimeField(auto_now_add = True, null = False, verbose_name = 'Введено в строй')
     working_times       = GenericRelation(WorkingTime, content_type_field = 'content_type', object_id_field = 'object_id')
     working_time_exceptions = GenericRelation(WorkingTimeException, content_type_field = 'content_type', object_id_field = 'object_id')
+    def _add_user_by_order(in_lst, order):
+        for l in in_lst:
+            if (
+                l['time_start'] <= order['time_start']
+                and (order['time_start'] < l['time_end']
+                    or l['time_end'] == datetime.time(0,0,0))
+            ):
+                #print(1)
+                #print(order['time_start'])
+                l['user'] = order['user']
+            elif (
+                # Remember [X, Y)
+                l['time_start'] < order['time_end']
+                and ((order['time_end'] <= l['time_end']
+                    and order['time_end'] != datetime.time(0,0,0))
+                or (l['time_end'] == datetime.time(0,0,0)
+                    and order['time_end'] != datetime.time(0,0,0)))
+            ):
+                #print(2)
+                #print(order['time_start'])
+                l['user'] = order['user']
+            elif (
+                order['time_start'] <= l['time_start']
+                and ((l['time_end'] <= order['time_end']
+                        and l['time_end'] != datetime.time(0,0,0))
+                    or order['time_end'] == datetime.time(0,0,0))
+            ):
+                #print(3)
+                #print(order['time_start'])
+                l['user'] = order['user']
     def get_working_time(self, day):
         if self.is_active == False or self.service.is_active == False:
             return {'works_from': datetime.time(0,0,0),
@@ -295,6 +350,11 @@ class Item(models.Model):
                     )
                     sts += td
                 t_start = sts
+            t_end = sts + (
+                ((datetime.datetime.combine(datetime.date.min, self.service.time_step) - datetime.datetime.min)*self.t_steps_per_order) 
+                * ((ste - sts) 
+                    // ((datetime.datetime.combine(datetime.date.min, self.service.time_step) - datetime.datetime.min)*self.t_steps_per_order))
+            )
             if t_end > ste and ste.time() != datetime.time(0,0,0) or t_end.time() == datetime.time(0,0,0):
                 t_end = ste
             elif t_end < ste:
@@ -304,6 +364,10 @@ class Item(models.Model):
                     )
                     ste -= td
                 t_end = ste
+        orders = self.get_orders(day)
+        for o in orders:
+            Item._add_user_by_order(to_prepend, o)
+            Item._add_user_by_order(to_append, o)
         return {
             'works_from': t_start.time(),
             'works_to': t_end.time(),
@@ -336,7 +400,7 @@ class Item(models.Model):
             result_lst[i]['contains_midnight'] = orders[i].contains_midnight()
         return result_lst
     def gen_list_of_intervals(self, time_start, time_end):
-        # Strange Python has timedelta only for datetime, not time
+        # Python has timedelta only for datetime, not time
         td = datetime.datetime.combine(datetime.date.min, 
             self.service.time_step) - datetime.datetime.min
         td *= self.t_steps_per_order
@@ -352,36 +416,6 @@ class Item(models.Model):
             t_start += td
         return result_lst
     def get_available_time(self):
-        def erase_from_order(in_lst, order):
-            for l in in_lst:
-                if (
-                    l['time_start'] <= order['time_start']
-                    and (order['time_start'] <= l['time_end']
-                        or l['time_end'] == datetime.time(0,0,0))
-                ):
-                    #print(1)
-                    #print(order['time_start'])
-                    l['user'] = order['user']
-                elif (
-                    # Remember [X, Y)
-                    l['time_start'] < order['time_end']
-                    and ((order['time_end'] <= l['time_end']
-                        and order['time_end'] != datetime.time(0,0,0))
-                    or (l['time_end'] == datetime.time(0,0,0)
-                        and order['time_end'] != datetime.time(0,0,0)))
-                ):
-                    #print(2)
-                    #print(order['time_start'])
-                    l['user'] = order['user']
-                elif (
-                    order['time_start'] <= l['time_start']
-                    and ((l['time_end'] <= order['time_end']
-                            and l['time_end'] != datetime.time(0,0,0))
-                        or order['time_end'] == datetime.time(0,0,0))
-                ):
-                    #print(3)
-                    #print(order['time_start'])
-                    l['user'] = order['user']
 
         result_time_list = []
         dtime = datetime.datetime.now()
@@ -398,7 +432,8 @@ class Item(models.Model):
                 )
                 orders = self.get_orders(day)
                 for o in orders:
-                    erase_from_order(lst, o)
+                    Item._add_user_by_order(lst, o)
+                #print('{0}:\n   {1}\n   {2}\n    {3}'.format(self.name, str(lst), str(time_sources['to_prepend']), str(time_sources['to_append'])))
                 lst[:0] = time_sources['to_prepend']
                 lst.extend(time_sources['to_append'])
                 result_time_list.append(lst)
@@ -425,12 +460,14 @@ class Order(models.Model):
         if self.date_start < datetime.date.today():
             raise ValidationError('date_start can`t be before today()')
         order_lst = list(Order.objects.all().filter(
-            models.Q(date_start = self.date_start)
-            | (models.Q(date_start = self.date_start 
-                    - datetime.timedelta(days = 1),
-                time_start__gt = models.F('time_end'))
-                # order {23:30, 00:00}
-                & ~models.Q(time_end = datetime.time(0,0,0)))
+            (
+                models.Q(date_start = self.date_start)
+                | (models.Q(date_start = self.date_start 
+                        - datetime.timedelta(days = 1),
+                    time_start__gt = models.F('time_end'))
+                    # order {23:30, 00:00}
+                    & ~models.Q(time_end = datetime.time(0,0,0)))
+            ) & ~models.Q(pk = self.pk)
         ).order_by('time_end'))
         for o in order_lst:
             if (

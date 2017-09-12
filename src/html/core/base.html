@@ -159,12 +159,20 @@
                         <li class='link-underline red'><a href='/services/'><span>Другие сервисы</span></a></li>
                         <li class='link-underline red'><a href='/notes/'><span>FAQs</span></a></li>
                         <li id='vk-menu'>
-                            <img src='{{ STATIC_URL }}/img/vk.svg' />
-                            <a href='' class='btn btn-vk'>
-                                <span>Привет, {{ stranger }}</span>
-                                <br />
-                                <small>(Войти через ВК)</small>
-                            </a>
+                            {% if user.is_authenticated %}
+                                {% if user.avatar_url %}
+                                    <img src='{{ user.avatar_url }}' />
+                                {% else %}
+                                    <img src='{{ STATIC_URL }}/img/vk.svg' />
+                                {% endif %}
+                                <a href='/logout/' class='btn btn-vk'>
+                                    <span>Привет, {{ user.get_short_name }}</span>
+                                </a>
+                            {% else %}
+                                <img src='{{ STATIC_URL }}/img/vk.svg' />
+                                <a href='{% url "social:begin" "vk-oauth2" %}' class='btn btn-vk'>
+                                <span>Привет, гость</span>
+                            {% endif %}
                         </li>
                     </ul>
                 </div>
@@ -175,8 +183,23 @@
                 <article id='vk-header'>
                     <img src='{{ STATIC_URL }}/img/vk.svg' />
                     <section>
-                        <p>Привет, {{ stranger }}</p>
-                        <a href='' class='btn btn-vk'>Войти через ВК</a>
+                        {% if user.is_authenticated %}
+                            {% if user.avatar_url %}
+                                <img src='{{ user.avatar_url }}' />
+                            {% else %}
+                                <img src='{{ STATIC_URL }}/img/vk.svg' />
+                            {% endif %}
+                            <section>
+                                <p>Привет, {{ user.get_short_name }}</p>
+                                <a href='/logout/' class='btn btn-vk'>Выйти</a>
+                            </section>
+                        {% else %}
+                            <img src='{{ STATIC_URL }}/img/vk.svg' />
+                            <section>
+                                <p>Привет, гость</p>
+                                <a href='{% url "social:begin" "vk-oauth2" %}' class='btn btn-vk'>Войти через ВК</a>
+                            </section>
+                        {% endif %}
                     </section>
                 </article>
                 <nav id='nav' class='link-underline red'>

@@ -1,143 +1,32 @@
 {% extends 'core/base.html' %}
 {% load utils_extra_filters %}
 {% block head_extras %}
-<link type='text/css' rel='stylesheet' href='https://unpkg.com/tippy.js@1.2.0/dist/tippy.css' /> {% endblock %}
+<link type='text/css' rel='stylesheet' href='https://unpkg.com/tippy.js@1.2.0/dist/tippy.css' />
+<!---->
+{% endblock %}
+<!---->
 {% block content %}
-    <section class='card'>
-        <h2 class='lightblue'>Заказ стиральной машины</h2>
-        <div>
-            <p>
-                <b>Что&nbsp;значат&nbsp;цвета?</b>
-            </p>
-            <p class='card-maintext'>
-                <span class='preview'></span> - Этот интервал можно выбирать<br />
-                <span class='preview ended'></span> - Этот интервал уже нельзя выбирать<br />
-                <span class='preview selected'></span> - Этот интервал был кем-то выбран<br />
-                <span class='preview choisen'></span> - Этот интервал был выбран вами<br />
-                <span class='preview started'></span> - Этот интервал можно выбирать, но он уже идет и прошло меньше половины(?)
-            </p>
-            <p><b>Чтоб выбрать или отменить выбор интервала нажми на него</b></p>
-        </div>
-    </section>
-    <form action='' method='post' id='washing'>
-        {% csrf_token %}
-        <div class='card'>
-            <h2>Понедельник 04.09</h2>
-            <table class='table_aside'>
-                <tr>
-                    <th>Время</th>
-                </tr>
-                <tr>
-                    <td>9:00</td>
-                </tr>
-                <tr>
-                    <td>9:00</td>
-                </tr>
-                <tr>
-                    <td>9:30</td>
-                </tr>
-                <tr>
-                    <td>10:00</td>
-                </tr>
-            </table>
-            <table class='table_main'>
-                <tr>
-                    <th>Машина №1<br /><small>(10 руб.)</small></th>
-                    <th>Машина №2<br /><small>(10 руб.)</small></th>
-                    <th>Машина №3<br /><small>(10 руб.)</small></th>
-                    <th>Машина №4<br /><small>(10 руб.)</small></th>
-                    <th>Машина №5<br /><small>(10 руб.)</small></th>
-                </tr>
-                <tr>
-                    <td class='ended'></td>
-                    <td class='ended'></td>
-                    <td class='ended'></td>
-                    <td class='ended'></td>
-                    <td class='ended selected'></td>
-                </tr>
-                <tr>
-                    <td class='started selected'></td>
-                    <td class='started'>
-                        <label>
-                  <input type='checkbox' data-price='10' class='hidden' />
-                  <span>V</span>
-                </label>
-                    </td>
-                    <td class='started selected'>
-                        <label class='userinfo' for='modal_userinfo_check' onclick='showuserinfo("Иванов Иван Иванович", "39333502", "+79777777777", "email@example.com");' title='Посмотреть инфо о заказавшем(-ей)'></label>
-                    </td>
-                    <td class='started'>
-                        <label>
-                  <input type='checkbox' data-price='10' class='hidden' />
-                  <span>V</span>
-                </label>
-                    </td>
-                    <td class='started selected'></td>
-                </tr>
-                <tr>
-                    <td>
-                        <label>
-                  <input type='checkbox' data-price='10' class='hidden' />
-                  <span>V</span>
-                </label>
-                    </td>
-                    <td>
-                        <label>
-                  <input type='checkbox' data-price='10' class='hidden' />
-                  <span>V</span>
-                </label>
-                    </td>
-                    <td class='choisen'></td>
-                    <td>
-                        <label>
-                  <input type='checkbox' data-price='10' class='hidden' />
-                  <span>V</span>
-                </label>
-                    </td>
-                    <td>
-                        <label>
-                  <input type='checkbox' data-price='10' class='hidden' />
-                  <span>V</span>
-                </label>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <label>
-                  <input type='checkbox' data-price='10' class='hidden' />
-                  <span>V</span>
-                </label>
-                    </td>
-                    <td>
-                        <label>
-                  <input type='checkbox' data-price='10' class='hidden' />
-                  <span>V</span>
-                </label>
-                    </td>
-                    <td>
-                        <label>
-                  <input type='checkbox' data-price='10' class='hidden' />
-                  <span>V</span>
-                </label>
-                    </td>
-                    <td>
-                        <label>
-                  <input type='checkbox' data-price='10' class='hidden' />
-                  <span>V</span>
-                </label>
-                    </td>
-                    <td>
-                        <label>
-                  <input type='checkbox' data-price='10' class='hidden' />
-                  <span>V</span>
-                </label>
-                    </td>
-                </tr>
-            </table>
-        </div>
+<section class='card'>
+    <h2 class='lightblue'>Заказ стиральной машины</h2>
+    <div>
+        <p>
+            <b>Что&nbsp;значат&nbsp;цвета?</b>
+        </p>
+        <p class='card-maintext'>
+            <span class='preview'></span> - Этот интервал можно выбирать<br />
+            <span class='preview ended'></span> - Этот интервал уже нельзя выбирать<br />
+            <span class='preview selected'></span> - Этот интервал был кем-то выбран<br />
+            <span class='preview choisen'></span> - Этот интервал был выбран вами<br />
+            <span class='preview started'></span> - Этот интервал можно выбирать, но он уже идет и прошло меньше половины(?)
+        </p>
+        <p><b>Чтоб выбрать или отменить выбор интервала нажми на него</b></p>
+    </div>
+</section>
+<form action='' method='post' id='washing'>
+    {% csrf_token %}
         {% with time_list=service.get_timetable_list %}
         {% with item_info=service.get_item_info %}
-            {% for day in time_list %}
+            {% for day in time_list|util_add_user_info:user %}
                 <div class='card'>
                     <h2>{{ day.day }}</h2>
                     <table class='table_aside'>
@@ -150,116 +39,149 @@
                             </tr>
                         {% endfor %}
                     </table>
-                    {% for machine,m_value in day.items.items %}
-                        <table class='table_main'>
-                            <tr>
-                                <th>{{ machine }}<br /><small>({{ item_info.price|by_key:machine }} руб.)</small></th>
-                            </tr>
-                            {% for cell in m_value.time %}
-                            <tr style='height: calc(52px*{{ m_value.rowspan }} - 2px);'>
-                                    <td >
-                                        <label>
-                                            <input type='checkbox' name='{{ machine }}&&{{ cell.time_start }}&&{{ cell.time_end }}' data-price='{{ item_info.price|by_key:machine }}' class='hidden' />
-                                            <span>V</span>
-                                        </label>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </table>
-                    {% endfor %}
+                    <table class='table_main'>
+                        <tr>
+<!-- break trailing spaces for nicer appeal -->
+{% for machine,m_value in day.items.items %}
+    <td>
+        <!-- print machine -->
+        <table>
+            <tr>
+                <th>{{ machine }}<br /><small>({{ item_info.price|util_by_key:machine }} руб.)</small></th>
+            </tr>
+        <!-- print cells -->
+        {% for cell in m_value.time %}
+            <tr>
+                <!-- users: display next/previous from selected even if closed -->
+                {% if cell.user%}
+                <td class={% if cell.user == user %}'choisen'{% elif not cell.closed or cell.show_info %}'selected'{% elif cell.closed %}'ended'{% endif %} {% if not cell.closed %}rowspan='{{ m_value.rowspan }}'{% endif %}>
+                        {% if cell.show_info %}
+                                <label class='userinfo' for='modal_userinfo_check' onclick='showuserinfo("{{ cell.user.get_full_name }}", "{{ cell.user.account_id }}", "{{ cell.user.phone_number }}", "{{ cell.user.email }}");' title='Посмотреть инфо о заказавшем(-ей)'></label>
+                        {% endif %}
+                    </td>
+                <!-- if not done yet -->
+                {% elif cell.closed %}
+                    <td class='ended'></td>
+                <!-- can be selected -->
+                {% else %}
+                    <td rowspan='{{ m_value.rowspan }}' {% if forloop.parentloop.parentloop.first and cell.time_start|util_is_started:service %}class='started'{% endif %}>
+                        <label>
+                            <input type='checkbox' name='{{ machine }}&&{{ cell.time_start }}&&{{ cell.time_end }}' data-price='{{ item_info.price|util_by_key:machine }}' class='hidden' />
+                            <span>V</span>
+                        </label>
+                    </td>
+                {% endif %}
+            </tr>
+                {% if not cell.closed %}
+                    {% with current_range=m_value.rowspan|util_range %}
+                        {% for i in current_range %}
+                            {% if not forloop.last %}
+                                <tr></tr>
+                            {% endif %}
+                        {% endfor %}
+                    {% endwith %}
+                {% endif %}
+            {% endfor %}
+        </table>
+    </td>
+{% endfor %}
+<!-- break end -->
+                    </tr>
+                    </table>
                 </div>
             {% endfor %}
         {% endwith %}
         {% endwith %}
-        <div class='card hidden' id='preresult'>
-            <p id='pretext'></p>
-        </div>
-        <div class='card' id='finalresult'>
-            <p id='finaltext'>
-                Вы ничего не выбрали
-            </p>
-            <input id='finalcancel' type='button' value='Сбросить' />
-            <input id='finalsubmit' type='submit' value='Подтверждаю' />
-        </div>
-    </form>
+    <div class='card hidden' id='preresult'>
+        <p id='pretext'></p>
+    </div>
+    <div class='card' id='finalresult'>
+        <p id='finaltext'>
+            Вы ничего не выбрали
+        </p>
+        <input id='finalcancel' type='button' value='Сбросить' />
+        <input id='finalsubmit' type='submit' value='Подтверждаю' />
+    </div>
+</form>
 {% endblock %}
+<!---->
 {% block body_extras %}
-    <script src='https://unpkg.com/tippy.js@1.2.0/dist/tippy.min.js'></script>
-    <script>
-        window.addEventListener('load', function() {
-            var preview = document.querySelector('#pretext'),
-                finalview = document.querySelector('#finaltext'),
-                currentprice = 0,
-                price = 0,
-                addwash = 0,
-                removewash = 0,
-                inputs = document.querySelector('#washing').querySelectorAll('input[type=checkbox]');
-    
-            for (var item of inputs) {
-                item.addEventListener('change', function() {
-                    price = parseInt(this.getAttribute('data-price'), 10);
-                    if (this.checked) {
-                        if (price > 0) {
-                            addwash++;
-                        } else {
-                            removewash++;
-                        }
-                        currentprice += price;
+<script src='https://unpkg.com/tippy.js@1.2.0/dist/tippy.min.js'></script>
+<script>
+    window.addEventListener('load', function() {
+        var preview = document.querySelector('#pretext'),
+            finalview = document.querySelector('#finaltext'),
+            currentprice = 0,
+            price = 0,
+            addwash = 0,
+            removewash = 0,
+            inputs = document.querySelector('#washing').querySelectorAll('input[type=checkbox]');
+
+        for (var item of inputs) {
+            item.addEventListener('change', function() {
+                price = parseInt(this.getAttribute('data-price'), 10);
+                if (this.checked) {
+                    if (price > 0) {
+                        addwash++;
                     } else {
-                        if (price > 0) {
-                            addwash--;
-                        } else {
-                            removewash--;
-                        }
-                        currentprice -= price;
+                        removewash++;
                     }
-                    if (addwash > 0) {
-                        preview.innerHTML = ((addwash > 0) ? ('Заказано: ' + addwash) : '') + ' Итого: ' + currentprice + 'руб. <a href="#finaltext">К оплате</a>';
-                        document.querySelector('#preresult').classList.remove('hidden');
-                        finalview.innerHTML = 'Вы выбрали ' + addwash + ' интервалов<br />Итого ' + ((currentprice > 0) ? ('нужно оплатить ' + currentprice) : ('вам вернут ' + (-currentprice))) + ' руб.';
+                    currentprice += price;
+                } else {
+                    if (price > 0) {
+                        addwash--;
                     } else {
-                        finalview.innerHTML = 'Вы ничего не выбрали';
-                        document.querySelector('#preresult').classList.add('hidden');
+                        removewash--;
                     }
-                });
-            }
-            document.querySelector('#finalcancel').addEventListener('click', function() {
-                addwash = 0;
-                removewash = 0;
-                currentprice = 0;
-                for (var item of inputs) {
-                    item.checked = false;
-                };
-                finalview.innerHTML = 'Вы ничего не выбрали';
-                document.querySelector('#preresult').classList.add('hidden');
+                    currentprice -= price;
+                }
+                if (addwash > 0) {
+                    preview.innerHTML = ((addwash > 0) ? ('Заказано: ' + addwash) : '') + ' Итого: ' + currentprice + 'руб. <a href="#finaltext">К оплате</a>';
+                    document.querySelector('#preresult').classList.remove('hidden');
+                    finalview.innerHTML = 'Вы выбрали ' + addwash + ' интервалов<br />Итого ' + ((currentprice > 0) ? ('нужно оплатить ' + currentprice) : ('вам вернут ' + (-currentprice))) + ' руб.';
+                } else {
+                    finalview.innerHTML = 'Вы ничего не выбрали';
+                    document.querySelector('#preresult').classList.add('hidden');
+                }
             });
+        }
+        document.querySelector('#finalcancel').addEventListener('click', function() {
+            addwash = 0;
+            removewash = 0;
+            currentprice = 0;
+            for (var item of inputs) {
+                item.checked = false;
+            };
+            finalview.innerHTML = 'Вы ничего не выбрали';
+            document.querySelector('#preresult').classList.add('hidden');
         });
-    
-        function showuserinfo(name, vkid, number, email) {
-            var username = document.querySelector('#userinfo_name'),
-                uservkid = document.querySelector('#userinfo_vkid'),
-                usernumber = document.querySelector('#userinfo_number'),
-                useremail = document.querySelector('#userinfo_email');
-            usernumber.classList.add('hidden');
-            uservkid.classList.add('hidden');
-            useremail.classList.add('hidden');
-            username.innerText = name;
-            if (number !== null) {
-                usernumber.innerText = 'Позвонить: ' + number;
-                usernumber.href = 'tel:' + number;
-                usernumber.classList.remove('hidden');
-            }
-            if (vkid !== null) {
-                uservkid.href = 'https://vk.me/id' + vkid;
-                uservkid.classList.remove('hidden');
-            }
-            if (email !== null) {
-                useremail.innerText = 'Написать: ' + email;
-                useremail.href = 'mailto:' + email;
-                useremail.classList.remove('hidden');
-            }
-        };
-        tippy('.userinfo');
-    
-    </script>
+    });
+
+    function showuserinfo(name, vkid, number, email) {
+        var username = document.querySelector('#userinfo_name'),
+            uservkid = document.querySelector('#userinfo_vkid'),
+            usernumber = document.querySelector('#userinfo_number'),
+            useremail = document.querySelector('#userinfo_email');
+        usernumber.classList.add('hidden');
+        uservkid.classList.add('hidden');
+        useremail.classList.add('hidden');
+        username.innerText = name;
+        if (number !== null) {
+            usernumber.innerText = 'Позвонить: ' + number;
+            usernumber.href = 'tel:' + number;
+            usernumber.classList.remove('hidden');
+        }
+        if (vkid !== null) {
+            uservkid.href = 'https://vk.me/id' + vkid;
+            uservkid.classList.remove('hidden');
+        }
+        if (email !== null) {
+            useremail.innerText = 'Написать: ' + email;
+            useremail.href = 'mailto:' + email;
+            useremail.classList.remove('hidden');
+        }
+    };
+    tippy('.userinfo');
+
+</script>
 {% endblock %}
