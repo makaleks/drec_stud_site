@@ -140,7 +140,6 @@
             </label>
         </div>
     </div>
-    </div>
 
 
     <article id='top'>
@@ -172,6 +171,7 @@
                                 <img src='{{ STATIC_URL }}img/vk.svg' />
                                 <a href='{% url "social:begin" "vk-oauth2" %}' class='btn btn-vk'>
                                 <span>Привет, гость</span>
+                                </a>
                             {% endif %}
                         </li>
                     </ul>
@@ -181,20 +181,18 @@
         <aside id='header'>
             <div class='box link-underline'>
                 <article id='vk-header'>
-                    <img src='{{ STATIC_URL }}img/vk.svg' />
+                    {% if user.is_authenticated and user.avatar_url %}
+                        <img src='{{ user.avatar_url }}' />
+                    {% else %}
+                        <img src='{{ STATIC_URL }}img/vk.svg' />
+                    {% endif %}
                     <section>
                         {% if user.is_authenticated %}
-                            {% if user.avatar_url %}
-                                <img src='{{ user.avatar_url }}' />
-                            {% else %}
-                                <img src='{{ STATIC_URL }}img/vk.svg' />
-                            {% endif %}
                             <section>
                                 <p>Привет, {{ user.get_short_name }}</p>
                                 <a href='/logout/' class='btn btn-vk'>Выйти</a>
                             </section>
                         {% else %}
-                            <img src='{{ STATIC_URL }}img/vk.svg' />
                             <section>
                                 <p>Привет, гость</p>
                                 <a href='{% url "social:begin" "vk-oauth2" %}' class='btn btn-vk'>Войти через ВК</a>

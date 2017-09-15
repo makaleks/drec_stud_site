@@ -46,7 +46,7 @@ class ServiceAdmin(admin.ModelAdmin):
 
 @admin.register(Item)
 class ItemAdmin(admin.ModelAdmin):
-    list_display = ('id', 'location', 'is_active', 'created')
+    list_display = ('id', 'name', 'is_active', 'created')
     list_filter = ['location', 'is_active']
     inlines = [WorkingTimeInline, WorkingTimeExceptionInline]
 
