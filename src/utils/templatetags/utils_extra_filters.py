@@ -37,4 +37,9 @@ def util_is_started(time_start, service):
             - datetime.datetime.min) 
         - (datetime.datetime.combine(datetime.date.min, time_start)
             - datetime.datetime.min))
-    return current_td <= service_td
+    if current_td <= service_td and current_td.days >= 0:
+        return 'started'
+    elif current_td > service_td and current_td.days >= 0:
+        return 'ended'
+    else:
+        return 'ok'
