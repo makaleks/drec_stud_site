@@ -9,7 +9,7 @@
 
     <link href='https://fonts.googleapis.com/css?family=Noto+Sans&amp;subset=cyrillic' rel='stylesheet'>
     <link type='text/css' rel='stylesheet' href='https://unpkg.com/normalize.css@7.0.0' />
-    <link type='text/css' rel='stylesheet' href='{{ STATIC_URL }}/content.css' />
+    <link type='text/css' rel='stylesheet' href='{{ STATIC_URL }}content.css' />
     <!--[if lt IE 9]>
         <script>
             document.createElement('header');
@@ -159,7 +159,7 @@
                         <li class='link-underline red'><a href='/services/'><span>Другие сервисы</span></a></li>
                         <li class='link-underline red'><a href='/notes/'><span>FAQs</span></a></li>
                         <li id='vk-menu'>
-                            <img src='{{ STATIC_URL }}/img/vk.svg' />
+                            <img src='{{ STATIC_URL }}img/vk.svg' />
                             <a href='' class='btn btn-vk'>
                                 <span>Привет, гость</span>
                                 <br />
@@ -170,13 +170,13 @@
                                 {% if user.avatar_url %}
                                     <img src='{{ user.avatar_url }}' />
                                 {% else %}
-                                    <img src='{{ STATIC_URL }}/img/vk.svg' />
+                                    <img src='{{ STATIC_URL }}img/vk.svg' />
                                 {% endif %}
                                 <a href='/logout/' class='btn btn-vk'>
                                     <span>Привет, {{ user.get_short_name }}</span>
                                 </a>
                             {% else %}
-                                <img src='{{ STATIC_URL }}/img/vk.svg' />
+                                <img src='{{ STATIC_URL }}img/vk.svg' />
                                 <a href='{% url "social:begin" "vk-oauth2" %}' class='btn btn-vk'>
                                 <span>Привет, гость</span>
                                 <br />
@@ -192,7 +192,7 @@
         <aside id='header'>
             <div class='box link-underline'>
                 <article id='vk-header'>
-                    <img src='{{ STATIC_URL }}/img/vk.svg' />
+                    <img src='{{ STATIC_URL }}img/vk.svg' />
                     <section>
                         <p>Привет, гость</p>
                         <a href='' class='btn btn-vk'>Войти через ВК</a>
@@ -201,14 +201,14 @@
                             {% if user.avatar_url %}
                                 <img src='{{ user.avatar_url }}' />
                             {% else %}
-                                <img src='{{ STATIC_URL }}/img/vk.svg' />
+                                <img src='{{ STATIC_URL }}img/vk.svg' />
                             {% endif %}
                             <section>
                                 <p>Привет, {{ user.get_short_name }}</p>
                                 <a href='/logout/' class='btn btn-vk'>Выйти</a>
                             </section>
                         {% else %}
-                            <img src='{{ STATIC_URL }}/img/vk.svg' />
+                            <img src='{{ STATIC_URL }}img/vk.svg' />
                             <section>
                                 <p>Привет, гость</p>
                                 <a href='{% url "social:begin" "vk-oauth2" %}' class='btn btn-vk'>Войти через ВК</a>

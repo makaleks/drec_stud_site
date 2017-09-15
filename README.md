@@ -15,6 +15,9 @@ More or less fresh preview can be found at [drec-stud.tk](http://drec-stud.tk).
 
 ### Development
 
+This repository contains copies of some open libraries to be independent from CDN and send these files faster inside local network:
+* normalize.css@7.0.0
+
 1. Clone the repository:
 ```bash
 git clone https://github.com/makaleks/drec_stud_site
