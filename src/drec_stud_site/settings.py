@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'social_django',
     # disable to save media on delete/update
     'django_cleanup',
+    'adminsortable2',
     'utils',
     'user',
     'news',

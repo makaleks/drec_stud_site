@@ -18,3 +18,6 @@ django-cleanup==1.0.1
 
 # Markdown in templates
 django-markdown-deux==1.0.5
+
+# Models can be made sortable in Admin Panel
+django-admin-sortable2
