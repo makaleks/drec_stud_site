@@ -24,7 +24,7 @@ urlpatterns = [
     url(r'^social/', include('social_django.urls', namespace='social')),
     url(r'^logout/$', LogoutView.as_view()),
     url(r'^services/', include('service.urls')),
-    url(r'^info/', include('note.urls')),
+    url(r'^notes/', include('note.urls')),
     url(r'^', include('news.urls')),
     #url(r'^login_success/', render_login_success),
     #url(r'^login/', TemplateView.as_view(template_name='login.html')),

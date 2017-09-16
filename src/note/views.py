@@ -1,8 +1,8 @@
-from django.views.generic.detail import DetailView
+from django.views.generic.list import ListView
 from .models import Note
 
 # Create your views here.
 
-class NoteDetailView(DetailView):
+class NoteListView(ListView):
     model = Note
-    template_name = 'note.html'
+    template_name = 'note_list.html'

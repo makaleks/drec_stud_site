@@ -1,6 +1,6 @@
 from django.conf.urls import url, include
-from .views import NoteDetailView
+from .views import NoteListView
 
 urlpatterns = [
-    url(r'^(?P<pk>.+)/$', NoteDetailView.as_view(), name = 'note'),
+    url(r'$', NoteListView.as_view(), name = 'note_list'),
 ]

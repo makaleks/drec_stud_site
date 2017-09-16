@@ -1,0 +1,33 @@
+{% extends 'core/base.html' %}
+{% block head_extras %}
+{% load markdown_deux_tags %}
+<style>
+    {% for n in note_list %}
+    #tab-nav-{{ forloop.counter }}:checked~div.tab:nth-of-type({{ forloop.counter }}){% if not forloop.last %},{% endif %} 
+    {% endfor %}{
+        display: block;
+    }
+
+</style>
+{% endblock %}
+<!---->
+{% block content %}
+<section class='card'>
+    <h2>FAQs(Frequentky Asked Questions) или ЧаВо(Частые вопросы)</h2>
+</section>
+{% for n in note_list %}
+<input type='radio' class='hidden' name='tabs' id='tab-nav-{{ forloop.counter }}'{% if forloop.first %}checked{% endif %}>
+{% endfor %}
+
+{% for n in note_list %}
+<label for='tab-nav-{{ forloop.counter }}' class='card tablabel'>
+    <h3>{{ n.name }}</h3>
+</label>
+{% endfor %}
+{% for n in note_list %}
+    <div class='card tab'>
+        <h2>{{ n.name }}</h2>
+        <p>{% markdown STYLE %}{{ n.text }}{% endmarkdown %}</p>
+    </div>
+{% endfor %}
+{% endblock %}
