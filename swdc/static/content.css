@@ -664,6 +664,10 @@ body {
     z-index: 100;
 }
 
+#content {
+    margin-bottom: 5rem;
+}
+
 footer {
     width: 100%;
     height: 45px;
