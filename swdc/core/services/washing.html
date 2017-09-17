@@ -532,7 +532,7 @@
                 if (addwash > 0) {
                     preview.innerHTML = ((addwash > 0) ? ('Заказано: ' + addwash) : '') + ' Итого: ' + currentprice + 'руб. <a href="#finaltext">К оплате</a>';
                     document.querySelector('#preresult').classList.remove('hidden');
-                    finalview.innerHTML = 'Вы выбрали ' + addwash + ' интервалов<br />Итого ' + ((currentprice > 0) ? ('нужно оплатить ' + currentprice) : ('вам вернут ' + (-currentprice))) + ' руб.';
+                    finalview.innerHTML = 'Выбрано интервалов: ' + addwash + '<br />Итого ' + ((currentprice >= 0) ? ('нужно оплатить: ' + currentprice) : ('вам вернут: ' + (-currentprice))) + ' руб.';
                 } else {
                     finalview.innerHTML = 'Вы ничего не выбрали';
                     document.querySelector('#preresult').classList.add('hidden');
