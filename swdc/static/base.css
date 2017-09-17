@@ -24,17 +24,10 @@ footer {
  ***### TOP, HEADER and TOGGLER styles
  */
 
-#back {
-    position: fixed;
-    top: -5%;
-    left: -5%;
-    right: -5%;
-    opacity: 0.65;
-    width: 110%;
-    height: 110vh;
+body {
     background: url(img/back.jpg) center center fixed;
     -moz-background-size: cover;
-    background-size: cover;
+    background-size: cover; 
 }
 
 #top {
