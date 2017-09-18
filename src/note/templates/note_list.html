@@ -13,7 +13,7 @@
 <!---->
 {% block content %}
 <section class='card'>
-    <h2>FAQs(Frequentky Asked Questions) или ЧаВо(Частые вопросы)</h2>
+    <h2>FAQs(Frequently Asked Questions) или ЧаВо(Частые вопросы)</h2>
 </section>
 {% for n in note_list %}
 <input type='radio' class='hidden' name='tabs' id='tab-nav-{{ forloop.counter }}'{% if forloop.first %}checked{% endif %}>
