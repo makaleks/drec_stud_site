@@ -1,13 +1,17 @@
 .tablabel {
+    margin-top: 8px;
+    margin-left: 4px;
     display: inline-block;
-    margin: 3px;
+    border: 3px rgba(204, 204, 204, 0.6) solid;
 }
 
 .tablabel>h3 {
     margin: 0;
+
 }
 
 .tab {
+    margin-top: 8px;
     display: none;
     z-index: 0;
 }

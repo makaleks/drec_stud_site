@@ -123,6 +123,9 @@
     border-radius: 2px;
     display: block;
     padding: 1rem;
+    border-bottom: 1px solid #ccc;
+    border-image: linear-gradient(to right, rgba(0,0,0,0) 25%, #000 25%, #000 75%, rgba(0,0,0,0) 75%);
+    border-image-slice: 1;
     -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
     -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
@@ -274,10 +277,24 @@
 /*
  ***### ALLPAGE styles not prefered
  */
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Open Sans Regular'), local('OpenSans-Regular'), url('Open_Sans/OpenSans-Regular.ttf');
+}
+
+@font-face {
+  font-family: 'Comfortaa';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Comfortaa Regular'), local('Comfortaa-Regular'), url('Comfortaa/Comfortaa-Regular.ttf');
+}
+
 
 html,
 body {
-    font-family: 'Noto Sans', sans-serif;
+    font-family: 'Comfortaa', 'Noto Sans', sans-serif;
     position: relative;
 }
 
@@ -297,17 +314,10 @@ footer {
  ***### TOP, HEADER and TOGGLER styles
  */
 
-#back {
-    position: fixed;
-    top: -5%;
-    left: -5%;
-    right: -5%;
-    opacity: 0.65;
-    width: 110%;
-    height: 110vh;
+body {
     background: url(img/back.jpg) center center fixed;
     -moz-background-size: cover;
-    background-size: cover;
+    background-size: cover; 
 }
 
 #top {
@@ -668,6 +678,11 @@ footer {
     z-index: 100;
 }
 
+#content {
+    margin-bottom: 5rem;
+    font-family: 'Open Sans', sans-serif;
+}
+
 footer {
     width: 100%;
     height: 45px;
@@ -813,12 +828,10 @@ footer>section {
 	empty-cells: show;
 }
 
-.table_main td[rowspan='22'] {
-    height: 84px;
-}
-
-.table_main td {
-    min-width: 100px;
+.table_main td,
+.table_main th {
+    min-width: 102px;
+    overflow-x: hidden;
     position: relative;
 }
 
@@ -878,7 +891,6 @@ footer>section {
     text-align: center;
     vertical-align: middle;
     font-size: 2rem;
-    display: table;
 }
 
 .table_main input:checked~span {
@@ -989,15 +1001,19 @@ footer>section {
     border: 0 none;
 }
 .tablabel {
+    margin-top: 8px;
+    margin-left: 4px;
     display: inline-block;
-    margin: 3px;
+    border: 3px rgba(204, 204, 204, 0.6) solid;
 }
 
 .tablabel>h3 {
     margin: 0;
+
 }
 
 .tab {
+    margin-top: 8px;
     display: none;
     z-index: 0;
 }

@@ -43,7 +43,7 @@ for FILE in index survey surveys_list note; do
         }
         else {print $0;}
     }' core/base.html > preview/$FILE.html;
-    sed -i "s/{{ STATIC_URL }}/..\/static/" preview/$FILE.html;
+    sed -i "s/{{ STATIC_URL }}/..\/static\//" preview/$FILE.html;
     sed -i "s/{[\{\%] [ _\.a-z]* [\%\}]}//g" preview/$FILE.html;
 done
 for FILE in index washing; do
@@ -88,7 +88,7 @@ for FILE in index washing; do
         }
         else {print $0;}
     }' core/base.html > preview/services/$FILE.html;
-    sed -i "s/{{ STATIC_URL }}/..\/..\/static/" preview/services/$FILE.html;
+    sed -i "s/{{ STATIC_URL }}/..\/..\/static\//" preview/services/$FILE.html;
     sed -i "s/{[\{\%] [ _\.a-z]* [\%\}]}//g" preview/services/$FILE.html;
 done
 sh build.sh

@@ -44,12 +44,10 @@
 	empty-cells: show;
 }
 
-.table_main td[rowspan='22'] {
-    height: 84px;
-}
-
-.table_main td {
-    min-width: 100px;
+.table_main td,
+.table_main th {
+    min-width: 102px;
+    overflow-x: hidden;
     position: relative;
 }
 
