@@ -1,5 +1,6 @@
 # coding: utf-8
 from django.db import models
+from service.models import Service
 # Uncomment to enable #passwordAuth
 #from django.contrib.auth.models import AbstractBaseUser
 from .managers import UserManager
@@ -26,6 +27,9 @@ class User(models.Model):
     is_superuser    = models.BooleanField(default = False)
     is_staff        = models.BooleanField(default = False)
     is_active       = models.BooleanField(default = True)
+    # uid is the info from plastic card
+    # TODO: in production make this field REQUIRED
+    uid             = models.CharField(max_length = 128, blank = True, null = True, verbose_name = 'UID карты')
     # Comment to enable #passwordAuth (start)
     is_anonymous    = models.BooleanField(default = False)
     is_authenticated= models.BooleanField(default = True)
@@ -44,6 +48,8 @@ class User(models.Model):
         return True
     def has_module_perms(self, app_label):
         return True
+    def __str__(self):
+        return self.get_full_name()
     class Meta:
         verbose_name        = 'Пользователя'
         verbose_name_plural = 'Пользователи'

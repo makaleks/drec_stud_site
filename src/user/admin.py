@@ -125,7 +125,7 @@ class UserAdmin(BaseUserAdmin):
         ('Personal info', {'fields': ('last_name', 'first_name', 'patronymic_name', 'group_number')}),
         # Replace next string with this one to enable #passwordAuth
         #('Contacts', {'fields': ('account_id', 'email')}),
-        ('Contacts', {'fields': ('account_id', 'phone_number', 'email')}),
+        ('Contacts', {'fields': ('account_id', 'uid', 'phone_number', 'email')}),
         ('Permissions', {'fields': ('is_active','is_staff',)}),
     )
     # Superuser can be created only from tty
@@ -134,7 +134,7 @@ class UserAdmin(BaseUserAdmin):
             'classes': ('wide',),
             # Replace next string with this one to enable #passwordAuth
             #'fields': ('phone_number', 'last_name', 'first_name', 'patronymic_name', 'group_number', 'account_id', 'email', 'is_staff', 'password1', 'password2')}
-            'fields': ('last_name', 'first_name', 'patronymic_name', 'group_number', 'account_id', 'phone_number', 'email', 'is_staff')}
+            'fields': ('last_name', 'first_name', 'patronymic_name', 'group_number', 'account_id', 'uid', 'phone_number', 'email', 'is_staff')}
         ),
     )
     search_fields = ('last_name', 'group_number', 'phone_number', 'account_id', 'first_name', 'patronymic_name', 'email',)

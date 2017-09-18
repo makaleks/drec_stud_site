@@ -1,0 +1,68 @@
+{% extends 'сore/base.html' %}
+{% block head_extras %}
+<style>
+    #tab-nav-1:checked~div.tab:nth-of-type(1),
+    #tab-nav-2:checked~div.tab:nth-of-type(2),
+    #tab-nav-3:checked~div.tab:nth-of-type(3),
+    #tab-nav-4:checked~div.tab:nth-of-type(4),
+    #tab-nav-5:checked~div.tab:nth-of-type(5),
+    #tab-nav-6:checked~div.tab:nth-of-type(6) {
+        display: block;
+    }
+
+</style>
+{% endblock %}
+<!---->
+{% block content %}
+<section class='card'>
+    <h2>FAQs(Frequentky Asked Questions) или ЧаВо(Частые вопросы)</h2>
+</section>
+<input type='radio' class='hidden' name='tabs' id='tab-nav-1' checked>
+<input type='radio' class='hidden' name='tabs' id='tab-nav-2'>
+<input type='radio' class='hidden' name='tabs' id='tab-nav-3'>
+<input type='radio' class='hidden' name='tabs' id='tab-nav-4'>
+<input type='radio' class='hidden' name='tabs' id='tab-nav-5'>
+<input type='radio' class='hidden' name='tabs' id='tab-nav-6'>
+<label for='tab-nav-1' class='card tablabel'>
+    <h3>О сайте</h3>
+</label>
+<label for='tab-nav-2' class='card tablabel'>
+    <h3>О стиралке</h3>
+</label>
+<label for='tab-nav-3' class='card tablabel'>
+    <h3>О не знаю чем</h3>
+</label>
+<label for='tab-nav-4' class='card tablabel'>
+    <h3>О ещё чем-то</h3>
+</label>
+<label for='tab-nav-5' class='card tablabel'>
+    <h3>О ещё чем-то</h3>
+</label>
+<label for='tab-nav-6' class='card tablabel'>
+    <h3>О ещё чем-то</h3>
+</label>
+<div class='card tab'>
+    <h2>О сайте</h2>
+    <p>1</p>
+</div>
+<div class='card tab'>
+    <h2>О стиралке</h2>
+    <p>12</p>
+</div>
+<div class='card tab'>
+    <h2>О не знаю чем</h2>
+    <p>123</p>
+</div>
+<div class='card tab'>
+    <h2>О ещё чем-то</h2>
+    <p>1234</p>
+</div>
+<div class='card tab'>
+    <h2>О ещё чем-то</h2>
+    <p>12345</p>
+</div>
+<div class='card tab'>
+    <h2>О ещё чем-то</h2>
+    <p>123456</p>
+</div>
+{% endblock %}

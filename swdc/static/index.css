@@ -1,0 +1,17 @@
+/* NEWS */
+
+.cutted {
+    display: block;
+}
+
+.full {
+    display: none;
+}
+
+.shownews:checked~.cutted>label {
+    display: none;
+}
+
+.shownews:checked~.full {
+    display: block;
+}

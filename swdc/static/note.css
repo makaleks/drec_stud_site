@@ -1,0 +1,13 @@
+.tablabel {
+    display: inline-block;
+    margin: 3px;
+}
+
+.tablabel>h3 {
+    margin: 0;
+}
+
+.tab {
+    display: none;
+    z-index: 0;
+}
