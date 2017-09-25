@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'markdown_deux',
     'social_django',
+    'reversion',
     # disable to save media on delete/update
     'django_cleanup',
     'adminsortable2',
@@ -188,3 +189,35 @@ SOCIAL_AUTH_SANITIZE_REDIRECTS = False
 # So social-auth will not set redirect-url with post
 # needs in nginx server settings: 'proxy_set_header Host $host;'
 USE_X_FORWARDED_HOST = True
+
+LOGGING = {
+    # The only possible value, I know it`s strange
+    'version': 1,
+    # Set this True on your own risk
+    'disable_existing_loggers': False,
+    # Targets: user actions info
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'formatter': 'user_formatter',
+            'filename': os.path.join(PROJECT_ROOT, 'logs/all_events.log'),
+        },
+    },
+    'formatters': {
+        'user_formatter': {
+            # never set default 'user'
+            'format': '%(user)s %(asctime)s - %(message)s',
+            # default formatter includes milliseconds
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        },
+    },
+    'loggers': {
+        'site_events': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            # don`t pass to handlers of higher level (default: True)
+            'propagate': False,
+        },
+    },
+}

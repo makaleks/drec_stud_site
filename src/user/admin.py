@@ -1,4 +1,5 @@
 from django.contrib import admin
+from reversion.admin import VersionAdmin
 from django import forms
 from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
@@ -8,6 +9,9 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from utils.validators import *
 from utils.utils import check_unique
 from .models import User
+
+import logging
+logger = logging.getLogger('site_events')
 
 # Register your models here.
 
@@ -114,7 +118,7 @@ class UserChangeForm(forms.ModelForm):
     #    return self.initial['password']
 
 
-class UserAdmin(BaseUserAdmin):
+class UserAdmin(BaseUserAdmin, VersionAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
     list_display = ('last_name', 'first_name', 'patronymic_name', 'group_number', 'is_superuser')
@@ -140,6 +144,14 @@ class UserAdmin(BaseUserAdmin):
     search_fields = ('last_name', 'group_number', 'phone_number', 'account_id', 'first_name', 'patronymic_name', 'email',)
     ordering = ('last_name', 'first_name', 'is_staff')
     filter_horizontal = ()
+    def save_model(self, request, obj, form, change):
+        if change:
+            fields = [{field: str(getattr(obj, field))} for field in form.changed_data]
+            logger.info('{0} was {1}'.format(self.model.__name__,  'edited in {0}'.format(str(fields)) if fields else 'just saved'), extra={'user': request.user.get_full_name()})
+        else:
+            fields = [{f.name: str(getattr(obj, f.name))} for f in obj._meta.fields]
+            logger.info('{0} was created as {1}'.format(self.model.__name__, str(fields)), extra={'user': request.user.get_full_name()})
+        super(NewsAdmin, self).save_model(request, obj, form, change)
 
 # Register the new UserAdmin
 admin.site.register(User, UserAdmin)

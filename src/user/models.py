@@ -49,7 +49,7 @@ class User(models.Model):
     def has_module_perms(self, app_label):
         return True
     def __str__(self):
-        return self.get_full_name()
+        return '{0} (id={1})'.format(self.get_full_name(), self.id)
     class Meta:
         verbose_name        = 'Пользователя'
         verbose_name_plural = 'Пользователи'

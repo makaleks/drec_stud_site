@@ -21,3 +21,6 @@ django-markdown-deux==1.0.5
 
 # Models can be made sortable in Admin Panel
 django-admin-sortable2
+
+# Model version are stored separately, so they can be restored
+django-reversion==2.0.10

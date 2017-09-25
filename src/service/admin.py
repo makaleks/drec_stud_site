@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import WorkingTime, WorkingTimeException, Service, Item, Order
-from django.contrib.contenttypes.admin import *
+from django.contrib.contenttypes.admin import GenericStackedInline
 from django import forms
 
 # Register your models here.
