@@ -17,10 +17,53 @@
         <p><b>Чтоб выбрать или отменить выбор интервала нажми на него</b></p>
     </div>
 </section>
+<section class='card'>
+    <h2 class='lightblue'>Объявления</h2>
+    <div>
+        <p class='card-maintext'>
+            <ul>
+                <li>Обнаружен радужный носок с понями 2 числа на полу в 19:37 за пропажей к охране(или ответственным за стиралку)</li>
+                <li>Временно недоступна 5 стиралка, к 5 числу отремонтируют</li>
+            </ul>
+        </p>
+    </div>
+</section>
+<section class='card'>
+    <h2 class='lightblue'>Правила пользования стиральными машинами</h2>
+    <div>
+        <p class='card-maintext'>
+            <ol>
+                <li>Студентам, пользующимся стиралкой (стиральной машиной), запрещается:
+                    <ul>
+                        <li>использовать стиральную машинку, на которую не были записаны;</li>
+                        <li>оставлять неубранным рассыпанный стиральный порошок;</li>
+                        <li>оставлять пустые коробки, пакеты из-под порошка и т.д.;</li>
+                        <li>использовать при стирке вещества, не предназначенные для автоматических стиральных машин;</li>
+                        <li>оставлять дверь стиралки открытой.</li>
+                    </ul>
+                </li>
+                <li>Студенты, пользующиеся стиралкой, обязаны соблюдать правила эксплуатации машинками:
+                    <ul>
+                        <li>Не загружать в машинку более 6 кг. белья</li>
+                        <li>Использовать стиральную машинку только с тем номером, на которую были записаны</li>
+                        <li>Не открывать дверцы до разблокировки</li>
+                        <li>Избегать попадания мелких деталей (монеты, ключи и т.д.) в барабан машинки</li>
+                        <li>Стирать бюстгалтеры и вещи с мелкими твердыми предметами в специальных мешках для стирки</li>
+                        <li>Не оставлять белье в машинке после стирки</li>
+                        <li>Не смешивать белые и цветные вещи</li>
+                        <li>Оставлять после стирки дверцу машинки открытой</li>
+                        <li>Забрать высохшие вещи из стиралки в течение суток после окончания своей записи (в этом случае для получения доступа в стиралку следует обратиться к ответственному)</li>
+                        <li>Оперативно информировать ответственного о выявленных неисправностях машинки</li>
+                    </ul>
+                </li>
+            </ol>
+        </p>
+    </div>
+</section>
 <form action='' method='post' id='washing'>
     {% csrf_token %}
     <div class='card'>
-        <h2>Понедельник 04.09</h2>
+        <h2>Среда 04.10</h2>
         <div>
             <table class='table_aside'>
                 <tr>
@@ -61,7 +104,7 @@
                                 <td>
                                     <label>
                                         <input type='checkbox' data-price='10' class='hidden' />
-                                        <span>V</span>
+                                        <span><div>V</div></span>
                                     </label>
                                 </td>
                             </tr>
@@ -79,7 +122,7 @@
                                 <td class='started'>
                                     <label>
                                         <input type='checkbox' data-price='10' class='hidden' />
-                                        <span>V</span>
+                                        <span><div>V</div></span>
                                     </label>
                                 </td>
                             </tr>
@@ -87,7 +130,7 @@
                                 <td>
                                     <label>
                                         <input type='checkbox' data-price='10' class='hidden' />
-                                        <span>V</span>
+                                        <span><div>V</div></span>
                                     </label>
                                 </td>
                             </tr>
@@ -95,7 +138,7 @@
                                 <td>
                                     <label>
                                         <input type='checkbox' data-price='10' class='hidden' />
-                                        <span>V</span>
+                                        <span><div>V</div></span>
                                     </label>
                                 </td>
                             </tr>
@@ -113,7 +156,7 @@
                                 <td class='started'>
                                     <label>
                                         <input type='checkbox' data-price='10' class='hidden' />
-                                        <span>V</span>
+                                        <span><div>V</div></span>
                                     </label>
                                 </td>
                             </tr>
@@ -121,7 +164,7 @@
                                 <td rowspan='2'>
                                     <label>
                                         <input type='checkbox' data-price='10' class='hidden' />
-                                        <span>V</span>
+                                        <span><div>V</div></span>
                                     </label>
                                 </td>
                             </tr>
@@ -140,7 +183,7 @@
                                 <td class='started'>
                                     <label>
                                         <input type='checkbox' data-price='10' class='hidden' />
-                                        <span>V</span>
+                                        <span><div>V</div></span>
                                     </label>
                                 </td>
                             </tr>
@@ -148,7 +191,7 @@
                                 <td>
                                     <label>
                                         <input type='checkbox' data-price='10' class='hidden' />
-                                        <span>V</span>
+                                        <span><div>V</div></span>
                                     </label>
                                 </td>
                             </tr>
@@ -156,13 +199,13 @@
                                 <td>
                                     <label>
                                         <input type='checkbox' data-price='10' class='hidden' />
-                                        <span>V</span>
+                                        <span><div>V</div></span>
                                     </label>
                                 </td>
                             </tr>
                         </table>
                     </td>
-                    <td>
+                    <td class='hidden'>
                         <table>
                             <tr>
                                 <th>Машина №5<br /><small>(10 руб.)</small></th>
@@ -174,7 +217,7 @@
                                 <td class='started'>
                                     <label>
                                         <input type='checkbox' data-price='10' class='hidden' />
-                                        <span>V</span>
+                                        <span><div>V</div></span>
                                     </label>
                                 </td>
                             </tr>
@@ -182,7 +225,7 @@
                                 <td>
                                     <label>
                                         <input type='checkbox' data-price='10' class='hidden' />
-                                        <span>V</span>
+                                        <span><div>V</div></span>
                                     </label>
                                 </td>
                             </tr>
@@ -190,7 +233,7 @@
                                 <td>
                                     <label>
                                         <input type='checkbox' data-price='10' class='hidden' />
-                                        <span>V</span>
+                                        <span><div>V</div></span>
                                     </label>
                                 </td>
                             </tr>
@@ -208,7 +251,7 @@
                                 <td class='started'>
                                     <label>
                                         <input type='checkbox' data-price='10' class='hidden' />
-                                        <span>V</span>
+                                        <span><div>V</div></span>
                                     </label>
                                 </td>
                             </tr>
@@ -216,7 +259,7 @@
                                 <td>
                                     <label>
                                         <input type='checkbox' data-price='10' class='hidden' />
-                                        <span>V</span>
+                                        <span><div>V</div></span>
                                     </label>
                                 </td>
                             </tr>
@@ -224,7 +267,7 @@
                                 <td>
                                     <label>
                                         <input type='checkbox' data-price='10' class='hidden' />
-                                        <span>V</span>
+                                        <span><div>V</div></span>
                                     </label>
                                 </td>
                             </tr>
@@ -235,7 +278,7 @@
         </div>
     </div>
     <div class='card'>
-        <h2>Вторник 05.09</h2>
+        <h2>Четверг 05.10</h2>
         <table class='table_aside'>
             <tr>
                 <th>Время</th>
@@ -264,7 +307,7 @@
                             <td>
                                 <label>
                                     <input type='checkbox' data-price='10' class='hidden' />
-                                    <span>V</span>
+                                    <span><div>V</div></span>
                                 </label>
                             </td>
                         </tr>
@@ -276,7 +319,7 @@
                             <td>
                                 <label>
                                     <input type='checkbox' data-price='10' class='hidden' />
-                                    <span>V</span>
+                                    <span><div>V</div></span>
                                 </label>
                             </td>
                         </tr>
@@ -284,7 +327,7 @@
                             <td>
                                 <label>
                                     <input type='checkbox' data-price='10' class='hidden' />
-                                    <span>V</span>
+                                    <span><div>V</div></span>
                                 </label>
                             </td>
                         </tr>
@@ -299,7 +342,7 @@
                             <td>
                                 <label>
                                     <input type='checkbox' data-price='10' class='hidden' />
-                                    <span>V</span>
+                                    <span><div>V</div></span>
                                 </label>
                             </td>
                         </tr>
@@ -307,7 +350,7 @@
                             <td>
                                 <label>
                                     <input type='checkbox' data-price='10' class='hidden' />
-                                    <span>V</span>
+                                    <span><div>V</div></span>
                                 </label>
                             </td>
                         </tr>
@@ -315,7 +358,7 @@
                             <td>
                                 <label>
                                     <input type='checkbox' data-price='10' class='hidden' />
-                                    <span>V</span>
+                                    <span><div>V</div></span>
                                 </label>
                             </td>
                         </tr>
@@ -323,7 +366,7 @@
                             <td>
                                 <label>
                                     <input type='checkbox' data-price='10' class='hidden' />
-                                    <span>V</span>
+                                    <span><div>V</div></span>
                                 </label>
                             </td>
                         </tr>
@@ -338,7 +381,7 @@
                             <td>
                                 <label>
                                     <input type='checkbox' data-price='10' class='hidden' />
-                                    <span>V</span>
+                                    <span><div>V</div></span>
                                 </label>
                             </td>
                         </tr>
@@ -346,7 +389,7 @@
                             <td>
                                 <label>
                                     <input type='checkbox' data-price='10' class='hidden' />
-                                    <span>V</span>
+                                    <span><div>V</div></span>
                                 </label>
                             </td>
                         </tr>
@@ -354,7 +397,7 @@
                             <td>
                                 <label>
                                     <input type='checkbox' data-price='10' class='hidden' />
-                                    <span>V</span>
+                                    <span><div>V</div></span>
                                 </label>
                             </td>
                         </tr>
@@ -362,7 +405,7 @@
                             <td>
                                 <label>
                                     <input type='checkbox' data-price='10' class='hidden' />
-                                    <span>V</span>
+                                    <span><div>V</div></span>
                                     </label>
                             </td>
                         </tr>
@@ -377,7 +420,7 @@
                             <td>
                                 <label>
                                     <input type='checkbox' data-price='10' class='hidden' />
-                                    <span>V</span>
+                                    <span><div>V</div></span>
                                 </label>
                             </td>
                         </tr>
@@ -385,7 +428,7 @@
                             <td>
                                 <label>
                                     <input type='checkbox' data-price='10' class='hidden' />
-                                    <span>V</span>
+                                    <span><div>V</div></span>
                                 </label>
                             </td>
                         </tr>
@@ -393,7 +436,7 @@
                             <td>
                                 <label>
                                     <input type='checkbox' data-price='10' class='hidden' />
-                                    <span>V</span>
+                                    <span><div>V</div></span>
                                 </label>
                             </td>
                         </tr>
@@ -401,7 +444,7 @@
                             <td>
                                 <label>
                                     <input type='checkbox' data-price='10' class='hidden' />
-                                    <span>V</span>
+                                    <span><div>V</div></span>
                                     </label>
                             </td>
                         </tr>
@@ -416,7 +459,7 @@
                             <td>
                                 <label>
                                     <input type='checkbox' data-price='10' class='hidden' />
-                                    <span>V</span>
+                                    <span><div>V</div></span>
                                 </label>
                             </td>
                         </tr>
@@ -424,7 +467,7 @@
                             <td>
                                 <label>
                                     <input type='checkbox' data-price='10' class='hidden' />
-                                    <span>V</span>
+                                    <span><div>V</div></span>
                                 </label>
                             </td>
                         </tr>
@@ -432,7 +475,7 @@
                             <td>
                                 <label>
                                     <input type='checkbox' data-price='10' class='hidden' />
-                                    <span>V</span>
+                                    <span><div>V</div></span>
                                 </label>
                             </td>
                         </tr>
@@ -440,7 +483,7 @@
                             <td>
                                 <label>
                                     <input type='checkbox' data-price='10' class='hidden' />
-                                    <span>V</span>
+                                    <span><div>V</div></span>
                                     </label>
                             </td>
                         </tr>
@@ -455,7 +498,7 @@
                             <td>
                                 <label>
                                     <input type='checkbox' data-price='10' class='hidden' />
-                                    <span>V</span>
+                                    <span><div>V</div></span>
                                 </label>
                             </td>
                         </tr>
@@ -463,7 +506,7 @@
                             <td>
                                 <label>
                                     <input type='checkbox' data-price='10' class='hidden' />
-                                    <span>V</span>
+                                    <span><div>V</div></span>
                                 </label>
                             </td>
                         </tr>
@@ -471,7 +514,7 @@
                             <td>
                                 <label>
                                     <input type='checkbox' data-price='10' class='hidden' />
-                                    <span>V</span>
+                                    <span><div>V</div></span>
                                 </label>
                             </td>
                         </tr>
@@ -479,7 +522,7 @@
                             <td>
                                 <label>
                                     <input type='checkbox' data-price='10' class='hidden' />
-                                    <span>V</span>
+                                    <span><div>V</div></span>
                                 </label>
                             </td>
                         </tr>
@@ -560,16 +603,16 @@
         uservkid.classList.add('hidden');
         useremail.classList.add('hidden');
         username.innerText = name;
-        if (number !== null) {
+        if (number !== nlil) {
             usernumber.innerText = 'Позвонить: ' + number;
             usernumber.href = 'tel:' + number;
             usernumber.classList.remove('hidden');
         }
-        if (vkid !== null) {
+        if (vkid !== nlil) {
             uservkid.href = 'https://vk.me/id' + vkid;
             uservkid.classList.remove('hidden');
         }
-        if (email !== null) {
+        if (email !== nlil) {
             useremail.innerText = 'Написать: ' + email;
             useremail.href = 'mailto:' + email;
             useremail.classList.remove('hidden');

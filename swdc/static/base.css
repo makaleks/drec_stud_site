@@ -5,20 +5,20 @@
   font-family: 'Open Sans';
   font-style: normal;
   font-weight: 400;
-  src: local('Open Sans Regular'), local('OpenSans-Regular'), url('Open_Sans/OpenSans-Regular.ttf');
+  src: local('Open Sans Regular'), local('OpenSans-Regular'), url('web_copy/Open_Sans/OpenSans-Regular.ttf');
 }
 
 @font-face {
   font-family: 'Comfortaa';
   font-style: normal;
   font-weight: 400;
-  src: local('Comfortaa Regular'), local('Comfortaa-Regular'), url('Comfortaa/Comfortaa-Regular.ttf');
+  src: local('Comfortaa Regular'), local('Comfortaa-Regular'), url('web_copy/Comfortaa/Comfortaa-Regular.ttf');
 }
 
 
 html,
 body {
-    font-family: 'Comfortaa', 'Noto Sans', sans-serif;
+    font-family: 'Comfortaa', sans-serif;
     position: relative;
 }
 
