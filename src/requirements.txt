@@ -24,3 +24,7 @@ django-admin-sortable2
 
 # Model version are stored separately, so they can be restored
 django-reversion==2.0.10
+
+# BBCode
+django-precise-bbcode==1.2.8
+

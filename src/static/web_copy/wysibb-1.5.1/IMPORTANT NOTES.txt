@@ -1,0 +1,2 @@
+Currently, there is a bug, change according to
+https://github.com/wbb/wysibb/issues/169
