@@ -10,8 +10,18 @@
 
 }
 
-.tab {
+.tab,
+.newans {
     margin-top: 8px;
     display: none;
     z-index: 0;
+}
+
+.newans textarea {
+    min-width: 100%;
+    width: 100%;
+    max-width: 100%;
+    min-height: 4.5em;
+    max-height: 10.5em;
+    maxlength: 9;
 }
