@@ -70,13 +70,19 @@
 
 {% block admin_change_form_document_ready %}
 <!-- START CUSTOM -->
-    <script src='/static/web_copy/jquery-3.2.1.min.js'></script>
-    <script src='/static/web_copy/wysibb-1.5.1/jquery.wysibb.min.js'></script>
-    <link rel="stylesheet" href='/static/web_copy/wysibb-1.5.1/theme/default/wbbtheme.css' />
+    <script src='/static/web_copy/jquery/jquery-3.2.1.min.js'></script>
+    <script src='/static/web_copy/wysibb-1.5.1/jquery.wysibb.js'></script>
+    <link rel='stylesheet' href='/static/web_copy/wysibb-1.5.1/theme/default/wbbtheme.css' />
+    <script src='/static/web_copy/wysibb-1.5.1/lang/ru.js'></script>
     <script type='text/javascript'>
         window.onload = function() {
-            $('#id_text_preview').wysibb();
-            $('#id_text').wysibb();
+            fields = documen.getElementClassName('field-text');
+            var wbbOpt = {
+                lang:       "ru",
+                //buttons:    "bold,italic,underline,|,link,|,code,quote"
+            }
+            $('#id_text_preview').wysibb(wbbOpt);
+            $('#id_text').wysibb(wbbOpt);
         }
     </script>
 <!-- END CUSTOM -->

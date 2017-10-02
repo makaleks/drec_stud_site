@@ -8,6 +8,9 @@
         display: block;
     }
 
+    #tab-nav-newans:checked~div.newans {
+        display: block;
+    }
 </style>
 {% endblock %}
 <!---->
@@ -18,16 +21,41 @@
 {% for n in note_list %}
 <input type='radio' class='hidden' name='tabs' id='tab-nav-{{ forloop.counter }}'{% if forloop.first %}checked{% endif %}>
 {% endfor %}
+<input type='radio' class='hidden' name='tabs' id='tab-nav-newans'>
 
 {% for n in note_list %}
 <label for='tab-nav-{{ forloop.counter }}' class='card tablabel'>
     <h3>{{ n.name }}</h3>
 </label>
 {% endfor %}
+<label for='tab-nav-newans' class='card tablabel'>
+    <h3>Вопрос студсовету</h3>
+</label>
 {% for n in note_list %}
     <div class='card tab'>
         <h2>{{ n.name }}</h2>
         <p>{% markdown STYLE %}{{ n.text }}{% endmarkdown %}</p>
     </div>
 {% endfor %}
+<div class='newans'>
+    <section class='card'>
+        <h2 class='lightblue'>Последние вопросы</h2>
+        <div>
+            <p class='card-maintext'>
+                <ul>
+                    <li><a href=''>Ворпос №1</a></li>
+                    <li><a href=''>Вопрос №2</a></li>
+                </ul>
+            </p>
+        </div>
+    </section>
+    <div class='card'>
+        <h2>Задайте вопрос</h2>
+        <form method='post'>
+            <textarea name='question' maxlength='384'></textarea>
+            <input type='checkbox' id='notstupid' /><label for='notstupid'>Мой вопрос ещё не был занят никем до меня и относится к ФРТК</label>
+            <input type='submit' />
+        </form>
+    </div>
+</div>
 {% endblock %}

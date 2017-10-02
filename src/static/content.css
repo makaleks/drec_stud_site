@@ -294,7 +294,7 @@
 
 html,
 body {
-    font-family: 'Comfortaa', 'Noto Sans', sans-serif;
+    font-family: 'Comfortaa', sans-serif;
     position: relative;
 }
 
@@ -875,9 +875,12 @@ footer>section {
 .table_main span,
 .table_main label {
     position: absolute;
-    top: 1px;
-    bottom: 1px;
-    width: 99%;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    height: 100%;
+    width: 100%;
     overflow: hidden;
     margin: 0 auto;
 }
@@ -886,11 +889,20 @@ footer>section {
     opacity: 0;
     background: #FF9800;
     color: #FFF;
-    font-size: 2em;
+    font-size: 2rem;
     transition: opacity .4s linear;
     text-align: center;
     vertical-align: middle;
-    font-size: 2rem;
+}
+
+.table_main span>div {
+    position: absolute;
+    margin: auto 0;
+    height: 2rem;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
 }
 
 .table_main input:checked~span {
@@ -1012,8 +1024,18 @@ footer>section {
 
 }
 
-.tab {
+.tab,
+.newans {
     margin-top: 8px;
     display: none;
     z-index: 0;
+}
+
+.newans textarea {
+    min-width: 100%;
+    width: 100%;
+    max-width: 100%;
+    min-height: 4.5em;
+    max-height: 10.5em;
+    maxlength: 9;
 }

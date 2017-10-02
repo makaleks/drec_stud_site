@@ -7,7 +7,7 @@
     <meta charset='UTF-8' />
     <meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' />
 
-    <link type='text/css' rel='stylesheet' href='{{ STATIC_URL }}web_copy/normalize.css' />
+    <link type='text/css' rel='stylesheet' href='{{ STATIC_URL }}web_copy/normalize/normalize.css' />
     <link type='text/css' rel='stylesheet' href='{{ STATIC_URL }}content.css' />
     <!--[if lt IE 9]>
         <script>
@@ -182,7 +182,6 @@
         <aside id='header'>
             <div class='box link-underline'>
                 <article id='vk-header'>
-                    <img src='{{ STATIC_URL }}img/vk.svg' />
                     <section>
                         {% if user.is_authenticated %}
                             {% if user.avatar_url %}
