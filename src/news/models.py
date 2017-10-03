@@ -1,6 +1,5 @@
 # coding: utf-8
 from django.db import models
-from precise_bbcode.fields import BBCodeTextField
 import datetime
 
 # Create your models here.
@@ -10,8 +9,8 @@ class News(models.Model):
     edited  = models.DateTimeField(auto_now = True, verbose_name = 'Последнее редактирование')
     title   = models.CharField(max_length = 64, blank = False, null = False, verbose_name   = 'Заголовок')
     # Preview will be shown before spoiler
-    text_preview = BBCodeTextField(blank = True, verbose_name = 'Превью')
-    text    = BBCodeTextField(blank = True, verbose_name = 'Текст')
+    text_preview = models.TextField(blank = True, verbose_name = 'Превью')
+    text    = models.TextField(blank = True, verbose_name = 'Текст')
     image   = models.ImageField(blank = True)
     # Useful + 'view on site' in /admin available
     def get_absolute_url(self):

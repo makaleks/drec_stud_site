@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     'markdown_deux',
     'social_django',
     'reversion',
-    'precise_bbcode',
     # disable to save media on delete/update
     'django_cleanup',
     'adminsortable2',

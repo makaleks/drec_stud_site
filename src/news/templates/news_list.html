@@ -11,8 +11,8 @@
                 <div>
                     <!--!!!! Важно: необходим уникальный id внутри блока для input и label -->
                     <input id="show_{{ post.id }}" type="checkbox" class="hidden shownews" />
-                    <p class="card-maintext cutted">{{ post.text_preview.rendered }} <label class="link-underline" for="show_{{ post.id }}"><a class="lightblue">&nbsp;Читать&nbsp;далее&nbsp;</a></label></p>
-                    <p class="card-maintext full">{{ post.text.rendered }} <label class="link-underline" for="show_{{ post.id }}"><a class="lightblue">&nbsp;Скрыть&nbsp;</a></label></p>
+                    <p class="card-maintext cutted">{{ post.text_preview|safe }} <label class="link-underline" for="show_{{ post.id }}"><a class="lightblue">&nbsp;Читать&nbsp;далее&nbsp;</a></label></p>
+                    <p class="card-maintext full">{{ post.text|safe }} <label class="link-underline" for="show_{{ post.id }}"><a class="lightblue">&nbsp;Скрыть&nbsp;</a></label></p>
                 </div>
             {% endif %}
             <p class="card-text"><small class="text-muted">Last updated {{ post.edited }} <a href='{{ post.get_absolute_url }}'>Link</a></small></p>
