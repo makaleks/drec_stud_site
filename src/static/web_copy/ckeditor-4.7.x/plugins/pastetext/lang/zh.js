@@ -1,0 +1,1 @@
+﻿CKEDITOR.plugins.setLang("pastetext","zh",{button:"貼成純文字",pasteNotification:"Your browser does not allow you to paste plain text this way. Press %1 to paste."});

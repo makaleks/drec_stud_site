@@ -1,0 +1,1 @@
+﻿CKEDITOR.plugins.setLang("pastetext","az",{button:"Yalnız mətni saxla",pasteNotification:"Sizin İnternet bələdçiniz bu cür mətnin köçürməsini dəstəklənmir. Əlavə etmək üçün %1 basın."});

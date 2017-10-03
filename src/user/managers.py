@@ -6,7 +6,7 @@ from utils.utils import check_unique
 class UserManager(BaseUserManager):
     # Replace next string with this one to enable #passwordAuth
     #def create_user(self, last_name, first_name, patronymic_name, group_number, phone_number, account_id, email, password=None):
-    def create_user(self, last_name, first_name, patronymic_name, group_number, phone_number, account_id, email = None):
+    def create_user(self, last_name, first_name, patronymic_name, group_number, phone_number, account_id, account = None, email = None):
         if not first_name or not last_name or not patronymic_name or not phone_number:
             raise ValueError('Users must have first name, last name, patronymic name and phone number')
         if is_valid_name(first_name) is False:
@@ -38,6 +38,7 @@ class UserManager(BaseUserManager):
             group_number = group_number,
             phone_number = phone_number,
             account_id = account_id,
+            account = account,
             # Uncomment to enable #passwordAuth
             #password = password,
         )
@@ -48,7 +49,7 @@ class UserManager(BaseUserManager):
 
     # Replace next string with this one to enable #passwordAuth
     #def create_superuser(self, last_name, first_name, patronymic_name, group_number, phone_number, account_id, email, password):
-    def create_superuser(self, last_name, first_name, patronymic_name, group_number, phone_number, account_id, email = None):
+    def create_superuser(self, last_name, first_name, patronymic_name, group_number, phone_number, account_id, account = None, email = None):
         user = self.create_user(
             email = self.normalize_email(email),
             first_name = first_name,
@@ -57,6 +58,7 @@ class UserManager(BaseUserManager):
             group_number = group_number,
             phone_number = phone_number,
             account_id = account_id,
+            account = account
             # Uncomment to enable #passwordAuth
             #password = password,
         )

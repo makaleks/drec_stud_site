@@ -46,7 +46,7 @@ Arguments:
   -f,--file        - select file to restore to/from
   -F,--pgdump_file - specify file for pgdump_helper.py
   --restore        - restore, otherwize; Note: database must exits
-  -F,--pgdump_file - specify file for pgdump_helper.py\n" ; shift ;;
+  -F,--pgdump_file - specify file for pgdump_helper.py\n" ; exit 0 ;;
         --) shift ; break ;;
         *) printf "Error! %s\n" "$1" ; exit 1 ;;
     esac

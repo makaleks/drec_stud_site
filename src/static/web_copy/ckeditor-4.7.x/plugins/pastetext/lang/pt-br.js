@@ -1,0 +1,1 @@
+﻿CKEDITOR.plugins.setLang("pastetext","pt-br",{button:"Colar como Texto sem Formatação",pasteNotification:"Your browser does not allow you to paste plain text this way. Press %1 to paste."});

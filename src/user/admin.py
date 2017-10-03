@@ -126,7 +126,7 @@ class UserAdmin(BaseUserAdmin, VersionAdmin):
     fieldsets = (
         # Uncomment to enable #passwordAuth
         #(None, {'fields': ('phone_number', 'password')}),
-        ('Personal info', {'fields': ('last_name', 'first_name', 'patronymic_name', 'group_number')}),
+        ('Personal info', {'fields': ('last_name', 'first_name', 'patronymic_name', 'group_number', 'account')}),
         # Replace next string with this one to enable #passwordAuth
         #('Contacts', {'fields': ('account_id', 'email')}),
         ('Contacts', {'fields': ('account_id', 'uid', 'phone_number', 'email')}),

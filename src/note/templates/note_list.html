@@ -34,7 +34,7 @@
 {% for n in note_list %}
     <div class='card tab'>
         <h2>{{ n.name }}</h2>
-        <p>{% markdown STYLE %}{{ n.text }}{% endmarkdown %}</p>
+        <p>{{ n.text.rendered }}</p>
     </div>
 {% endfor %}
 <div class='newans'>
@@ -50,12 +50,22 @@
         </div>
     </section>
     <div class='card'>
-        <h2>Задайте вопрос</h2>
-        <form method='post'>
-            <textarea name='question' maxlength='384'></textarea>
-            <input type='checkbox' id='notstupid' /><label for='notstupid'>Мой вопрос ещё не был занят никем до меня и относится к ФРТК</label>
-            <input type='submit' />
-        </form>
+        {% if user.is_authenticated %}
+            
+            <h2>Задайте вопрос</h2>
+            <form method='post' id='new_question'>
+                {% csrf_token %}
+                {{ form.title.errors }}
+                <p><label for='{{ form.title.id_for_label }}'>Заголовок</label> {{ form.title }}</p>
+                {{ form.text.errors }}
+                <p>{{ form.text }}</p>
+                {{ form.check_to_send.errors }}
+                <p>{{ form.check_to_send }} <label for='{{ form.check_to_send.id_for_label }}'>Мой вопрос ещё не был занят никем до меня и относится к ФРТК</label></p>
+                <input type='submit' id='submit' value='Отправить'/>
+            </form>
+        {% else %}
+            <p>Войдите, чтобы задать свой вопрос!</p>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

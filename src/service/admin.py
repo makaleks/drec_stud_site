@@ -5,7 +5,7 @@ from django import forms
 
 # Register your models here.
 
-class ItemInline(admin.StackedInline):
+class ItemInline(admin.TabularInline):
     model = Item
     extra = 0
     verbose_name = 'Элемент'

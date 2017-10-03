@@ -1,0 +1,1 @@
+﻿CKEDITOR.plugins.setLang("pastetext","sv",{button:"Klistra in som vanlig text",pasteNotification:"Din webbläsare tillåter dig inte att klistra in vanlig text på detta vis. Tryck på %1 för att klistra in."});

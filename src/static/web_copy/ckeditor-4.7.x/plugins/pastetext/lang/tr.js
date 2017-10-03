@@ -1,0 +1,1 @@
+﻿CKEDITOR.plugins.setLang("pastetext","tr",{button:"Düz Metin Olarak Yapıştır",pasteNotification:"Web tarayıcınız bu şekilde düz metni yapıştırmanıza izin vermiyor. Yapıştırmak için %1 basınız."});

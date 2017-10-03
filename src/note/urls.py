@@ -1,6 +1,6 @@
 from django.conf.urls import url, include
-from .views import NoteListView
+from .views import NoteFormListView
 
 urlpatterns = [
-    url(r'$', NoteListView.as_view(), name = 'note_list'),
+    url(r'$', NoteFormListView.as_view(), name = 'note_list'),
 ]
