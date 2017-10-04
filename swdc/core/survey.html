@@ -1,65 +1,190 @@
 {% extends 'сore/base.html' %}
 {% block head_extras %}
-<link type='text/css' rel='stylesheet' href='https://surveyjs.azureedge.net/0.12.23/survey.css' /> {% endblock %}
-<!---->
-{% block content %}
-<section class='card' id='survey'>
-    <div id="surveyContainer">Loading, please wait</div>
-</section>
+<link type='text/css' rel='stylesheet' href='https://surveyjs.azureedge.net/0.12.23/survey.css' />
+<link type='text/css' rel='stylesheet' href='{{ STATIC_URL }}survey.css' />
 {% endblock %}
-<!---->
+
+{% block content %}
+    <div id="surveyContainer"><div class='card'>Loading, please wait</div></div>
+{% endblock %}
+
 {% block body_extras %}
+<script src='https://cdnjs.cloudflare.com/ajax/libs/node-waves/0.7.5/waves.min.js'></script>
 <script src='https://unpkg.com/jquery@3.2.1/dist/jquery.slim.min.js'></script>
 <script src='https://cdn.rawgit.com/mgalante/jquery.redirect/master/jquery.redirect.js'></script>
 <script src='https://surveyjs.azureedge.net/0.12.23/survey.jquery.min.js'></script>
 <script>
+    Survey.defaultStandardCss.header += ' card';
+    Survey.defaultStandardCss.row += ' card';
+    Survey.defaultStandardCss.footer += ' card';
+    Survey.defaultStandardCss.dropdown.root += ' sv_q_select';
+    Survey.defaultStandardCss.window.button += ' btn waves-effect';
+    Survey.defaultStandardCss.matrixdynamic.button += ' btn waves-effect';
+    Survey.defaultStandardCss.navigationButton += ' btn waves-effect';
+    Survey.defaultStandardCss.paneldynamic.button += ' btn waves-effect';
+    Survey.defaultStandardCss.window.header.button += ' btn waves-effect';
+    
     window.addEventListener('load', function() {
         var surveyJSON = {
             title: 'Hello world!',
-            completedHtml: 'Спасибо, что выполнил(-а), {{ username }}<br />Сейчас мы вернемся к списку опросов',
-            questions: [{
-                type: "matrix",
-                name: "Quality",
-                title: "Please indicate if you agree or disagree with the following statements",
-                columns: [{
-                        value: 1,
-                        text: "Strongly Disagree"
-                    },
-                    {
-                        value: 2,
-                        text: "Disagree"
-                    },
-                    {
-                        value: 3,
-                        text: "Neutral"
-                    },
-                    {
-                        value: 4,
-                        text: "Agree"
-                    },
-                    {
-                        value: 5,
-                        text: "Strongly Agree"
-                    }
-                ],
-                rows: [{
-                        value: "affordable",
-                        text: "Product is affordable"
-                    },
-                    {
-                        value: "does what it claims",
-                        text: "Product does what it claims"
-                    },
-                    {
-                        value: "better then others",
-                        text: "Product is better than other products on the market"
-                    },
-                    {
-                        value: "easy to use",
-                        text: "Product is easy to use"
-                    }
-                ]
-            }]
+            completedHtml: '<div class=\'card\'>Спасибо, что выполнил(-а), {{ username }}<br />Сейчас мы вернемся к списку опросов</div>',
+            pages:[
+   {
+      elements:[
+         {
+            type:"text",
+            name:"question1"
+         },
+         {
+            type:"checkbox",
+            name:"question2",
+            choices:[
+               "item1",
+               "item2",
+               "item3"
+            ]
+         },
+         {
+            type:"radiogroup",
+            name:"question3",
+            choices:[
+               "item1",
+               "item2",
+               "item3"
+            ]
+         },
+         {
+            type:"dropdown",
+            name:"question4",
+            choices:[
+               "item1",
+               "item2",
+               "item3"
+            ]
+         },
+         {
+            type:"comment",
+            name:"question5"
+         },
+         {
+            type:"rating",
+            name:"question6"
+         },
+         {
+            type:"boolean",
+            name:"question7"
+         },
+         {
+            type:"file",
+            name:"question8"
+         },
+         {
+            type:"matrix",
+            columns:[
+               "Column 1",
+               "Column 2",
+               "Column 3"
+            ],
+            name:"question9",
+            rows:[
+               "Row 1",
+               "Row 2"
+            ]
+         },
+         {
+            type:"matrixdropdown",
+            choices:[
+               1,
+               2,
+               3,
+               4,
+               5
+            ],
+            columns:[
+               {
+                  name:"Column 1"
+               },
+               {
+                  name:"Column 2"
+               },
+               {
+                  name:"Column 3"
+               }
+            ],
+            name:"question10",
+            rows:[
+               "Row 1",
+               "Row 2"
+            ]
+         },
+         {
+            type:"matrixdynamic",
+            choices:[
+               1,
+               2,
+               3,
+               4,
+               5
+            ],
+            columns:[
+               {
+                  name:"Column 1"
+               },
+               {
+                  name:"Column 2"
+               },
+               {
+                  name:"Column 3"
+               }
+            ],
+            name:"question11"
+         },
+         {
+            type:"multipletext",
+            items:[
+               {
+                  name:"text1"
+               },
+               {
+                  name:"text2"
+               }
+            ],
+            name:"question12"
+         },
+         {
+            type:"panel",
+            elements:[
+               {
+                  type:"paneldynamic",
+                  name:"question13",
+                  panelCount:1,
+                  templateElements:[
+                     {
+                        type:"text",
+                        name:"question14"
+                     }
+                  ]
+               }
+            ],
+            name:"panel1"
+         }
+      ],
+      name:"page1"
+   },
+   {
+      elements:[
+         {
+            type:"comment",
+            name:"question16"
+         },
+         {
+            type:"text",
+            name:"question15"
+         }
+      ],
+      name:"page2"
+   }
+]
         };
 
         var survey = new Survey.Model(surveyJSON);
@@ -77,6 +202,8 @@
             setTimeout(sendData, 2000);
         }
     });
+    Waves.attach('.waves-effect');
+    Waves.init();
 
 </script>
 {% endblock %}
