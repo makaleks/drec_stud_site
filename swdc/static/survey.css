@@ -106,7 +106,7 @@ label.sv_q_checkbox>[type='checkbox']:disabled:checked~span:after {
     position: relative;
     background-color: transparent;
     border: none;
-    border-bottom: 1.5px solid #ccc;
+    border-bottom: 2px solid #ccc;
     outline: none;
     height: 3rem;
     line-height: 2rem;
@@ -357,7 +357,7 @@ label.sv_q_checkbox>[type='checkbox']:disabled:checked~span:after {
   transition: .3s ease-out;
 }
 
-.btn {
+.sv_main .btn {
     border: none;
     background-color: #eee;
     outline: none;
