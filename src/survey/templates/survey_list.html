@@ -1,16 +1,52 @@
 {% extends 'core/base.html' %}
-
+<!-- <input type='radio' class='hidden' name='tagspace' id='tag_all' checked='checked' />
+<input type='radio' class='hidden' name='tagspace' id='tag_gotit' />
+<input type='radio' class='hidden' name='tagspace' id='tag_1course' />
+<input type='radio' class='hidden' name='tagspace' id='tag_618' />
+<input type='radio' class='hidden' name='tagspace' id='tag_sport' />
+<input type='radio' class='hidden' name='tagspace' id='tag_hostel' />
+<input type='radio' class='hidden' name='tagspace' id='tag_lecture' />
+<input type='radio' class='hidden' name='tagspace' id='tag_site' />
+<section class='card tagspace'>
+    <h2>Облако меток</h2>
+    <small>
+                    <label for='tag_all' class='tag white'>Всё</label>
+                    <label for='tag_gotit' class='tag red'>я прошёл</label>
+                    <label for='tag_1course' class='tag green'>1 курс</label>
+                    <label for='tag_618' class='tag green'>618</label>
+                    <label for='tag_sport' class='tag blue'>спорт</label>
+                    <label for='tag_hostel' class='tag blue'>общежитие</label>
+                    <label for='tag_lecture' class='tag blue'>лекции</label>
+                    <label for='tag_site' class='tag yellow'>сайт</label>
+                </small>
+</section> -->
 {% block content %}
-    <section class='card'>
-        <a href='/surveys/create'>Создать опрос</a>
-    </section>
-    {% for survey in survey_list %}
-        <section class='card'>
-            <h2><a href='{{ survey.get_absolute_url }}'>{{ survey.title }} {% if not survey.is_started %} (черновик){% elif survey.is_finished %} (завершено){% endif %}</a></h2>
-            <p class='card-maintext'>
-                {{ survey.description }}
-            </p>
-            <p class='card-text'><small class='text-muted'>Started {{ survey.started }}</small></p>
-        </section>
-    {% endfor %}
+<section class='card'>
+    {% if survey_list_now %}
+        <h2>Текущие опросы:</h2>
+        {% for survey in survey_list_now %}
+            <div class='tagged tag_hostel'>
+                <p><a href='{{ survey.get_absolute_url }}' class='survey_list'>{{ survey.title }}</a></p>
+                <!-- <small><span class='tag blue'>общежитие</span></small> -->
+                <hr>
+            </div>
+        {% endfor %}
+    {% else %}
+        <h2>Текущих опросов нет<h2>
+    {% endif %}
+</section>
+<section class='card'>
+    {% if survey_list_finished %}
+        <h2>Прошедшие опросы:</h2>
+        {% for survey in survey_list_finished %}
+            <div class='tagged tag_hostel'>
+                <p>{#<a href='{{ survey.get_absolute_url }}' class='survey_list'>#}{{ survey.title }}{#</a>#}</p>
+                <!-- <small><span class='tag blue'>общежитие</span></small> -->
+                <hr>
+            </div>
+        {% endfor %}
+    {% else %}
+        <h2>Прошедших опросов нет<h2>
+    {% endif %}
+</section>
 {% endblock %}

@@ -1,0 +1,436 @@
+/*body*/
+.sv_body{}
+
+/*checkbox*/
+/*-root*/
+.sv_qcbc{}
+/*-item*/
+.sv_q_checkbox{}
+label.sv_q_checkbox>[type='checkbox'],
+label.sv_q_checkbox>.checkbox-material{display: none}
+label.sv_q_checkbox>span{
+    position: relative;
+    padding-left: 35px;
+    display: inline-block;
+    height: 25px;
+    line-height: 25px;
+    font-size: 1rem;
+}
+
+label.sv_q_checkbox>[type='checkbox']~span:after {
+  border-radius: 2px;
+}
+
+label.sv_q_checkbox>[type='checkbox']~span:before,
+label.sv_q_checkbox>[type='checkbox']~span:after {
+  content: '';
+  left: 0;
+  position: absolute;
+  /* .1s delay is for check animation */
+  -webkit-transition: border .25s, background-color .25s, width .20s .1s, height .20s .1s, top .20s .1s, left .20s .1s;
+  transition: border .25s, background-color .25s, width .20s .1s, height .20s .1s, top .20s .1s, left .20s .1s;
+  z-index: 1;
+}
+
+label.sv_q_checkbox>[type='checkbox']:not(:checked)~span:before {
+  width: 0;
+  height: 0;
+  border: 3px solid transparent;
+  left: 6px;
+  top: 10px;
+  -webkit-transform: rotateZ(37deg);
+          transform: rotateZ(37deg);
+  -webkit-transform-origin: 100% 100%;
+          transform-origin: 100% 100%;
+}
+
+label.sv_q_checkbox>[type='checkbox']:not(:checked)~span:after {
+  height: 20px;
+  width: 20px;
+  background-color: transparent;
+  border: 2px solid #5a5a5a;
+  top: 0px;
+  z-index: 0;
+}
+
+label.sv_q_checkbox>[type='checkbox']:checked~span:before {
+  top: 0;
+  left: 1px;
+  width: 8px;
+  height: 13px;
+  border-top: 2px solid transparent;
+  border-left: 2px solid transparent;
+  border-right: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  -webkit-transform: rotateZ(37deg);
+          transform: rotateZ(37deg);
+  -webkit-transform-origin: 100% 100%;
+          transform-origin: 100% 100%;
+}
+
+label.sv_q_checkbox>[type='checkbox']:checked~span:after {
+  top: 0;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #df3f31;
+  background-color: #df3f31;
+  z-index: 0;
+}
+
+label.sv_q_checkbox>[type='checkbox']:disabled:not(:checked)~span:before {
+  background-color: transparent;
+  border: 2px solid transparent;
+}
+
+label.sv_q_checkbox>[type='checkbox']:disabled:not(:checked)~span:after {
+  border-color: transparent;
+  background-color: #949494;
+}
+
+label.sv_q_checkbox>[type='checkbox']:disabled:checked~span:before {
+  background-color: transparent;
+}
+
+label.sv_q_checkbox>[type='checkbox']:disabled:checked~span:after {
+  background-color: #949494;
+  border-color: #949494;
+}
+/*-other*/
+.sv_q_other{}
+
+/*comment*/
+
+/*dropdown*/
+/*-root /*+sv_q_select from js * /*/
+.sv_main select {
+    position: relative;
+    background-color: transparent;
+    border: none;
+    border-bottom: 2px solid #ccc;
+    outline: none;
+    height: 3rem;
+    line-height: 2rem;
+    font-size: 1rem;
+    margin: 0 0 20px 0;
+    padding: 0 5px;
+    display: block;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.sv_q_select {
+    vertical-align: middle;
+    position: relative;
+}
+
+/*-control*/
+/*-other*/
+.sv_q_other{}
+
+/*error*/
+/*-root*/
+.sv_q_erbox{}
+/*-icon*/
+/*-item*/
+
+/*footer /*~card from js * /*/
+.sv_nav{}
+
+/*header /*~card from js * /*/
+
+/*matrix*/
+/*-root*/
+.sv_q_matrix{}
+.sv_q_matrix td{
+    vertical-align: middle;
+}
+.sv_q_matrix label{
+    vertical-align: middle;
+    display: inline-block;
+    position: relative!important;/* because SurveyJS write other option in html */
+}
+
+/*matrixdropdown*/
+/*-root*/
+.sv_q_matrix{}
+.sv_q_matrix select{
+    margin: auto;
+}
+
+/*matrixdynamic*/
+/*-root*/
+.table{}
+/*-button*/
+
+/*multipletext*/
+/*-root*/
+/*-itemTitle*/
+/*-row*/
+/*-itemValue*/
+
+/*navigation*/
+/*-complete*/
+.sv_complete_btn{}
+/*-prev*/
+.sv_prev_btn{}
+/*-next*/
+.sv_next_btn{}
+
+/*navigationButton*/
+
+/*pageTitle*/
+.sv_p_title{}
+
+/*paneldynamic*/
+/*-root*/
+/*-button*/
+
+/*progress*/
+.sv_progress{}
+
+/*progressBar*/
+
+/*question*/
+/*-mainRoot*/
+.sv_q{}
+/*-title*/
+.sv_q_title{
+    font-size: 1em;
+}
+/*-description*/
+.sv_q_description{}
+/*-comment*/
+/*-required*/
+/*-titleRequired*/
+
+/*radiogroup*/
+/*-root*/
+.sv_qcbc{}
+/*-item*/
+.sv_q_radiogroup{}
+.sv_main label{
+    position: relative;
+}
+.sv_main label>[type='radio'],
+.sv_main label>.circle,
+.sv_main label>.check{display: none}
+.sv_main label>[type='radio']:not(:checked),
+.sv_main label>[type='radio']:checked {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sv_q_matrix label>.circle {
+    display: block;
+}
+
+.sv_main label>[type='radio']:not(:checked)~span,
+.sv_main label>[type='radio']:checked~span {
+  position: relative;
+  padding-left: 35px;
+  cursor: pointer;
+  height: 25px;
+  line-height: 25px;
+  font-size: 1rem;
+  -webkit-transition: .28s ease;
+  transition: .28s ease;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
+
+.sv_main label>[type='radio']~span:before,
+.sv_main label>[type='radio']~span:after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: -4px;
+  margin: 4px;
+  width: 16px;
+  height: 16px;
+  z-index: 0;
+  -webkit-transition: .28s ease;
+  transition: .28s ease;
+}
+
+.sv_main label>[type="radio"]:not(:checked)~span:before,
+.sv_main label>[type="radio"]:not(:checked)~span:after,
+.sv_main label>[type="radio"]:checked~span:before,
+.sv_main label>[type="radio"]:checked~span:after {
+  border-radius: 50%;
+}
+
+.sv_main label>[type="radio"]:not(:checked)~span:before,
+.sv_main label>[type="radio"]:not(:checked)~span:after {
+  border: 2px solid #5a5a5a;
+}
+
+.sv_main label>[type="radio"]:not(:checked)~span:after {
+  -webkit-transform: scale(0);
+          transform: scale(0);
+}
+
+.sv_main label>[type="radio"]:checked~span:before {
+  border: 2px solid transparent;
+}
+
+.sv_main label>[type="radio"]:checked~span:after {
+  border: 2px solid #df3f31;
+}
+
+.sv_main label>[type="radio"]:checked~span:after {
+  background-color: #df3f31;
+}
+
+.sv_main label>[type="radio"]:checked~span:after {
+  -webkit-transform: scale(1.02);
+          transform: scale(1.02);
+}
+/*-label*/
+/*-other*/
+.sv_q_other{}
+
+/*rating*/
+/*-root*/
+.sv_q_rating{}
+/*-item*/
+.sv_q_rating_item{}
+
+/*root*/
+.sv_main{}
+
+/*row /*~card from js * /*/
+.sv_row{}
+
+/*saveData*/
+/*-root*/
+/*-saving*/
+/*-error*/
+/*-success*/
+/*-saveAgainButton*/
+
+/*text*/
+
+/*window*/
+/*-root*/
+.sv_window{}
+/*-body*/
+.sv_window_content{}
+/*-header*/
+/*--button /*+waves-effect from js and downside */
+/*--buttonCollapsed*/
+/*--buttonExpanded*/
+/*--root*/
+.sv_window_title{}
+/*--title*/
+/*-root*/
+.sv_window{}
+
+
+
+
+/*!
+ * Waves v0.6.0
+ * http://fian.my.id/Waves
+ *
+ * Copyright 2014 Alfiana E. Sibuea and other contributors
+ * Released under the MIT license
+ * https://github.com/fians/Waves/blob/master/LICENSE
+ */
+.waves-effect {
+  position: relative;
+  cursor: pointer;
+  display: inline-block;
+  overflow: hidden;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  vertical-align: middle;
+  z-index: 1;
+  -webkit-transition: .3s ease-out;
+  transition: .3s ease-out;
+}
+
+.sv_main .btn {
+    border: none;
+    background-color: #eee;
+    outline: none;
+    border-radius: 2px;
+    display: inline-block;
+    height: 36px;
+    line-height: 36px;
+    padding: 0 2rem;
+    text-transform: uppercase;
+    vertical-align: middle;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.btn:hover {
+  background-color: #ccc;
+}
+
+.sv_main input:not([type]),
+.sv_main input[type=text],
+.sv_main input[type=password],
+.sv_main input[type=email],
+.sv_main input[type=url],
+.sv_main input[type=time],
+.sv_main input[type=date],
+.sv_main input[type=datetime],
+.sv_main input[type=datetime-local],
+.sv_main input[type=tel],
+.sv_main input[type=number],
+.sv_main input[type=search],
+.sv_main textarea {
+  background-color: transparent;
+  border: none;
+  border-bottom: 2px solid #9e9e9e;
+  border-radius: 0;
+  outline: none;
+  height: 2rem;
+  width: 100%;
+  font-size: 1rem;
+  margin: 5px;
+  padding: 0 5px;
+  -webkit-box-shadow: none;
+          box-shadow: none;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+}
+
+.sv_main input:not([type]):active,
+.sv_main input[type=text]:active,
+.sv_main input[type=password]:active,
+.sv_main input[type=email]:active,
+.sv_main input[type=url]:active,
+.sv_main input[type=time]:active,
+.sv_main input[type=date]:active,
+.sv_main input[type=datetime]:active,
+.sv_main input[type=datetime-local]:active,
+.sv_main input[type=tel]:active,
+.sv_main input[type=number]:active,
+.sv_main input[type=search]:active,
+.sv_main textarea:active,
+.sv_main input:not([type]):focus,
+.sv_main input[type=text]:focus,
+.sv_main input[type=password]:focus,
+.sv_main input[type=email]:focus,
+.sv_main input[type=url]:focus,
+.sv_main input[type=time]:focus,
+.sv_main input[type=date]:focus,
+.sv_main input[type=datetime]:focus,
+.sv_main input[type=datetime-local]:focus,
+.sv_main input[type=tel]:focus,
+.sv_main input[type=number]:focus,
+.sv_main input[type=search]:focus,
+.sv_main textarea:focus {
+  border-bottom: 2px solid #df3f31;
+}

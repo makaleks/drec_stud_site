@@ -11,8 +11,10 @@ class Survey(models.Model):
     description = models.CharField(max_length = 256, blank = False, null = False, verbose_name = 'Описание')
     structure   = models.TextField(blank = False, null = False, verbose_name = 'Опрос в JSON (survey.js)')
     # Surveys can still be edited
-    started     = models.DateTimeField(blank = True, null = True, verbose_name = 'Дата начала')
-    finished    = models.DateTimeField(blank = True, null = True, verbose_name = 'Дата конца')
+    started     = models.DateTimeField(blank = False, null = True, verbose_name = 'Дата начала')
+    finished    = models.DateTimeField(blank = False, null = True, verbose_name = 'Дата конца')
+    def __str__(self):
+        return self.title
     def is_started():
         return started and started > datetime.now()
     def is_finished():
@@ -34,8 +36,8 @@ class Answer(models.Model):
     answer  = models.TextField(blank = False, null = False, verbose_name = 'ответ в JSON (survey.js)')
     survey  = models.ForeignKey(Survey, on_delete = models.CASCADE, related_name = 'answers', verbose_name = 'Ответ')
     user    = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.CASCADE, related_name = 'answers', verbose_name = 'Пользователь')
-    date    = models.DateTimeField(auto_now = True, blank = False, null = False, verbose_name = 'Дата ответа')
+    created = models.DateTimeField(auto_now = True, blank = False, null = False, verbose_name = 'Дата ответа')
     class Meta:
         verbose_name        = 'Ответ'
         verbose_name_plural = 'Ответы'
-        ordering            = ['-date']
+        ordering            = ['-created']

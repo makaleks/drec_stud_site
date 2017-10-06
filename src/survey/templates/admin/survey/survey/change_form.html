@@ -96,6 +96,10 @@
             SurveyEditor.editorLocalization.locales['ru'] = russianStrings;
             SurveyEditor.editorLocalization.currentLocale = 'ru';
             var editor = new SurveyEditor.SurveyEditor("surveyEditorContainer", editorOptions);
+            editor.onQuestionAdded.add(function(sender, options){
+                var q = options.question;
+                q.isRequired = true;
+            });
             var form = document.getElementById('survey_form');
             if (form['structure'].value) {
                 editor.text = form['structure'].value;

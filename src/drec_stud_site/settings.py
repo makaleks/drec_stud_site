@@ -21,12 +21,6 @@ PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(_
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '!qz1m9e=9-tv&n)4&q98ms!%7694qf*iz58q2^4oeuly+-h_9s'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
 # TODO: fix for production
 ALLOWED_HOSTS = ['*']
 
@@ -153,6 +147,12 @@ spec.loader.exec_module(module)
 SOCIAL_AUTH_VK_OAUTH2_KEY = module.SOCIAL_AUTH_VK_OAUTH2_KEY
 SOCIAL_AUTH_VK_OAUTH2_SECRET = module.SOCIAL_AUTH_VK_OAUTH2_SECRET
 SOCIAL_AUTH_VK_OAUTH2_EXTRA_DATA = ['photo_100']
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = module.DEBUG
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = module.SECRET_KEY
 
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.vk.VKOAuth2',

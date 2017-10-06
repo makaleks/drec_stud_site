@@ -23,6 +23,7 @@ class Question(models.Model):
     edited = models.DateTimeField(auto_now = True, null = False, verbose_name = 'Время редактирования', error_messages={'required':'heh'})
     title = models.CharField(max_length = 32, unique = True, blank = False, null = False, verbose_name = 'Заголовок')
     text = BBCodeTextField(blank = False, null = False, verbose_name = 'Текст')
+    is_public = models.BooleanField(default = True, null = False, verbose_name = 'Виден всем')
     class Meta:
         verbose_name = 'Вопрос'
         verbose_name_plural = 'Вопросы'
