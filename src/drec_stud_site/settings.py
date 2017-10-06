@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'news',
     'note',
     'service',
+    'survey',
 ]
 
 MIDDLEWARE = [
