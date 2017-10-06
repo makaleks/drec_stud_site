@@ -151,7 +151,7 @@ class UserAdmin(BaseUserAdmin, VersionAdmin):
         else:
             fields = [{f.name: str(getattr(obj, f.name))} for f in obj._meta.fields]
             logger.info('{0} was created as {1}'.format(self.model.__name__, str(fields)), extra={'user': request.user.get_full_name()})
-        super(NewsAdmin, self).save_model(request, obj, form, change)
+        super(UserAdmin, self).save_model(request, obj, form, change)
 
 # Register the new UserAdmin
 admin.site.register(User, UserAdmin)
