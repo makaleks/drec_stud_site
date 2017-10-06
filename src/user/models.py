@@ -20,7 +20,7 @@ class User(models.Model):
     account         = models.PositiveSmallIntegerField(default = 0, blank = True, null = False, verbose_name = 'Счёт')
     avatar_url      = models.URLField(null = True, blank = True)
     # Two 'blank' (unrequired) values can`t be unique
-    email           = models.CharField(max_length = 64, blank = True, null = False, unique = False, verbose_name = 'Почта')
+    email           = models.CharField(default = '', max_length = 64, blank = True, null = False, unique = False, verbose_name = 'Почта')
     USERNAME_FIELD  = 'phone_number'
     EMAIL_FIELD     = 'email'
     # USERNAME_FIELD and password are always required
