@@ -198,12 +198,30 @@ LOGGING = {
     # Set this True on your own risk
     'disable_existing_loggers': False,
     # Targets: user actions info
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
     'handlers': {
-        'file': {
+        'file_events': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
             'formatter': 'user_formatter',
             'filename': os.path.join(PROJECT_ROOT, 'logs/all_events.log'),
+        },
+        'file_django': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            #'formatter': 'user_formatter',
+            'filename': os.path.join(PROJECT_ROOT, 'logs/django_events.log'),
+            'formatter': 'verbose',
+        },
+        'console': {
+            'level': 'INFO',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
         },
     },
     'formatters': {
@@ -213,13 +231,24 @@ LOGGING = {
             # default formatter includes milliseconds
             'datefmt': '%Y-%m-%d %H:%M:%S',
         },
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
     },
     'loggers': {
         'site_events': {
-            'handlers': ['file'],
+            'handlers': ['file_events'],
             'level': 'INFO',
             # don`t pass to handlers of higher level (default: True)
             'propagate': False,
+        },
+        'django': {
+            'handlers': ['console', 'file_django'],
+            'propagete': True,
         },
     },
 }
