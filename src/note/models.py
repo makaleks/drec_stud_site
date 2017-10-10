@@ -8,7 +8,7 @@ from django.conf import settings
 class Note(models.Model):
     edited  = models.DateTimeField(auto_now = True, verbose_name = 'Последнее редактирование')
     name    = models.SlugField(max_length = 16, unique = True, blank = False, null = False, verbose_name = 'Название')
-    text    = BBCodeTextField(max_length = 384, blank = True, null = False, verbose_name = 'Текст')
+    text    = BBCodeTextField(blank = True, null = False, verbose_name = 'Текст')
     order   = models.PositiveIntegerField(default = 0, blank = False, null = False, verbose_name = 'Порядок показа')
     def __str__(self):
         return self.name

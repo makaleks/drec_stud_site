@@ -29,9 +29,9 @@ class SurveyDetailView(DetailView):
     template_name = 'survey_detail.html'
     def post(self, request, *args, **kwargs):
         data = request.POST.dict()
-        f = open('test.txt','w')
-        f.write(str(data))
-        f.close()
+        #f = open('test.txt','w')
+        #f.write(str(data))
+        #f.close()
         a = Answer(answer = data['survey_result'], survey = Survey.objects.all().filter(pk = data['survey_pk']).first(), user = request.user)
         a.save()
         return redirect('/surveys')

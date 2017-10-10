@@ -503,7 +503,7 @@ class Order(models.Model):
         self.full_clean()
         return super(Order, self).save(*args, **kwargs)
     def __str__(self):
-        return '{0} ({1} {2}-{3})'.format(self.date_start.strftime('%Y-%m-%d'), self.time_start.strftime('%H:%M:%S'), self.time_end.strftime('%H:%M:%S'))
+        return '{0} ({1} {2}-{3})'.format(self.item.name, self.date_start.strftime('%Y-%m-%d'), self.time_start.strftime('%H:%M:%S'), self.time_end.strftime('%H:%M:%S'))
     class Meta:
         verbose_name = 'Заказ'
         verbose_name_plural = 'Заказы'
