@@ -163,15 +163,13 @@
                                 {% else %}
                                     <img src='{{ STATIC_URL }}img/vk.svg' />
                                 {% endif %}
-                                <a href='/logout/' class='btn btn-vk'>
+                                <a href='/logout/?next={{ request.path }}' class='btn btn-vk'>
                                     <span>Привет, {{ user.get_short_name }}</span>
                                 </a>
                             {% else %}
                                 <img src='{{ STATIC_URL }}img/vk.svg' />
-                                <a href='{% url "social:begin" "vk-oauth2" %}' class='btn btn-vk'>
-                                <span>Привет, гость</span>
-                                <br />
-                                <small>(Войти через ВК)</small>
+                                <a href='{% url "social:begin" "vk-oauth2" %}?next={{ request.path }}' class='btn btn-vk'>
+                                <span>Войти через ВК</span>
                                 </a>
                             {% endif %}
                         </li>
@@ -191,13 +189,13 @@
                             {% endif %}
                             <section>
                                 <p>Привет, {{ user.get_short_name }}</p>
-                                <a href='/logout/' class='btn btn-vk'>Выйти</a>
+                                <a href='/logout/?next={{ request.path }}' class='btn btn-vk'>Выйти</a>
                             </section>
                         {% else %}
                             <img src='{{ STATIC_URL }}img/vk.svg' />
                             <section>
                                 <p>Привет, гость</p>
-                                <a href='{% url "social:begin" "vk-oauth2" %}' class='btn btn-vk'>Войти через ВК</a>
+                                <a href='{% url "social:begin" "vk-oauth2" %}?next={{ request.path }}' class='btn btn-vk'>Войти через ВК</a>
                             </section>
                         {% endif %}
                     </section>

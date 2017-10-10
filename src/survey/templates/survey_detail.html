@@ -32,7 +32,8 @@
     window.addEventListener('load', function() {
         var surveyJSON = {{ survey.structure | safe }};
         surveyJSON['title'] = '{{ survey.title }}';
-        surveyJSON['completedHtml'] = '<div class=\'card\'>Спасибо, что выполнил(-а), {{ user.get_short_name }}<br />Сейчас мы вернемся к списку опросов</div>';
+        surveyJSON['completeText'] = 'Отправить';
+        surveyJSON['completedHtml'] = '<div class=\'card\'>{% if not user.is_authenticated %}Вы не вошли на сайт. Ничего не отправлено.{% else %}Отправляем...{% endif %}</div>';
         /*var surveyJSON = {
             title: '{{ survey.title }}',
             completedHtml: '<div class=\'card\'>Спасибо, что выполнил(-а), {{ user.get_short_name }}<br />Сейчас мы вернемся к списку опросов</div>',
@@ -198,20 +199,24 @@
         var survey = new Survey.Model(surveyJSON);
         $("#surveyContainer").Survey({
             model: survey,
-            onComplete: sendDataToServer
+                onComplete: sendDataToServer
         });
 
         function sendDataToServer(survey) {
-            var resultAsString = JSON.stringify(survey.data);
+            {% if not user.is_authenticated %}
+                function throw_anonymous() {
+                    window.location.replace('/surveys/');
+                };
+                setTimeout(throw_anonymous, 2000);
+            {% else %}
+                var resultAsString = JSON.stringify(survey.data);
 
-            function sendData() {
                 form = document.getElementById('form');
-                form.survey_result.value = survey.data;
+                form.survey_result.value = JSON.stringify(survey.data);
                 form.survey_pk.value = {{ survey.pk }};
                 form.submit();
                 //$.redirect('http://httpbin.org/post', survey.data);
-            };
-            setTimeout(sendData, 1000);
+            {% endif %}
         }
     });
     Waves.attach('.waves-effect');

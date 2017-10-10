@@ -56,6 +56,7 @@
             <h2>Задайте вопрос</h2>
             <form method='post' id='new_question'>
                 {% csrf_token %}
+                {{ form.non_field_errors }}
                 {{ form.title.errors }}
                 <p><label for='{{ form.title.id_for_label }}'>Заголовок</label> {{ form.title }}</p>
                 {{ form.text.errors }}

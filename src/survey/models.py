@@ -34,7 +34,7 @@ class Survey(models.Model):
 
 class Answer(models.Model):
     answer  = models.TextField(blank = False, null = False, verbose_name = 'ответ в JSON (survey.js)')
-    survey  = models.ForeignKey(Survey, on_delete = models.CASCADE, related_name = 'answers', verbose_name = 'Ответ')
+    survey  = models.ForeignKey(Survey, on_delete = models.CASCADE, related_name = 'answers', verbose_name = 'Опрос')
     user    = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.CASCADE, related_name = 'answers', verbose_name = 'Пользователь')
     created = models.DateTimeField(auto_now = True, blank = False, null = False, verbose_name = 'Дата ответа')
     class Meta:

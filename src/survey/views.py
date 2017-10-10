@@ -1,4 +1,4 @@
-from django.shortcuts import redirect
+from django.shortcuts import render, redirect
 from django.views.generic.base import TemplateView
 from django.views.generic.detail import DetailView
 from django.db.models import Q
@@ -28,11 +28,24 @@ class SurveyDetailView(DetailView):
     model = Survey
     template_name = 'survey_detail.html'
     def post(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('/')
         data = request.POST.dict()
-        #f = open('test.txt','w')
-        #f.write(str(data))
-        #f.close()
-        a = Answer(answer = data['survey_result'], survey = Survey.objects.all().filter(pk = data['survey_pk']).first(), user = request.user)
-        a.save()
-        return redirect('/surveys')
+        rewrite = False
+        finished = False
+        started = True
+        queryset = Answer.objects.all().filter(survey = Survey.objects.all().filter(pk = data['survey_pk']).first(), user = request.user)
+        if queryset.exists():
+            a = queryset.first()
+            rewrite = True
+            a.answer = data['survey_result']
+        else:
+            a = Answer(answer = data['survey_result'], survey = Survey.objects.all().filter(pk = data['survey_pk']).first(), user = request.user)
+        if a.survey.finished < datetime.datetime.now():
+            finished = True
+        elif a.survey.started > datetime.datetime.now():
+            started = False
+        else:
+            a.save()
+        return render(request, 'survey_thanks.html', {'rewrite': rewrite, 'finished': finished, 'started': started})
 
