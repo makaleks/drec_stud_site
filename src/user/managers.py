@@ -23,12 +23,12 @@ class UserManager(BaseUserManager):
         if (len(email) != 0) and (is_valid_email(email) is False):
             raise ValueError('Email format is incorrent')
 
-        if check_unique(self.model, 'phone_number', phone_number) is False:
-            raise ValueError('This phone number has been already registered')
         if check_unique(self.model, 'account_id', account_id) is False:
             raise ValueError('This account url has been already registered')
         if (len(email) != 0) and (check_unique(self.model, 'email', email) is False):
             raise ValueError('This email has been already registered')
+        if (len(phone_number) != 0) and (check_unique(self.model, 'phone_number', phone_number) is False):
+            raise ValueError('This phone number has been already registered')
 
         user = self.model(
             email = self.normalize_email(email),

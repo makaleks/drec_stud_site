@@ -14,7 +14,8 @@ class User(models.Model):
     first_name      = models.CharField(max_length = 32, blank = False, null = False, verbose_name = 'Имя')
     last_name       = models.CharField(max_length = 32, blank = False, null = False, verbose_name = 'Фамилия')
     patronymic_name = models.CharField(max_length = 32, blank = False, null = False, verbose_name = 'Отчество')
-    phone_number    = models.CharField(max_length = 20, blank = False, null = False, unique = True, verbose_name = 'Контактный номер')
+    # Two 'blank' (unrequired) values can`t be unique
+    phone_number    = models.CharField(max_length = 20, blank = False, null = False, unique = False, verbose_name = 'Контактный номер')
     account_id      = models.CharField(max_length = 64, blank = False, null = False, unique = True, verbose_name = 'Аккаунт')
     group_number    = models.CharField(max_length = 4, blank = False, null = False, verbose_name = 'Номер группы')
     account         = models.PositiveSmallIntegerField(default = 0, blank = True, null = False, verbose_name = 'Счёт')

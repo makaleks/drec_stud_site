@@ -7,6 +7,7 @@ from openpyxl import load_workbook
 import vk
 import json
 import progressbar
+from requests.exceptions import ReadTimeout
 
 import datetime
 
@@ -61,7 +62,7 @@ def inc_cell_column(start):
         sys.exit('FATAL: inc_cell_columnt is after \'Z\'!')
     return st + end
 
-def add_error_row(start, ws):
+def add_error_row(field, start, ws):
     s = start
     f = open(_err_str, 'a')
     print('Error:', end=' ')
@@ -70,7 +71,7 @@ def add_error_row(start, ws):
         print(ws[s].value, end=',')
         s = inc_cell_column(s)
     print('\n')
-    f.write('\n')
+    f.write(' ({0})\n'.format(field))
     f.close()
     if _err_countdown == 1:
         print('Terminated at {0}'.format(start))
@@ -115,27 +116,27 @@ def get_line_by_schema(start, input_format, ws, vk_api):
             if len(tmp) != 3 and len(tmp) != 2:
                 print('\'{0}\''.format(tmp))
                 print('full name check 1: ')
-                add_error_row(start, ws)
+                add_error_row('full name', start, ws)
                 return None
             elif len(tmp) == 2:
                 add_todo_row('patronymic name', start, ws)
             elif len(tmp) != 3:
                 print('\'{0}\''.format(tmp))
                 print('full name check 2: ')
-                add_error_row(start, ws)
+                add_error_row('full name', start, ws)
                 return None
             for elem in tmp:
                 if not validators.is_valid_name(str(elem)):
                     print('\'{0}\''.format(tmp))
                     print('full name check 3: ')
-                    add_error_row(start, ws)
+                    add_error_row('full name', start, ws)
                     tmp = False
                     break
             if not tmp:
                 return None
             result['last_name'] = tmp[0]
             result['first_name'] = tmp[1]
-            # TODO: normal reaction on No Patconymic
+            # TODO: normal reaction on No Patronymic
             if len(tmp) == 3:
                 result['patronymic_name'] = tmp[2] 
             elif len(tmp) == 2:
@@ -144,7 +145,7 @@ def get_line_by_schema(start, input_format, ws, vk_api):
             if  not validators.is_valid_name(str(tmp)) and not (c == 'p' and not tmp):
                 print('\'{0}\''.format(tmp))
                 print('name check 1: ')
-                add_error_row(start, ws)
+                add_error_row('first/last/patronymic name', start, ws)
                 return None
             elif c == 'p' and not tmp:
                 result['patronymic_name'] = ''
@@ -161,7 +162,7 @@ def get_line_by_schema(start, input_format, ws, vk_api):
             if not validators.is_valid_id_url(str(tmp)):
                 print('\'{0}\''.format(tmp))
                 print('vk id check 1: ')
-                add_error_row(start, ws)
+                add_error_row('vk id', start, ws)
                 return None
             if tmp[:7] == 'http://':
                 tmp = tmp[7:]
@@ -175,21 +176,31 @@ def get_line_by_schema(start, input_format, ws, vk_api):
                 tmp = tmp[2:]
             if tmp[-1] == '/':
                 tmp = tmp[:-1]
-            try:
-                tmp = vk_api.users.get(user_ids=tmp)
-                #print(str(tmp))
-                result['account_id'] = tmp[0]['uid']
-            except BaseException as e:
-                print('{0}'.format(str(e)))
-                print('\'{0}\''.format(tmp))
-                print('vk id check 2: ')
-                add_error_row(start, ws)
-                return None
+            flag = True
+            while flag:
+                try:
+                    tmp = vk_api.users.get(user_ids=tmp)
+                    #print(str(tmp))
+                    result['account_id'] = tmp[0]['uid']
+                except BaseException as e:
+                    print('{0}\n'.format(e.__class__.__name__))
+                    if not isinstance(e, ReadTimeout):
+                        flag = False
+                        print('{0}\n'.format(vars(e)))
+                        print('{0}'.format(str(e)))
+                        print('\'{0}\''.format(tmp))
+                        print('vk id check 2: ')
+                        add_error_row('vk id', start, ws)
+                        return None
+                    else:
+                        print('Time out. Trying again...\n\n')
+                        continue
+                flag = False
         elif c == 'g':
             if not validators.is_valid_group(str(tmp)) and not group_cache:
                 print('\'{0}\''.format(tmp))
                 print('group check 1: ')
-                add_error_row(start, ws)
+                add_error_row('group number', start, ws)
                 return None
             elif group_cache:
                 tmp = group_cache
@@ -201,7 +212,7 @@ def get_line_by_schema(start, input_format, ws, vk_api):
                 add_todo_row('phone number', start, ws)
                 #print('\'{0}\''.format(tmp))
                 #print('telephone check 1: ')
-                #add_error_row(start, ws)
+                #add_error_row('phone number', start, ws)
                 #return None
             result['phone_number'] = tmp
         elif c == 'e':
@@ -215,7 +226,7 @@ def get_line_by_schema(start, input_format, ws, vk_api):
                 add_todo_row('phone number', start, ws)
                 #print('\'{0}\''.format(tmp))
                 #print('email check 1: ')
-                #add_error_row(start, ws)
+                #add_error_row('email', start, ws)
                 #return None
             result['email'] = tmp
         else:
