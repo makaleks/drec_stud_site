@@ -121,8 +121,8 @@ class UserChangeForm(forms.ModelForm):
 class UserAdmin(BaseUserAdmin, VersionAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
-    list_display = ('last_name', 'first_name', 'patronymic_name', 'group_number', 'is_superuser')
-    list_filter = ('group_number', 'is_superuser')
+    list_display = ('last_name', 'first_name', 'patronymic_name', 'group_number', 'is_staff')
+    list_filter = ('is_staff', 'group_number')
     fieldsets = (
         # Uncomment to enable #passwordAuth
         #(None, {'fields': ('phone_number', 'password')}),
