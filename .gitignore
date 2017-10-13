@@ -1,6 +1,7 @@
 *.pyc
 *.sw?
 *~
+.*
 !.gitignore
 media
 env
