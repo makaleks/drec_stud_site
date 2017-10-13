@@ -28,3 +28,14 @@ django-reversion==2.0.10
 # BBCode
 django-precise-bbcode==1.2.8
 
+# xlsx & csv terminal viewer
+x-x==0.9
+
+# xlsx reader
+openpyxl==2.4.8
+
+# Vk API (get user id by short link)
+vk==2.0.2
+
+# Show progress bar in scripts
+progressbar2==3.34.3

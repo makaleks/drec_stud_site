@@ -3,6 +3,7 @@
 *~
 .*
 !.gitignore
+*.xlsx
 media
 env
 collected_static
