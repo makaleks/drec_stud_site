@@ -11,7 +11,7 @@ import progressbar
 import datetime
 
 _todo_str = 'user_todo_{0}.csv'.format(datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S'))
-_err_str  = 'user_errors.scv'
+_err_str  = 'user_errors.csv'
 
 from src.utils import validators
 

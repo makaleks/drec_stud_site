@@ -4,6 +4,8 @@
 .*
 !.gitignore
 *.xlsx
+*.csv
+users_parsed.txt
 media
 env
 collected_static
