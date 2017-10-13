@@ -142,7 +142,6 @@ class UserAdmin(BaseUserAdmin, VersionAdmin):
         ),
     )
     search_fields = ('last_name', 'group_number', 'phone_number', 'account_id', 'first_name', 'patronymic_name', 'email',)
-    ordering = ('last_name', 'first_name', 'is_staff')
     filter_horizontal = ()
     def save_model(self, request, obj, form, change):
         if change:
