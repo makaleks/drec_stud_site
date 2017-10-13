@@ -143,6 +143,7 @@ class UserAdmin(BaseUserAdmin, VersionAdmin):
     )
     search_fields = ('last_name', 'group_number', 'phone_number', 'account_id', 'first_name', 'patronymic_name', 'email',)
     filter_horizontal = ()
+    ordering = ['is_superuser', 'is_staff', 'group_number', 'last_name', 'first_name', 'patronymic_name']
     def save_model(self, request, obj, form, change):
         if change:
             fields = [{field: str(getattr(obj, field))} for field in form.changed_data]
