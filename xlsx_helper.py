@@ -202,7 +202,7 @@ def get_line_by_schema(start, input_format, ws, vk_api):
                 print('group check 1: ')
                 add_error_row('group number', start, ws)
                 return None
-            elif group_cache:
+            elif not validators.is_valid_group(str(tmp)):
                 tmp = group_cache
             group_cache = tmp
             result['group_number'] = tmp

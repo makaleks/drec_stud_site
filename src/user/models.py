@@ -53,5 +53,6 @@ class User(models.Model):
     def __str__(self):
         return '{0} (id={1})'.format(self.get_full_name(), self.id)
     class Meta:
+        ordering            = ['is_superuser', 'is_staff', 'group_number', 'last_name']
         verbose_name        = 'Пользователя'
         verbose_name_plural = 'Пользователи'
