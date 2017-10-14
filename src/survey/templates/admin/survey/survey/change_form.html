@@ -327,6 +327,39 @@
             form.onsubmit = function() {
                 form['structure'].value = editor.text;
             };
+            var rewrite_allowed = form['allow_rewrite'].checked;
+            var f_anonymous = function() {
+                if (form['is_anonymous'].checked == true) {
+                    form['allow_rewrite'].checked = false;
+                    form['allow_rewrite'].disabled = true;
+                }
+                else {
+                    form['allow_rewrite'].checked = rewrite_allowed;
+                    form['allow_rewrite'].removeAttribute('disabled');
+                }
+            }
+            var f_rewrite = function() {
+                rewrite_allowed = form['allow_rewrite'].checked;
+            }
+
+            if (form['allow_rewrite'].addEventListener) {
+                form['allow_rewrite'].addEventListener('click', f_rewrite, false);
+            }
+            else if (form['allow_rewrite'].attachEvent) {
+                form['allow_rewrite'].attachEvent('onclick', f_rewrite);
+            }
+            else {
+                form['allow_rewrite']['onclick'] = f_rewrite;
+            }
+            if (form['is_anonymous'].addEventListener) {
+                form['is_anonymous'].addEventListener('click', f_anonymous, false);
+            }
+            else if (form['is_anonymous'].attachEvent) {
+                form['is_anonymous'].attachEvent('onclick', f_anonymous);
+            }
+            else {
+                form['is_anonymous']['onclick'] = f_anonymous;
+            }
         }
     </script>
 <!-- END CUSTOM -->

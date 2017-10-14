@@ -1,7 +1,7 @@
 # coding: utf-8
 from django.db import models
+from django.utils import timezone
 from precise_bbcode.fields import BBCodeTextField
-import datetime
 
 # Create your models here.
 
@@ -17,7 +17,7 @@ class News(models.Model):
     def get_absolute_url(self):
         return '/?news={}'.format(self.id)
     def __str__(self):
-        return '{0} (created {1})'.format(self.title, self.created.strftime('%Y-%m-%d %H:%M:%S') if self.created else datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+        return '{0} (created {1})'.format(self.title, self.created.strftime('%Y-%m-%d %H:%M:%S') if self.created else timezone.now().strftime('%Y-%m-%d %H:%M:%S'))
     class Meta:
         verbose_name        = 'Новость'
         verbose_name_plural = 'Новости'

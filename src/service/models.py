@@ -6,7 +6,9 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.validators import MinValueValidator, FileExtensionValidator
+from django.utils import timezone
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 from math import gcd
 import datetime
 import types
@@ -170,7 +172,7 @@ class Service(models.Model):
             items[item.name] = item.get_available_time()
         weekdays = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье']
         # timedelta is available for datetime only
-        now = datetime.datetime.now()
+        now = timezone.now()
         # start generating result
         result_lst = []
         for i in range(self.days_to_show):
@@ -420,7 +422,7 @@ class Item(models.Model):
     def get_available_time(self):
 
         result_time_list = []
-        dtime = datetime.datetime.now()
+        dtime = timezone.now()
         today = datetime.date.today()
         for i in range(self.service.days_to_show):
             day = today + datetime.timedelta(days = i)

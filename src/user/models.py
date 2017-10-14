@@ -22,10 +22,10 @@ class User(models.Model):
     avatar_url      = models.URLField(null = True, blank = True)
     # Two 'blank' (unrequired) values can`t be unique
     email           = models.CharField(default = '', max_length = 64, blank = True, null = False, unique = False, verbose_name = 'Почта')
-    USERNAME_FIELD  = 'phone_number'
+    USERNAME_FIELD  = 'account_id'
     EMAIL_FIELD     = 'email'
     # USERNAME_FIELD and password are always required
-    REQUIRED_FIELDS = ['last_name', 'first_name', 'patronymic_name', 'group_number', 'account_id', 'email']
+    REQUIRED_FIELDS = ['last_name', 'first_name', 'patronymic_name', 'group_number', 'phone_number', 'email']
     is_superuser    = models.BooleanField(default = False, verbose_name = 'Разработчик')
     is_staff        = models.BooleanField(default = False, verbose_name = 'Администратор')
     is_active       = models.BooleanField(default = True)

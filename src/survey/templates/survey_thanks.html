@@ -5,16 +5,18 @@
     <div>
         {% if finished %}
             Опрос уже окончен! Новые ответы не принимаются...
-        {% else if started %}
-            {% if not rewrite %}
+        {% elif started %}
+            {% if status == 'created' %}
                 Ответ записан!<br />Спасибо за участие, {{ user.get_short_name }}
-            {% else %}
+            {% elif status == 'edited' %}
                 Ответ перезаписан!
+            {% else %}
+                Нельзя отправить ещё один ответ!
             {% endif %}
         {% else %}
             Этот опрос ещё не начался! И как только Вы сюда попали...
         {% endif %}
-        <br />Сейчас мы вернемся к списку опросов</div>
+        <br />Переход к списку опросов...</div>
     <div id='timer'></div>
 </section>
 {% endblock %}
