@@ -1,0 +1,1 @@
+﻿CKEDITOR.plugins.setLang("pastetext","ro",{button:"Adaugă ca text simplu (Plain Text)",pasteNotification:"Your browser does not allow you to paste plain text this way. Press %1 to paste."});

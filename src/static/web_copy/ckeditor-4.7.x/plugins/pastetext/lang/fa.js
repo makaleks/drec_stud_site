@@ -1,0 +1,1 @@
+﻿CKEDITOR.plugins.setLang("pastetext","fa",{button:"چسباندن به عنوان متن ساده",pasteNotification:"Your browser does not allow you to paste plain text this way. Press %1 to paste."});

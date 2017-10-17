@@ -44,12 +44,10 @@
 	empty-cells: show;
 }
 
-.table_main td[rowspan='22'] {
-    height: 84px;
-}
-
-.table_main td {
-    min-width: 100px;
+.table_main td,
+.table_main th {
+    min-width: 102px;
+    overflow-x: hidden;
     position: relative;
 }
 
@@ -93,9 +91,12 @@
 .table_main span,
 .table_main label {
     position: absolute;
-    top: 1px;
-    bottom: 1px;
-    width: 99%;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    height: 100%;
+    width: 100%;
     overflow: hidden;
     margin: 0 auto;
 }
@@ -104,11 +105,20 @@
     opacity: 0;
     background: #FF9800;
     color: #FFF;
-    font-size: 2em;
+    font-size: 2rem;
     transition: opacity .4s linear;
     text-align: center;
     vertical-align: middle;
-    font-size: 2rem;
+}
+
+.table_main span>div {
+    position: absolute;
+    margin: auto 0;
+    height: 2rem;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
 }
 
 .table_main input:checked~span {

@@ -14,18 +14,20 @@ class User(models.Model):
     first_name      = models.CharField(max_length = 32, blank = False, null = False, verbose_name = 'Имя')
     last_name       = models.CharField(max_length = 32, blank = False, null = False, verbose_name = 'Фамилия')
     patronymic_name = models.CharField(max_length = 32, blank = False, null = False, verbose_name = 'Отчество')
-    phone_number    = models.CharField(max_length = 20, blank = False, null = False, unique = True, verbose_name = 'Контактный номер')
+    # Two 'blank' (unrequired) values can`t be unique
+    phone_number    = models.CharField(max_length = 20, blank = False, null = False, unique = False, verbose_name = 'Контактный номер')
     account_id      = models.CharField(max_length = 64, blank = False, null = False, unique = True, verbose_name = 'Аккаунт')
-    group_number    = models.IntegerField(blank = False, null = False, verbose_name = 'Номер группы')
+    group_number    = models.CharField(max_length = 4, blank = False, null = False, verbose_name = 'Номер группы')
+    account         = models.PositiveSmallIntegerField(default = 0, blank = True, null = False, verbose_name = 'Счёт')
     avatar_url      = models.URLField(null = True, blank = True)
     # Two 'blank' (unrequired) values can`t be unique
-    email           = models.CharField(max_length = 64, blank = True, null = False, unique = False, verbose_name = 'Почта')
-    USERNAME_FIELD  = 'phone_number'
+    email           = models.CharField(default = '', max_length = 64, blank = True, null = False, unique = False, verbose_name = 'Почта')
+    USERNAME_FIELD  = 'account_id'
     EMAIL_FIELD     = 'email'
     # USERNAME_FIELD and password are always required
-    REQUIRED_FIELDS = ['last_name', 'first_name', 'patronymic_name', 'group_number', 'account_id', 'email']
-    is_superuser    = models.BooleanField(default = False)
-    is_staff        = models.BooleanField(default = False)
+    REQUIRED_FIELDS = ['last_name', 'first_name', 'patronymic_name', 'group_number', 'phone_number', 'email']
+    is_superuser    = models.BooleanField(default = False, verbose_name = 'Разработчик')
+    is_staff        = models.BooleanField(default = False, verbose_name = 'Администратор')
     is_active       = models.BooleanField(default = True)
     # uid is the info from plastic card
     # TODO: in production make this field REQUIRED
@@ -49,7 +51,8 @@ class User(models.Model):
     def has_module_perms(self, app_label):
         return True
     def __str__(self):
-        return self.get_full_name()
+        return '{0} (id={1})'.format(self.get_full_name(), self.id)
     class Meta:
+        ordering            = ['is_superuser', 'is_staff', 'group_number', 'last_name']
         verbose_name        = 'Пользователя'
         verbose_name_plural = 'Пользователи'

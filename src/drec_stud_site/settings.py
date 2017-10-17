@@ -21,12 +21,6 @@ PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(_
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '!qz1m9e=9-tv&n)4&q98ms!%7694qf*iz58q2^4oeuly+-h_9s'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
 # TODO: fix for production
 ALLOWED_HOSTS = ['*']
 
@@ -42,13 +36,17 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'markdown_deux',
     'social_django',
+    'reversion',
+    'precise_bbcode',
     # disable to save media on delete/update
     'django_cleanup',
+    'adminsortable2',
     'utils',
     'user',
     'news',
     'note',
     'service',
+    'survey',
 ]
 
 MIDDLEWARE = [
@@ -150,6 +148,12 @@ SOCIAL_AUTH_VK_OAUTH2_KEY = module.SOCIAL_AUTH_VK_OAUTH2_KEY
 SOCIAL_AUTH_VK_OAUTH2_SECRET = module.SOCIAL_AUTH_VK_OAUTH2_SECRET
 SOCIAL_AUTH_VK_OAUTH2_EXTRA_DATA = ['photo_100']
 
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = module.DEBUG
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = module.SECRET_KEY
+
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.vk.VKOAuth2',
     # Uncomment to return #passwordAuth
@@ -187,3 +191,64 @@ SOCIAL_AUTH_SANITIZE_REDIRECTS = False
 # So social-auth will not set redirect-url with post
 # needs in nginx server settings: 'proxy_set_header Host $host;'
 USE_X_FORWARDED_HOST = True
+
+LOGGING = {
+    # The only possible value, I know it`s strange
+    'version': 1,
+    # Set this True on your own risk
+    'disable_existing_loggers': False,
+    # Targets: user actions info
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'handlers': {
+        'file_events': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'formatter': 'user_formatter',
+            'filename': os.path.join(PROJECT_ROOT, 'logs/all_events.log'),
+        },
+        'file_django': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            #'formatter': 'user_formatter',
+            'filename': os.path.join(PROJECT_ROOT, 'logs/django_events.log'),
+            'formatter': 'verbose',
+        },
+        'console': {
+            'level': 'INFO',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'formatters': {
+        'user_formatter': {
+            # never set default 'user'
+            'format': '%(user)s %(asctime)s - %(message)s',
+            # default formatter includes milliseconds
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        },
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'loggers': {
+        'site_events': {
+            'handlers': ['file_events'],
+            'level': 'INFO',
+            # don`t pass to handlers of higher level (default: True)
+            'propagate': False,
+        },
+        'django': {
+            'handlers': ['console', 'file_django'],
+            'propagete': True,
+        },
+    },
+}

@@ -1,0 +1,8 @@
+﻿/*
+ Copyright (c) 2003-2017, CKSource - Frederico Knabben. All rights reserved.
+ For licensing, see LICENSE.md or http://ckeditor.com/license
+*/
+(function(){function l(a,c,f){var d=CKEDITOR.cleanWord;d?f():(a=CKEDITOR.getUrl(a.config.pasteFromWordCleanupFile||c+"filter/default.js"),CKEDITOR.scriptLoader.load(a,f,null,!0));return!d}CKEDITOR.plugins.add("pastefromword",{requires:"clipboard",lang:"af,ar,az,bg,bn,bs,ca,cs,cy,da,de,de-ch,el,en,en-au,en-ca,en-gb,eo,es,es-mx,et,eu,fa,fi,fo,fr,fr-ca,gl,gu,he,hi,hr,hu,id,is,it,ja,ka,km,ko,ku,lt,lv,mk,mn,ms,nb,nl,no,oc,pl,pt,pt-br,ro,ru,si,sk,sl,sq,sr,sr-latn,sv,th,tr,tt,ug,uk,vi,zh,zh-cn",icons:"pastefromword,pastefromword-rtl",
+hidpi:!0,init:function(a){var c=0,f=this.path;a.addCommand("pastefromword",{canUndo:!1,async:!0,exec:function(a,b){c=1;a.execCommand("paste",{type:"html",notification:b&&"undefined"!==typeof b.notification?b.notification:!0})}});a.ui.addButton&&a.ui.addButton("PasteFromWord",{label:a.lang.pastefromword.toolbar,command:"pastefromword",toolbar:"clipboard,50"});a.on("paste",function(d){var b=d.data,g=(CKEDITOR.plugins.clipboard.isCustomDataTypesSupported?b.dataTransfer.getData("text/html",!0):null)||
+b.dataValue,e={dataValue:g},h=/(class=\"?Mso|style=(?:\"|\')[^\"]*?\bmso\-|w:WordDocument|<o:\w+>|<\/font>)/,h=/<meta\s*name=(?:\"|\')?generator(?:\"|\')?\s*content=(?:\"|\')?microsoft/gi.test(g)||h.test(g);if(g&&(c||h)&&(!1!==a.fire("pasteFromWord",e)||c)){b.dontFilter=!0;var k=l(a,f,function(){if(k)a.fire("paste",b);else if(!a.config.pasteFromWordPromptCleanup||c||confirm(a.lang.pastefromword.confirmCleanup))e.dataValue=CKEDITOR.cleanWord(e.dataValue,a),a.fire("afterPasteFromWord",e),b.dataValue=
+e.dataValue;c=0});k&&d.cancel()}},null,null,3)}})})();

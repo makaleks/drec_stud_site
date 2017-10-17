@@ -6,16 +6,16 @@
             {% if post.image %}
                 <img src='{{ post.image.url }}' class='card-img' />
             {% endif %}
-            <h2>{{ title }}</h2>
+            <h2>{{ post.title }}</h2>
             {% if post.text %}
                 <div>
                     <!--!!!! Важно: необходим уникальный id внутри блока для input и label -->
                     <input id="show_{{ post.id }}" type="checkbox" class="hidden shownews" />
-                    <p class="card-maintext cutted">{{ post.text_preview }} <label class="link-underline" for="show_{{ post.id }}"><a class="lightblue">&nbsp;Читать&nbsp;далее&nbsp;</a></label></p>
-                    <p class="card-maintext full">{{ post.text }} <label class="link-underline" for="show_{{ post.id }}"><a class="lightblue">&nbsp;Скрыть&nbsp;</a></label></p>
+                    <p class="card-maintext cutted">{{ post.text_preview.rendered }} <label class="link-underline" for="show_{{ post.id }}"><a class="lightblue">&nbsp;Читать&nbsp;далее&nbsp;</a></label></p>
+                    <p class="card-maintext full">{{ post.text.rendered }} <label class="link-underline" for="show_{{ post.id }}"><a class="lightblue">&nbsp;Скрыть&nbsp;</a></label></p>
                 </div>
             {% endif %}
-            <p class="card-text"><small class="text-muted">Last updated {{ post.edited }} <a href='{{ post.get_absolute_url }}'>Link</a></small></p>
+            <p class="card-text"><small class="text-muted">Обновлено {{ post.edited }} <a href='{{ post.get_absolute_url }}'>Ссылка</a></small></p>
         </section>
     {% endfor %}
     {% if render_archive %}

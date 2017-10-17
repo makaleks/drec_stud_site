@@ -1,0 +1,1 @@
+﻿CKEDITOR.plugins.setLang("pastetext","sk",{button:"Vložiť ako čistý text",pasteNotification:"Your browser does not allow you to paste plain text this way. Press %1 to paste."});

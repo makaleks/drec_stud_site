@@ -1,8 +1,13 @@
 *.pyc
 *.sw?
 *~
+.*
 !.gitignore
+*.xlsx
+*.csv
+*users_parsed.txt
 media
 env
 collected_static
 setting_additions.py
+logs

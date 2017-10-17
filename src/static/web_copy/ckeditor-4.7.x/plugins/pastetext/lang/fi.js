@@ -1,0 +1,1 @@
+﻿CKEDITOR.plugins.setLang("pastetext","fi",{button:"Liitä tekstinä",pasteNotification:"Your browser does not allow you to paste plain text this way. Press %1 to paste."});

@@ -22,18 +22,22 @@ def is_valid_name(s):
     _name_valid = re.compile(r"^([А-Я|Ё]([а-я|ё]+)([-| ]?))+$")
     return _check_valid(_name_valid, s = s)
 
-# +79000000000
+# +7-(900)-0(0)0-00-00
 def is_valid_phone(s):
-    _phone_valid = re.compile(r"^\+?[0-9]+$")
+    _phone_valid = re.compile(r"^\+?[0-9](([ -]?([0-9]+|(\([0-9]+\))))+)$")
     return _check_valid(_phone_valid, s = s)
 
 # user.web-admin@phystech.edu
 def is_valid_email(s):
-    _email_valid = re.compile(r"^[0-9a-z]+([-.]?[0-9a-z]+)*@[0-9a-z]+\.[a-z]+$")
+    _email_valid = re.compile(r"^[0-9a-zA-Z_]+([-.]?[0-9a-zA-Z_]+)*@[0-9a-z]+\.[a-z]+$")
     return _check_valid(_email_valid, s = s)
 
 # DREC-only groups
 def is_valid_group(n):
-    _group_valid = re.compile(r"^[1-9]1[1-9]$")
+    _group_valid = re.compile(r"^[1-9]1[1-9][а-я]?$")
     return _check_valid(_group_valid, s = str(n))
 
+# vk id
+def is_valid_id_url(s):
+    _id_valid_url = re.compile(r"^((https?://)?(m.)?vk.com/)?((((i|I)d)?[0-9]+)|([0-9a-zA-Z_\.]+))$")
+    return _check_valid(_id_valid_url, s = s)

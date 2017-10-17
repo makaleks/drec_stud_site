@@ -1,5 +1,7 @@
 from django import template
+from django.utils import timezone
 import datetime
+import re
 
 register = template.Library()
 
@@ -33,7 +35,7 @@ def util_add_user_info(lst, user):
 def util_is_started(time_start, service):
     service_td = datetime.datetime.combine(datetime.date.min, service.time_after_now) - datetime.datetime.min
     current_td = ((datetime.datetime.combine(
-            datetime.date.min, datetime.datetime.now().time()) 
+            datetime.date.min, timezone.now().time()) 
             - datetime.datetime.min) 
         - (datetime.datetime.combine(datetime.date.min, time_start)
             - datetime.datetime.min))
@@ -43,3 +45,8 @@ def util_is_started(time_start, service):
         return 'ended'
     else:
         return 'ok'
+
+@register.filter
+def util_contains_string(url, s):
+    r = re.compile(s)
+    return bool(r.match(url))

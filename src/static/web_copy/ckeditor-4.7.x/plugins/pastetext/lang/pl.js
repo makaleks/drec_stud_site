@@ -1,0 +1,1 @@
+﻿CKEDITOR.plugins.setLang("pastetext","pl",{button:"Wklej jako czysty tekst",pasteNotification:"Twoja przeglądarka nie pozwala na wklejanie treści w ten sposób. Naciśnij %1 by wkleić tekst."});

@@ -1,10 +1,5 @@
 {% extends 'core/base.html' %}
 {% load utils_extra_filters %}
-{% block head_extras %}
-<link type='text/css' rel='stylesheet' href='https://unpkg.com/tippy.js@1.2.0/dist/tippy.css' />
-<!---->
-{% endblock %}
-<!---->
 {% block content %}
 <section class='card'>
     <h2 class='lightblue'>Заказ стиральной машины</h2>
@@ -17,10 +12,52 @@
             <span class='preview ended'></span> - Этот интервал уже нельзя выбирать<br />
             <span class='preview selected'></span> - Этот интервал был кем-то выбран<br />
             <span class='preview choisen'></span> - Этот интервал был выбран вами<br />
-            {# Uncomment to enable STARTED color: #}
-            {#<span class='preview started'></span> - Этот интервал можно выбирать, но он уже идет и прошло меньше половины(?)#}
+            <span class='preview started'></span> - Этот интервал можно выбирать, но он уже идет и прошло меньше половины(?)
         </p>
         <p><b>Чтоб выбрать или отменить выбор интервала нажми на него</b></p>
+    </div>
+</section>
+<section class='card'>
+    <h2 class='lightblue'>Объявления</h2>
+    <div>
+        <p class='card-maintext'>
+            <ul>
+                <li>Обнаружен радужный носок с понями 2 числа на полу в 19:37 за пропажей к охране(или ответственным за стиралку)</li>
+                <li>Временно недоступна 5 стиралка, к 5 числу отремонтируют</li>
+            </ul>
+        </p>
+    </div>
+</section>
+<section class='card'>
+    <h2 class='lightblue'>Правила пользования стиральными машинами</h2>
+    <div>
+        <p class='card-maintext'>
+            <ol>
+                <li>Студентам, пользующимся стиралкой (стиральной машиной), запрещается:
+                    <ul>
+                        <li>использовать стиральную машинку, на которую не были записаны;</li>
+                        <li>оставлять неубранным рассыпанный стиральный порошок;</li>
+                        <li>оставлять пустые коробки, пакеты из-под порошка и т.д.;</li>
+                        <li>использовать при стирке вещества, не предназначенные для автоматических стиральных машин;</li>
+                        <li>оставлять дверь стиралки открытой.</li>
+                    </ul>
+                </li>
+                <li>Студенты, пользующиеся стиралкой, обязаны соблюдать правила эксплуатации машинками:
+                    <ul>
+                        <li>Не загружать в машинку более 6 кг. белья</li>
+                        <li>Использовать стиральную машинку только с тем номером, на которую были записаны</li>
+                        <li>Не открывать дверцы до разблокировки</li>
+                        <li>Избегать попадания мелких деталей (монеты, ключи и т.д.) в барабан машинки</li>
+                        <li>Стирать бюстгалтеры и вещи с мелкими твердыми предметами в специальных мешках для стирки</li>
+                        <li>Не оставлять белье в машинке после стирки</li>
+                        <li>Не смешивать белые и цветные вещи</li>
+                        <li>Оставлять после стирки дверцу машинки открытой</li>
+                        <li>Забрать высохшие вещи из стиралки в течение суток после окончания своей записи (в этом случае для получения доступа в стиралку следует обратиться к ответственному)</li>
+                        <li>Оперативно информировать ответственного о выявленных неисправностях машинки</li>
+                    </ul>
+                </li>
+            </ol>
+        </p>
     </div>
 </section>
 <form action='' method='post' id='washing'>
@@ -30,18 +67,19 @@
             {% for day in time_list|util_add_user_info:user %}
                 <div class='card'>
                     <h2>{{ day.day }}</h2>
-                    <table class='table_aside'>
-                        <tr>
-                            <th>Время</th>
-                        </tr>
-                        {% for t in day.time_layout %}
-                            <tr>{#|time:'H:M'#}
-                                <td>{{ t.time_start }}</td>
+                    <div>
+                        <table class='table_aside'>
+                            <tr>
+                                <th>Время</th>
                             </tr>
-                        {% endfor %}
-                    </table>
-                    <table class='table_main'>
-                        <tr>
+                            {% for t in day.time_layout %}
+                                <tr>
+                                    <td>{{ t.time_start }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                        <table class='table_main'>
+                            <tr>
 <!-- break trailing spaces for nicer appeal -->
 {% for machine,m_value in day.items.items %}
     <td>
@@ -69,8 +107,8 @@
                 {% else %}
                 <td rowspan='{{ m_value.rowspan }}' {% if forloop.parentloop.parentloop.first and cell.time_start|util_is_started:service  == 'started' %}{# Uncomment to enable STARTED color: #}{#class='started'#}{% endif %}>
                         <label>
-                            <input type='checkbox' name='{{ machine }}&&{{ cell.time_start }}&&{{ cell.time_end }}' data-price='{{ item_info.price|util_by_key:machine }}' class='hidden' />
-                            <span>V</span>
+                            <input type='checkbox' name='{{ machine }}&&{{ cell.time_start }}&&{{ cell.time_end }}' data-price='{{ item_info.price|util_by_key:machine }}' class='hidden'/>
+                            <span><div>V</div></span>
                         </label>
                     </td>
                 {% endif %}
@@ -89,8 +127,9 @@
     </td>
 {% endfor %}
 <!-- break end -->
-                    </tr>
-                    </table>
+                            </tr>
+                        </table>
+                    </div>
                 </div>
             {% endfor %}
         {% endwith %}
@@ -107,9 +146,7 @@
     </div>
 </form>
 {% endblock %}
-<!---->
 {% block body_extras %}
-<script src='https://unpkg.com/tippy.js@1.2.0/dist/tippy.min.js'></script>
 <script>
     window.addEventListener('load', function() {
         var preview = document.querySelector('#pretext'),
@@ -141,7 +178,7 @@
                 if (addwash > 0) {
                     preview.innerHTML = ((addwash > 0) ? ('Заказано: ' + addwash) : '') + ' Итого: ' + currentprice + 'руб. <a href="#finaltext">К оплате</a>';
                     document.querySelector('#preresult').classList.remove('hidden');
-                    finalview.innerHTML = 'Вы выбрали ' + addwash + ' интервалов<br />Итого ' + ((currentprice > 0) ? ('нужно оплатить ' + currentprice) : ('вам вернут ' + (-currentprice))) + ' руб.';
+                    finalview.innerHTML = 'Выбрано интервалов: ' + addwash + '<br />Итого ' + ((currentprice >= 0) ? ('нужно оплатить: ' + currentprice) : ('вам вернут: ' + (-currentprice))) + ' руб.';
                 } else {
                     finalview.innerHTML = 'Вы ничего не выбрали';
                     document.querySelector('#preresult').classList.add('hidden');
@@ -169,22 +206,21 @@
         uservkid.classList.add('hidden');
         useremail.classList.add('hidden');
         username.innerText = name;
-        if (number !== null) {
+        if (number !== nlil) {
             usernumber.innerText = 'Позвонить: ' + number;
             usernumber.href = 'tel:' + number;
             usernumber.classList.remove('hidden');
         }
-        if (vkid !== null) {
+        if (vkid !== nlil) {
             uservkid.href = 'https://vk.me/id' + vkid;
             uservkid.classList.remove('hidden');
         }
-        if (email !== null) {
+        if (email !== nlil) {
             useremail.innerText = 'Написать: ' + email;
             useremail.href = 'mailto:' + email;
             useremail.classList.remove('hidden');
         }
     };
-    tippy('.userinfo');
 
 </script>
 {% endblock %}

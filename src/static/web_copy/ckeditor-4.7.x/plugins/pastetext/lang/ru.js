@@ -1,0 +1,1 @@
+﻿CKEDITOR.plugins.setLang("pastetext","ru",{button:"Вставить только текст",pasteNotification:"Ваш браузер не поддерживает данный метод вставки. Для вставки нажмите %1"});

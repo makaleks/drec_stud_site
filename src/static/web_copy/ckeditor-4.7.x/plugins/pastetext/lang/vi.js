@@ -1,0 +1,1 @@
+﻿CKEDITOR.plugins.setLang("pastetext","vi",{button:"Dán theo định dạng văn bản thuần",pasteNotification:"Your browser does not allow you to paste plain text this way. Press %1 to paste."});

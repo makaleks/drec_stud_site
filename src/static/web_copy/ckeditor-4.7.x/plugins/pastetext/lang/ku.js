@@ -1,0 +1,1 @@
+﻿CKEDITOR.plugins.setLang("pastetext","ku",{button:"لکاندنی وەك دەقی ڕوون",pasteNotification:"Your browser does not allow you to paste plain text this way. Press %1 to paste."});

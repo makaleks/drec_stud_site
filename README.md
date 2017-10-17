@@ -15,6 +15,9 @@ More or less fresh preview can be found at [drec-stud.tk](http://drec-stud.tk).
 
 ### Development
 
+This repository contains copies of some open libraries to be independent from CDN and send these files faster inside local network:
+* normalize.css@7.0.0
+
 1. Clone the repository:
 ```bash
 git clone https://github.com/makaleks/drec_stud_site
@@ -106,3 +109,13 @@ manage.py collectstatic
 gunicorn --reload -b localhost:8080 --pythonpath src drec_stud_site.wsgi:application
 ```
 Now, you can view [the site](localhost) at localhost and play with models in [admin panel](localhost/admin) at localhost/admin. Moreover, you are able to access static files in 'collected static' and 'media' using links 'localhost/static/FILENAME' and 'localhost/media/FILENAME'. Good luck!
+
+### Notes
+* Don't forget to run command for initial ordering - it is required, when you add ordering to already-existing objects.
+```bash
+./manage.py reorder note.Note
+```
+* Don't forget to run command for initial revisions - it is required, when you add revisions to already-existing objects.
+```bash
+./manage.py createinitialrevisions
+```

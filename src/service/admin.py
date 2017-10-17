@@ -1,11 +1,11 @@
 from django.contrib import admin
 from .models import WorkingTime, WorkingTimeException, Service, Item, Order
-from django.contrib.contenttypes.admin import *
+from django.contrib.contenttypes.admin import GenericStackedInline
 from django import forms
 
 # Register your models here.
 
-class ItemInline(admin.StackedInline):
+class ItemInline(admin.TabularInline):
     model = Item
     extra = 0
     verbose_name = 'Элемент'
@@ -46,7 +46,7 @@ class ServiceAdmin(admin.ModelAdmin):
 
 @admin.register(Item)
 class ItemAdmin(admin.ModelAdmin):
-    list_display = ('id', 'location', 'is_active', 'created')
+    list_display = ('id', 'name', 'is_active', 'created')
     list_filter = ['location', 'is_active']
     inlines = [WorkingTimeInline, WorkingTimeExceptionInline]
 

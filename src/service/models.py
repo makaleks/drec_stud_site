@@ -6,7 +6,9 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.validators import MinValueValidator, FileExtensionValidator
+from django.utils import timezone
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 from math import gcd
 import datetime
 import types
@@ -170,7 +172,7 @@ class Service(models.Model):
             items[item.name] = item.get_available_time()
         weekdays = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье']
         # timedelta is available for datetime only
-        now = datetime.datetime.now()
+        now = timezone.now()
         # start generating result
         result_lst = []
         for i in range(self.days_to_show):
@@ -235,6 +237,8 @@ class Service(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()
         return super(Service, self).save(*args, **kwargs)
+    def __str__(self):
+        return self.name
     class Meta:
         verbose_name = 'Сервис'
         verbose_name_plural = 'Сервисы'
@@ -418,7 +422,7 @@ class Item(models.Model):
     def get_available_time(self):
 
         result_time_list = []
-        dtime = datetime.datetime.now()
+        dtime = timezone.now()
         today = datetime.date.today()
         for i in range(self.service.days_to_show):
             day = today + datetime.timedelta(days = i)
@@ -500,6 +504,8 @@ class Order(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()
         return super(Order, self).save(*args, **kwargs)
+    def __str__(self):
+        return '{0} ({1} {2}-{3})'.format(self.item.name, self.date_start.strftime('%Y-%m-%d'), self.time_start.strftime('%H:%M:%S'), self.time_end.strftime('%H:%M:%S'))
     class Meta:
         verbose_name = 'Заказ'
         verbose_name_plural = 'Заказы'

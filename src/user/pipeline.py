@@ -2,10 +2,9 @@ from django.contrib.auth import login, get_user_model
 from social_core.backends.vk import VKOAuth2
 from .exceptions import LoginDeniedException
 
-#import logging
-#logging.basicConfig(filename='social_auth.log', level=logging.INFO)
-#log = logging.getLogger(__name__)
-#from django.utils.encoding import force_text
+import datetime
+import logging
+logger = logging.getLogger('site_events')
 
 # uid       - user id in the network
 # response  - server response with user details (depends on provider)
@@ -14,12 +13,14 @@ def load_user (uid, backend, response = {}, **kwargs):
     User = get_user_model()
     user = User.objects.get(account_id = uid)
     if user is None:
+        logger.info('unknown VK user with uid={0} tried to login'.format(uid), extra={'user': 'anonymous'})
         raise LoginDeniedException('This user is unregistered.')
     if isinstance(backend, VKOAuth2):
         url = response['photo_100']
         if not user.avatar_url or user.avatar_url != url:
             user.avatar_url = url
             user.save(update_fields=['avatar_url'])
+    logger.info('logged in from VK', extra={'user': user.get_full_name()})
     return {'user': user}
 
 # crutch?
