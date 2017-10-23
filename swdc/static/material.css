@@ -10,10 +10,18 @@
     text-transform: uppercase;
     vertical-align: middle;
     -webkit-tap-highlight-color: transparent;
+    cursor: pointer;
 }
 .m-btn:hover {
   background-color: #ccc;
 }
+.m-btn.inactive:hover,
+.m-btn.inactive {
+    background-color: #ddd;
+    cursor: default;
+}
+
+
 .card {
     position: relative;
     background: #fff;

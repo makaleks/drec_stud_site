@@ -8,8 +8,12 @@
     display: none;
 }
 
+.shownews:not(:checked)~.full {
+    display: none !important;
+}
+
 .shownews:checked~.cutted>label {
-    display: none;
+    display: none !important;
 }
 
 .shownews:checked~.full {
