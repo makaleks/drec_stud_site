@@ -1,25 +1,45 @@
 {% extends 'core/base.html' %}
+
 {% block content %}
-<section class="card">
-    <img src="../static/img/FRTK.png" class="card-img" />
-    <h2>{{ title }}</h2>
-    <div>
-        <!--!!!! Важно: необходим уникальный id внутри блока для input и label -->
-        <input id="show_{{id}}" type="checkbox" class="hidden shownews" />
-        <p class="card-maintext cutted">{{ cutted text }} <label class="link-underline" for="show_{{id}}"><a class="lightblue">&nbsp;Читать&nbsp;далее&nbsp;</a></label></p>
-        <p class="card-maintext full">{{ full text }} <label class="link-underline" for="show_{{id}}"><a class="lightblue">&nbsp;Скрыть&nbsp;</a></label></p>
-    </div>
-    <small class="text-muted">Обновлено {{ main.time }} <a href='/?news={{id}}'>Ссылка</a></small>
-</section>
-<section class="card">
-    <img src="../static/img/FRTK.png" class="card-img" />
-    <h2>{{ title }}</h2>
-    <div>
-        <!--!!!! Важно: необходим уникальный id внутри блока для input и label -->
-        <input id="show_{{id}}" type="checkbox" class="hidden shownews" />
-        <p class="card-maintext cutted">{{ cutted text }} <label class="link-underline" for="show_{{id}}"><a class="lightblue">&nbsp;Читать&nbsp;далее&nbsp;</a></label></p>
-        <p class="card-maintext full">{{ full text }} <label class="link-underline" for="show_{{id}}"><a class="lightblue">&nbsp;Скрыть&nbsp;</a></label></p>
-    </div>
-    <small class="text-muted">Обновлено {{ main.time }} <a href='/?news={{id}}'>Ссылка</a></small>
-</section>
+        <!-- DEMO CONTENT -->
+        <section class='card'>
+            <img src='../static/img/FRTK.png' class='card-img' />
+            <h2>Заголовок</h2>
+            <div>
+                <!--!!!! Важно: необходим уникальный id внутри блока для input и label -->
+                <input id='show_{{id2}}' type='checkbox' class='hidden shownews' />
+                <p class='card-maintext cutted'>Текстовое превью<label class='link-underline' for='show_{{id2}}'><a class='lightblue'>&nbsp;Читать&nbsp;далее&nbsp;</a></label></p>
+                <p class='card-maintext full'>Куча остального изначально скрытого текста<label class='link-underline' for='show_{{id2}}'><a class='lightblue'>&nbsp;Скрыть&nbsp;</a></label></p>
+            </div>
+            <small class='text-muted'>Обновлено 01.01.1970 в 00:00 <a href='/?news={{id}}'>Ссылка</a></small>
+        </section>
+        <!-- END DEMO -->
+    {% for post in news_list %}
+        <section class='card'>
+            {% if post.image %}
+                <img src='{{ post.image.url }}' class='card-img' />
+            {% endif %}
+            <h2>{{ post.title }}</h2>
+            {% if post.text %}
+                <div>
+                    <!--!!!! Важно: необходим уникальный id внутри блока для input и label -->
+                    <input id='show_{{ post.id }}' type='checkbox' class='hidden shownews' />
+                    <p class='card-maintext cutted'>{{ post.text_preview.rendered }}<label class='link-underline' for='show_{{ post.id }}'><a class='lightblue'>&nbsp;Читать&nbsp;далее&nbsp;</a></label></p>
+                    <p class='card-maintext full'>{{ post.text.rendered }} <label class='link-underline' for='show_{{ post.id }}'><a class='lightblue'>&nbsp;Скрыть&nbsp;</a></label></p>
+                </div>
+                <small class='text-muted'>Обновлено {{ post.edited }} <a href='{{ post.get_absolute_url }}'>Ссылка</a></small>
+        </section>
+    {% endfor %}
+    {% if render_archive %}
+        <section class='card'>
+            
+            <h2><a href='archive'>Архив</a></h2>
+            <div>
+                <a href='archive'>Архив</a>
+                <p>Быстрый переход: <a href='?years=2016'>2016 (предыдущий год)</a>
+            </div>
+            
+        </section>
+    {% endif %}
+
 {% endblock %}

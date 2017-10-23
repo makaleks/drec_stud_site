@@ -1,6 +1,6 @@
 mkdir -p preview
 mkdir -p preview/services
-for FILE in index survey surveys_list note; do
+for FILE in index survey surveys_list note chart; do
     echo $FILE;
     awk -v FILE="$FILE" '
     {

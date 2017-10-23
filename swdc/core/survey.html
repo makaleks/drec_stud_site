@@ -1,11 +1,13 @@
-{% extends 'сore/base.html' %}
+{% extends 'core/base.html' %}
 {% block head_extras %}
 <link type='text/css' rel='stylesheet' href='https://surveyjs.azureedge.net/0.12.23/survey.css' />
 <link type='text/css' rel='stylesheet' href='{{ STATIC_URL }}survey.css' />
 {% endblock %}
 
 {% block content %}
-    <div id="surveyContainer"><div class='card'>Loading, please wait</div></div>
+    <div id="surveyContainer">
+        <div class='card'>Loading, please wait</div>
+    </div>
 {% endblock %}
 
 {% block body_extras %}
@@ -18,11 +20,11 @@
     Survey.defaultStandardCss.row += ' card';
     Survey.defaultStandardCss.footer += ' card';
     Survey.defaultStandardCss.dropdown.root += ' sv_q_select';
-    Survey.defaultStandardCss.window.button += ' btn waves-effect';
-    Survey.defaultStandardCss.matrixdynamic.button += ' btn waves-effect';
-    Survey.defaultStandardCss.navigationButton += ' btn waves-effect';
-    Survey.defaultStandardCss.paneldynamic.button += ' btn waves-effect';
-    Survey.defaultStandardCss.window.header.button += ' btn waves-effect';
+    Survey.defaultStandardCss.window.button += ' btn';
+    Survey.defaultStandardCss.matrixdynamic.button += ' btn';
+    Survey.defaultStandardCss.navigationButton += ' btn';
+    Survey.defaultStandardCss.paneldynamic.button += ' btn';
+    Survey.defaultStandardCss.window.header.button += ' btn';
     
     window.addEventListener('load', function() {
         var surveyJSON = {
@@ -30,158 +32,11 @@
             completedHtml: '<div class=\'card\'>Спасибо, что выполнил(-а), {{ username }}<br />Сейчас мы вернемся к списку опросов</div>',
             pages:[
    {
-      elements:[
-         {
-            type:"text",
-            name:"question1"
-         },
-         {
-            type:"checkbox",
-            name:"question2",
-            choices:[
-               "item1",
-               "item2",
-               "item3"
-            ]
-         },
-         {
-            type:"radiogroup",
-            name:"question3",
-            choices:[
-               "item1",
-               "item2",
-               "item3"
-            ]
-         },
-         {
-            type:"dropdown",
-            name:"question4",
-            choices:[
-               "item1",
-               "item2",
-               "item3"
-            ]
-         },
-         {
-            type:"comment",
-            name:"question5"
-         },
-         {
-            type:"rating",
-            name:"question6"
-         },
-         {
-            type:"boolean",
-            name:"question7"
-         },
-         {
-            type:"file",
-            name:"question8"
-         },
-         {
-            type:"matrix",
-            columns:[
-               "Column 1",
-               "Column 2",
-               "Column 3"
-            ],
-            name:"question9",
-            rows:[
-               "Row 1",
-               "Row 2"
-            ]
-         },
-         {
-            type:"matrixdropdown",
-            choices:[
-               1,
-               2,
-               3,
-               4,
-               5
-            ],
-            columns:[
-               {
-                  name:"Column 1"
-               },
-               {
-                  name:"Column 2"
-               },
-               {
-                  name:"Column 3"
-               }
-            ],
-            name:"question10",
-            rows:[
-               "Row 1",
-               "Row 2"
-            ]
-         },
-         {
-            type:"matrixdynamic",
-            choices:[
-               1,
-               2,
-               3,
-               4,
-               5
-            ],
-            columns:[
-               {
-                  name:"Column 1"
-               },
-               {
-                  name:"Column 2"
-               },
-               {
-                  name:"Column 3"
-               }
-            ],
-            name:"question11"
-         },
-         {
-            type:"multipletext",
-            items:[
-               {
-                  name:"text1"
-               },
-               {
-                  name:"text2"
-               }
-            ],
-            name:"question12"
-         },
-         {
-            type:"panel",
-            elements:[
-               {
-                  type:"paneldynamic",
-                  name:"question13",
-                  panelCount:1,
-                  templateElements:[
-                     {
-                        type:"text",
-                        name:"question14"
-                     }
-                  ]
-               }
-            ],
-            name:"panel1"
-         }
-      ],
+      elements:[ {type:"text",name:"question1" }, {type:"checkbox",name:"question2",choices:[ "item1", "item2", "item3"] }, {type:"radiogroup",name:"question3",choices:[ "item1", "item2", "item3"] }, {type:"dropdown",name:"question4",choices:[ "item1", "item2", "item3"] }, {type:"comment",name:"question5" }, {type:"rating",name:"question6" }, {type:"boolean",name:"question7" }, {type:"file",name:"question8" }, {type:"matrix",columns:[ "Column 1", "Column 2", "Column 3"],name:"question9",rows:[ "Row 1", "Row 2"] }, {type:"matrixdropdown",choices:[ 1, 2, 3, 4, 5],columns:[ {name:"Column 1" }, {name:"Column 2" }, {name:"Column 3" }],name:"question10",rows:[ "Row 1", "Row 2"] }, {type:"matrixdynamic",choices:[ 1, 2, 3, 4, 5],columns:[ {name:"Column 1" }, {name:"Column 2" }, {name:"Column 3" }],name:"question11" }, {type:"multipletext",items:[ {name:"text1" }, {name:"text2" }],name:"question12" }, {type:"panel",elements:[ {type:"paneldynamic",name:"question13",panelCount:1,templateElements:[ {type:"text",name:"question14" }] }],name:"panel1" }],
       name:"page1"
    },
    {
-      elements:[
-         {
-            type:"comment",
-            name:"question16"
-         },
-         {
-            type:"text",
-            name:"question15"
-         }
-      ],
+      elements:[{type:"comment",name:"question16" }, {type:"text",name:"question15" }],
       name:"page2"
    }
 ]
@@ -197,6 +52,7 @@
             var resultAsString = JSON.stringify(survey.data);
 
             function sendData() {
+                //replace test code when prodaction publishing
                 $.redirect('http://httpbin.org/post', survey.data);
             };
             setTimeout(sendData, 2000);

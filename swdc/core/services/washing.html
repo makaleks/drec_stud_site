@@ -603,16 +603,16 @@
         uservkid.classList.add('hidden');
         useremail.classList.add('hidden');
         username.innerText = name;
-        if (number !== nlil) {
+        if (number !== null) {
             usernumber.innerText = 'Позвонить: ' + number;
             usernumber.href = 'tel:' + number;
             usernumber.classList.remove('hidden');
         }
-        if (vkid !== nlil) {
+        if (vkid !== null) {
             uservkid.href = 'https://vk.me/id' + vkid;
             uservkid.classList.remove('hidden');
         }
-        if (email !== nlil) {
+        if (email !== null) {
             useremail.innerText = 'Написать: ' + email;
             useremail.href = 'mailto:' + email;
             useremail.classList.remove('hidden');

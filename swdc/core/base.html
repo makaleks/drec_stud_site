@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
-<!--{% load staticfiles %}-->
+{% load staticfiles %}
+{% load utils_extra_filters %}
 
 <head>
     <title>Сайт студсовета</title>
@@ -20,7 +21,7 @@
             document.createElement('footer');
         </script>
     <![endif]-->
-    <!--{% block head_extras %}-->
+    {% block head_extras %}
     {% endblock %}
 </head>
 
@@ -140,88 +141,71 @@
         </div>
     </div>
 
-
     <article id='top'>
-        <div>
-            <h1>
-                Добро пожаловать на сайт ФРТК!
-            </h1>
-        </div>
-        <div style='padding-left:10px;padding-right:10px'>
-            <div id='bottom_menu'>
-                <div>
-                    <ul>
-                        <li class='link-underline red'><a href='/' class='active'><span>Новости</span></a></li>
-                        <li class='link-underline red'><a href='/surveys/'><span>Опросы</span></a></li>
-                        <li class='link-underline red'><a href='/services/washing/'><span>Стиралка</span></a></li>
-                        <li class='link-underline red'><a href='/services/'><span>Другие сервисы</span></a></li>
-                        <li class='link-underline red'><a href='/notes/'><span>FAQs</span></a></li>
-                        <li id='vk-menu'>
+        <div id='vk_top'>
+            <div class='container'>
+                <div class='block right'>
+                    {% if user.is_authenticated %}
+                        {% if user.avatar_url %}
+                            <img src='{{ user.avatar_url }}' />
+                        {% else %}
                             <img src='{{ STATIC_URL }}img/vk.svg' />
-                            <a href='' class='btn btn-vk'>
-                                <span>Привет, гость</span>
-                                <br />
-                                <small>(Войти через ВК)</small>
-                            </a>
-                            <!--
-                            {% if user.is_authenticated %}
-                                {% if user.avatar_url %}
-                                    <img src='{{ user.avatar_url }}' />
-                                {% else %}
-                                    <img src='{{ STATIC_URL }}img/vk.svg' />
-                                {% endif %}
-                                <a href='/logout/' class='btn btn-vk'>
-                                    <span>Привет, {{ user.get_short_name }}</span>
-                                </a>
-                            {% else %}
-                                <img src='{{ STATIC_URL }}img/vk.svg' />
-                                <a href='{% url "social:begin" "vk-oauth2" %}' class='btn btn-vk'>
-                                <span>Привет, гость</span>
-                                <br />
-                                <small>(Войти через ВК)</small>
-                                </a>
-                            {% endif %}
-                            -->
-                        </li>
-                    </ul>
+                        {% endif %}
+                        <a href='/logout/?next={{ request.path }}' class='btn btn-vk'>
+                            <span>Привет, {{ user.get_short_name }}</span>
+                        </a>
+                    {% else %}
+                        <img src='{{ STATIC_URL }}img/vk.svg' />
+                        <a href='{% url "social:begin" "vk-oauth2" %}?next={{ request.path }}' class='btn btn-vk'>
+                            <span>Войти через ВК</span>
+                        </a>
+                    {% endif %}
                 </div>
+            </div>
+        </div>
+        <div id='welcome'>
+            <img src='{{ STATIC_URL }}img/header.jpg' />
+        </div>
+        <div id='bottom_menu'>
+            <div>
+                <ul>
+                    <li class='link-underline red'><a href='/' {% if request.path|util_contains_string:'^/$' %}class='active'{% endif %}><span>Новости</span></a></li>
+                    <li class='link-underline red'><a href='/surveys/' {% if request.path|util_contains_string:'^/surveys/' %}class='active'{% endif %}><span>Опросы</span></a></li>
+                    <li class='link-underline red'><a class='disable'><span>Студсовет</span></a></li>
+                    <li class='link-underline red'><a href='/services/washing/' {% if request.path|util_contains_string:'^/services/washing/' %}class='active'{% endif %}><span>Стиралка</span></a></li>
+                    <li class='link-underline red'><a href='/services/' {% if request.path|util_contains_string:'^/services/$' %}class='active'{% endif %}><span>Другие сервисы</span></a></li>
+                    <li class='link-underline red'><a href='/notes/' {% if request.path|util_contains_string:'^/notes/' %}class='active'{% endif %}><span>FAQs</span></a></li>
+                </ul>
             </div>
         </div>
         <aside id='header'>
             <div class='box link-underline'>
                 <article id='vk-header'>
-                    <img src='{{ STATIC_URL }}img/vk.svg' />
-                    <section>
-                        <p>Привет, гость</p>
-                        <a href='' class='btn btn-vk'>Войти через ВК</a>
-                        <!--
-                        {% if user.is_authenticated %}
-                            {% if user.avatar_url %}
-                                <img src='{{ user.avatar_url }}' />
-                            {% else %}
-                                <img src='{{ STATIC_URL }}img/vk.svg' />
-                            {% endif %}
-                            <section>
-                                <p>Привет, {{ user.get_short_name }}</p>
-                                <a href='/logout/' class='btn btn-vk'>Выйти</a>
-                            </section>
+                    {% if user.is_authenticated %}
+                        {% if user.avatar_url %}
+                            <img src='{{ user.avatar_url }}' />
                         {% else %}
                             <img src='{{ STATIC_URL }}img/vk.svg' />
-                            <section>
-                                <p>Привет, гость</p>
-                                <a href='{% url "social:begin" "vk-oauth2" %}' class='btn btn-vk'>Войти через ВК</a>
-                            </section>
                         {% endif %}
-                        -->
-                    </section>
+                        <section>
+                            <p>Привет, {{ user.get_short_name }}</p>
+                            <a href='/logout/?next={{ request.path }}' class='btn btn-vk'>Выйти</a>
+                        </section>
+                    {% else %}
+                        <img src='{{ STATIC_URL }}img/vk.svg' />
+                        <section>
+                            <p>Привет, гость</p>
+                            <a href='{% url "social:begin" "vk-oauth2" %}?next={{ request.path }}' class='btn btn-vk'>Войти через ВК</a>
+                        </section>
+                    {% endif %}
                 </article>
                 <nav id='nav' class='link-underline red'>
-                    <ul>
-                        <li><a href='/' class='active'><span>Новости</span></a></li>
-                        <li><a href='surveys/'><span>Опросы</span></a></li>
-                        <li><a href='/services/washing/'><span>Стиралка</span></a></li>
-                        <li><a href='/services/'><span>Другие сервисы</span></a></li>
-                        <li><a href='/notes/'><span>FAQs</span></a></li>
+                    <ul>                        <li><a href='/' {% if request.path|util_contains_string:'^/$' %}class='active'{% endif %}><span>Новости</span></a></li>
+                        <li><a href='surveys/' {% if request.path|util_contains_string:'^/surveys/' %}class='active'{% endif %}><span>Опросы</span></a></li>
+                        <li><a class='disable'><span>Студсовет</span></a></li>
+                        <li><a href='/services/washing/' {% if request.path|util_contains_string:'^/services/washing/' %}class='active'{% endif %}><span>Стиралка</span></a></li>
+                        <li><a href='/services/' {% if request.path|util_contains_string:'^/services/$' %}class='active'{% endif %}><span>Другие сервисы</span></a></li>
+                        <li><a href='/notes/' {% if request.path|util_contains_string:'^/notes/' %}class='active'{% endif %}><span>FAQs</span></a></li>
                     </ul>
                 </nav>
             </div>
@@ -232,7 +216,7 @@
     <div id='wrapper'>
 
         <main id='content' class='container'>
-            <!--{% block content %}-->
+            {% block content %}
             {% endblock %}
         </main>
     </div>
@@ -266,7 +250,7 @@
         })();
 
     </script>
-    <!--{% block body_extras %}-->
+    {% block body_extras %}
     {% endblock %}
 </body>
 
