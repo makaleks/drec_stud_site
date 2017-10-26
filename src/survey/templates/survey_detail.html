@@ -5,7 +5,19 @@
 {% endblock %}
 
 {% block content %}
-    <div id="surveyContainer"><div class='card'>Loading, please wait</div></div>
+    <div class='card'>
+        <a class='m-btn inactive' id='btnShowSurvey' onclick='showSurvey();'>Опрос</a>
+        <a class='m-btn' id='btnShowResult' onclick='showResult();'>Результаты</a>
+    </div>
+    <div id='surveyContainer'>
+        <div class='card'>Loading, please wait</div>
+    </div>
+    <div id='resultContainer' class='hidden'>
+        <div class='card'>
+            Results;
+        </div>
+    </div>
+
     <form method = 'post' hidden id = 'form'>
         {% csrf_token %}
         <textarea name='survey_result'></textarea>
@@ -23,204 +35,82 @@
     Survey.defaultStandardCss.row += ' card';
     Survey.defaultStandardCss.footer += ' card';
     Survey.defaultStandardCss.dropdown.root += ' sv_q_select';
-    Survey.defaultStandardCss.window.button += ' btn waves-effect';
-    Survey.defaultStandardCss.matrixdynamic.button += ' btn waves-effect';
-    Survey.defaultStandardCss.navigationButton += ' btn waves-effect';
-    Survey.defaultStandardCss.paneldynamic.button += ' btn waves-effect';
-    Survey.defaultStandardCss.window.header.button += ' btn waves-effect';
+    Survey.defaultStandardCss.window.button += ' btn';
+    Survey.defaultStandardCss.matrixdynamic.button += ' btn';
+    Survey.defaultStandardCss.navigationButton += ' btn';
+    Survey.defaultStandardCss.paneldynamic.button += ' btn';
+    Survey.defaultStandardCss.window.header.button += ' btn';
     
-    window.addEventListener('load', function() {
+    function sendDataToServer(survey) {
+        {% if not user.is_authenticated %}
+            function throw_anonymous() {
+                window.location.replace('/surveys/');
+            };
+            setTimeout(throw_anonymous, 2000);
+        {% else %}
+            var resultAsString = JSON.stringify(survey.data);
+            form = document.getElementById('form');
+            form.survey_result.value = JSON.stringify(survey.data);
+            form.survey_pk.value = {{ survey.pk }};
+            form.submit();
+            //$.redirect('http://httpbin.org/post', survey.data);
+        {% endif %}
+        /*var resultAsString = JSON.stringify(survey.data);
+        function sendData() {
+            //replace test code when prodaction publishing
+            $.redirect('http://httpbin.org/post', survey.data);
+        };
+        setTimeout(sendData, 2000);*/
+    }
+    
+    function showResult() {
+        document.querySelector('#btnShowSurvey').classList.remove('inactive');
+        document.querySelector('#surveyContainer').classList.add('hidden');
+        document.querySelector('#btnShowResult').classList.add('inactive');
+        document.querySelector('#resultContainer').classList.remove('hidden');
+    }
+    
+    function showSurvey() {
+        document.querySelector('#btnShowResult').classList.remove('inactive');
+        document.querySelector('#resultContainer').classList.add('hidden');
+        document.querySelector('#btnShowSurvey').classList.add('inactive');
+        document.querySelector('#surveyContainer').classList.remove('hidden');
+    }
+</script>
+<script>
         var surveyJSON = {{ survey.structure | safe }};
         surveyJSON['title'] = '{{ survey.title }}';
         surveyJSON['completeText'] = 'Отправить';
         surveyJSON['completedHtml'] = '<div class=\'card\'>{% if not user.is_authenticated %}Вы не вошли на сайт. Ничего не отправлено.{% else %}Отправляем...{% endif %}</div>';
-        /*var surveyJSON = {
-            title: '{{ survey.title }}',
-            completedHtml: '<div class=\'card\'>Спасибо, что выполнил(-а), {{ user.get_short_name }}<br />Сейчас мы вернемся к списку опросов</div>',
-            pages:[
-   {
-      elements:[
-         {
-            type:"text",
-            name:"question1"
-         },
-         {
-            type:"checkbox",
-            name:"question2",
-            choices:[
-               "item1",
-               "item2",
-               "item3"
-            ]
-         },
-         {
-            type:"radiogroup",
-            name:"question3",
-            choices:[
-               "item1",
-               "item2",
-               "item3"
-            ]
-         },
-         {
-            type:"dropdown",
-            name:"question4",
-            choices:[
-               "item1",
-               "item2",
-               "item3"
-            ]
-         },
-         {
-            type:"comment",
-            name:"question5"
-         },
-         {
-            type:"rating",
-            name:"question6"
-         },
-         {
-            type:"boolean",
-            name:"question7"
-         },
-         {
-            type:"file",
-            name:"question8"
-         },
-         {
-            type:"matrix",
-            columns:[
-               "Column 1",
-               "Column 2",
-               "Column 3"
-            ],
-            name:"question9",
-            rows:[
-               "Row 1",
-               "Row 2"
-            ]
-         },
-         {
-            type:"matrixdropdown",
-            choices:[
-               1,
-               2,
-               3,
-               4,
-               5
-            ],
-            columns:[
-               {
-                  name:"Column 1"
-               },
-               {
-                  name:"Column 2"
-               },
-               {
-                  name:"Column 3"
-               }
-            ],
-            name:"question10",
-            rows:[
-               "Row 1",
-               "Row 2"
-            ]
-         },
-         {
-            type:"matrixdynamic",
-            choices:[
-               1,
-               2,
-               3,
-               4,
-               5
-            ],
-            columns:[
-               {
-                  name:"Column 1"
-               },
-               {
-                  name:"Column 2"
-               },
-               {
-                  name:"Column 3"
-               }
-            ],
-            name:"question11"
-         },
-         {
-            type:"multipletext",
-            items:[
-               {
-                  name:"text1"
-               },
-               {
-                  name:"text2"
-               }
-            ],
-            name:"question12"
-         },
-         {
-            type:"panel",
-            elements:[
-               {
-                  type:"paneldynamic",
-                  name:"question13",
-                  panelCount:1,
-                  templateElements:[
-                     {
-                        type:"text",
-                        name:"question14"
-                     }
-                  ]
-               }
-            ],
-            name:"panel1"
-         }
-      ],
-      name:"page1"
-   },
-   {
-      elements:[
-         {
-            type:"comment",
-            name:"question16"
-         },
-         {
-            type:"text",
-            name:"question15"
-         }
-      ],
-      name:"page2"
-   }
-]
-        };*/
-
+        
+    /*var surveyJSON = {
+        title: 'Hello world!',
+        completedHtml: '<div class=\'card\'>Спасибо, что выполнил(-а), {{ username }}<br />Сейчас мы вернемся к списку опросов</div>',
+        pages:[{
+            elements:[ {type:'text',name:'question1' }, {type:'checkbox',name:'question2',choices:[ 'item1', 'item2', 'item3'] }, {type:'radiogroup',name:'question3',choices:[ 'item1', 'item2', 'item3'] }, {type:'dropdown',name:'question4',choices:[ 'item1', 'item2', 'item3'] }, {type:'comment',name:'question5' }, {type:'rating',name:'question6' }, {type:'boolean',name:'question7' }, {type:'file',name:'question8' }, {type:'matrix',columns:[ 'Column 1', 'Column 2', 'Column 3'],name:'question9',rows:[ 'Row 1', 'Row 2'] }, {type:'matrixdropdown',choices:[ 1, 2, 3, 4, 5],columns:[ {name:'Column 1' }, {name:'Column 2' }, {name:'Column 3' }],name:'question10',rows:[ 'Row 1', 'Row 2'] }, {type:'matrixdynamic',choices:[ 1, 2, 3, 4, 5],columns:[ {name:'Column 1' }, {name:'Column 2' }, {name:'Column 3' }],name:'question11' }, {type:'multipletext',items:[ {name:'text1' }, {name:'text2' }],name:'question12' }, {type:'panel',elements:[ {type:'paneldynamic',name:'question13',panelCount:1,templateElements:[ {type:'text',name:'question14' }] }],name:'panel1' }],
+            name:'page1'
+        },
+        {
+            elements:[{type:'comment',name:'question16' }, {type:'text',name:'question15' }],
+            name:'page2'
+        }]
+    };*/
+    var resultJSON = {
+        pages:[{
+            elements:[ {type:'text',name:'question1',url:'' }, {type:'checkbox',name:'question2',choices:[ 'item1', 'item2', 'item3'] }, {type:'radiogroup',name:'question3',choices:[ 'item1', 'item2', 'item3'] }, {type:'dropdown',name:'question4',choices:[ 'item1', 'item2', 'item3'] }, {type:'comment',name:'question5' }, {type:'rating',name:'question6' }, {type:'boolean',name:'question7' }, {type:'file',name:'question8' }, {type:'matrix',columns:[ 'Column 1', 'Column 2', 'Column 3'],name:'question9',rows:[ 'Row 1', 'Row 2'] }, {type:'matrixdropdown',choices:[ 1, 2, 3, 4, 5],columns:[ {name:'Column 1' }, {name:'Column 2' }, {name:'Column 3' }],name:'question10',rows:[ 'Row 1', 'Row 2'] }, {type:'matrixdynamic',choices:[ 1, 2, 3, 4, 5],columns:[ {name:'Column 1' }, {name:'Column 2' }, {name:'Column 3' }],name:'question11' }, {type:'multipletext',items:[ {name:'text1' }, {name:'text2' }],name:'question12' }, {type:'panel',elements:[ {type:'paneldynamic',name:'question13',panelCount:1,templateElements:[ {type:'text',name:'question14' }] }],name:'panel1' }],
+            name:'page1'
+        },
+        {
+            elements:[{type:'comment',name:'question16' }, {type:'text',name:'question15' }],
+            name:'page2'
+        }]
+    };
+    window.addEventListener('load', function() {
         var survey = new Survey.Model(surveyJSON);
-        $("#surveyContainer").Survey({
+        $('#surveyContainer').Survey({
             model: survey,
-                onComplete: sendDataToServer
+            onComplete: sendDataToServer
         });
-
-        function sendDataToServer(survey) {
-            {% if not user.is_authenticated %}
-                function throw_anonymous() {
-                    window.location.replace('/surveys/');
-                };
-                setTimeout(throw_anonymous, 2000);
-            {% else %}
-                var resultAsString = JSON.stringify(survey.data);
-
-                form = document.getElementById('form');
-                form.survey_result.value = JSON.stringify(survey.data);
-                form.survey_pk.value = {{ survey.pk }};
-                form.submit();
-                //$.redirect('http://httpbin.org/post', survey.data);
-            {% endif %}
-        }
     });
-    Waves.attach('.waves-effect');
-    Waves.init();
-
 </script>
 {% endblock %}
