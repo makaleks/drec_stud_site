@@ -14,14 +14,15 @@
                     <div class='card-maintext cutted'>{{ post.text_preview.rendered }}<label class='link-underline' for='show_{{ post.id }}'><a class='lightblue'>&nbsp;Читать&nbsp;далее&nbsp;</a></label></div>
                     <div class='card-maintext full'>{{ post.text.rendered }} <label class='link-underline' for='show_{{ post.id }}'><a class='lightblue'>&nbsp;Скрыть&nbsp;</a></label></div>
                 </div>
-                <small class='text-muted'>Обновлено {{ post.edited }} <a href='{{ post.get_absolute_url }}'>Ссылка</a></small>
             {% endif %}
+            <small class='text-muted'>Обновлено {{ post.edited }} <a href='{{ post.get_absolute_url }}'>Ссылка</a></small>
         </section>
     {% endfor %}
     {% if render_archive %}
         <section class='card'>
+            
+            <h2><a href='archive'>Архив</a></h2>
             <div>
-                <a href='archive'>Архив</a>
                 <p>Быстрый переход: <a href='?years=2016'>2016 (предыдущий год)</a>
             </div>
             

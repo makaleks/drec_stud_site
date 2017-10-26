@@ -1,4 +1,8 @@
 {% extends 'core/base.html' %}
+{% block head_extras %}
+<script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.bundle.min.js'></script>
+{% endblock %}
+
 {% block content %}
 <section class='card'>
     <a class='m-btn chart-btn' onclick='pie(0);'>Pie type</a><a class='m-btn chart-btn' onclick='bar(0);'>Bar type</a>
@@ -6,7 +10,6 @@
         <canvas class='chart' id='chart_0'></canvas>
     </div>
 </section>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.bundle.min.js'></script>
 <script>
     var config = [];
     var chrt = [];
