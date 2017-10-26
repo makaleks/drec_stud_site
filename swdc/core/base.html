@@ -142,9 +142,9 @@
     </div>
 
     <article id='top'>
-        <div id='vk_top'>
+        <div id='quick_tool'>
             <div class='container'>
-                <div class='block right'>
+                <div class='block right' id='vk_quick'>
                     {% if user.is_authenticated %}
                         {% if user.avatar_url %}
                             <img src='{{ user.avatar_url }}' />
@@ -180,7 +180,7 @@
         </div>
         <aside id='header'>
             <div class='box link-underline'>
-                <article id='vk-header'>
+                <article id='vk_header'>
                     {% if user.is_authenticated %}
                         {% if user.avatar_url %}
                             <img src='{{ user.avatar_url }}' />
@@ -200,7 +200,8 @@
                     {% endif %}
                 </article>
                 <nav id='nav' class='link-underline red'>
-                    <ul>                        <li><a href='/' {% if request.path|util_contains_string:'^/$' %}class='active'{% endif %}><span>Новости</span></a></li>
+                    <ul>
+                        <li><a href='/' {% if request.path|util_contains_string:'^/$' %}class='active'{% endif %}><span>Новости</span></a></li>
                         <li><a href='surveys/' {% if request.path|util_contains_string:'^/surveys/' %}class='active'{% endif %}><span>Опросы</span></a></li>
                         <li><a class='disable'><span>Студсовет</span></a></li>
                         <li><a href='/services/washing/' {% if request.path|util_contains_string:'^/services/washing/' %}class='active'{% endif %}><span>Стиралка</span></a></li>
