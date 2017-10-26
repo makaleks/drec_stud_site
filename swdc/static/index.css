@@ -6,6 +6,16 @@
 
 .full {
     display: none;
+    padding-bottom: 1em;
+}
+
+.full>label,
+.cutted>label {
+    display: block;
+}
+
+.shownews:not(:checked)~.cutted {
+    padding-bottom: 1em;
 }
 
 .shownews:not(:checked)~.full {
