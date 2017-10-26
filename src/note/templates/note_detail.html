@@ -1,0 +1,10 @@
+{% extends 'core/base.html' %}
+{% block content %}
+    <section class='card'>
+        <h2>{{ note.name }}</h2>
+        <div>
+            <div class='card-maintext cutted'>{{ note.text.rendered }}</div>
+        </div>
+        <small class='text-muted'>Обновлено {{ note.edited }} <a href='{{ note.get_absolute_url }}'>Ссылка</a></small>
+    </section>
+{% endblock %}

@@ -3,6 +3,8 @@ from django.views.generic.detail import DetailView
 from django.http import HttpResponseBadRequest
 from .models import Note, Question
 from .forms import QuestionForm
+from django.views.generic.detail import DetailView
+
 
 # Create your views here.
 
@@ -13,7 +15,7 @@ class NoteFormListView(FormView):
     success_url = '/notes/'
     def get_context_data(self, **kwargs):
         context = super(NoteFormListView, self).get_context_data(**kwargs)
-        context['note_list'] = Note.objects.all()
+        context['note_list'] = Note.objects.all().exclude(slug = 'student_council')
         context['question_list'] = Question.objects.all()
         return context
     def form_valid(self, form):
@@ -28,3 +30,7 @@ class NoteFormListView(FormView):
 class QuestionDetailView(DetailView):
     model = Question
     template_name = 'question.html'
+
+class NoteDetailView(DetailView):
+    model = Note
+    template_name = 'note_detail.html'
