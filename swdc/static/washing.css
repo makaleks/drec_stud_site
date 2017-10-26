@@ -9,15 +9,23 @@
     padding: 1px;
 }
 
-.table_aside {
+#washing div>div {
+    position: relative;
+}
+
+#washing .table_aside {
     width: 60px;
-    background: aliceblue;
     text-align: center;
     display: inline-block;
     position: absolute;
+    top: -1.3em;
 }
 
-.table_main {
+#washing .table_aside th {
+    vertical-align: bottom;
+}
+
+#washing .table_main {
     max-width: calc(100% - 65px);
     margin-left: 60px;
     display: inline-block;
@@ -34,18 +42,18 @@
     display: inline-block;
 }
 
-.table_main tr,
-.table_aside tr {
+#washing .table_main tr,
+#washing .table_aside tr {
     height: 42px;
 }
 
-.table_main td,
-.table_aside td {
+#washing .table_main td,
+#washing .table_aside td {
 	empty-cells: show;
 }
 
-.table_main td,
-.table_main th {
+#washing .table_main td,
+#washing .table_main th {
     min-width: 102px;
     overflow-x: hidden;
     position: relative;
@@ -54,33 +62,33 @@
 
 /* WASHING COLORS */
 
-.table_main table tr>td,
+#washing .table_main table tr>td,
 .preview {
     background-color: #8BC34A;
 }
 
-.table_main tr>td.empty,
+#washing .table_main tr>td.empty,
 .preview.empty {
     background-color: #00BCD4;
 }
 
-.table_main tr>td.started,
+#washing .table_main tr>td.started,
 .preview.started {
     background-color: #00BCD4;
 }
 
-.table_main tr>td.choisen,
+#washing .table_main tr>td.choisen,
 .preview.choisen {
     background-color: #9C27B0;
 }
 
-.table_main tr>td.selected,
+#washing .table_main tr>td.selected,
 .preview.selected {
     background-color: #E91E63;
     color: white;
 }
 
-.table_main tr>td.ended,
+#washing .table_main tr>td.ended,
 .preview.ended {
     background-color: #607D8B;
 }
@@ -88,8 +96,8 @@
 
 /* CHECKBOX cutomization */
 
-.table_main span,
-.table_main label {
+#washing .table_main span,
+#washing .table_main label {
     position: absolute;
     top: 0;
     left: 0;
@@ -101,7 +109,7 @@
     margin: 0 auto;
 }
 
-.table_main span {
+#washing .table_main span {
     opacity: 0;
     background: #FF9800;
     color: #FFF;
@@ -111,7 +119,7 @@
     vertical-align: middle;
 }
 
-.table_main span>div {
+#washing .table_main span>div {
     position: absolute;
     margin: auto 0;
     height: 2rem;
@@ -121,7 +129,7 @@
     right: 0;
 }
 
-.table_main input:checked~span {
+#washing .table_main input:checked~span {
     opacity: 1;
     transition: opacity .4s linear;
 }
@@ -129,7 +137,7 @@
 
 /* USERINFO STYLES */
 
-.table_main label.userinfo {
+#washing .table_main label.userinfo {
     background: #FF9800;
     color: #FFF;
     font-size: 2em;
@@ -221,7 +229,7 @@
     margin-bottom: 0;
 }
 
-#washing>div#finalresult>input {
+#finalresult>input {
     display: inline;
     vertical-align: end;
     padding: 5px 15px;
