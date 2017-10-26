@@ -29,9 +29,9 @@
     </div>
 </section>
 <section class='card'>
-    <h2 class='lightblue'>Правила пользования стиральными машинами</h2>
-    <div>
-        <p class='card-maintext'>
+    <input id='show_rules' type='checkbox' hidden class='shownews' />
+    <div class='cutted'><h2 class='lightblue'>Правила пользования стиральными машинами</h2><label class='link-underline' for='show_rules'><a class='lightblue'>&nbsp;Ознакомится&nbsp;</a></label></div>
+    <div class='full'><p class='card-maintext'>
             <ol>
                 <li>Студентам, пользующимся стиралкой (стиральной машиной), запрещается:
                     <ul>
@@ -58,7 +58,7 @@
                 </li>
             </ol>
         </p>
-    </div>
+    <label class='link-underline' for='show_rules'><a class='lightblue'>&nbsp;Скрыть&nbsp;</a></label></div>
 </section>
 <form action='' method='post' id='washing'>
     {% csrf_token %}
@@ -66,8 +66,9 @@
         {% with item_info=service.get_item_info %}
             {% for day in time_list|util_add_user_info:user %}
                 <div class='card'>
-                    <h2>{{ day.day }}</h2>
-                    <div>
+                    <input id='show_day_{{ forloop.revcounter0 }}' type='checkbox' hidden class='shownews' />
+                    <div class='cutted'><h2>{{ day.day }}</h2><label class='link-underline' for='show_day_{{ forloop.revcounter0 }}'><a class='lightblue'>&nbsp;Открыть&nbsp;</a></label></div>
+                    <div class='full'>
                         <table class='table_aside'>
                             <tr>
                                 <th>Время</th>
@@ -129,6 +130,7 @@
 <!-- break end -->
                             </tr>
                         </table>
+                        <br /><br /><label class='link-underline' for='show_day_{{ forloop.revcounter0 }}'><a class='lightblue'>&nbsp;Скрыть&nbsp;</a></label>
                     </div>
                 </div>
             {% endfor %}
@@ -141,8 +143,12 @@
         <p id='finaltext'>
             Вы ничего не выбрали
         </p>
+        <p>
+            <input id='show_agree' type='checkbox' class='shownews' required />
+            <label for='show_agree'>Я прочитал(-а) и обязуюсь выполнять правила пользования стиралкой</label>
+        </p>
         <input id='finalcancel' type='button' value='Сбросить' />
-        <input id='finalsubmit' type='submit' value='Подтверждаю' />
+        <input id='finalsubmit' class='full' type='submit' value='Подтверждаю' />
     </div>
 </form>
 {% endblock %}
@@ -155,7 +161,7 @@
             price = 0,
             addwash = 0,
             removewash = 0,
-            inputs = document.querySelector('#washing').querySelectorAll('input[type=checkbox]');
+            inputs = document.querySelector('#washing').querySelectorAll('input[type=checkbox].hidden');
 
         for (var item of inputs) {
             item.addEventListener('change', function() {
@@ -206,16 +212,16 @@
         uservkid.classList.add('hidden');
         useremail.classList.add('hidden');
         username.innerText = name;
-        if (number !== nlil) {
+        if (number !== null) {
             usernumber.innerText = 'Позвонить: ' + number;
             usernumber.href = 'tel:' + number;
             usernumber.classList.remove('hidden');
         }
-        if (vkid !== nlil) {
+        if (vkid !== null) {
             uservkid.href = 'https://vk.me/id' + vkid;
             uservkid.classList.remove('hidden');
         }
-        if (email !== nlil) {
+        if (email !== null) {
             useremail.innerText = 'Написать: ' + email;
             useremail.href = 'mailto:' + email;
             useremail.classList.remove('hidden');
