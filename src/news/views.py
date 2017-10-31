@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.views.generic.list import ListView
 from django.shortcuts import redirect
+from django.utils import timezone
 import datetime
 
 from .models import News
@@ -19,9 +20,14 @@ class NewsListView(ListView):
         years = self.request.GET.get('years')
         news = self.request.GET.get('news')
         if not years and not news:
-            now = datetime.datetime.now()
-            last = now.replace(year = now.year if now.month > 1 else now.year - 1,
-            month = now.month - 1 if now.month > 1 else 12)
+            now = timezone.now()
+            for i in range(1):
+                try:
+                    last = now.replace(year = now.year - 1,
+                        month = now.month, day = (now - datetime.timedelta(days = 1 + i)).day)
+                    break
+                except Exception as e:
+                    raise
             queryset = queryset.filter(edited__gt = last).order_by('-created')
         else:
             if years:
