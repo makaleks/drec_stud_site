@@ -4,7 +4,6 @@
     margin: .25rem;
     display: inline-block;
 }
-
 @media (max-width: 860px) {
     .service_card {
         width: calc(50% - 2rem);

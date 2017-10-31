@@ -8,7 +8,7 @@ img {
     position: relative;
     display: block;
 }
-@media (min-width: 860px) {
+@media(min-width: 860px) {
     .container {
         margin-left: auto;
         margin-right: auto;
@@ -19,7 +19,7 @@ img {
         max-width: calc(100% - 330px);
     }
 }
-@media (max-width: 860px) {
+@media(max-width: 860px) {
     .container {
         margin-right: auto;
         margin-left: auto;
@@ -33,7 +33,7 @@ img {
         max-width: calc(100% - 30px);
     }
 }
-@media (max-width: 480px) {
+@media(max-width: 480px) {
     .container {
         padding-right: 0;
         padding-left: 0;
@@ -101,6 +101,15 @@ img {
     background: #81D4FA;
     color: #fff;
 }
+.lightgray, /* because the same */
+.lightgrey {
+    border-bottom: 2px solid #BDBDBD;
+    -webkit-box-shadow: inset 0 -3px 0 #BDBDBD;
+    -moz-box-shadow: inset 0 -3px 0 #BDBDBD;
+    box-shadow: inset 0 -3px 0 #BDBDBD;
+    color: #000;
+}
+
 .btn {
     text-decoration: none;
     display: inline-block;

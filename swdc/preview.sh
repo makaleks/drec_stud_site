@@ -1,6 +1,6 @@
 mkdir -p preview
 mkdir -p preview/services
-for FILE in index survey surveys_list note chart; do
+for FILE in index survey surveys_list note chart studsovet; do
     echo $FILE;
     awk -v FILE="$FILE" '
     {
@@ -46,7 +46,7 @@ for FILE in index survey surveys_list note chart; do
     sed -i "s/{{ STATIC_URL }}/..\/static\//" preview/$FILE.html;
     sed -i "s/{[\{\%] [ _\.a-z]* [\%\}]}//g" preview/$FILE.html;
 done
-for FILE in index washing; do
+for FILE in index washing other; do
     echo "services/$FILE";
     awk -v FILE="$FILE" '
     {
