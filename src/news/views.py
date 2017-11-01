@@ -21,13 +21,20 @@ class NewsListView(ListView):
         news = self.request.GET.get('news')
         if not years and not news:
             now = timezone.now()
-            for i in range(1):
+            days = range(2)
+            for i in days:
                 try:
                     last = now.replace(year = now.year - 1,
-                        month = now.month, day = (now - datetime.timedelta(days = 1 + i)).day)
+                        month = now.month 
+                            if now.day != 1 
+                            else now.month - 1 
+                                if now.month != 1 
+                                else 12, 
+                        day = (now - datetime.timedelta(days = 1 + i)).day)
                     break
                 except Exception as e:
-                    raise
+                    if i == len(days) - 1:
+                        raise
             queryset = queryset.filter(edited__gt = last).order_by('-created')
         else:
             if years:
