@@ -23,14 +23,13 @@
 {% endfor %}
 <input type='radio' class='hidden' name='tabs' id='tab-nav-newans'>
 
-{% for n in note_list %}
-<label for='tab-nav-{{ forloop.counter }}' class='card tablabel'>
-    <h3>{{ n.name }}</h3>
-</label>
-{% endfor %}
-<label for='tab-nav-newans' class='card tablabel'>
-    <h3>Вопрос студсовету</h3>
-</label>
+<span class='card'>
+    {% for n in note_list %}
+    <label for='tab-nav-{{ forloop.counter }}' class='card tablabel'>
+        <h3>{{ n.name }}</h3>
+    </label>
+    {% endfor %}
+</span>
 {% for n in note_list %}
     <div class='card tab'>
         <h2>{{ n.name }}</h2>
@@ -39,7 +38,7 @@
 {% endfor %}
 <div class='newans'>
     <section class='card'>
-        <h2 class='lightblue'>Последние вопросы</h2>
+        <h2 class='lightgray'>Последние вопросы</h2>
         <div>
             <p class='card-maintext'>
                 <ul>
@@ -50,26 +49,6 @@
             </p>
         </div>
     </section>
-    <div class='card'>
-        {% if user.is_authenticated %}
-            
-            <h2>Задайте вопрос</h2>
-            <form method='post' id='new_question'>
-                {% csrf_token %}
-                {{ form.non_field_errors }}
-                {{ form.title.errors }}
-                <p><label for='{{ form.title.id_for_label }}'>Заголовок</label> {{ form.title }}</p>
-                {{ form.text.errors }}
-                <p>{{ form.text }}</p>
-                {{ form.is_public.errors }}
-                <p><label for='{{ form.is_public.id_for_label }}'>Не скрывать автора</label> {{ form.is_public }}</p>
-                {{ form.check_to_send.errors }}
-                <p>{{ form.check_to_send }} <label for='{{ form.check_to_send.id_for_label }}'>Мой вопрос ещё не был занят никем до меня и относится к ФРТК</label></p>
-                <input type='submit' id='submit' value='Отправить'/>
-            </form>
-        {% else %}
-            <p>Войдите, чтобы задать свой вопрос!</p>
-        {% endif %}
     </div>
 </div>
 {% endblock %}

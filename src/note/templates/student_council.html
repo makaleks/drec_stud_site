@@ -1,0 +1,72 @@
+{% extends 'core/base.html' %}
+{% block head_extras %}
+<style>
+    #tab-main:checked~div.tab:nth-of-type(1),
+    #tab-nav-answer:checked~div.tab.answer,
+    #tab-nav-newans:checked~div.tab.newans {
+        display: block;
+    }
+    
+    #tab-nav-newans:checked~div.newans {
+        display: block;
+    }
+
+</style>
+{% endblock %}
+<!---->
+{% block content %}
+<section class='card'>
+    <h2>О Студсовете ФРТК</h2>
+</section>
+<input type='radio' class='hidden' name='tabs' id='tab-main' checked>
+<input type='radio' class='hidden' name='tabs' id='tab-nav-answer'>
+<input type='radio' class='hidden' name='tabs' id='tab-nav-newans'>
+<span class='card'>
+    <label for='tab-main' class='card tablabel'>
+        <h3>Основные положения</h3>
+    </label>
+    <label for='tab-nav-answer' class='card tablabel'>
+        <h3>Заданные вопросы</h3>
+    </label>
+    <label for='tab-nav-newans' class='card tablabel'>
+        <h3>Вопрос студсовету</h3>
+    </label>
+</span>
+<div class='card tab'>
+    <h2 class='lightgrey'>Основные положения</h2>
+    <div>{{ note.text.rendered }}</div>
+</div>
+<div class='card tab answer'>
+    <h2>Заданные вопросы</h2>
+    <div>
+        <p class='card-maintext'>
+            <ul>
+                {% for question in question_list %}
+                    <li><a href='{{ question.pk }}'>{{ question.title }}{% if question.is_public %} ({{ question.author.get_full_name }}){% endif %}</a></li>
+                {% endfor %}
+            </ul>
+        </p>
+    </div>
+</div>
+<div class='newans card tab'>
+    <h2>Вопрос студсовету</h2>
+    {% if user.is_authenticated %}
+        <h3>Задайте свой вопрос</h3>
+        <form method='post'>
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            {{ form.title.errors }}
+            <p><label for='{{ form.title.id_for_label }}'>Заголовок</label> {{ form.title }}</p>
+            {{ form.text.errors }}
+            <p>{{ form.text }}</p>
+            {{ form.is_public.errors }}
+            <p><label for='{{ form.is_public.id_for_label }}'>Не скрывать автора</label> {{ form.is_public }}</p>
+            {{ form.check_to_send.errors }}
+            <p>{{ form.check_to_send }} <label for='{{ form.check_to_send.id_for_label }}'>Мой вопрос ещё не был занят никем до меня и относится к ФРТК</label></p>
+            <input type='submit' id='submit' value='Отправить'/>
+        </form>
+    {% else %}
+        <p>Войдите, чтобы задать свой вопрос!</p>
+    {% endif %}
+</div>
+{% endblock %}

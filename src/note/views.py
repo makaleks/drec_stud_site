@@ -1,5 +1,6 @@
 from django.views.generic.edit import FormView
 from django.views.generic.detail import DetailView
+from django.views.generic.list import ListView
 from django.http import HttpResponseBadRequest
 from .models import Note, Question
 from .forms import QuestionForm
@@ -8,14 +9,20 @@ from django.views.generic.detail import DetailView
 
 # Create your views here.
 
-class NoteFormListView(FormView):
+class NoteListView(ListView):
     model = Note
     template_name = 'note_list.html'
+    def get_queryset(self, **kwargs):
+        return Note.objects.all().exclude(slug = 'student_council')
+
+class StudentCouncilView(FormView):
+    model = Note
+    template_name = 'student_council.html'
     form_class = QuestionForm
-    success_url = '/notes/'
+    success_url = '/notes/student_council'
     def get_context_data(self, **kwargs):
-        context = super(NoteFormListView, self).get_context_data(**kwargs)
-        context['note_list'] = Note.objects.all().exclude(slug = 'student_council')
+        context = super(StudentCouncilView, self).get_context_data(**kwargs)
+        context['note'] = Note.objects.all().filter(slug = 'student_council').first()
         context['question_list'] = Question.objects.all()
         return context
     def form_valid(self, form):
@@ -25,7 +32,7 @@ class NoteFormListView(FormView):
         else:
             form.instance.author = self.request.user
         form.save()
-        return super(NoteFormListView, self).form_valid(form)
+        return super(StudentCouncilView, self).form_valid(form)
 
 class QuestionDetailView(DetailView):
     model = Question
