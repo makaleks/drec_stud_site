@@ -144,7 +144,7 @@
     <article id='top'>
         <div id='quick_tool'>
             <div class='container'>
-                <div class='block right' id='vk_quick'>
+                <div class='inblock right' id='vk_quick'>
                     {% if user.is_authenticated %}
                         {% if user.avatar_url %}
                             <img src='{{ user.avatar_url }}' />
@@ -161,10 +161,23 @@
                         </a>
                     {% endif %}
                 </div>
+                <div class='inblock'>
+                    {% if user.is_stuff %}
+                        <a href='/admin' class='btn btn-vk'>
+                            <span>В админку</span>
+                        </a>
+                        <a href='/admin/news/news/add/' class='btn btn-vk'>
+                            <span>Новая новость</span>
+                        </a>
+                        <a href='/admin/survey/survey/add/' class='btn btn-vk'>
+                            <span>Добавить опрос</span>
+                        </a>
+                    {% endif %}
+                </div>
             </div>
         </div>
         <div id='welcome'>
-            <img src='{{ STATIC_URL }}img/header.jpg' />
+            <img src='{{ STATIC_URL }}img/header.svg' />
         </div>
         <div id='bottom_menu'>
             <div>

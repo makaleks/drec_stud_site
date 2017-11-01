@@ -204,14 +204,15 @@ label.sv_q_checkbox>[type='checkbox']:disabled:checked~span:after {
 }
 .sv_main label>[type='radio'],
 .sv_main label>.circle,
-.sv_main label>.check{display: none}
+.sv_main label>.check {
+    display: none
+}
 .sv_main label>[type='radio']:not(:checked),
 .sv_main label>[type='radio']:checked {
     position: absolute;
     opacity: 0;
     pointer-events: none;
 }
-
 .sv_q_matrix label>.circle {
     display: block;
 }

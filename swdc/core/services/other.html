@@ -1,8 +1,8 @@
 {% extends 'сore/base.html' %}
-{% load utils_extra_filters %} <!-- NOT WORKS, IN PROCESS -->
+{% load utils_extra_filters %} <!-- THIS PAGE NOT WORKS, IN PROCESS -->
 {% block content %}
 <section class='card'>
-    <h2 class='lightblue'>Заказ стиральной машины</h2>
+    <h2 class='lightblue'>Заказ КДС{{ service.name }}</h2>
     <div>
         <p>
             <b>Что&nbsp;значат&nbsp;цвета?</b>
@@ -20,314 +20,43 @@
 <section class='card'>
     <h2 class='lightblue'>Объявления</h2>
     <div>
-        <p class='card-maintext'>
+        <div class='card-maintext'>
             <ul>
-                <li>Обнаружен радужный носок с понями 2 числа на полу в 19:37 за пропажей к охране(или ответственным за стиралку)</li>
-                <li>Временно недоступна 5 стиралка, к 5 числу отремонтируют</li>
+                <li>Обнаружен радужный носок с понями 2 числа на полу в 19:37 в КДС за пропажей к охране(или ответственным за стиралку)</li>
+                <li>Временно недоступна КДС, к 5 числу переклеят обои</li>
             </ul>
-        </p>
+        </div>
     </div>
 </section>
-<section class='card'>
-    <h2 class='lightblue'>Правила пользования стиральными машинами</h2>
-    <div>
-        <p class='card-maintext'>
-            <ol>
-                <li>Студентам, пользующимся стиралкой (стиральной машиной), запрещается:
-                    <ul>
-                        <li>использовать стиральную машинку, на которую не были записаны;</li>
-                        <li>оставлять неубранным рассыпанный стиральный порошок;</li>
-                        <li>оставлять пустые коробки, пакеты из-под порошка и т.д.;</li>
-                        <li>использовать при стирке вещества, не предназначенные для автоматических стиральных машин;</li>
-                        <li>оставлять дверь стиралки открытой.</li>
-                    </ul>
-                </li>
-                <li>Студенты, пользующиеся стиралкой, обязаны соблюдать правила эксплуатации машинками:
-                    <ul>
-                        <li>Не загружать в машинку более 6 кг. белья</li>
-                        <li>Использовать стиральную машинку только с тем номером, на которую были записаны</li>
-                        <li>Не открывать дверцы до разблокировки</li>
-                        <li>Избегать попадания мелких деталей (монеты, ключи и т.д.) в барабан машинки</li>
-                        <li>Стирать бюстгалтеры и вещи с мелкими твердыми предметами в специальных мешках для стирки</li>
-                        <li>Не оставлять белье в машинке после стирки</li>
-                        <li>Не смешивать белые и цветные вещи</li>
-                        <li>Оставлять после стирки дверцу машинки открытой</li>
-                        <li>Забрать высохшие вещи из стиралки в течение суток после окончания своей записи (в этом случае для получения доступа в стиралку следует обратиться к ответственному)</li>
-                        <li>Оперативно информировать ответственного о выявленных неисправностях машинки</li>
-                    </ul>
-                </li>
-            </ol>
-        </p>
-    </div>
-</section>
-<form action='' method='post' id='{{ service }} service {{/* for preview, delete elsewhere */}}'>
+<form action='' method='post' id='service{{ service }}'>
     {% csrf_token %}
     <div class='card'>
         <h2>Среда 04.10</h2>
         <div>
             <table>
                 <tr>
-                    <th></th><td></td>
+                    <th class='time'>09:00</th>
+                    <td>
+                        <span class='celltext'>Время свободно</span>
+                        <label>
+                            <input type='checkbox' class='servselector hidden' name='0410-0900' data-price='1' />
+                            <a class='m-btn servoff'>Выбрать</a>
+                            <a class='m-btn selected servon'>Выбрано</a>
+                        </label>
+                    </td>
+                </tr>
+                    <th class='time'>09:30</th>
+                    <td>
+                        <span class='celltext'>Время свободно</span>
+                        <label>
+                            <input type='checkbox' class='servselector hidden' name='0410-0900' data-price='1' />
+                            <a class='m-btn servoff'>Выбрать</a>
+                            <a class='m-btn selected servon'>Выбрано</a>
+                        </label>
+                    </td>
                 </tr>
             </table>
         </div>
-    </div>
-    <div class='card'>
-        <h2>Четверг 05.10</h2>
-        <table class='table_aside'>
-            <tr>
-                <th>Время</th>
-            </tr>
-            <tr>
-                <td>9:00</td>
-            </tr>
-            <tr>
-                <td>9:00</td>
-            </tr>
-            <tr>
-                <td>9:30</td>
-            </tr>
-            <tr>
-                <td>10:00</td>
-            </tr>
-            <tr>
-                <td>10:30</td>
-            </tr>
-        </table>
-        <table class='table_main'>
-            <tr>
-                <td>
-                    <table>
-                        <tr>
-                            <th>Машина №1<br /><small>(10 руб.)</small></th>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label>
-                                    <input type='checkbox' data-price='10' class='hidden' />
-                                    <span><div>V</div></span>
-                                </label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class='selected'>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label>
-                                    <input type='checkbox' data-price='10' class='hidden' />
-                                    <span><div>V</div></span>
-                                </label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label>
-                                    <input type='checkbox' data-price='10' class='hidden' />
-                                    <span><div>V</div></span>
-                                </label>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-                <td>
-                    <table>
-                        <tr>
-                            <th>Машина №2<br /><small>(10 руб.)</small></th>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label>
-                                    <input type='checkbox' data-price='10' class='hidden' />
-                                    <span><div>V</div></span>
-                                </label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label>
-                                    <input type='checkbox' data-price='10' class='hidden' />
-                                    <span><div>V</div></span>
-                                </label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label>
-                                    <input type='checkbox' data-price='10' class='hidden' />
-                                    <span><div>V</div></span>
-                                </label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label>
-                                    <input type='checkbox' data-price='10' class='hidden' />
-                                    <span><div>V</div></span>
-                                </label>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-                <td>
-                    <table>
-                        <tr>
-                            <th>Машина №3<br /><small>(10 руб.)</small></th>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label>
-                                    <input type='checkbox' data-price='10' class='hidden' />
-                                    <span><div>V</div></span>
-                                </label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label>
-                                    <input type='checkbox' data-price='10' class='hidden' />
-                                    <span><div>V</div></span>
-                                </label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label>
-                                    <input type='checkbox' data-price='10' class='hidden' />
-                                    <span><div>V</div></span>
-                                </label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label>
-                                    <input type='checkbox' data-price='10' class='hidden' />
-                                    <span><div>V</div></span>
-                                    </label>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-                <td>
-                    <table>
-                        <tr>
-                            <th>Машина №4<br /><small>(10 руб.)</small></th>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label>
-                                    <input type='checkbox' data-price='10' class='hidden' />
-                                    <span><div>V</div></span>
-                                </label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label>
-                                    <input type='checkbox' data-price='10' class='hidden' />
-                                    <span><div>V</div></span>
-                                </label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label>
-                                    <input type='checkbox' data-price='10' class='hidden' />
-                                    <span><div>V</div></span>
-                                </label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label>
-                                    <input type='checkbox' data-price='10' class='hidden' />
-                                    <span><div>V</div></span>
-                                    </label>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-                <td>
-                    <table>
-                        <tr>
-                            <th>Машина №5<br /><small>(10 руб.)</small></th>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label>
-                                    <input type='checkbox' data-price='10' class='hidden' />
-                                    <span><div>V</div></span>
-                                </label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label>
-                                    <input type='checkbox' data-price='10' class='hidden' />
-                                    <span><div>V</div></span>
-                                </label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label>
-                                    <input type='checkbox' data-price='10' class='hidden' />
-                                    <span><div>V</div></span>
-                                </label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label>
-                                    <input type='checkbox' data-price='10' class='hidden' />
-                                    <span><div>V</div></span>
-                                    </label>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-                <td>
-                    <table>
-                        <tr>
-                            <th>Машина №6<br /><small>(10 руб.)</small></th>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label>
-                                    <input type='checkbox' data-price='10' class='hidden' />
-                                    <span><div>V</div></span>
-                                </label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label>
-                                    <input type='checkbox' data-price='10' class='hidden' />
-                                    <span><div>V</div></span>
-                                </label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label>
-                                    <input type='checkbox' data-price='10' class='hidden' />
-                                    <span><div>V</div></span>
-                                </label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label>
-                                    <input type='checkbox' data-price='10' class='hidden' />
-                                    <span><div>V</div></span>
-                                </label>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
     </div>
     <div class='card hidden' id='preresult'>
         <p id='pretext'></p>
@@ -350,7 +79,7 @@
             price = 0,
             addwash = 0,
             removewash = 0,
-            inputs = document.querySelector('#washing').querySelectorAll('input[type=checkbox]');
+            inputs = document.querySelector('#service').querySelectorAll('input[type=checkbox]');
 
         for (var item of inputs) {
             item.addEventListener('change', function() {
@@ -371,9 +100,9 @@
                     currentprice -= price;
                 }
                 if (addwash > 0) {
-                    preview.innerHTML = ((addwash > 0) ? ('Заказано: ' + addwash) : '') + ' Итого: ' + currentprice + 'руб. <a href="#finaltext">К оплате</a>';
+                    preview.innerHTML = ((addwash > 0) ? ('Выбрано: ' + addwash) : '') + '<a href="#finaltext">К подтверждению</a>';
                     document.querySelector('#preresult').classList.remove('hidden');
-                    finalview.innerHTML = 'Выбрано интервалов: ' + addwash + '<br />Итого ' + ((currentprice >= 0) ? ('нужно оплатить: ' + currentprice) : ('вам вернут: ' + (-currentprice))) + ' руб.';
+                    finalview.innerHTML = 'Выбрано интервалов: ' + addwash;
                 } else {
                     finalview.innerHTML = 'Вы ничего не выбрали';
                     document.querySelector('#preresult').classList.add('hidden');
