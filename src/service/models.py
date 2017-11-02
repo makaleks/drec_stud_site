@@ -9,6 +9,7 @@ from django.core.validators import MinValueValidator, FileExtensionValidator
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from precise_bbcode.fields import BBCodeTextField
 from math import gcd
 import datetime
 import types
@@ -116,7 +117,7 @@ class Service(models.Model):
     slug        = models.SlugField(max_length = 16, blank = False, null = False, unique = True, verbose_name = 'Фрагмент URL на английском (навсегда)')
     name        = models.CharField(max_length = 64, blank = False, null = False, unique = True, verbose_name = 'Название')
     description = models.CharField(max_length = 124, blank = False, null = False, verbose_name = 'Краткое описание')
-    instruction = models.TextField(blank = True, null = True, verbose_name = 'Инструкция и подробное описание')    
+    instruction = BBCodeTextField(blank = True, null = True, verbose_name = 'Инструкция и подробное описание')    
     image       = models.FileField(validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'gif', 'svg'])], blank = False, null = False, verbose_name = 'Картинка')
     time_step   = models.TimeField(blank = False, null = False, verbose_name = 'Минимальное время использования (шаг времени)')
     max_time_steps  = models.PositiveSmallIntegerField(blank = False, null = False, default = 1, verbose_name = 'Максимальное число шагов времени непрерывного использования')
