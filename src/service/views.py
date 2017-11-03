@@ -9,6 +9,10 @@ import json
 import re
 from .models import Order, Service
 
+# TODO: REMOVE THIS!!!
+from django.conf import settings
+import os
+
 # Create your views here.
 
 def unlock(request, slug):
@@ -32,6 +36,13 @@ def list_update(request, slug):
 class ServiceListView(ListView):
     model = Service
     template_name = 'service_list.html'
+    def post(self, request, *args, **kwargs):
+        data = request.POST.dict()
+        # TODO: REMOVE THIS!
+        f = open(os.path.join(settings.MEDIA_ROOT, 'root post {0}.txt'.format(datetime.datetime.now)))
+        f.write(str(data))
+        f.close()
+        return HttpResponse(str(data))
 
 class ServiceDetailView(DetailView):
     model = Service
