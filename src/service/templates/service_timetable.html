@@ -34,6 +34,7 @@
         </div>
     </div>
 </section>
+{% if service.instruction.rendered %}
 <section class='card'>
     <input id='show_rules' type='checkbox' hidden class='shownews' />
     <div class='cutted'><h2 class='lightgray'>Правила пользования стиральными машинами</h2><label class='link-underline' for='show_rules'><a class='lightred'>&nbsp;Ознакомится&nbsp;</a></label></div>
@@ -42,6 +43,7 @@
         </div>
     <label class='link-underline' for='show_rules'><a class='lightred'>&nbsp;Скрыть&nbsp;</a></label></div>
 </section>
+{% endif %}
 <form action='' method='post' id='washing'>
     {% csrf_token %}
         {% with time_list=service.get_timetable_list %}
