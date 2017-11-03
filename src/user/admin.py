@@ -28,13 +28,13 @@ class UserCreationForm(forms.ModelForm):
         group_number    = self.cleaned_data.get('group_number')
         account_id      = self.cleaned_data.get('account_id')
         email           = self.cleaned_data.get('email')
-        if is_valid_phone(phone_number) is False:
+        if phone_number and is_valid_phone(phone_number) is False:
             raise forms.ValidationError('Неверный формат телефонного номера')
         if is_valid_name(last_name) is False:
             raise forms.ValidationError('Неверный формат фамилии')
         if is_valid_name(first_name) is False:
             raise forms.ValidationError('Неверный формат имени')
-        if is_valid_name(patronymic_name) is False:
+        if patronymic_name and is_valid_name(patronymic_name) is False:
             raise forms.ValidationError('Неверный формат отчества')
         if is_valid_group(group_number) is False:
             raise forms.ValidationError('Неверный формат группы')
@@ -42,7 +42,7 @@ class UserCreationForm(forms.ModelForm):
         if (len(email) != 0) and (is_valid_email(email) is False):
             raise forms.ValidationError('Неверный формат почты')
 
-        if check_unique(User, 'phone_number', phone_number) is False:
+        if phone_number and check_unique(User, 'phone_number', phone_number) is False:
             raise forms.ValidationError('Этот номер телефона уже зарегистрирован')
         if check_unique(User, 'account_id', account_id) is False:
             raise forms.ValidationError('Эта ссылка на аккаунт уже зарегистрирована')
@@ -81,13 +81,13 @@ class UserChangeForm(forms.ModelForm):
         group_number    = self.cleaned_data.get('group_number')
         account_id      = self.cleaned_data.get('account_id')
         email           = self.cleaned_data.get('email')
-        if is_valid_phone(phone_number) is False:
+        if phone_number and is_valid_phone(phone_number) is False:
             raise forms.ValidationError('Неверный формат телефонного номера')
         if is_valid_name(last_name) is False:
             raise forms.ValidationError('Неверный формат фамилии')
         if is_valid_name(first_name) is False:
             raise forms.ValidationError('Неверный формат имени')
-        if is_valid_name(patronymic_name) is False:
+        if patronymic_name and is_valid_name(patronymic_name) is False:
             raise forms.ValidationError('Неверный формат отчества')
         if is_valid_group(group_number) is False:
             raise forms.ValidationError('Неверный формат группы')
@@ -95,7 +95,7 @@ class UserChangeForm(forms.ModelForm):
         if (len(email) != 0) and (is_valid_email(email) is False):
             raise forms.ValidationError('Неверный формат почты')
 
-        if ((check_unique(User, 'phone_number', phone_number) is False)
+        if phone_number and ((check_unique(User, 'phone_number', phone_number) is False)
             and (phone_number != self.instance.phone_number)):
             raise forms.ValidationError('Этот номер телефона уже зарегистрирован')
         if ((check_unique(User, 'account_id', account_id) is False)

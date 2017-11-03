@@ -38,4 +38,5 @@ class ServiceDetailView(DetailView):
     template_name = 'service_timetable.html'
     def post(self, request, *args, **kwargs):
         # TODO: check required 'Rules accepted' checkbox
-        return HttpResponse(str(request.POST.dict()))
+        data = request.POST.dict()
+        return HttpResponse(str(data))
