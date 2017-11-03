@@ -485,27 +485,27 @@ footer>section {
     background: #333333;
     cursor: default;
 }
-.link-underline a.lightblue,
-.lightblue {
-    border-bottom: 3px solid #81D4FA;
-    -webkit-box-shadow: inset 0 -4px 0 #81D4FA;
-    -moz-box-shadow: inset 0 -4px 0 #81D4FA;
-    box-shadow: inset 0 -4px 0 #81D4FA;
+.link-underline a.lightred,
+.lightred {
+    border-bottom: 1px solid #802017;
+    -webkit-box-shadow: inset 0 -4px 0 #802017;
+    -moz-box-shadow: inset 0 -4px 0 #802017;
+    box-shadow: inset 0 -4px 0 #802017;
     color: #000;
 }
-.link-underline a.lightblue.active {
+.link-underline a.lightred.active {
     color: #fff;
-    background: #0277BD;
+    background: #802017;
 }
-.link-underline a.lightblue:hover,
-.link-underline a.lightblue:focus,
-.link-underline a.lightblue:active {
-    background: #81D4FA;
+.link-underline a.lightred:hover,
+.link-underline a.lightred:focus,
+.link-underline a.lightred:active {
+    background: #802017;
     color: #fff;
 }
 .lightgray, /* because the same */
 .lightgrey {
-    border-bottom: 2px solid #BDBDBD;
+    border-bottom: 1px solid #BDBDBD;
     -webkit-box-shadow: inset 0 -3px 0 #BDBDBD;
     -moz-box-shadow: inset 0 -3px 0 #BDBDBD;
     box-shadow: inset 0 -3px 0 #BDBDBD;

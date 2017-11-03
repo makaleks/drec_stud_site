@@ -34,7 +34,7 @@
 </section>
 <section class='card'>
     <input id='show_rules' type='checkbox' hidden class='shownews' />
-    <div class='cutted'><h2 class='lightgrey'>Правила пользования стиральными машинами</h2><label class='link-underline' for='show_rules'><a class='lightblue'>&nbsp;Ознакомиться&nbsp;</a></label></div>
+    <div class='cutted'><h2 class='lightgrey'>Правила пользования стиральными машинами</h2><label class='link-underline' for='show_rules'><a class='lightred'>&nbsp;Ознакомиться&nbsp;</a></label></div>
     <div class='full'>
         <p class='card-maintext'>
             <ol>
@@ -63,13 +63,13 @@
                 </li>
             </ol>
         </p>
-    <label class='link-underline' for='show_rules'><a class='lightblue'>&nbsp;Скрыть&nbsp;</a></label></div>
+    <label class='link-underline' for='show_rules'><a class='lightred'>&nbsp;Скрыть&nbsp;</a></label></div>
 </section>
 <form action='' method='post' id='washing'>
     {% csrf_token %}
     <div class='card'>
         <input id='show_day{{id}}' type='checkbox' hidden class='shownews' />
-        <div class='cutted'><h2>Среда 04.10</h2><label class='link-underline' for='show_day{{id}}'><a class='lightblue'>&nbsp;Открыть&nbsp;</a></label></div>
+        <div class='cutted'><h2>Среда 04.10</h2><label class='link-underline' for='show_day{{id}}'><a class='lightred'>&nbsp;Открыть&nbsp;</a></label></div>
         <div class='full'>
             <table class='table_aside'>
                 <tr>
@@ -284,12 +284,12 @@
                     </td>
                 </tr>
             </table>
-            <br /><br /><label class='link-underline' for='show_day{{id}}'><a class='lightblue'>&nbsp;Скрыть&nbsp;</a></label>
+            <br /><br /><label class='link-underline' for='show_day{{id}}'><a class='lightred'>&nbsp;Скрыть&nbsp;</a></label>
         </div>
     </div>
     <div class='card'>
         <input id='show_day{{id}}' type='checkbox' hidden class='shownews' />
-        <div class='cutted'><h2>Четверг 05.10</h2><label class='link-underline' for='show_day{{id}}'><a class='lightblue'>&nbsp;Открыть&nbsp;</a></label></div>
+        <div class='cutted'><h2>Четверг 05.10</h2><label class='link-underline' for='show_day{{id}}'><a class='lightred'>&nbsp;Открыть&nbsp;</a></label></div>
         <div class='full'>
             <table class='table_aside'>
                 <tr>
@@ -545,7 +545,7 @@
                     </td>
                 </tr>
             </table>
-            <br /><br /><label class='link-underline' for='show_day{{id}}'><a class='lightblue'>&nbsp;Скрыть&nbsp;</a></label>
+            <br /><br /><label class='link-underline' for='show_day{{id}}'><a class='lightred'>&nbsp;Скрыть&nbsp;</a></label>
         </div>
     </div>
     <div class='card hidden' id='preresult'>
