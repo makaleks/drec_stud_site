@@ -2,7 +2,7 @@
 {% load utils_extra_filters %}
 {% block content %}
 <section class='card'>
-    <h2 class='lightgray'>Заказ стиральной машины</h2>
+    <h2 class='lightgrey'>Заказ стиральной машины</h2>
     <div>
         <p>
             <b>Что&nbsp;значат&nbsp;цвета?</b>
@@ -36,11 +36,11 @@
 </section>
 <section class='card'>
     <input id='show_rules' type='checkbox' hidden class='shownews' />
-    <div class='cutted'><h2 class='lightgray'>Правила пользования стиральными машинами</h2><label class='link-underline' for='show_rules'><a class='lightblue'>&nbsp;Ознакомится&nbsp;</a></label></div>
+    <div class='cutted'><h2 class='lightgray'>Правила пользования стиральными машинами</h2><label class='link-underline' for='show_rules'><a class='lightred'>&nbsp;Ознакомится&nbsp;</a></label></div>
     <div class='full'><div class='card-maintext'>
         {{ service.instruction.rendered }}
         </div>
-    <label class='link-underline' for='show_rules'><a class='lightblue'>&nbsp;Скрыть&nbsp;</a></label></div>
+    <label class='link-underline' for='show_rules'><a class='lightred'>&nbsp;Скрыть&nbsp;</a></label></div>
 </section>
 <form action='' method='post' id='washing'>
     {% csrf_token %}
@@ -49,7 +49,7 @@
             {% for day in time_list|util_add_user_info:user %}
                 <div class='card'>
                     <input id='show_day_{{ forloop.revcounter0 }}' type='checkbox' hidden class='shownews' />
-                    <div class='cutted'><h2>{{ day.day }}</h2><label class='link-underline' for='show_day_{{ forloop.revcounter0 }}'><a class='lightblue'>&nbsp;Открыть&nbsp;</a></label></div>
+                    <div class='cutted'><h2>{{ day.day }}</h2><label class='link-underline' for='show_day_{{ forloop.revcounter0 }}'><a class='lightred'>&nbsp;Открыть&nbsp;</a></label></div>
                     <div class='full'>
                         <table class='table_aside'>
                             <tr>
@@ -112,7 +112,7 @@
 <!-- break end -->
                             </tr>
                         </table>
-                        <br /><br /><label class='link-underline' for='show_day_{{ forloop.revcounter0 }}'><a class='lightblue'>&nbsp;Скрыть&nbsp;</a></label>
+                        <br /><br /><label class='link-underline' for='show_day_{{ forloop.revcounter0 }}'><a class='lightred'>&nbsp;Скрыть&nbsp;</a></label>
                     </div>
                 </div>
             {% endfor %}
