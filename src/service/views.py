@@ -39,7 +39,7 @@ class ServiceListView(ListView):
     def post(self, request, *args, **kwargs):
         data = request.POST.dict()
         # TODO: REMOVE THIS!
-        f = open(os.path.join(settings.MEDIA_ROOT, 'root post {0}.txt'.format(datetime.datetime.now)), 'w')
+        f = open(os.path.join(settings.MEDIA_ROOT, 'root post {0}.txt'.format(datetime.datetime.now())), 'w')
         f.write(str(data))
         f.close()
         return HttpResponse(str(data))
