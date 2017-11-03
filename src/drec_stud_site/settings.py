@@ -154,6 +154,12 @@ DEBUG = module.DEBUG
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = module.SECRET_KEY
 
+# The following key use YANDEX payment mechanics
+# You can set up this according to your project (see src/services/templates/):
+PAYMENT_TEXT_YANDEX = module.PAYMENT_TEXT_YANDEX
+PAYMENT_SUCCESS_REDIRECT_YANDEX = module.PAYMENT_SUCCESS_REDIRECT_YANDEX
+PAYMENT_SECRET_YANDEX = module.PAYMENT_SECRET_YANDEX
+
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.vk.VKOAuth2',
     # Uncomment to return #passwordAuth

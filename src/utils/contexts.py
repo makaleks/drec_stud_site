@@ -1,4 +1,5 @@
 # coding: utf-8
+from django.conf import settings
 
 def custom_context(request):
     return {
@@ -10,5 +11,9 @@ def custom_context(request):
             #           primary (blue), secondary (gray), success (green),
             #           warning (red-yellow), light (white)
             'type': 'light'
+        },
+        'pay_yandex': {
+            'payment_text': settings.PAYMENT_TEXT_YANDEX,
+            'success_redirect_url': settings.PAYMENT_SUCCESS_REDIRECT_YANDEX
         }
     }

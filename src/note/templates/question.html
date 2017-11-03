@@ -6,6 +6,6 @@
             <div>
                 <p>{{ question.text }}</p>
             </div>
-            <p class="card-text"><small class="text-muted">Обновлено {{ post.edited }}{% if question.is_public %}, Спросил {{ question.author.get_full_name }}{% endif %}</small></p>
+            <p class="card-text"><small class="text-muted">Обновлено {{ question.edited }}{% if question.is_public %}, Спросил {{ question.author.get_full_name }}{% endif %}</small></p>
         </section>
 {% endblock %}
