@@ -37,22 +37,29 @@ def list_update(request, slug):
 class ServiceListView(ListView):
     model = Service
     template_name = 'service_list.html'
+    def _is_int(s):
+        try:
+            int(s)
+            return True
+        except ValueError:
+            return False
     def post(self, request, *args, **kwargs):
         data = request.POST.dict()
         user_id = data['label']
         amount = data['amount']
-        user = User.objects.get(id = user_id)
-        if not user or not user.is_authenticated:
-            f = open(os.path.join(settings.MEDIA_ROOT, 'error_pay {0}.txt'.format(datetime.datetime.now())), 'w')
+        if user_id and _is_int(user_id) and int(user_id) > 0:
+            user = User.objects.get(id = user_id)
+            if not user or not user.is_authenticated:
+                f = open(os.path.join(settings.MEDIA_ROOT, 'error_pay {0}.txt'.format(datetime.datetime.now())), 'w')
+                f.write(str(data))
+                f.close()
+            else:
+                user.account += amount
+                user.save()
+            # TODO: REMOVE THIS!
+            f = open(os.path.join(settings.MEDIA_ROOT, 'root post {0}.txt'.format(datetime.datetime.now())), 'w')
             f.write(str(data))
             f.close()
-        else:
-            user.account += amount
-            user.save()
-        # TODO: REMOVE THIS!
-        f = open(os.path.join(settings.MEDIA_ROOT, 'root post {0}.txt'.format(datetime.datetime.now())), 'w')
-        f.write(str(data))
-        f.close()
         return HttpResponse(str(data))
 
 class ServiceDetailView(DetailView):
