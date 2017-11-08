@@ -93,7 +93,7 @@
                 {% else %}
                 <td rowspan='{{ m_value.rowspan }}' {% if forloop.parentloop.parentloop.first and cell.time_start|util_is_started:service  == 'started' %}{# Uncomment to enable STARTED color: #}{#class='started'#}{% endif %}>
                         <label>
-                            <input type='checkbox' name='order={{ machine }}&&{{ cell.time_start }}&&{{ cell.time_end }}' data-price='{{ item_info.price|util_by_key:machine }}' class='hidden'/>
+                            <input type='checkbox' name='order={{ machine }}&&{{ cell.time_start }}&&{{ cell.time_end }}&&{{ day.dateyear }}' data-price='{{ item_info.price|util_by_key:machine }}' data-timestep='{{ item_info.timestep|util_by_key:machine }}' data-timestart='{{ cell.time_start }}' data-timeend='{{ cell.time_end }}' data-dateyear='{{ day.dateyear }}' class='hidden'/>
                             <span><div>V</div></span>
                         </label>
                     </td>

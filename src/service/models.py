@@ -179,6 +179,7 @@ class Service(models.Model):
         for i in range(self.days_to_show):
             result_lst.append({
                 'day': '{0} {1}'.format(weekdays[(now + datetime.timedelta(days = i)).date().weekday()], (now + datetime.timedelta(days = i)).strftime('%d.%m')),
+                'dateyear': str((now + datetime.timedelta(days = i)).date()),
                 'items': {},
                 'time_layout': []
             })
@@ -223,12 +224,18 @@ class Service(models.Model):
                 result_lst[i]['time_layout'] = tmp_lst
         return result_lst
     def get_item_info(self):
-        result_lst = {'price':{}}
+        result_lst = {'price':{}, 'timestep':{}}
         for it in self.items.all():
+            td = datetime.datetime.combine(datetime.date.min, 
+                self.time_step) - datetime.datetime.min
+            td *= it.t_steps_per_order
+            timestep = (datetime.datetime.min + td).time()
             if it.price:
                 result_lst['price'][it.name] = it.price
+                result_lst['timestep'][it.name] = timestep
             else:
                 result_lst['price'][it.name] = self.default_price
+                result_lst['timestep'][it.name] = timestep
         return result_lst
     def clean(self):
         if self.default_works_to < self.default_works_from:
@@ -443,6 +450,8 @@ class Item(models.Model):
                 lst.extend(time_sources['to_append'])
                 result_time_list.append(lst)
         return result_time_list
+    def get_price(self):
+        return self.price if self.price else self.service.default_price
     def __str__(self):
         return self.name
     class Meta:
@@ -472,15 +481,16 @@ class Order(models.Model):
                     time_start__gt = models.F('time_end'))
                     # order {23:30, 00:00}
                     & ~models.Q(time_end = datetime.time(0,0,0)))
-            ) & ~models.Q(pk = self.pk)
+            ) & ~models.Q(pk = self.pk) & models.Q(item = self.item)
         ).order_by('time_end'))
         for o in order_lst:
             if (
+                # Remember [X, Y)
                 o.time_start <= self.time_start
-                and (self.time_start <= o.time_end
+                and (self.time_start < o.time_end
                     or o.time_end == datetime.time(0,0,0))
             ):
-                raise ValidationError('Order is in conflict with the order [{0}-{1})'.format(o.time_start, o.time_end))
+                raise ValidationError('Order [{0}-{1}] is in conflict with the order [{2}-{3}]'.format(self.time_start, self.time_end, o.time_start, o.time_end))
             elif (
                 # Remember [X, Y)
                 o.time_start < self.time_end
@@ -489,7 +499,7 @@ class Order(models.Model):
                 or (o.time_end == datetime.time(0,0,0)
                     and self.time_end != datetime.time(0,0,0)))
             ):
-                raise ValidationError('Order is in conflict with the order [{0}-{1})'.format(o.time_start, o.time_end))
+                raise ValidationError('Order [{0}-{1}] is in conflict with the order [{2}-{3})'.format(self.time_start, self.time_end, o.time_start, o.time_end))
             elif (
                 self.time_start <= o.time_start
                 and ((o.time_end <= self.time_end

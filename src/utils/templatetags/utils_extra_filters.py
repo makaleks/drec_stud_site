@@ -23,9 +23,11 @@ def util_add_user_info(lst, user):
             while i < length:
                 u = column[i].get('user')
                 if u and u == user:
-                    if i != 0 and 'user' in column[i - 1]:
+                    if (i != 0 and 'user' in column[i - 1]
+                        and column[i - 1]['user'] != user):
                         column[i - 1].update({'show_info': True})
-                    if i != length - 1 and 'user' in column[i + 1]:
+                    if (i != length - 1 and 'user' in column[i + 1]
+                        and column[i + 1]['user'] != user):
                         column[i + 1].update({'show_info': True})
                 i+=1
             machine['time'] = column
