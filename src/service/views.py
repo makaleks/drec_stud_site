@@ -5,6 +5,7 @@ from django.http import HttpResponse
 from django.db.models import Q
 from django.utils import timezone
 from django.conf import settings
+from decimal import Decimal
 import datetime
 import json
 import re
@@ -34,6 +35,12 @@ def list_update(request, slug):
     orders = Order.objects.all().filter(Q(date_start = today.date(), item__service__slug = slug) & (Q(time_end__gt = today.time()) | Q(time_end = datetime.time(0,0,0))) | Q(date_start__gt = today.date())).order_by('date_start', 'time_end')
     return HttpResponse(json.dumps([{'uid': o.user.uid, 'date_start': str(o.date_start), 'time_start': to_H_M(o.time_start), 'time_end': to_H_M(o.time_end)} for o in orders]))
 
+def _is_decimal(s):
+    try:
+        Decimal(s)
+        return True
+    except ValueError:
+        return False
 def _is_int(s):
     try:
         int(s)
@@ -48,14 +55,14 @@ class ServiceListView(ListView):
         data = request.POST.dict()
         user_id = data['label']
         amount = data['amount']
-        if user_id and _is_int(user_id) and int(user_id) > 0:
+        if user_id and _is_int(user_id) and int(user_id) > 0 and _is_decimal(amount):
             user = User.objects.get(id = user_id)
             if not user or not user.is_authenticated:
                 f = open(os.path.join(settings.MEDIA_ROOT, 'error_pay {0}.txt'.format(datetime.datetime.now())), 'w')
                 f.write(str(data))
                 f.close()
             else:
-                user.account += amount
+                user.account += Decimal(amount)
                 user.save()
         # TODO: REMOVE THIS!
         f = open(os.path.join(settings.MEDIA_ROOT, 'root post {0}.txt'.format(datetime.datetime.now())), 'w')
