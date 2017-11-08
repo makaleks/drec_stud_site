@@ -54,7 +54,7 @@ class ServiceListView(ListView):
     def post(self, request, *args, **kwargs):
         data = request.POST.dict()
         user_id = data['label']
-        amount = data['amount']
+        amount = data['withdraw_amount']
         if user_id and _is_int(user_id) and int(user_id) > 0 and _is_decimal(amount):
             user = User.objects.get(id = user_id)
             if not user or not user.is_authenticated:
