@@ -4,13 +4,13 @@ from django.views.generic.detail import DetailView
 from django.http import HttpResponse
 from django.db.models import Q
 from django.utils import timezone
+from django.conf import settings
 import datetime
 import json
 import re
 from .models import Order, Service
 
 # TODO: REMOVE THIS!!!
-from django.conf import settings
 import os
 
 # Create your views here.
@@ -38,6 +38,16 @@ class ServiceListView(ListView):
     template_name = 'service_list.html'
     def post(self, request, *args, **kwargs):
         data = request.POST.dict()
+        user_id = data['label']
+        amount = data['amount']
+        user = settings.AUTH_USER_MODEL.objects.get(id = user_id)
+        if not user:
+            f = open(os.path.join(settings.MEDIA_ROOT, 'error_pay {0}.txt'.format(datetime.datetime.now())), 'w')
+            f.write(str(data))
+            f.close()
+        else:
+            user.account += amount
+            user.save()
         # TODO: REMOVE THIS!
         f = open(os.path.join(settings.MEDIA_ROOT, 'root post {0}.txt'.format(datetime.datetime.now())), 'w')
         f.write(str(data))

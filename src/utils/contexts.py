@@ -14,6 +14,7 @@ def custom_context(request):
         },
         'pay_yandex': {
             'payment_text': settings.PAYMENT_TEXT_YANDEX,
-            'success_redirect_url': settings.PAYMENT_SUCCESS_REDIRECT_YANDEX
+            'success_redirect_url': settings.PAYMENT_SUCCESS_REDIRECT_YANDEX,
+            'account': settings.PAYMENT_ACCOUNT_YANDEX
         }
     }

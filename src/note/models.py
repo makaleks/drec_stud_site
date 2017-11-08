@@ -26,7 +26,7 @@ class Question(models.Model):
     text = BBCodeTextField(blank = False, null = False, verbose_name = 'Текст')
     is_public = models.BooleanField(default = True, null = False, verbose_name = 'Автор виден всем')
     def __str__(self):
-        return '{0}, {1}'.format(title, author)
+        return '{0}, {1}'.format(self.title, self.author)
     def get_absolute_url(self):
         return '/notes/student_council/{0}/'.format(self.id)
     class Meta:
