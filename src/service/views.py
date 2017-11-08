@@ -56,10 +56,10 @@ class ServiceListView(ListView):
             else:
                 user.account += amount
                 user.save()
-            # TODO: REMOVE THIS!
-            f = open(os.path.join(settings.MEDIA_ROOT, 'root post {0}.txt'.format(datetime.datetime.now())), 'w')
-            f.write(str(data))
-            f.close()
+        # TODO: REMOVE THIS!
+        f = open(os.path.join(settings.MEDIA_ROOT, 'root post {0}.txt'.format(datetime.datetime.now())), 'w')
+        f.write(str(data))
+        f.close()
         return HttpResponse(str(data))
 
 class ServiceDetailView(DetailView):
