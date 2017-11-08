@@ -8,6 +8,7 @@ from django.conf import settings
 import datetime
 import json
 import re
+from user.models import User
 from .models import Order, Item, Service
 
 # TODO: REMOVE THIS!!!
@@ -40,7 +41,7 @@ class ServiceListView(ListView):
         data = request.POST.dict()
         user_id = data['label']
         amount = data['amount']
-        user = request.user
+        user = User.objects.get(id = user_id)
         if not user or not user.is_authenticated:
             f = open(os.path.join(settings.MEDIA_ROOT, 'error_pay {0}.txt'.format(datetime.datetime.now())), 'w')
             f.write(str(data))
