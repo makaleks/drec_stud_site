@@ -47,7 +47,7 @@ class ServiceListView(ListView):
         data = request.POST.dict()
         user_id = data['label']
         amount = data['amount']
-        if user_id and _is_int(user_id) and int(user_id) > 0:
+        if user_id and self._is_int(user_id) and int(user_id) > 0:
             user = User.objects.get(id = user_id)
             if not user or not user.is_authenticated:
                 f = open(os.path.join(settings.MEDIA_ROOT, 'error_pay {0}.txt'.format(datetime.datetime.now())), 'w')
