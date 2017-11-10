@@ -7,7 +7,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 #from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
 from utils.validators import *
-from utils.utils import check_unique
+from utils.utils import check_unique, get_id_by_url_vk
 from .models import User
 
 import logging
@@ -28,24 +28,36 @@ class UserCreationForm(forms.ModelForm):
         group_number    = self.cleaned_data.get('group_number')
         account_id      = self.cleaned_data.get('account_id')
         email           = self.cleaned_data.get('email')
+        # Format of phone_number (optional)
         if phone_number and is_valid_phone(phone_number) is False:
             raise forms.ValidationError('Неверный формат телефонного номера')
+        # Format of name
         if is_valid_name(last_name) is False:
             raise forms.ValidationError('Неверный формат фамилии')
         if is_valid_name(first_name) is False:
             raise forms.ValidationError('Неверный формат имени')
         if patronymic_name and is_valid_name(patronymic_name) is False:
             raise forms.ValidationError('Неверный формат отчества')
+        # Format of group
         if is_valid_group(group_number) is False:
             raise forms.ValidationError('Неверный формат группы')
-        # 'email' is optional
+        # Format of email (optional)
         if (len(email) != 0) and (is_valid_email(email) is False):
             raise forms.ValidationError('Неверный формат почты')
 
+        # Unique phone
         if phone_number and check_unique(User, 'phone_number', phone_number) is False:
             raise forms.ValidationError('Этот номер телефона уже зарегистрирован')
+        # Unique and valid account_id
         if check_unique(User, 'account_id', account_id) is False:
             raise forms.ValidationError('Эта ссылка на аккаунт уже зарегистрирована')
+        id_num = get_id_by_url_vk(account_id)
+        if not id_num:
+            raise forms.ValidationError('Не удалось получить id из социальной сети. Это точно существующий пользователь?')
+        else:
+            self.cleaned_data['account_id'] = id_num
+            account_id = id_num
+        # Unique email (optional)
         if (len(email) != 0) and (check_unique(User, 'email', email) is False):
             raise forms.ValidationError('Эта почта уже зарегистрирована')
         return self.cleaned_data
@@ -81,26 +93,38 @@ class UserChangeForm(forms.ModelForm):
         group_number    = self.cleaned_data.get('group_number')
         account_id      = self.cleaned_data.get('account_id')
         email           = self.cleaned_data.get('email')
+        # Format of phone_number (optional)
         if phone_number and is_valid_phone(phone_number) is False:
             raise forms.ValidationError('Неверный формат телефонного номера')
+        # Format of name
         if is_valid_name(last_name) is False:
             raise forms.ValidationError('Неверный формат фамилии')
         if is_valid_name(first_name) is False:
             raise forms.ValidationError('Неверный формат имени')
         if patronymic_name and is_valid_name(patronymic_name) is False:
             raise forms.ValidationError('Неверный формат отчества')
+        # Format of group
         if is_valid_group(group_number) is False:
             raise forms.ValidationError('Неверный формат группы')
-        # 'email' is optional
+        # Format of email (optional)
         if (len(email) != 0) and (is_valid_email(email) is False):
             raise forms.ValidationError('Неверный формат почты')
 
+        # Unique phone
         if phone_number and ((check_unique(User, 'phone_number', phone_number) is False)
             and (phone_number != self.instance.phone_number)):
             raise forms.ValidationError('Этот номер телефона уже зарегистрирован')
+        # Unique and valid account_id
         if ((check_unique(User, 'account_id', account_id) is False)
             and (account_id != self.instance.account_id)):
             raise forms.ValidationError('Эта ссылка на аккаунт уже зарегистрирована')
+        id_num = get_id_by_url_vk(account_id)
+        if not id_num:
+            raise forms.ValidationError('Не удалось получить id из социальной сети. Это точно существующий пользователь?')
+        else:
+            self.cleaned_data['account_id'] = id_num
+            account_id = id_num
+        # Unique email (optional)
         if (len(email) != 0) and (check_unique(User, 'email', email) is False) and email != self.instance.email:
             raise forms.ValidationError('Эта почта уже зарегистрирована')
         # Uncomment to enable #passwordAuth
@@ -126,7 +150,7 @@ class UserAdmin(BaseUserAdmin, VersionAdmin):
     fieldsets = (
         # Uncomment to enable #passwordAuth
         #(None, {'fields': ('phone_number', 'password')}),
-        ('Personal info', {'fields': ('last_name', 'first_name', 'patronymic_name', 'group_number', 'account')}),
+        ('Personal info', {'fields': ('last_name', 'first_name', 'patronymic_name', 'group_number', 'account', 'avatar_url')}),
         # Replace next string with this one to enable #passwordAuth
         #('Contacts', {'fields': ('account_id', 'email')}),
         ('Contacts', {'fields': ('account_id', 'uid', 'phone_number', 'email')}),
@@ -138,7 +162,7 @@ class UserAdmin(BaseUserAdmin, VersionAdmin):
             'classes': ('wide',),
             # Replace next string with this one to enable #passwordAuth
             #'fields': ('phone_number', 'last_name', 'first_name', 'patronymic_name', 'group_number', 'account_id', 'email', 'is_staff', 'password1', 'password2')}
-            'fields': ('last_name', 'first_name', 'patronymic_name', 'group_number', 'account_id', 'uid', 'phone_number', 'email', 'is_staff')}
+            'fields': ('last_name', 'first_name', 'patronymic_name', 'group_number', 'account_id', 'uid', 'phone_number', 'email', 'avatar_url', 'is_staff')}
         ),
     )
     search_fields = ('last_name', 'group_number', 'phone_number', 'account_id', 'first_name', 'patronymic_name', 'email',)

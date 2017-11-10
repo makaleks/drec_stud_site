@@ -19,7 +19,7 @@ class User(models.Model):
     account_id      = models.CharField(max_length = 64, blank = False, null = False, unique = True, verbose_name = 'Аккаунт')
     group_number    = models.CharField(max_length = 4, blank = False, null = False, verbose_name = 'Номер группы')
     account         = models.DecimalField(default = 0, max_digits = 7, decimal_places = 2, blank = False, null = False, verbose_name = 'Счёт')
-    avatar_url      = models.URLField(null = True, blank = True)
+    avatar_url      = models.URLField(null = True, blank = True, verbose_name = 'URL аватарки')
     # Two 'blank' (unrequired) values can`t be unique
     email           = models.CharField(default = '', max_length = 64, blank = True, null = False, unique = False, verbose_name = 'Почта')
     USERNAME_FIELD  = 'account_id'
