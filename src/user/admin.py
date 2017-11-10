@@ -157,14 +157,8 @@ class UserAdmin(BaseUserAdmin, VersionAdmin):
         ('Permissions', {'fields': ('is_active','is_staff',)}),
     )
     # Superuser can be created only from tty
-    add_fieldsets = (
-        (None, {
-            'classes': ('wide',),
-            # Replace next string with this one to enable #passwordAuth
-            #'fields': ('phone_number', 'last_name', 'first_name', 'patronymic_name', 'group_number', 'account_id', 'email', 'is_staff', 'password1', 'password2')}
-            'fields': ('last_name', 'first_name', 'patronymic_name', 'group_number', 'account_id', 'uid', 'phone_number', 'email', 'avatar_url', 'is_staff')}
-        ),
-    )
+    add_fieldsets = fieldsets
+    add_form_template = 'admin/user/user/change_form.html'
     search_fields = ('last_name', 'group_number', 'phone_number', 'account_id', 'first_name', 'patronymic_name', 'email',)
     filter_horizontal = ()
     ordering = ['-is_superuser', '-is_staff', 'group_number', 'last_name', 'first_name', 'patronymic_name']

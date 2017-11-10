@@ -91,7 +91,7 @@
                 }
             };
             function is_empty_field(v){
-                if (v.value == true || v.value == '') return true;
+                if (v.value == null || v.value == '') return true;
                 else return false;
             };
             function insert_after(after, elem) {
@@ -229,7 +229,10 @@
             }
             add_checkbox_callback(checkbox, checkbox_callback);
             // Add VK status
-            insert_after(checkbox, vk_validation_text);
+            if (checkbox.parentNode)
+                insert_after(checkbox, vk_validation_text);
+            else
+                insert_after(account_id, vk_validation_text);
 
             // Set initial for fields
             if (!checkbox.checked && is_empty_field(first_name)) fields_to_fill.push(first_name);
