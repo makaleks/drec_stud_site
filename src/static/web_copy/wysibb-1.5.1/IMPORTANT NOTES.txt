@@ -1,9 +1,0 @@
-Currently, there is some bugs, fix them, if starting from scratch
-
-jQuery compability
-(change .size() to .length)
-https://github.com/wbb/wysibb/issues/169
-
-If scrolling-on-unfocus issue for you 'is bug, not feature'
-https://github.com/wbb/wysibb/issues/84
-Don`t forget about .min.js, that is really used
