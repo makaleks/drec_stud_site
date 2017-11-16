@@ -513,11 +513,13 @@ class Order(models.Model):
     # Django doesn`t call full_clean (clean_fields, clean, validate_unique)
     # no save() by default
     def save(self, *args, **kwargs):
-        self.full_clean()
+        self.clean()
         return super(Order, self).save(*args, **kwargs)
     def __str__(self):
         return '{0} ({1} {2}-{3})'.format(self.item.name, self.date_start.strftime('%Y-%m-%d'), self.time_start.strftime('%H:%M:%S'), self.time_end.strftime('%H:%M:%S'))
+    def __repr__(self):
+        return self.__str__()
     class Meta:
         verbose_name = 'Заказ'
         verbose_name_plural = 'Заказы'
-        unique_together = (('date_start', 'time_start'), ('date_start', 'time_end'),)
+        unique_together = (('date_start', 'time_start', 'item'), ('date_start', 'time_end', 'item'),)

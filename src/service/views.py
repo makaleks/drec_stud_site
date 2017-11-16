@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.db.models import Q
 from django.utils import timezone
 from django.conf import settings
@@ -92,17 +92,25 @@ class ServiceDetailView(DetailView):
         for l in lst:
             total_price += items_dict[l['name']].get_price()
         data['success'] = False
+        final_orders = []
         if request.user.account >= total_price:
             # Can`t use bulk_create because 
             # it does not call save() and pre_save and post_save
             for l in lst:
-                Order(date_start = l['date_start'], 
+                final_orders.append(Order(date_start = l['date_start'], 
                     time_start = l['time_start'], time_end = l['time_end'],
-                    item = items_dict[l['name']], user = request.user).save()
+                    item = items_dict[l['name']], user = request.user))
+            for o in final_orders:
+                o.clean()
+                #pass
+            for o in final_orders:
+                o.save()
+                #pass
             request.user.account -= total_price
             request.user.save()
 
 
         #tmp = data['name'].split('&&')
         data['result'] = str(total_price)
-        return HttpResponse(str(data))
+        #return HttpResponse(final_orders)
+        return HttpResponseRedirect('')
