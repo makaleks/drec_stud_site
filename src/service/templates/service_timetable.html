@@ -80,7 +80,7 @@
                 <!-- users: display next/previous from selected even if closed -->
                 {% if cell.user%}
                 <td class={% if cell.user == user %}'choisen'{% elif not cell.closed or cell.show_info %}'selected'{% elif cell.closed %}'ended'{% endif %} {% if not cell.closed %}rowspan='{{ m_value.rowspan }}'{% endif %}>
-                        {% if cell.show_info or user.is_staff %}
+                        {% if cell.show_info or user.is_staff and cell.user != user %}
                                 <label class='userinfo' for='modal_userinfo_check' onclick='showuserinfo("{{ cell.user.get_full_name }}", "{{ cell.user.account_id }}", "{{ cell.user.phone_number }}", "{{ cell.user.email }}");' title='Посмотреть инфо о заказавшем(-ей)'></label>
                         {% endif %}
                     </td>
