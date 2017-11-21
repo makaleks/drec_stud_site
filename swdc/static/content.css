@@ -393,6 +393,9 @@ footer>section {
  ***### ALLPAGE styles prefered
     font-family: 'Noto Serif', serif;
  */
+.inline {
+    display: inline;
+}
 .hidden {
     display: none !important;
 }
@@ -718,10 +721,10 @@ footer>section {
        -moz-user-select: none;
         -ms-user-select: none;
             user-select: none; 
-    border-spacing: 1px;
+    border-spacing: 0 1px;
 }
 
-#washing td,
+#washing td td,
 #service td {
     padding: 1px;
 }
@@ -769,6 +772,13 @@ footer>section {
     min-width: 102px;
     overflow-x: hidden;
     position: relative;
+}
+#washing .table_main td {
+    word-break: break-all;
+    padding: 0;
+}
+#washing .table_main td td {
+    padding: 2px;
 }
 #service th {
     text-align: right;
@@ -918,7 +928,7 @@ footer>section {
     width: -webkit-calc(100vw - 60px);
     width:    -moz-calc(100vw - 60px);
     width:         calc(100vw - 60px);
-    z-index: 75;
+    z-index: 100;
 }
 @media(min-width: 860px) {
     #preresult {
@@ -941,7 +951,6 @@ footer>section {
 }
 #finalresult {
     position: relative;
-    z-index: 100;
     margin-bottom: 0;
 }
 #finalresult>input {

@@ -1,44 +1,56 @@
 {% extends 'core/base.html' %}
-<!-- <input type="radio" class="hidden" name="tagspace" id="tag_all" checked="checked" />
-<input type="radio" class="hidden" name="tagspace" id="tag_gotit" />
-<input type="radio" class="hidden" name="tagspace" id="tag_1course" />
-<input type="radio" class="hidden" name="tagspace" id="tag_618" />
-<input type="radio" class="hidden" name="tagspace" id="tag_sport" />
-<input type="radio" class="hidden" name="tagspace" id="tag_hostel" />
-<input type="radio" class="hidden" name="tagspace" id="tag_lecture" />
-<input type="radio" class="hidden" name="tagspace" id="tag_site" />
-<section class="card tagspace">
+<!-- <input type='radio' class='hidden' name='tagspace' id='tag_all' checked='checked' />
+<input type='radio' class='hidden' name='tagspace' id='tag_gotit' />
+<input type='radio' class='hidden' name='tagspace' id='tag_1course' />
+<input type='radio' class='hidden' name='tagspace' id='tag_618' />
+<input type='radio' class='hidden' name='tagspace' id='tag_sport' />
+<input type='radio' class='hidden' name='tagspace' id='tag_hostel' />
+<input type='radio' class='hidden' name='tagspace' id='tag_lecture' />
+<input type='radio' class='hidden' name='tagspace' id='tag_site' />
+<section class='card tagspace'>
     <h2>Облако меток</h2>
     <small>
-                    <label for="tag_all" class="tag white">Всё</label>
-                    <label for="tag_gotit" class="tag red">я прошёл</label>
-                    <label for="tag_1course" class="tag green">1 курс</label>
-                    <label for="tag_618" class="tag green">618</label>
-                    <label for="tag_sport" class="tag blue">спорт</label>
-                    <label for="tag_hostel" class="tag blue">общежитие</label>
-                    <label for="tag_lecture" class="tag blue">лекции</label>
-                    <label for="tag_site" class="tag yellow">сайт</label>
+                    <label for='tag_all' class='tag white'>Всё</label>
+                    <label for='tag_gotit' class='tag red'>я прошёл</label>
+                    <label for='tag_1course' class='tag green'>1 курс</label>
+                    <label for='tag_618' class='tag green'>618</label>
+                    <label for='tag_sport' class='tag blue'>спорт</label>
+                    <label for='tag_hostel' class='tag blue'>общежитие</label>
+                    <label for='tag_lecture' class='tag blue'>лекции</label>
+                    <label for='tag_site' class='tag yellow'>сайт</label>
                 </small>
 </section> -->
 {% block content %}
-<section class="card">
+<section class='card'>
     <h2>Текущие опросы:</h2>
-    <div class="tagged tag_hostel">
-        <p><a href="survey#3" class="survey_list">Качество ремонта общежития</a></p>
-        <!-- <small><span class="tag blue">общежитие</span></small> -->
+    <div class='tagged tag_hostel'>
+        <div class='card'>
+            <a href='survey#3' class='survey_list'>Качество ремонта общежития</a>
+            <br />
+            <small>Создано: 19 апр; Доступно до 24 апр;</small>
+        </div>
+        <!-- <small><span class='tag blue'>общежитие</span></small> -->
         <hr>
     </div>
-    <div class="tagged tag_lecture tag_gotit">
-        <p><a href="survey#2" class="survey_list">Новые лекции</a></p>
-        <!-- <small><span class="tag blue">лекции</span><span class="tag red">я прошёл</span></small> -->
+    <div class='tagged tag_lecture tag_gotit'>
+        <div class='card'>
+            <a href='survey#2' class='survey_list'>Новые лекции</a>
+            <br />
+            <small>Создано: 19 апр; Доступно до 24 апр;</small>
+        </div>
+        <!-- <small><span class='tag blue'>лекции</span><span class='tag red'>я прошёл</span></small> -->
         <hr>
     </div>
 </section>
-<section class="card">
+<section class='card'>
     <h2>Прошедшие опросы:</h2>
-    <div class="tagged tag_site">
-        <p><a href="survey#1" class="survey_list">Работа сайта</a></p>
-        <!-- <small><span class="tag yellow">сайт</span></small> -->
+    <div class='tagged tag_site'>
+        <div class='card'>
+            <a href='survey#1' class='survey_list'>Работа сайта</a>
+            <br />
+            <small>Создано: 19 апр; Доступно до 24 апр;</small>
+        </div>
+        <!-- <small><span class='tag yellow'>сайт</span></small> -->
         <hr>
     </div>
 

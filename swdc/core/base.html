@@ -144,7 +144,7 @@
     <article id='top'>
         <div id='quick_tool'>
             <div class='container'>
-                <div class='inblock right' id='vk_quick'>
+                <div class='inline right' id='vk_quick'>
                     {% if user.is_authenticated %}
                         {% if user.avatar_url %}
                             <img src='{{ user.avatar_url }}' />
@@ -161,8 +161,8 @@
                         </a>
                     {% endif %}
                 </div>
-                <div class='inblock'>
-                    {% if user.is_stuff %}
+                <div class='inline'>
+                    {% if user.is_staff %}
                         <a href='/admin' class='btn btn-vk'>
                             <span>В админку</span>
                         </a>
@@ -246,6 +246,11 @@
         (function() {
             var bottom = document.querySelector('#bottom_menu'),
                 top = document.querySelector('#top');
+            document.querySelector("#showside").addEventListener('change',
+                function(){
+                    if(this.checked) document.body.style.overflow = "hidden";
+                    else document.body.style.overflow = "auto";
+                }, false);
             if (getComputedStyle(bottom).display !== 'none') {
                 window.addEventListener('scroll', scrollPage, false);
                 document.body.addEventListener('scroll', scrollPage, false);

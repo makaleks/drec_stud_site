@@ -5,10 +5,10 @@
        -moz-user-select: none;
         -ms-user-select: none;
             user-select: none; 
-    border-spacing: 1px;
+    border-spacing: 0 1px;
 }
 
-#washing td,
+#washing td td,
 #service td {
     padding: 1px;
 }
@@ -56,6 +56,13 @@
     min-width: 102px;
     overflow-x: hidden;
     position: relative;
+}
+#washing .table_main td {
+    word-break: break-all;
+    padding: 0;
+}
+#washing .table_main td td {
+    padding: 2px;
 }
 #service th {
     text-align: right;
@@ -205,7 +212,7 @@
     width: -webkit-calc(100vw - 60px);
     width:    -moz-calc(100vw - 60px);
     width:         calc(100vw - 60px);
-    z-index: 75;
+    z-index: 100;
 }
 @media(min-width: 860px) {
     #preresult {
@@ -228,7 +235,6 @@
 }
 #finalresult {
     position: relative;
-    z-index: 100;
     margin-bottom: 0;
 }
 #finalresult>input {
