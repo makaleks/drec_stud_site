@@ -140,12 +140,34 @@
             </label>
         </div>
     </div>
+    
+    <input type='checkbox' id='modal_refill_check' class='hidden' />
+    <label id='modal_refill_back' for='modal_refill_check'>
+    </label>
+    <div class='container' id='modal_refill'>
+        <div class='card modal_refill'>
+            <iframe src="https://money.yandex.ru/quickpay/shop-widget?writer=seller&targets=%D0%9E%D0%BF%D0%BB%D0%B0%D1%82%D0%B0%20%D1%81%D1%82%D0%B8%D1%80%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE%D0%B9%20%D0%BA%D0%BE%D0%BC%D0%BD%D0%B0%D1%82%D1%8B%20%D0%B2%20%D0%BE%D0%B1%D1%89%D0%B5%D0%B6%D0%B8%D1%82%D0%B8%D0%B8%20%E2%84%96%201&targets-hint=&default-sum=100&button-text=11&payment-type-choice=on&mobile-payment-type-choice=on&fio=on&hint=&successURL=https%3A%2F%2Ffrtk.mipt.ru%2Fservices%2Fwashing%2F&quickpay=shop&account=410012497029013" width="450" height="230" frameborder="0" allowtransparency="true" scrolling="no"></iframe>
+            <label for='modal_refill_check' class='m_close'>
+                <svg class='close' viewBox='0 0 10 10'>
+                    <path d='M2 8l6-6M2 2l6 6'/>
+                </svg>
+            </label>
+        </div>
+    </div>
+
+
 
     <article id='top'>
         <div id='quick_tool'>
             <div class='container'>
                 <div class='inline right' id='vk_quick'>
                     {% if user.is_authenticated %}
+                        <h3 class='inline'><u>Ваш счет: {{ 500 }}руб.</u></h3>
+                        <label for='modal_refill_check'>
+                            <a class='m-btn m-dark'>
+                                <span>Пополнить</span>
+                            </a>
+                        </label>
                         {% if user.avatar_url %}
                             <img src='{{ user.avatar_url }}' />
                         {% else %}
@@ -203,6 +225,12 @@
                         <section>
                             <p>Привет, {{ user.get_short_name }}</p>
                             <a href='/logout/?next={{ request.path }}' class='btn btn-vk'>Выйти</a>
+                            <h4><u>Ваш счет: {{ 500 }}руб.</u></h4>
+                            <label for='modal_refill_check'>
+                                <a class='m-btn m-dark'>
+                                    <span>Пополнить</span>
+                                </a>
+                            </label>
                         </section>
                     {% else %}
                         <img src='{{ STATIC_URL }}img/vk.svg' />

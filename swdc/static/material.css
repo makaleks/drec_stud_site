@@ -12,15 +12,15 @@
     -webkit-tap-highlight-color: transparent;
     cursor: pointer;
 }
-.m-btn.selected {
+.m-btn.m-selected {
     background-color: #666;
     color: #fff;
 }
 .m-btn:hover {
     background-color: #bbb;
 }
-.m-btn.inactive:hover,
-.m-btn.inactive {
+.m-btn.m-inactive:hover,
+.m-btn.m-inactive {
     background-color: #ddd;
     cursor: default;
 }
@@ -60,4 +60,9 @@
     width: 100%;
     border-bottom: #ccc solid 1px;
     padding-bottom: 1rem;
+}
+
+.m-dark {
+    background-color: #666;
+    color: #fff;
 }
