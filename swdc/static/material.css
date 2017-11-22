@@ -4,7 +4,7 @@
     outline: none;
     border-radius: 2px;
     display: inline-block;
-    height: 36px;
+    min-height: 36px;
     line-height: 36px;
     padding: 0 2rem;
     text-transform: uppercase;
@@ -15,6 +15,14 @@
 .m-btn.m-selected {
     background-color: #666;
     color: #fff;
+}
+.m-btn.m-mobiletiny {
+    padding: 1em;
+}
+@media (max-width: 860px) {
+    .m-btn.m-mobiletiny {
+        padding: 0 .5rem;
+    }
 }
 .m-btn:hover {
     background-color: #bbb;

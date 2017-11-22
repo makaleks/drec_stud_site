@@ -162,7 +162,7 @@
             <div class='container'>
                 <div class='inline right' id='vk_quick'>
                     {% if user.is_authenticated %}
-                        <h3 class='inline'><u>Ваш счет: {{ 500 }}руб.</u></h3>
+                        <h3 class='inline'><u>Ваш счет: {{ user.account|urlencode }}руб.</u></h3>
                         <label for='modal_refill_check'>
                             <a class='m-btn m-dark'>
                                 <span>Пополнить</span>
@@ -225,7 +225,7 @@
                         <section>
                             <p>Привет, {{ user.get_short_name }}</p>
                             <a href='/logout/?next={{ request.path }}' class='btn btn-vk'>Выйти</a>
-                            <h4><u>Ваш счет: {{ 500 }}руб.</u></h4>
+                            <h4><u>Ваш счет: {{ user.account|urlencode }}руб.</u></h4>
                             <label for='modal_refill_check'>
                                 <a class='m-btn m-dark'>
                                     <span>Пополнить</span>

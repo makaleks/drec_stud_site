@@ -6,8 +6,14 @@
         -ms-user-select: none;
             user-select: none; 
     border-spacing: 0 1px;
+    table-layout: fixed;
 }
-
+#service table,
+#service th,
+#service td,
+#service tr {
+    border: 1px black solid;
+}
 #washing td td,
 #service td {
     padding: 1px;
@@ -70,33 +76,27 @@
 }
 /* WASHING COLORS */
 #washing .table_main table tr>td,
-#service table tr>td,
 .preview {
     background-color: #8BC34A;
 }
 #washing .table_main tr>td.empty,
-#service tr>td.empty,
 .preview.empty {
     background-color: #00BCD4;
 }
 #washing .table_main tr>td.started,
-#service tr>td.started,
 .preview.started {
     background-color: #00BCD4;
 }
 #washing .table_main tr>td.choisen,
-#service tr>td.choisen,
 .preview.choisen {
     background-color: #9C27B0;
 }
 #washing .table_main tr>td.selected,
-#service tr>td.selected,
 .preview.selected {
     background-color: #E91E63;
     color: white;
 }
 #washing .table_main tr>td.ended,
-#service tr>td.ended,
 .preview.ended {
     background-color: #607D8B;
 }
