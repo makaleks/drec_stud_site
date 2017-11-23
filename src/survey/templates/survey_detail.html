@@ -6,7 +6,7 @@
 
 {% block content %}
     <div class='card'>
-        <a class='m-btn inactive' id='btnShowSurvey' onclick='showSurvey();'>Опрос</a>
+        <a class='m-btn m-inactive' id='btnShowSurvey' onclick='showSurvey();'>Опрос</a>
         <a class='m-btn' id='btnShowResult' onclick='showResult();'>Результаты</a>
     </div>
     <div id='surveyContainer'>
@@ -64,16 +64,16 @@
     }
     
     function showResult() {
-        document.querySelector('#btnShowSurvey').classList.remove('inactive');
+        document.querySelector('#btnShowSurvey').classList.remove('m-inactive');
         document.querySelector('#surveyContainer').classList.add('hidden');
-        document.querySelector('#btnShowResult').classList.add('inactive');
+        document.querySelector('#btnShowResult').classList.add('m-inactive');
         document.querySelector('#resultContainer').classList.remove('hidden');
     }
     
     function showSurvey() {
-        document.querySelector('#btnShowResult').classList.remove('inactive');
+        document.querySelector('#btnShowResult').classList.remove('m-inactive');
         document.querySelector('#resultContainer').classList.add('hidden');
-        document.querySelector('#btnShowSurvey').classList.add('inactive');
+        document.querySelector('#btnShowSurvey').classList.add('m-inactive');
         document.querySelector('#surveyContainer').classList.remove('hidden');
     }
 </script>

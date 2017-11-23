@@ -16,7 +16,7 @@
 <!---->
 {% block content %}
 <section class='card'>
-    <h2>О Студсовете ФРТК</h2>
+    <h2>Студсовет</h2>
 </section>
 <input type='radio' class='hidden' name='tabs' id='tab-main' checked>
 <input type='radio' class='hidden' name='tabs' id='tab-nav-answer'>
@@ -39,13 +39,13 @@
 <div class='card tab answer'>
     <h2>Заданные вопросы</h2>
     <div>
-        <p class='card-maintext'>
+        <div class='card-maintext'>
             <ul>
                 {% for question in question_list %}
                     <li><a href='{{ question.pk }}'>{{ question.title }}{% if question.is_public %} ({{ question.author.get_full_name }}){% endif %}</a></li>
                 {% endfor %}
             </ul>
-        </p>
+        </div>
     </div>
 </div>
 <div class='newans card tab'>

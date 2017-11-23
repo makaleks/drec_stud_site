@@ -4,16 +4,6 @@
 <section class='card'>
     <h2 class='lightgrey'>Заказ КДС{{ service.name }}</h2>
     <div>
-        <p>
-            <b>Что&nbsp;значат&nbsp;цвета?</b>
-        </p>
-        <p class='card-maintext'>
-            <span class='preview'></span> - Этот интервал можно выбирать<br />
-            <span class='preview ended'></span> - Этот интервал уже нельзя выбирать<br />
-            <span class='preview selected'></span> - Этот интервал был кем-то выбран<br />
-            <span class='preview choisen'></span> - Этот интервал был выбран вами<br />
-            <span class='preview started'></span> - Этот интервал можно выбирать, но он уже идет и прошло меньше половины(?)
-        </p>
         <p><b>Чтоб выбрать или отменить выбор интервала нажми на него</b></p>
     </div>
 </section>
@@ -43,7 +33,7 @@
                             <td>
                                 <span class='celltext'>Время свободно</span>
                                 <label>
-                                    <input type='checkbox' class='servselector hidden' name='0410-0900' data-price='1' />
+                                    <input type='checkbox' class='servselector hidden' name='order={{ service }}&&{{ cell.time_start }}&&{{ cell.time_end }}&&{{ day.dateyear }}' data-price='{{ service.default_price }}' data-timestep='{{ service.time_step }}' data-timestart='{{ cell.time_start }}' data-timeend='{{ cell.time_end }}' data-dateyear='{{ day.dateyear }}' />
                                     <a class='m-btn servoff'>Выбрать</a>
                                     <a class='m-btn selected servon'>Выбрано</a>
                                 </label>

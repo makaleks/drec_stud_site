@@ -2,7 +2,7 @@
 
 {% block content %}
 <section class='card'>
-    <h2 class='lightblue'>Доступные сервисы:</h2>
+    <h2 class='lightgray'>Доступные сервисы:</h2>
     {% for service in service_list %}
         <a href='/services/{{ service.slug }}/'>
             <div class='card service_card'>
