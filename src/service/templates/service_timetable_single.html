@@ -28,17 +28,35 @@
                 <div>
                     <table>
                         {% for t in day.time_layout %}
+                        {% if not cell.closed %}
                         <tr>
                             <th class='time'>{{ t.time_start }}</th>
+                            {% if cell.user %}
                             <td>
-                                <span class='celltext'>Время свободно</span>
+                                <!-- TODO: <h2/> for title, <span class='celltext'/> for description-->
+                                <span class='celltext'>Заказал {{ cell.user.get_full_name }}</span>
+                            </td>
+                            <td>
                                 <label>
-                                    <input type='checkbox' class='servselector hidden' name='order={{ service }}&&{{ cell.time_start }}&&{{ cell.time_end }}&&{{ day.dateyear }}' data-price='{{ service.default_price }}' data-timestep='{{ service.time_step }}' data-timestart='{{ cell.time_start }}' data-timeend='{{ cell.time_end }}' data-dateyear='{{ day.dateyear }}' />
-                                    <a class='m-btn servoff'>Выбрать</a>
-                                    <a class='m-btn selected servon'>Выбрано</a>
+                                    <input type='checkbox' class='servselector hidden' name='0410-0900' data-price='1' />
+                                    <a class='m-btn m-mobiletiny servoff'>Принять участие</a>
+                                    <a class='m-btn m-mobiletiny m-selected servon'>Участие заявлено (отменить?)</a>
                                 </label>
                             </td>
+                            {% else %}
+                            <td>
+                                <span class='celltext'>Время свободно</span>
+                            </td>
+                            <td>
+                                <label>
+                                    <input type='checkbox' class='servselector hidden' name='order={{ service }}&&{{ cell.time_start }}&&{{ cell.time_end }}&&{{ day.dateyear }}' data-price='{{ service.default_price }}' data-timestep='{{ service.time_step }}' data-timestart='{{ cell.time_start }}' data-timeend='{{ cell.time_end }}' data-dateyear='{{ day.dateyear }}' />
+                                    <a class='m-btn m-mobiletiny servoff'>Зарезервировать</a>
+                                    <a class='m-btn m-mobiletiny m-selected servon'>Выбрано</a>
+                                </label>
+                            </td>
+                            {% endif %}
                         </tr>
+                        {% endif %}
                         {% endfor %}
                     </table>
                 </div>
@@ -53,6 +71,7 @@
         <p id='finaltext'>
             Вы ничего не выбрали
         </p>
+    <textarea placeholder='Пояснить причину заказа(если вы просто участвуете в мероприятии, оставьте пустым)' style='width: 100%;'></textarea><br />
         <input id='finalcancel' type='button' value='Сбросить' />
         <input id='finalsubmit' type='submit' value='Подтверждаю' />
     </div>
