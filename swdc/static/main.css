@@ -1,6 +1,13 @@
 img {
     vertical-align: middle;
 }
+blockquote {
+    margin-top: 1em;
+    margin-bottom: 1em;
+    margin-left: 40px;
+    padding-left: 15px;
+    border-left: 3px solid #ccc;
+}
 .container {
     padding-right: 15px;
     padding-left: 15px;
@@ -229,4 +236,45 @@ img {
 }
 #modal.white {
     background-color: #fff;
+}
+#modal_refill {
+    display: none;
+    z-index: 1100;
+    margin: 3em -webkit-calc(50% - 350px);
+    margin: 3em    -moz-calc(50% - 350px);
+    margin: 3em         calc(50% - 350px);
+    padding: 0;
+    padding-bottom: 2.5rem;
+    bottom: 0;
+    width: 700px;
+    color: #000;
+    stroke: currentcolor;
+    position: fixed;
+}
+#modal_refill .m_close {
+    top: 2em;
+}
+@media(max-width: 860px) {
+    #modal_refill {
+        margin: 3em 0;
+        width: 100%;
+    }
+}
+#modal_refill_back {
+    display: none;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 0;
+    height: 100%;
+    min-width: 100%;
+    min-height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    position: fixed;
+    z-index: 1050;
+}
+#modal_refill_check:checked~#modal_refill_back,
+#modal_refill_check:checked~#modal_refill {
+    display: block;
 }

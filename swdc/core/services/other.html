@@ -1,19 +1,9 @@
 {% extends 'сore/base.html' %}
-{% load utils_extra_filters %} <!-- THIS PAGE NOT WORKS, IN PROCESS -->
+{% load utils_extra_filters %}
 {% block content %}
 <section class='card'>
     <h2 class='lightgrey'>Заказ КДС{{ service.name }}</h2>
     <div>
-        <p>
-            <b>Что&nbsp;значат&nbsp;цвета?</b>
-        </p>
-        <p class='card-maintext'>
-            <span class='preview'></span> - Этот интервал можно выбирать<br />
-            <span class='preview ended'></span> - Этот интервал уже нельзя выбирать<br />
-            <span class='preview selected'></span> - Этот интервал был кем-то выбран<br />
-            <span class='preview choisen'></span> - Этот интервал был выбран вами<br />
-            <span class='preview started'></span> - Этот интервал можно выбирать, но он уже идет и прошло меньше половины(?)
-        </p>
         <p><b>Чтоб выбрать или отменить выбор интервала нажми на него</b></p>
     </div>
 </section>
@@ -38,21 +28,32 @@
                     <th class='time'>09:00</th>
                     <td>
                         <span class='celltext'>Время свободно</span>
+                    </td>
+                    <td>
                         <label>
                             <input type='checkbox' class='servselector hidden' name='0410-0900' data-price='1' />
-                            <a class='m-btn servoff'>Выбрать</a>
-                            <a class='m-btn selected servon'>Выбрано</a>
+                            <a class='m-btn m-mobiletiny servoff'>Зарезервировать</a>
+                            <a class='m-btn m-mobiletiny m-selected servon'>Выбрано</a>
                         </label>
                     </td>
+                    <!--
+                    <h3>Время зарезервировано</h3>
+                    -->
                 </tr>
-                    <th class='time'>09:30</th>
+                <th class='time'>09:30</th>
                     <td>
-                        <span class='celltext'>Время свободно</span>
+                        <h2>Посещение массонской лоожи</h2>
+                        <span class='celltext'>Спешите, кол-во мест ограничено, только лучшие увидят места в которых действительн творилась история Земли &#9786;</span>
+                    </td>
+                    <td>
                         <label>
                             <input type='checkbox' class='servselector hidden' name='0410-0900' data-price='1' />
-                            <a class='m-btn servoff'>Выбрать</a>
-                            <a class='m-btn selected servon'>Выбрано</a>
+                            <a class='m-btn m-mobiletiny servoff'>Принять участие</a>
+                            <a class='m-btn m-mobiletiny m-selected servon'>Участие заявлено (отменить?)</a>
                         </label>
+                        <!--
+                        <h3>Места закончились</h3>
+                        -->
                     </td>
                 </tr>
             </table>
@@ -65,6 +66,7 @@
         <p id='finaltext'>
             Вы ничего не выбрали
         </p>
+        <textarea placeholder='Пояснить причину заказа(если вы просто участвуете в мероприятии, оставьте пустым)' style='width: 100%;'></textarea><br />
         <input id='finalcancel' type='button' value='Сбросить' />
         <input id='finalsubmit' type='submit' value='Подтверждаю' />
     </div>

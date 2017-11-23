@@ -393,6 +393,9 @@ footer>section {
  ***### ALLPAGE styles prefered
     font-family: 'Noto Serif', serif;
  */
+.inline {
+    display: inline;
+}
 .hidden {
     display: none !important;
 }
