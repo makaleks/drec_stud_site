@@ -42,7 +42,7 @@ def get_id_by_url_vk(s):
         s = s[7:]
     elif s[:9] == 'm.vk.com/':
         s = s[9:]
-    if (s[:2] == 'id' or s[:2] == 'Id') and id_is_raw.match(tmp):
+    if (s[:2] == 'id' or s[:2] == 'Id') and id_is_raw.match(s):
         s = s[2:]
     if s[-1] == '/':
         s = s[:-1]
