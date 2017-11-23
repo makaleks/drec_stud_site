@@ -72,7 +72,8 @@ class ServiceListView(ListView):
 
 class ServiceDetailView(DetailView):
     model = Service
-    template_name = 'service_timetable.html'
+    def get_template_names(self):
+        return ['service_timetable.html' if not self.object.is_single_item else 'service_timetable_single.html']
     def post(self, request, *args, **kwargs):
         # TODO: check required 'Rules accepted' checkbox
         data = request.POST.dict()

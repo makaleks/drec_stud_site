@@ -1,0 +1,148 @@
+{% extends 'core/base.html' %}
+{% load utils_extra_filters %} <!-- THIS PAGE NOT WORKS, IN PROCESS -->
+{% block content %}
+<section class='card'>
+    <h2 class='lightgrey'>Заказ КДС{{ service.name }}</h2>
+    <div>
+        <p>
+            <b>Что&nbsp;значат&nbsp;цвета?</b>
+        </p>
+        <p class='card-maintext'>
+            <span class='preview'></span> - Этот интервал можно выбирать<br />
+            <span class='preview ended'></span> - Этот интервал уже нельзя выбирать<br />
+            <span class='preview selected'></span> - Этот интервал был кем-то выбран<br />
+            <span class='preview choisen'></span> - Этот интервал был выбран вами<br />
+            <span class='preview started'></span> - Этот интервал можно выбирать, но он уже идет и прошло меньше половины(?)
+        </p>
+        <p><b>Чтоб выбрать или отменить выбор интервала нажми на него</b></p>
+    </div>
+</section>
+<section class='card'>
+    <h2 class='lightgray'>Объявления</h2>
+    <div>
+        <div class='card-maintext'>
+            <ul>
+                <li>Обнаружен радужный носок с понями 2 числа на полу в 19:37 в КДС за пропажей к охране(или ответственным за стиралку)</li>
+                <li>Временно недоступна КДС, к 5 числу переклеят обои</li>
+            </ul>
+        </div>
+    </div>
+</section>
+<form action='' method='post' id='service'>
+    {% csrf_token %}
+    {% with time_list=service.get_timetable_list %}
+    {% with item_info=service.get_item_info %}
+        {% for day in time_list|util_add_user_info:user %}
+            <div class='card'>
+                <h2>{{ day.day }}</h2>
+                <div>
+                    <table>
+                        {% for t in day.time_layout %}
+                        <tr>
+                            <th class='time'>{{ t.time_start }}</th>
+                            <td>
+                                <span class='celltext'>Время свободно</span>
+                                <label>
+                                    <input type='checkbox' class='servselector hidden' name='0410-0900' data-price='1' />
+                                    <a class='m-btn servoff'>Выбрать</a>
+                                    <a class='m-btn selected servon'>Выбрано</a>
+                                </label>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        {% endfor %}
+    {% endwith %}
+    {% endwith %}
+    <div class='card hidden' id='preresult'>
+        <p id='pretext'></p>
+    </div>
+    <div class='card' id='finalresult'>
+        <p id='finaltext'>
+            Вы ничего не выбрали
+        </p>
+        <input id='finalcancel' type='button' value='Сбросить' />
+        <input id='finalsubmit' type='submit' value='Подтверждаю' />
+    </div>
+</form>
+{% endblock %}
+{% block body_extras %}
+<script>
+    window.addEventListener('load', function() {
+        var preview = document.querySelector('#pretext'),
+            finalview = document.querySelector('#finaltext'),
+            currentprice = 0,
+            price = 0,
+            addwash = 0,
+            removewash = 0,
+            inputs = document.querySelector('#service').querySelectorAll('input[type=checkbox]');
+
+        for (var item of inputs) {
+            item.addEventListener('change', function() {
+                price = parseInt(this.getAttribute('data-price'), 10);
+                if (this.checked) {
+                    if (price > 0) {
+                        addwash++;
+                    } else {
+                        removewash++;
+                    }
+                    currentprice += price;
+                } else {
+                    if (price > 0) {
+                        addwash--;
+                    } else {
+                        removewash--;
+                    }
+                    currentprice -= price;
+                }
+                if (addwash > 0) {
+                    preview.innerHTML = ((addwash > 0) ? ('Выбрано: ' + addwash) : '') + '<a href="#finaltext">К подтверждению</a>';
+                    document.querySelector('#preresult').classList.remove('hidden');
+                    finalview.innerHTML = 'Выбрано интервалов: ' + addwash;
+                } else {
+                    finalview.innerHTML = 'Вы ничего не выбрали';
+                    document.querySelector('#preresult').classList.add('hidden');
+                }
+            });
+        }
+        document.querySelector('#finalcancel').addEventListener('click', function() {
+            addwash = 0;
+            removewash = 0;
+            currentprice = 0;
+            for (var item of inputs) {
+                item.checked = false;
+            };
+            finalview.innerHTML = 'Вы ничего не выбрали';
+            document.querySelector('#preresult').classList.add('hidden');
+        });
+    });
+
+    function showuserinfo(name, vkid, number, email) {
+        var username = document.querySelector('#userinfo_name'),
+            uservkid = document.querySelector('#userinfo_vkid'),
+            usernumber = document.querySelector('#userinfo_number'),
+            useremail = document.querySelector('#userinfo_email');
+        usernumber.classList.add('hidden');
+        uservkid.classList.add('hidden');
+        useremail.classList.add('hidden');
+        username.innerText = name;
+        if (number !== null) {
+            usernumber.innerText = 'Позвонить: ' + number;
+            usernumber.href = 'tel:' + number;
+            usernumber.classList.remove('hidden');
+        }
+        if (vkid !== null) {
+            uservkid.href = 'https://vk.me/id' + vkid;
+            uservkid.classList.remove('hidden');
+        }
+        if (email !== null) {
+            useremail.innerText = 'Написать: ' + email;
+            useremail.href = 'mailto:' + email;
+            useremail.classList.remove('hidden');
+        }
+    };
+
+</script>
+{% endblock %}

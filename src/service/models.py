@@ -131,6 +131,7 @@ class Service(models.Model):
     working_times       = GenericRelation(WorkingTime, content_type_field = 'content_type', object_id_field = 'object_id')
     working_time_exceptions = GenericRelation(WorkingTimeException, content_type_field = 'content_type', object_id_field = 'object_id')
     responsible_user    = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.SET_NULL, blank = True, null = True, verbose_name = 'ответственное лицо')
+    is_single_item      = models.BooleanField(default = False, blank = False, null = False, verbose_name = 'Один предмет сервиса')
     def __str__(self):
         return self.name
     def get_timetable_list(self):
@@ -466,6 +467,7 @@ class Order(models.Model):
     time_end    = models.TimeField(blank = False, null = False, verbose_name = 'Время конца')
     item        = models.ForeignKey(Item, on_delete = models.CASCADE, related_name = 'orders', blank = False, null = False, verbose_name = 'Предмет сервиса')
     user        = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.CASCADE, related_name = 'orders', blank = False, null = False, verbose_name = 'Пользователь')
+    text        = models.TextField(blank = True, null = True, verbose_name = 'Назначение заказа')
     # time_start > time_end is normal, we say it means 'finish next day'
     def contains_midnight(self):
         return self.time_start > self.time_end and self.time_end != datetime.time(0,0,0)
