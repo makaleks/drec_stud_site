@@ -3,6 +3,8 @@ from django.utils import timezone
 import datetime
 import re
 
+from service.models import Participation
+
 register = template.Library()
 
 @register.filter
@@ -29,6 +31,9 @@ def util_add_user_info(lst, user):
                     if (i != length - 1 and 'user' in column[i + 1]
                         and column[i + 1]['user'] != user):
                         column[i + 1].update({'show_info': True})
+                id = column[i].get('id')
+                if id and Participation.objects.filter(order = id, user = user):
+                    column[i]['participated'] = True
                 i+=1
             machine['time'] = column
     return lst

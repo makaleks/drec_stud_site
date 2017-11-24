@@ -282,6 +282,7 @@ class Item(models.Model):
                 #print(order['time_start'])
                 if 'user' in order:
                     l['user'] = order['user']
+                    l['id'] = order['id']
                 if 'title' in order:
                     l['title'] = order['title']
             elif (
@@ -296,6 +297,7 @@ class Item(models.Model):
                 #print(order['time_start'])
                 if 'user' in order:
                     l['user'] = order['user']
+                    l['id'] = order['id']
                 if 'title' in order:
                     l['title'] = order['title']
             elif (
@@ -308,6 +310,7 @@ class Item(models.Model):
                 #print(order['time_start'])
                 if 'user' in order:
                     l['user'] = order['user']
+                    l['id'] = order['id']
                 if 'title' in order:
                     l['title'] = order['title']
     def get_working_time(self, day):
@@ -424,6 +427,7 @@ class Item(models.Model):
                     result_lst[i]['time_end'] = orders[i].time_end
             if orders[i].approved:
                 result_lst[i]['user'] = orders[i].user
+                result_lst[i]['id'] = orders[i].id
             if orders[i].title:
                 result_lst[i]['title'] = orders[i].title
             result_lst[i]['contains_midnight'] = orders[i].contains_midnight()
@@ -544,3 +548,11 @@ class Order(models.Model):
         verbose_name_plural = 'Заказы'
         ordering = ['-approved', '-date_start', 'time_start']
         unique_together = (('date_start', 'time_start', 'item'), ('date_start', 'time_end', 'item'),)
+
+class Participation(models.Model):
+    order   = models.ForeignKey(Order, on_delete = models.CASCADE, related_name = 'participations', blank = False, null = False, verbose_name = 'Событие')
+    user    = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.CASCADE, related_name = 'participations', blank = False, null = False, verbose_name = 'Пользователь')
+    class Meta:
+        verbose_name = 'Участие'
+        verbose_name_plural = 'Участия'
+        ordering = ['-order', 'user']

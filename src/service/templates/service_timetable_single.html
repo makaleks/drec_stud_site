@@ -21,6 +21,7 @@
     {% endif %}
     <div>
         <p><b>Чтобы выбрать или отменить выбор интервала нажми на него</b></p>
+        <p>Note: когда поставят замки, использование кнопки 'принять участие' станет обязательным</p>
     </div>
 </section>
 <input type='radio' class='hidden' name='tabs' id='tab-main' checked>
@@ -84,9 +85,13 @@
                                 </td>
                                 <td>
                                     <label>
-                                        <input type='checkbox' class='servselector hidden' name='0410-0900' data-price='1' />
-                                        <a class='m-btn m-mobiletiny servoff'>Принять участие</a>
-                                        <a class='m-btn m-mobiletiny m-selected servon'>Участие заявлено (отменить?)</a>
+                                        {% if not cell.participated %}
+                                            <input type='checkbox' class='servselector hidden' name='participation={{ cell.id }}' />
+                                            <a class='m-btn m-mobiletiny servoff'>Принять участие</a>
+                                            <a class='m-btn m-mobiletiny m-selected servon'>Участие заявлено (отменить?)</a>
+                                        {% else %}
+                                            Вы участвуете
+                                        {% endif %}
                                     </label>
                                 </td>
                                 {% else %}
@@ -95,7 +100,8 @@
                                 </td>
                                 <td>
                                     <label>
-                                        <input type='checkbox' class='servselector hidden' name='order={{ service.items.first }}&&{{ cell.time_start }}&&{{ cell.time_end }}&&{{ day.dateyear }}' data-price='{{ service.default_price }}' data-timestep='{{ service.time_step }}' data-timestart='{{ cell.time_start }}' data-timeend='{{ cell.time_end }}' data-dateyear='{{ day.dateyear }}' />
+                                        <!-- To pay for this, add data-price='{{ service.default_price }}' -->
+                                        <input type='checkbox' class='servselector hidden' name='order={{ service.items.first }}&&{{ cell.time_start }}&&{{ cell.time_end }}&&{{ day.dateyear }}' data-timestep='{{ service.time_step }}' data-timestart='{{ cell.time_start }}' data-timeend='{{ cell.time_end }}' data-dateyear='{{ day.dateyear }}' />
                                         <a class='m-btn m-mobiletiny servoff'>Зарезервировать</a>
                                         <a class='m-btn m-mobiletiny m-selected servon'>Выбрано</a>
                                     </label>
@@ -138,7 +144,7 @@
         <div class='card'>
             <input type='checkbox' name='id={{ order.id }}' id='{{ order.id }}' />
             <label for='{{ order.id }}'>
-            {{ order.date_start|date:'Y:m:d' }}: {{ order.time_start|date:'H:i' }}-{{ order.time_start|date:'H:i' }}, {{ order.user.get_full_name }}
+            {{ order.date_start|date:'Y:m:d' }}: {{ order.time_start|date:'H:i' }}-{{ order.time_end|date:'H:i' }}, {{ order.user.get_full_name }}
             {% if order.title %}
             <br /><span style='font-weight:bold;'>{{ order.title }}</span>
             {% endif %}
