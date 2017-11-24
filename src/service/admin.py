@@ -37,7 +37,7 @@ class WorkingTimeExceptionAdmin(admin.ModelAdmin):
 
 @admin.register(Service)
 class ServiceAdmin(SortableAdminMixin, VersionAdmin):
-    list_display = ('slug', 'default_price', 'time_step', 'is_active','edited')
+    list_display = ('name', 'default_price', 'time_step', 'is_active','edited')
     inlines = [ItemInline, WorkingTimeInline, WorkingTimeExceptionInline]
     list_filter = ['name']
     def get_readonly_fields(self, request, obj=None):
@@ -54,7 +54,7 @@ class ItemAdmin(SortableAdminMixin, VersionAdmin):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user_info', 'item_id', 'date_start', 'time_start', 'time_end')
+    list_display = ('id', 'user_info', 'item_id', 'date_start', 'time_start', 'time_end', 'approved')
     list_filter = ['date_start', 'item_id']
     def user_info(self, obj):
         return '{0}, {1}'.format(obj.user.group_number, obj.user.get_full_name())

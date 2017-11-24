@@ -90,6 +90,9 @@ class ServiceDetailView(DetailView):
                 note['text'] = 'Это уведомление не должно было появиться! Сообщите о нём администрации'
                 note['type'] = 'danger'
         context['notification'] = note
+        if self.object.is_single_item:
+            to_approve = list(self.object.items.first().orders.all().filter(approved = False))
+            context['to_approve'] = to_approve
         return context
     def get(self, request, *args, **kwargs):
         data = request.GET.dict()
@@ -99,43 +102,58 @@ class ServiceDetailView(DetailView):
         return super(ServiceDetailView, self).get(request, *args, **kwargs)
     def post(self, request, *args, **kwargs):
         # TODO: check required 'Rules accepted' checkbox
+        self.object = self.get_object()
         status = 'success'
+        approved = True
         data = request.POST.dict()
-        lst = []
-        title = data['title'] if data.get('title') else ''
-        for k in data.keys():
-            if k[:6] == 'order=':
-                tmp = k[6:].split('&&')
-                lst.append({'name': tmp[0], 'time_start': datetime.datetime.strptime(tmp[1], '%H:%M').time(), 'time_end': datetime.datetime.strptime(tmp[2], '%H:%M').time(), 'date_start': datetime.datetime.strptime(tmp[3], '%Y-%m-%d').date()})
-        names = []
-        for l in lst:
-            names.append(l['name'])
-        items = list(Item.objects.all())
-        items_dict = {}
-        for i in items:
-            items_dict[i.name] = i
-        total_price = 0
-        for l in lst:
-            total_price += items_dict[l['name']].get_price()
-        #data['success'] = False
-        final_orders = []
-        if request.user.account >= total_price:
-            # Can`t use bulk_create because 
-            # it does not call save() and pre_save and post_save
+        if data.get('type') == 'order':
+            lst = []
+            title = data['title'] if data.get('title') else ''
+            if self.object.request_document:
+                approved = False
+                status = 'info'
+            for k in data.keys():
+                if k[:6] == 'order=':
+                    tmp = k[6:].split('&&')
+                    lst.append({'name': tmp[0], 'time_start': datetime.datetime.strptime(tmp[1], '%H:%M').time(), 'time_end': datetime.datetime.strptime(tmp[2], '%H:%M').time(), 'date_start': datetime.datetime.strptime(tmp[3], '%Y-%m-%d').date()})
+            names = []
             for l in lst:
-                final_orders.append(Order(date_start = l['date_start'], 
-                    time_start = l['time_start'], time_end = l['time_end'],
-                    item = items_dict[l['name']], user = request.user, title = title))
-            for o in final_orders:
-                o.clean()
-                #pass
-            for o in final_orders:
-                o.save()
-                #pass
-            request.user.account -= total_price
-            request.user.save()
+                names.append(l['name'])
+            items = list(Item.objects.all())
+            items_dict = {}
+            for i in items:
+                items_dict[i.name] = i
+            total_price = 0
+            for l in lst:
+                total_price += items_dict[l['name']].get_price()
+            #data['success'] = False
+            final_orders = []
+            if request.user.account >= total_price:
+                # Can`t use bulk_create because 
+                # it does not call save() and pre_save and post_save
+                for l in lst:
+                    final_orders.append(Order(date_start = l['date_start'], 
+                        time_start = l['time_start'], time_end = l['time_end'],
+                        item = items_dict[l['name']], user = request.user, title = title, approved = approved))
+                for o in final_orders:
+                    o.clean()
+                    #pass
+                for o in final_orders:
+                    o.save()
+                    #pass
+                request.user.account -= total_price
+                request.user.save()
 
-        #tmp = data['name'].split('&&')
-        #data['result'] = str(total_price)
-        #return HttpResponse(final_orders)
+            #tmp = data['name'].split('&&')
+            #data['result'] = str(total_price)
+            #return HttpResponse(final_orders)
+        elif data.get('type') == 'approve':
+            lst = []
+            for k in data.keys():
+                if k[:3] == 'id=':
+                    lst.append(k[3:])
+            orders = Order.objects.all().filter(pk__in=lst)
+            for o in orders:
+                o.approved = True
+                o.save()
         return HttpResponseRedirect('?status={0}'.format(status))

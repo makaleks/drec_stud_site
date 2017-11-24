@@ -5,7 +5,7 @@
     <h2 class='lightgrey'>{{ service.name }}</h2>
     {% if service.responsible_user %}
     <div>
-        Ответственный: <label style='text-decoration:underline;' for='modal_userinfo_check' onclick='showuserinfo("{{ service.responsible_user.get_full_name }}", "{{ service.responsible_user.account_id }}", "{{ service.responsible_user.phone_number }}", "{{ service.responsible_user.email }}");'>{{ service.responsible_user.get_full_name }}</label>
+        Ответственный: <label style='text-decoration:underline;color:blue;' for='modal_userinfo_check' onclick='showuserinfo("{{ service.responsible_user.get_full_name }}", "{{ service.responsible_user.account_id }}", "{{ service.responsible_user.phone_number }}", "{{ service.responsible_user.email }}");'>{{ service.responsible_user.get_full_name }}</label>
         {% if service.request_document %}
             <br><a href={{ service.request_document.url }}>Образец служебки</a>
         {% endif %}
@@ -39,7 +39,7 @@
 {% if service.instruction.rendered %}
 <section class='card'>
     <input id='show_rules' type='checkbox' hidden class='shownews' />
-    <div class='cutted'><h2 class='lightgray'>Правила пользования стиральными машинами</h2><label class='link-underline' for='show_rules'><a class='lightred'>&nbsp;Ознакомится&nbsp;</a></label></div>
+    <div class='cutted'><h2 class='lightgray'>Правила пользования</h2><label class='link-underline' for='show_rules'><a class='lightred'>&nbsp;Ознакомится&nbsp;</a></label></div>
     <div class='full'><div class='card-maintext'>
         {{ service.instruction.rendered }}
         </div>
@@ -78,19 +78,20 @@
         <!-- print cells -->
         {% for cell in m_value.time %}
             <tr>
+                <!-- can`t be selected -->
+                {% if forloop.parentloop.parentloop.first and cell.time_start|util_is_started:service == 'ended' %}
+                    <td class='ended' rowspan='{{ m_value.rowspan }}'></td>
+                <!-- if not done yet -->
+                {% elif cell.closed %}
+                    <td class='ended'></td>
                 <!-- users: display next/previous from selected even if closed -->
-                {% if cell.user %}
-                <td class={% if cell.user == user %}'choisen'{% elif not cell.closed or cell.show_info %}'selected'{% elif cell.closed %}'ended'{% endif %} {% if not cell.closed %}rowspan='{{ m_value.rowspan }}'{% endif %}>
+                {% elif cell.user %}
+                    <td class={% if cell.user == user %}'choisen'{% elif not cell.closed or cell.show_info %}'selected'{% elif cell.closed %}'ended'{% endif %} {% if not cell.closed %}rowspan='{{ m_value.rowspan }}'{% endif %}>
                         {% if cell.show_info or user.is_staff and cell.user != user %}
                                 <label class='userinfo' for='modal_userinfo_check' onclick='showuserinfo("{{ cell.user.get_full_name }}", "{{ cell.user.account_id }}", "{{ cell.user.phone_number }}", "{{ cell.user.email }}");' title='Посмотреть инфо о заказавшем(-ей)'></label>
                         {% endif %}
                     </td>
-                <!-- if not done yet -->
-                {% elif cell.closed %}
-                    <td class='ended'></td>
                 <!-- can be selected -->
-                {% elif forloop.parentloop.parentloop.first and cell.time_start|util_is_started:service == 'ended' %}
-                    <td class='ended' rowspan='{{ m_value.rowspan }}'></td>
                 {% else %}
                 <td rowspan='{{ m_value.rowspan }}' {% if forloop.parentloop.parentloop.first and cell.time_start|util_is_started:service  == 'started' %}{# Uncomment to enable STARTED color: #}{#class='started'#}{% endif %}>
                         <label>
@@ -133,6 +134,7 @@
             <input id='show_agree' type='checkbox' class='shownews' required />
             <label for='show_agree'>Я прочитал(-а) и обязуюсь выполнять правила пользования стиралкой</label>
         </p>
+        <input type='hidden' name='type' value='order' />
         <input id='finalcancel' type='button' value='Сбросить' />
         <input id='finalsubmit' class='full' type='submit' value='Подтверждаю' />
     </div>

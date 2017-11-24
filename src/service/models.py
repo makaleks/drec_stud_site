@@ -130,8 +130,8 @@ class Service(models.Model):
     time_after_now      = models.TimeField(blank = False, null = False, default = datetime.time(0,20,0), verbose_name = 'Времени на запись после начала')
     working_times       = GenericRelation(WorkingTime, content_type_field = 'content_type', object_id_field = 'object_id')
     working_time_exceptions = GenericRelation(WorkingTimeException, content_type_field = 'content_type', object_id_field = 'object_id')
-    responsible_user    = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.SET_NULL, blank = True, null = True, verbose_name = 'ответственное лицо')
-    request_document        = models.FileField(validators=[FileExtensionValidator(allowed_extensions=['doc', 'docx', 'pdf', 'odt', 'png', 'jpg', 'jpeg'])], blank = True, null = True, verbose_name = 'Служебка (doc/docx/pdf/odt/png/jpg/jpeg')
+    responsible_user    = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.SET_NULL, blank = True, null = True, verbose_name = 'Ответственное лицо')
+    request_document        = models.FileField(validators=[FileExtensionValidator(allowed_extensions=['doc', 'docx', 'pdf', 'odt', 'png', 'jpg', 'jpeg'])], blank = True, null = True, verbose_name = 'Служебка (doc/docx/pdf/odt/png/jpg/jpeg)')
     is_single_item      = models.BooleanField(default = False, blank = False, null = False, verbose_name = 'Один предмет сервиса')
     order   = models.PositiveSmallIntegerField(default = 0, blank = False, null = False, verbose_name = 'Порядок показа')
     def __str__(self):
@@ -280,8 +280,9 @@ class Item(models.Model):
             ):
                 #print(1)
                 #print(order['time_start'])
-                l['user'] = order['user']
-                if order.get('title'):
+                if 'user' in order:
+                    l['user'] = order['user']
+                if 'title' in order:
                     l['title'] = order['title']
             elif (
                 # Remember [X, Y)
@@ -293,8 +294,9 @@ class Item(models.Model):
             ):
                 #print(2)
                 #print(order['time_start'])
-                l['user'] = order['user']
-                if order.get('title'):
+                if 'user' in order:
+                    l['user'] = order['user']
+                if 'title' in order:
                     l['title'] = order['title']
             elif (
                 order['time_start'] <= l['time_start']
@@ -304,8 +306,9 @@ class Item(models.Model):
             ):
                 #print(3)
                 #print(order['time_start'])
-                l['user'] = order['user']
-                if order.get('title'):
+                if 'user' in order:
+                    l['user'] = order['user']
+                if 'title' in order:
                     l['title'] = order['title']
     def get_working_time(self, day):
         if self.is_active == False or self.service.is_active == False:
@@ -419,7 +422,8 @@ class Item(models.Model):
             else:
                     result_lst[i]['time_start'] = orders[i].time_start
                     result_lst[i]['time_end'] = orders[i].time_end
-            result_lst[i]['user'] = orders[i].user
+            if orders[i].approved:
+                result_lst[i]['user'] = orders[i].user
             if orders[i].title:
                 result_lst[i]['title'] = orders[i].title
             result_lst[i]['contains_midnight'] = orders[i].contains_midnight()
@@ -480,6 +484,7 @@ class Order(models.Model):
     item        = models.ForeignKey(Item, on_delete = models.CASCADE, related_name = 'orders', blank = False, null = False, verbose_name = 'Предмет сервиса')
     user        = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.CASCADE, related_name = 'orders', blank = False, null = False, verbose_name = 'Пользователь')
     title       = models.TextField(blank = True, null = True, verbose_name = 'Назначение заказа')
+    approved    = models.BooleanField(default = True, blank = False, null = False, verbose_name = 'Одобрено')
     # time_start > time_end is normal, we say it means 'finish next day'
     def contains_midnight(self):
         return self.time_start > self.time_end and self.time_end != datetime.time(0,0,0)
@@ -496,6 +501,7 @@ class Order(models.Model):
                     # order {23:30, 00:00}
                     & ~models.Q(time_end = datetime.time(0,0,0)))
             ) & ~models.Q(pk = self.pk) & models.Q(item = self.item)
+            & models.Q(approved = True)
         ).order_by('time_end'))
         for o in order_lst:
             if (
@@ -536,4 +542,5 @@ class Order(models.Model):
     class Meta:
         verbose_name = 'Заказ'
         verbose_name_plural = 'Заказы'
+        ordering = ['-approved', '-date_start', 'time_start']
         unique_together = (('date_start', 'time_start', 'item'), ('date_start', 'time_end', 'item'),)
