@@ -144,7 +144,7 @@
         <div class='card'>
             <input type='checkbox' name='id={{ order.id }}' id='{{ order.id }}' />
             <label for='{{ order.id }}'>
-            {{ order.date_start|date:'Y:m:d' }}: {{ order.time_start|date:'H:i' }}-{{ order.time_end|date:'H:i' }}, {{ order.user.get_full_name }}
+            {{ order.date_start|date:'Y.m.d' }}: {{ order.time_start|date:'H:i' }}-{{ order.time_end|date:'H:i' }}, {{ order.user.get_full_name }}
             {% if order.title %}
             <br /><span style='font-weight:bold;'>{{ order.title }}</span>
             {% endif %}
