@@ -547,7 +547,6 @@ class Order(models.Model):
         verbose_name = 'Заказ'
         verbose_name_plural = 'Заказы'
         ordering = ['-approved', '-date_start', 'time_start']
-        unique_together = (('date_start', 'time_start', 'item'), ('date_start', 'time_end', 'item'),)
 
 class Participation(models.Model):
     order   = models.ForeignKey(Order, on_delete = models.CASCADE, related_name = 'participations', blank = False, null = False, verbose_name = 'Событие')
