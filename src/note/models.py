@@ -10,7 +10,7 @@ class Note(models.Model):
     name    = models.CharField(max_length = 16, unique = True, blank = False, null = False, verbose_name = 'Название')
     slug    = models.SlugField(max_length = 16, blank = True, null = True, verbose_name = 'URL')
     text    = BBCodeTextField(blank = True, null = False, verbose_name = 'Текст')
-    order   = models.PositiveIntegerField(default = 0, blank = False, null = False, verbose_name = 'Порядок показа')
+    order   = models.PositiveSmallIntegerField(default = 0, blank = False, null = False, verbose_name = 'Порядок показа')
     def __str__(self):
         return self.name
     class Meta:

@@ -72,12 +72,37 @@ class ServiceListView(ListView):
 
 class ServiceDetailView(DetailView):
     model = Service
+    status = ''
     def get_template_names(self):
         return ['service_timetable.html' if not self.object.is_single_item else 'service_timetable_single.html']
+    def get_context_data(self, **kwargs):
+        context = super(ServiceDetailView, self).get_context_data(**kwargs)
+        note = {}
+        if self.status:
+            status = self.status
+            note['enabled'] = True
+            note['type'] = self.status
+            if status == 'success':
+                note['text'] = 'Успех!'
+            elif status == 'info':
+                note['text'] = 'Заявка зарегистрирована. Осталось принести служебку. При наличии нескольких претендентов, удовлетворена будет заявка первого предъявившего служебку.'
+            else:
+                note['text'] = 'Это уведомление не должно было появиться! Сообщите о нём администрации'
+                note['type'] = 'danger'
+        context['notification'] = note
+        return context
+    def get(self, request, *args, **kwargs):
+        data = request.GET.dict()
+        status = data.get('status')
+        if status:
+            self.status = status
+        return super(ServiceDetailView, self).get(request, *args, **kwargs)
     def post(self, request, *args, **kwargs):
         # TODO: check required 'Rules accepted' checkbox
+        status = 'success'
         data = request.POST.dict()
         lst = []
+        title = data['title'] if data.get('title') else ''
         for k in data.keys():
             if k[:6] == 'order=':
                 tmp = k[6:].split('&&')
@@ -92,7 +117,7 @@ class ServiceDetailView(DetailView):
         total_price = 0
         for l in lst:
             total_price += items_dict[l['name']].get_price()
-        data['success'] = False
+        #data['success'] = False
         final_orders = []
         if request.user.account >= total_price:
             # Can`t use bulk_create because 
@@ -100,7 +125,7 @@ class ServiceDetailView(DetailView):
             for l in lst:
                 final_orders.append(Order(date_start = l['date_start'], 
                     time_start = l['time_start'], time_end = l['time_end'],
-                    item = items_dict[l['name']], user = request.user))
+                    item = items_dict[l['name']], user = request.user, title = title))
             for o in final_orders:
                 o.clean()
                 #pass
@@ -110,8 +135,7 @@ class ServiceDetailView(DetailView):
             request.user.account -= total_price
             request.user.save()
 
-
         #tmp = data['name'].split('&&')
-        data['result'] = str(total_price)
+        #data['result'] = str(total_price)
         #return HttpResponse(final_orders)
-        return HttpResponseRedirect('')
+        return HttpResponseRedirect('?status={0}'.format(status))

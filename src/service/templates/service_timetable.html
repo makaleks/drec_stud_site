@@ -2,7 +2,15 @@
 {% load utils_extra_filters %}
 {% block content %}
 <section class='card'>
-    <h2 class='lightgrey'>Заказ стиральной машины</h2>
+    <h2 class='lightgrey'>{{ service.name }}</h2>
+    {% if service.responsible_user %}
+    <div>
+        Ответственный: <label style='text-decoration:underline;' for='modal_userinfo_check' onclick='showuserinfo("{{ service.responsible_user.get_full_name }}", "{{ service.responsible_user.account_id }}", "{{ service.responsible_user.phone_number }}", "{{ service.responsible_user.email }}");'>{{ service.responsible_user.get_full_name }}</label>
+        {% if service.request_document %}
+            <br><a href={{ service.request_document.url }}>Образец служебки</a>
+        {% endif %}
+    </div>
+    {% endif %}
     <div>
         <p>
             <b>Что&nbsp;значат&nbsp;цвета?</b>
@@ -15,16 +23,9 @@
             <span class='preview started'></span> - Этот интервал можно выбирать, но он уже идет и прошло меньше половины(?)
         </p>
         <p><b>Чтоб выбрать или отменить выбор интервала нажми на него</b></p>
-        {% if user.is_authenticated %}
-        <section class='card {#hidden#}'>
-            <h2 class='lightgrey'>Пополнить счет</h2>
-            <p>Ваш счёт: {{ user.account|urlencode }} руб.</p>
-            <iframe src="https://money.yandex.ru/quickpay/shop-widget?writer=seller&targets={{ pay_yandex.payment_text|urlencode }}&targets-hint=&default-sum=2&button-text=11&payment-type-choice=on&mobile-payment-type-choice=on&fio=on&hint=&successURL={{ pay_yandex.success_redirect_url|urlencode }}&quickpay=shop&account={{ pay_yandex.account|urlencode }}&label={{ user.id|urlencode }}" width="450" height="223" frameborder="0" allowtransparency="true" scrolling="no"></iframe>
-        </section>
-        {% endif %}
     </div>
 </section>
-<section class='card'>
+<!--<section class='card'>
     <h2 class='lightgray'>Объявления</h2>
     <div>
         <div class='card-maintext'>
@@ -34,7 +35,7 @@
             </ul>
         </div>
     </div>
-</section>
+</section>-->
 {% if service.instruction.rendered %}
 <section class='card'>
     <input id='show_rules' type='checkbox' hidden class='shownews' />

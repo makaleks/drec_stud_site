@@ -2,12 +2,20 @@
 {% load utils_extra_filters %} <!-- THIS PAGE NOT WORKS, IN PROCESS -->
 {% block content %}
 <section class='card'>
-    <h2 class='lightgrey'>Заказ КДС{{ service.name }}</h2>
+    <h2 class='lightgrey'>{{ service.name }}</h2>
+    {% if service.responsible_user %}
+    <div>
+        Ответственный: <label style='text-decoration:underline;' for='modal_userinfo_check' onclick='showuserinfo("{{ service.responsible_user.get_full_name }}", "{{ service.responsible_user.account_id }}", "{{ service.responsible_user.phone_number }}", "{{ service.responsible_user.email }}");'>{{ service.responsible_user.get_full_name }}</label>
+        {% if service.request_document %}
+            <br><a href={{ service.request_document.url }}>Образец служебки</a>
+        {% endif %}
+    </div>
+    {% endif %}
     <div>
         <p><b>Чтоб выбрать или отменить выбор интервала нажми на него</b></p>
     </div>
 </section>
-<section class='card'>
+<!--<section class='card'>
     <h2 class='lightgray'>Объявления</h2>
     <div>
         <div class='card-maintext'>
@@ -17,7 +25,7 @@
             </ul>
         </div>
     </div>
-</section>
+</section>-->
 <form action='' method='post' id='service'>
     {% csrf_token %}
     {% with time_list=service.get_timetable_list %}
@@ -28,13 +36,17 @@
                 <div>
                     <table>
                         {% for t in day.time_layout %}
+                        {% with i=forloop.counter0 %}
+                        {% with item_dict=day|util_by_key:'items' %}
+                        {% with item=item_dict.values|util_to_list|first %}
+                        {% with cell=item.time|util_by_index:i %}
                         {% if not cell.closed %}
                         <tr>
                             <th class='time'>{{ t.time_start }}</th>
                             {% if cell.user %}
                             <td>
                                 <!-- TODO: <h2/> for title, <span class='celltext'/> for description-->
-                                <span class='celltext'>Заказал {{ cell.user.get_full_name }}</span>
+                                <span class='celltext'>{% if cell.title %}{{ cell.title }}{% else %}Заказал {{ cell.user.get_full_name }}{% endif %}</span>
                             </td>
                             <td>
                                 <label>
@@ -49,7 +61,7 @@
                             </td>
                             <td>
                                 <label>
-                                    <input type='checkbox' class='servselector hidden' name='order={{ service }}&&{{ cell.time_start }}&&{{ cell.time_end }}&&{{ day.dateyear }}' data-price='{{ service.default_price }}' data-timestep='{{ service.time_step }}' data-timestart='{{ cell.time_start }}' data-timeend='{{ cell.time_end }}' data-dateyear='{{ day.dateyear }}' />
+                                    <input type='checkbox' class='servselector hidden' name='order={{ service.items.first }}&&{{ cell.time_start }}&&{{ cell.time_end }}&&{{ day.dateyear }}' data-price='{{ service.default_price }}' data-timestep='{{ service.time_step }}' data-timestart='{{ cell.time_start }}' data-timeend='{{ cell.time_end }}' data-dateyear='{{ day.dateyear }}' />
                                     <a class='m-btn m-mobiletiny servoff'>Зарезервировать</a>
                                     <a class='m-btn m-mobiletiny m-selected servon'>Выбрано</a>
                                 </label>
@@ -57,6 +69,10 @@
                             {% endif %}
                         </tr>
                         {% endif %}
+                        {% endwith %}
+                        {% endwith %}
+                        {% endwith %}
+                        {% endwith %}
                         {% endfor %}
                     </table>
                 </div>
@@ -71,7 +87,7 @@
         <p id='finaltext'>
             Вы ничего не выбрали
         </p>
-    <textarea placeholder='Пояснить причину заказа(если вы просто участвуете в мероприятии, оставьте пустым)' style='width: 100%;'></textarea><br />
+    <textarea name='title' placeholder='Пояснить причину заказа(если вы просто участвуете в мероприятии, оставьте пустым)' style='width: 100%;'></textarea><br />
         <input id='finalcancel' type='button' value='Сбросить' />
         <input id='finalsubmit' type='submit' value='Подтверждаю' />
     </div>

@@ -52,3 +52,13 @@ def util_is_started(time_start, service):
 def util_contains_string(url, s):
     r = re.compile(s)
     return bool(r.match(url))
+
+# Django make_list supports only strings, it`s terrible
+@register.filter
+def util_to_list(lst):
+    return list(lst)
+
+# Django make_list supports only strings, it`s terrible
+@register.filter
+def util_by_index(lst,i):
+    return lst[i]
