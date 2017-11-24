@@ -123,7 +123,7 @@
                     currentprice -= price;
                 }
                 if (addwash > 0) {
-                    preview.innerHTML = ((addwash > 0) ? ('Выбрано: ' + addwash) : '') + '<a href="#finaltext">К подтверждению</a>';
+                    preview.innerHTML = ((addwash > 0) ? ('Выбрано: ' + addwash) : '') + ' <a href="#finaltext">К подтверждению</a>';
                     document.querySelector('#preresult').classList.remove('hidden');
                     finalview.innerHTML = 'Выбрано интервалов: ' + addwash;
                 } else {
