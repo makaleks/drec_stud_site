@@ -13,7 +13,7 @@
     <h2 class='lightgrey'>{{ service.name }}</h2>
     {% if service.responsible_user %}
     <div>
-        Ответственный: <label style='text-decoration:underline;color:blue;' for='modal_userinfo_check' onclick='showuserinfo("{{ service.responsible_user.get_full_name }}", "{{ service.responsible_user.account_id }}", "{{ service.responsible_user.phone_number }}", "{{ service.responsible_user.email }}");'>{{ service.responsible_user.get_full_name }}</label>
+        Ответственный: <label style='text-decoration:underline;color:blue;' for='modal_userinfo_check' onclick='showuserinfo("{{ service.responsible_user.get_full_name }}", "{{ service.responsible_user.account_id }}", "{{ service.responsible_user.phone_number }}", "{{ service.responsible_user.email }}");'>{{ service.responsible_user.get_full_name }}, {{ service.responsible_user.group_number }}</label>
         {% if service.request_document %}
             <br><a href={{ service.request_document.url }}>Образец служебки</a>
         {% endif %}
