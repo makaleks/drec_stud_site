@@ -17,25 +17,26 @@ def util_range(i):
 
 @register.filter
 def util_add_user_info(lst, user):
-    for day in lst:
-        for machine in day['items'].values():
-            i = 0
-            column = machine['time']
-            length = len(column)
-            while i < length:
-                u = column[i].get('user')
-                if u and u == user:
-                    if (i != 0 and 'user' in column[i - 1]
-                        and column[i - 1]['user'] != user):
-                        column[i - 1].update({'show_info': True})
-                    if (i != length - 1 and 'user' in column[i + 1]
-                        and column[i + 1]['user'] != user):
-                        column[i + 1].update({'show_info': True})
-                id = column[i].get('id')
-                if id and Participation.objects.filter(order = id, user = user):
-                    column[i]['participated'] = True
-                i+=1
-            machine['time'] = column
+    if not user.is_anonymous:
+        for day in lst:
+            for machine in day['items'].values():
+                i = 0
+                column = machine['time']
+                length = len(column)
+                while i < length:
+                    u = column[i].get('user')
+                    if u and u == user:
+                        if (i != 0 and 'user' in column[i - 1]
+                            and column[i - 1]['user'] != user):
+                            column[i - 1].update({'show_info': True})
+                        if (i != length - 1 and 'user' in column[i + 1]
+                            and column[i + 1]['user'] != user):
+                            column[i + 1].update({'show_info': True})
+                    id = column[i].get('id')
+                    if id and Participation.objects.filter(order = id, user = user):
+                        column[i]['participated'] = True
+                    i+=1
+                machine['time'] = column
     return lst
 
 @register.filter
