@@ -52,7 +52,7 @@
         {% with item_info=service.get_item_info %}
             {% for day in time_list|util_add_user_info:user %}
                 <div class='card'>
-                    <input id='show_day_{{ forloop.revcounter0 }}' type='checkbox' hidden class='shownews' />
+                    <input id='show_day_{{ forloop.revcounter0 }}' type='checkbox' hidden class='shownews' {% if forloop.first %}checked{% endif %}/>
                     <div class='cutted'><h2>{{ day.day }}</h2><label class='link-underline' for='show_day_{{ forloop.revcounter0 }}'><a class='lightred'>&nbsp;Открыть&nbsp;</a></label></div>
                     <div class='full'>
                         <table class='table_aside'>
@@ -78,12 +78,12 @@
         <!-- print cells -->
         {% for cell in m_value.time %}
             <tr>
-                <!-- can`t be selected -->
-                {% if forloop.parentloop.parentloop.first and cell.time_start|util_is_started:service == 'ended' %}
-                    <td class='ended' rowspan='{{ m_value.rowspan }}'></td>
                 <!-- if not done yet -->
-                {% elif cell.closed %}
+                {% if cell.closed %}
                     <td class='ended'></td>
+                <!-- can`t be selected -->
+                {% elif forloop.parentloop.parentloop.first and cell.time_start|util_is_started:service == 'ended' %}
+                    <td class='ended' rowspan='{{ m_value.rowspan }}'></td>
                 <!-- users: display next/previous from selected even if closed -->
                 {% elif cell.user %}
                     <td class={% if cell.user == user %}'choisen'{% elif not cell.closed or cell.show_info %}'selected'{% elif cell.closed %}'ended'{% endif %} {% if not cell.closed %}rowspan='{{ m_value.rowspan }}'{% endif %}>

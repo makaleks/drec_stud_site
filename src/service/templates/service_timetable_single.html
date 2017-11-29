@@ -64,7 +64,7 @@
     {% with item_info=service.get_item_info %}
         {% for day in time_list|util_add_user_info:user %}
             <div class='card'>
-                <input id='show_day_{{ forloop.revcounter0 }}' type='checkbox' hidden class='shownews' />
+                <input id='show_day_{{ forloop.revcounter0 }}' type='checkbox' hidden class='shownews' {% if forloop.first %}checked{% endif %}/>
                 <div class='cutted'><h2>{{ day.day }}</h2><label class='link-underline' for='show_day_{{ forloop.revcounter0 }}'><a class='lightred'>&nbsp;Открыть&nbsp;</a></label></div>
                 <div class='full'>
                     <table>

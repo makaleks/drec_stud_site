@@ -29,6 +29,8 @@
                 <div class='card'>
                     <a href='{{ survey.get_absolute_url }}' class='survey_list'>{{ survey.title }}</a>
                     <br />
+                    {{ survey.description }}
+                    <br />
                     <small>Создано: {{ survey.started }}; Доступно до {{ survey.finished }};</small>
                 </div>
                 <!-- <small><span class='tag blue'>общежитие</span></small> -->
@@ -46,6 +48,8 @@
             <div class='tagged tag_hostel'>
                 <div class='card'>
                     <a href='{{ survey.get_absolute_url }}' class='survey_list'>{{ survey.title }}</a>
+                    <br />
+                    {{ survey.description }}
                     <br />
                     <small>Создано: {{ survey.started }}; Доступно до {{ survey.finished }};</small>
                 </div>
