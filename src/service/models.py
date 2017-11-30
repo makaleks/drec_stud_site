@@ -170,6 +170,38 @@ class Service(models.Model):
                     num = 0
             if num != 0:
                 result_lst.append(types.SimpleNamespace(t_steps_per_order = num))
+        def final_prepare_first_day(final_lst):
+            if not final_lst:
+                return
+            lst = final_lst[0]
+            earliest_time = None
+            now = timezone.now().time()
+            for it in list(lst['items'].values()):
+                t_list = it['time']
+                for t in t_list:
+                    if ((t['time_end'] > now) 
+                        and (earliest_time == None 
+                            or earliest_time > t['time_start'])):
+                        earliest_time = t['time_start']
+                        break
+            for i in range(len(lst['time_layout'])):
+                if lst['time_layout'][i]['time_start'] >= earliest_time:
+                    lst['time_layout'] = lst['time_layout'][i:]
+                    break
+            td = (datetime.datetime.combine(datetime.date.min, self.time_step) - datetime.datetime.min)
+            for k in lst['items']:
+                t = lst['items'][k]['time']
+                for i in range(len(it['time'])):
+                    if t[i]['time_start'] >= earliest_time:
+                        t = t[i:]
+                        t_start = datetime.datetime.combine(datetime.date.min, t[0]['time_start'])
+                        while (t_start - td).time() > earliest_time:
+                            t.insert(0, {'time_start': (t_start - td).time(), 'time_end': t[0]['time_start'], 'closed': True})
+                        break
+                    elif t[i]['time_start'] == datetime.time(0,0,0):
+                        break
+                it['time'] = t
+            final_lst[0] = lst
         # collect available_time from all Items
         items = {}
         for item in list(self.items.all().order_by('name')):
@@ -225,6 +257,7 @@ class Service(models.Model):
                     })
                     t_start += td
                 result_lst[i]['time_layout'] = tmp_lst
+        #final_prepare_first_day(result_lst)
         return result_lst
     def get_item_info(self):
         result_lst = {'price':{}, 'timestep':{}}
