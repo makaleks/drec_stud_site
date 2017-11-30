@@ -775,7 +775,10 @@ blockquote {
     .service_card {
         width: calc(50% - 2rem);
     }
-}/* WASHING */
+}textarea {
+    max-width: 100%;
+}
+/* WASHING */
 #washing table,
 #service table {
     -webkit-user-select: none;
