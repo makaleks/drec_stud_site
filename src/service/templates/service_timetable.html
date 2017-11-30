@@ -60,7 +60,7 @@
                                 <th>Время</th>
                             </tr>
                             {% for t in day.time_layout %}
-                                <tr>
+                                <tr style='vertical-align:bottom;'>
                                     <td>{{ t.time_start }}</td>
                                 </tr>
                             {% endfor %}
@@ -71,7 +71,7 @@
                                     <table>
                                         <tr>
                                             {% for machine_name in day.items %}
-                                            <th style='word-break:normal;'>{{ machine_name }}<br /><small>({{ item_info.price|util_by_key:machine_name }} руб.)</small></th>
+                                            <th style='word-break:normal;vertical-align:top;'>{{ machine_name }}<br /><small>({{ item_info.price|util_by_key:machine_name }} руб.)</small></th>
                                             {% endfor %}
                                         </tr>
                                     </table>
