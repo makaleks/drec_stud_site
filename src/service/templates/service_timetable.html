@@ -71,7 +71,7 @@
                                     <table>
                                         <tr>
                                             {% for machine_name in day.items %}
-                                            <th style='overflow-wrap:break-word;'>{{ machine_name }}<br /><small>({{ item_info.price|util_by_key:machine_name }} руб.)</small></th>
+                                            <th style='overflow-wrap:break-word;word-break:break-word;'>{{ machine_name }}<br /><small>({{ item_info.price|util_by_key:machine_name }} руб.)</small></th>
                                             {% endfor %}
                                         </tr>
                                     </table>
