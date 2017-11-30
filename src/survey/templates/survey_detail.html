@@ -5,17 +5,19 @@
 {% endblock %}
 
 {% block content %}
-    <div class='card'>
-        <a class='m-btn m-inactive' id='btnShowSurvey' onclick='showSurvey();'>Опрос</a>
-        <a class='m-btn' id='btnShowResult' onclick='showResult();'>Результаты</a>
-    </div>
+    {% if user.is_staff %}
+        <div class='card'>
+            <a class='m-btn m-inactive' id='btnShowSurvey' onclick='showSurvey();'>Опрос</a>
+            <a class='m-btn' id='btnShowResult' onclick='showResult();'>Результаты</a>
+        </div>
+        <div id='resultContainer' class='hidden'>
+            <div class='card'>
+                Results;
+            </div>
+        </div>
+    {% endif %}
     <div id='surveyContainer'>
         <div class='card'>Loading, please wait</div>
-    </div>
-    <div id='resultContainer' class='hidden'>
-        <div class='card'>
-            Results;
-        </div>
     </div>
 
     <form method = 'post' hidden id = 'form'>
