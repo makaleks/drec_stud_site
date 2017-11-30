@@ -1,15 +1,4 @@
-<!DOCTYPE html>
-<html>
-{% load staticfiles %}
-{% load utils_extra_filters %}
-
-<head>
-    <title>Сайт студсовета</title>
-    <meta charset='UTF-8' />
-    <meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' />
-</head>
-
-<body style='background:url(/static/img/error.svg) fixed;background-size:100% 100%;height:100%;'>
-
-</body>
-</html>
+{% extends 'core/base.html' %}
+{% block content %}
+<img style='width:100%;margin-top:2rem;margin-left:-9px;border:10px black solid;' src='{{ STATIC_URL }}img/error.svg' />
+{% endblock %}
