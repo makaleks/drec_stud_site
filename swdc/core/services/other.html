@@ -37,7 +37,7 @@
                         </label>
                     </td>
                     <!--
-                    <h3>Время зарезервировано</h3>
+                    <h3>Время уже зарезервировано</h3>
                     -->
                 </tr>
                 <th class='time'>09:30</th>
@@ -52,7 +52,7 @@
                             <a class='m-btn m-mobiletiny m-selected servon'>Участие заявлено (отменить?)</a>
                         </label>
                         <!--
-                        <h3>Места закончились</h3>
+                        <h3>Места уже закончились</h3>
                         -->
                     </td>
                 </tr>
@@ -102,7 +102,7 @@
                     currentprice -= price;
                 }
                 if (addwash > 0) {
-                    preview.innerHTML = ((addwash > 0) ? ('Выбрано: ' + addwash) : '') + '<a href="#finaltext">К подтверждению</a>';
+                    preview.innerHTML = ((addwash > 0) ? ('Выбрано: ' + addwash) : '') + ' <a href="#finaltext">К подтверждению</a>';
                     document.querySelector('#preresult').classList.remove('hidden');
                     finalview.innerHTML = 'Выбрано интервалов: ' + addwash;
                 } else {
@@ -138,6 +138,7 @@
             usernumber.classList.remove('hidden');
         }
         if (vkid !== null) {
+            uservkid.innerText = 'Написать в ВК vk.me/' + vkid;
             uservkid.href = 'https://vk.me/id' + vkid;
             uservkid.classList.remove('hidden');
         }
