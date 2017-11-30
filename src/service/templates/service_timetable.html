@@ -65,10 +65,11 @@
                                 </tr>
                             {% endfor %}
                         </table>
+                        <!-- print machines -->
                         <table class='table_main'>
                             <tr>
                                 <td colspan={{ day.items.items|length }}>
-                                    <table>
+                                    <table style='margin:1px;'>
                                         <tr>
                                             {% for machine_name in day.items %}
                                             <th style='word-break:normal;vertical-align:top;'>{{ machine_name }}<br /><small>({{ item_info.price|util_by_key:machine_name }} руб.)</small></th>
@@ -79,8 +80,7 @@
 <!-- break trailing spaces for nicer appeal -->
 {% for machine,m_value in day.items.items %}
     <td>
-        <!-- print machine -->
-        <table>
+        <table style='margin:1px;'>
         <!-- print cells -->
         {% for cell in m_value.time %}
             <tr>
