@@ -338,7 +338,7 @@ body {
     z-index: 100;
 }
 #content {
-    margin-bottom: 5rem;
+    margin-bottom: 10rem;
     position: relative;
     font-family: 'Open Sans', sans-serif;
 }

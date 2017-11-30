@@ -27,6 +27,10 @@
                 <p>{{ comment.text }}</p>
                 <a data-comment-num='{{ comment.number }} 123' href='#' name='answer' class='block'>Ответить</a>
                 <small>Написан {{ comment.date }}</small>
+                {% if comment.author.id == user.id %}
+                    <a href='/notes/student_council/delete?id={{ comment.id }}'>Удалить</a>
+                {% endif %}
+                <hr>
             </div>
         </div>
     {% endfor %}
