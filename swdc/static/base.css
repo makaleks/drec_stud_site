@@ -339,6 +339,7 @@ body {
 }
 #content {
     margin-bottom: 5rem;
+    position: relative;
     font-family: 'Open Sans', sans-serif;
 }
 footer {
@@ -395,6 +396,9 @@ footer>section {
  */
 .inline {
     display: inline;
+}
+.block {
+    display: block;
 }
 .hidden {
     display: none !important;
