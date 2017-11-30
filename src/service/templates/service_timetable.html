@@ -67,14 +67,20 @@
                         </table>
                         <table class='table_main'>
                             <tr>
+                                <td colspan={{ day.items.items|length }}>
+                                    <table>
+                                        <tr>
+                                            {% for machine_name in day.items %}
+                                            <th>{{ machine_name }}<br /><small>({{ item_info.price|util_by_key:machine_name }} руб.)</small></th>
+                                            {% endfor %}
+                                        </tr>
+                                    </table>
+                                    <tr>
 <!-- break trailing spaces for nicer appeal -->
 {% for machine,m_value in day.items.items %}
     <td>
         <!-- print machine -->
         <table>
-            <tr>
-                <th>{{ machine }}<br /><small>({{ item_info.price|util_by_key:machine }} руб.)</small></th>
-            </tr>
         <!-- print cells -->
         {% for cell in m_value.time %}
             <tr>
@@ -111,6 +117,7 @@
                     {% endwith %}
                 {% endif %}
             {% endfor %}
+                                    </tr>
         </table>
     </td>
 {% endfor %}
