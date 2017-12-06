@@ -1,4 +1,13 @@
 /* WASHING */
+#washing .full-width {
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+}
+#washing .full-width>.card {
+    min-width: 700px;
+    max-width: 100%;
+    text-align: center;
+}
 #washing table,
 #service table {
     -webkit-user-select: none;
@@ -60,11 +69,23 @@
 #washing .table_main td,
 #washing .table_main th {
     min-width: 102px;
+    max-width: 102px;
     overflow-x: hidden;
     position: relative;
+    padding: 0;
+    margin: 0;
 }
 #washing .table_main td {
-    word-break: break-all;
+    -ms-word-break: break-all;
+        word-break: break-all;
+
+    /* Non standard for webkit */
+    word-break: break-word;
+
+    -webkit-hyphens: auto;
+       -moz-hyphens: auto;
+        -ms-hyphens: auto;
+            hyphens: auto;
     padding: 0;
 }
 #washing .table_main td td {
@@ -73,6 +94,9 @@
 #service th {
     text-align: right;
     vertical-align: top;
+}
+#washing .table_main table tr>td {
+    border: 1px solid white;
 }
 /* WASHING COLORS */
 #washing .table_main table tr>td,
