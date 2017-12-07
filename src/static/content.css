@@ -338,7 +338,8 @@ body {
     z-index: 100;
 }
 #content {
-    margin-bottom: 5rem;
+    margin-bottom: 10rem;
+    position: relative;
     font-family: 'Open Sans', sans-serif;
 }
 footer {
@@ -396,6 +397,9 @@ footer>section {
 .inline {
     display: inline;
 }
+.block {
+    display: block;
+}
 .hidden {
     display: none !important;
 }
@@ -412,6 +416,10 @@ blockquote {
     margin-left: 40px;
     padding-left: 15px;
     border-left: 3px solid #ccc;
+}
+textarea {
+    max-width: 100%;
+    min-width: 100%;
 }
 .container {
     padding-right: 15px;
@@ -775,10 +783,16 @@ blockquote {
     .service_card {
         width: calc(50% - 2rem);
     }
-}textarea {
-    max-width: 100%;
+}/* WASHING */
+#washing .full-width {
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
 }
-/* WASHING */
+#washing .full-width>.card {
+    min-width: 700px;
+    max-width: 100%;
+    text-align: center;
+}
 #washing table,
 #service table {
     -webkit-user-select: none;
@@ -840,11 +854,23 @@ blockquote {
 #washing .table_main td,
 #washing .table_main th {
     min-width: 102px;
+    max-width: 102px;
     overflow-x: hidden;
     position: relative;
+    padding: 0;
+    margin: 0;
 }
 #washing .table_main td {
-    word-break: break-all;
+    -ms-word-break: break-all;
+        word-break: break-all;
+
+    /* Non standard for webkit */
+    word-break: break-word;
+
+    -webkit-hyphens: auto;
+       -moz-hyphens: auto;
+        -ms-hyphens: auto;
+            hyphens: auto;
     padding: 0;
 }
 #washing .table_main td td {
@@ -853,6 +879,9 @@ blockquote {
 #service th {
     text-align: right;
     vertical-align: top;
+}
+#washing .table_main table tr>td {
+    border: 1px solid white;
 }
 /* WASHING COLORS */
 #washing .table_main table tr>td,
@@ -1023,6 +1052,54 @@ blockquote {
     padding: 5px 15px;
     background: #ccc;
     border: 0 none;
+}.qa-avatar {
+    width: 40px;
+    display: inline;
+}
+.qa-with-border {
+    border: 1px red solid;
+}
+.qa-comment-text{
+    display: inline;
+    position: static;
+}
+#comment {
+    bottom: 0;
+    position: fixed;
+    display: block;
+}
+@media(min-width: 860px) {
+    #comment {
+        min-width: 700px;
+        width: 700px;
+        max-width: -webkit-calc(100% - 330px);
+        max-width: -moz-calc(100% - 330px);
+        max-width: calc(100% - 330px);
+    }
+}
+@media(max-width: 860px) {
+    #comment {
+        min-width: calc(100% - 30px);
+        width: -webkit-calc(100% - 30px);
+        width: -moz-calc(100% - 30px);
+        width: calc(100% - 30px);
+        max-width: -webkit-calc(100% - 30px);
+        max-width: -moz-calc(100% - 30px);
+        max-width: calc(100% - 30px);
+    }
+}
+@media(max-width: 480px) {
+    #comment {
+        min-width: 100%;
+        width: 100%;
+        max-width: 100%;
+    }
+}
+#qa-answerval {
+    display: none;
+}
+#qa-isanswer:checked~#qa-answerval {
+    display: inline;
 }.tablabel {
     margin-top: 8px;
     margin-left: 4px;

@@ -51,32 +51,33 @@
         {% with time_list=service.get_timetable_list %}
         {% with item_info=service.get_item_info %}
             {% for day in time_list|util_add_user_info:user %}
-                <div class='card'>
-                    <input id='show_day_{{ forloop.revcounter0 }}' type='checkbox' hidden class='shownews' {% if forloop.first %}checked{% endif %}/>
-                    <div class='cutted'><h2>{{ day.day }}</h2><label class='link-underline' for='show_day_{{ forloop.revcounter0 }}'><a class='lightred'>&nbsp;Открыть&nbsp;</a></label></div>
-                    <div class='full'>
-                        <table class='table_aside'>
-                            <tr>
-                                <th>Время</th>
-                            </tr>
-                            {% for t in day.time_layout %}
-                                <tr style='vertical-align:bottom;'>
-                                    <td>{{ t.time_start }}</td>
+                <div class='full-width'>
+                    <div class='card'>
+                        <input id='show_day_{{ forloop.revcounter0 }}' type='checkbox' hidden class='shownews' {% if forloop.first %}checked{% endif %}/>
+                        <div class='cutted'><h2>{{ day.day }}</h2><label class='link-underline' for='show_day_{{ forloop.revcounter0 }}'><a class='lightred'>&nbsp;Открыть&nbsp;</a></label></div>
+                        <div class='full'>
+                            <table class='table_aside'>
+                                <tr>
+                                    <th>Время</th>
                                 </tr>
-                            {% endfor %}
-                        </table>
-                        <!-- print machines -->
-                        <table class='table_main'>
-                            <tr>
-                                <td colspan={{ day.items.items|length }}>
-                                    <table style='margin:1px;'>
+                                {% for t in day.time_layout %}
+                                    <tr style='vertical-align:bottom;'>
+                                        <td>{{ t.time_start }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                            <!-- print machines -->
+                            <table class='table_main'>
+                                <tr>
+                                    <td colspan={{ day.items.items|length }}>
+                                        <table style='margin:1px;'>
+                                            <tr>
+                                                {% for machine_name in day.items %}
+                                                <th style='word-break:normal;vertical-align:top;'>{{ machine_name }}<br /><small>({{ item_info.price|util_by_key:machine_name }} руб.)</small></th>
+                                                {% endfor %}
+                                            </tr>
+                                        </table>
                                         <tr>
-                                            {% for machine_name in day.items %}
-                                            <th style='word-break:normal;vertical-align:top;'>{{ machine_name }}<br /><small>({{ item_info.price|util_by_key:machine_name }} руб.)</small></th>
-                                            {% endfor %}
-                                        </tr>
-                                    </table>
-                                    <tr>
 <!-- break trailing spaces for nicer appeal -->
 {% for machine,m_value in day.items.items %}
     <td>
@@ -122,9 +123,10 @@
     </td>
 {% endfor %}
 <!-- break end -->
-                            </tr>
-                        </table>
-                        <br /><br /><label class='link-underline' for='show_day_{{ forloop.revcounter0 }}'><a class='lightred'>&nbsp;Скрыть&nbsp;</a></label>
+                                </tr>
+                            </table>
+                            <br /><br /><label class='link-underline' for='show_day_{{ forloop.revcounter0 }}'><a class='lightred'>&nbsp;Скрыть&nbsp;</a></label>
+                        </div>
                     </div>
                 </div>
             {% endfor %}
