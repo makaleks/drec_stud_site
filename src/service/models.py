@@ -191,17 +191,15 @@ class Service(models.Model):
             td = (datetime.datetime.combine(datetime.date.min, self.time_step) - datetime.datetime.min)
             for k in lst['items']:
                 t = lst['items'][k]['time']
-                for i in range(len(it['time'])):
+                for i in range(len(t)):
                     if t[i]['time_start'] >= earliest_time:
                         t = t[i:]
                         t_start = datetime.datetime.combine(datetime.date.min, t[0]['time_start'])
-                        while (t_start - td).time() > earliest_time:
+                        while (t_start - td).time() >= earliest_time:
                             t.insert(0, {'time_start': (t_start - td).time(), 'time_end': t[0]['time_start'], 'closed': True})
+                            t_start = datetime.datetime.combine(datetime.date.min, t[0]['time_start'])
                         break
-                    elif t[i]['time_start'] == datetime.time(0,0,0):
-                        break
-                it['time'] = t
-            final_lst[0] = lst
+                lst['items'][k]['time'] = t
         # collect available_time from all Items
         items = {}
         for item in list(self.items.all().order_by('name')):
@@ -257,7 +255,7 @@ class Service(models.Model):
                     })
                     t_start += td
                 result_lst[i]['time_layout'] = tmp_lst
-        #final_prepare_first_day(result_lst)
+        final_prepare_first_day(result_lst)
         return result_lst
     def get_item_info(self):
         result_lst = {'price':{}, 'timestep':{}}
