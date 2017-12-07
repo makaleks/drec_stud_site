@@ -1,6 +1,6 @@
 mkdir -p preview
 mkdir -p preview/services
-for FILE in index survey surveys_list note chart studsovet error; do
+for FILE in index survey surveys_list note chart studsovet qanda error; do
     echo $FILE;
     awk -v FILE="$FILE" '
     {

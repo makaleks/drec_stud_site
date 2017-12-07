@@ -67,6 +67,7 @@
 </section>
 <form action='' method='post' id='washing'>
     {% csrf_token %}
+    <div class='full-width'>
     <div class='card'>
         <input id='show_day{{id}}' type='checkbox' hidden class='shownews' />
         <div class='cutted'><h2>Среда 04.10</h2><label class='link-underline' for='show_day{{id}}'><a class='lightred'>&nbsp;Открыть&nbsp;</a></label></div>
@@ -100,7 +101,7 @@
                                 <th>Машина №2<br /><small>(10 руб.)</small></th>
                                 <th>Машина №3<br /><small>(10 руб.)</small></th>
                                 <th>Машина №4<br /><small>(10 руб.)</small></th>
-                                <th>Машина №5<br /><small>(10 руб.)</small></th>
+                                <th>Сушильная машина №1<br /><small>(10 руб.)</small></th>
                                 <th>Длинноназваннннннннннннннннннная машинка №6<br /><small>(10 руб.)</small></th>
                             </tr>
                         </table>
@@ -283,6 +284,7 @@
             <br /><br /><label class='link-underline' for='show_day{{id}}'><a class='lightred'>&nbsp;Скрыть&nbsp;</a></label>
         </div>
     </div>
+    </div>
     <div class='card hidden' id='preresult'>
         <p id='pretext'></p>
     </div>
@@ -376,7 +378,7 @@
             usernumber.classList.remove('hidden');
         }
         if (vkid !== null) {
-            uservkid.innerText = 'Написать в ВК vk.com/' + vkid;
+            uservkid.innerText = 'Написать в ВК vk.com/id' + vkid;
             uservkid.href = 'https://vk.me/id' + vkid;
             uservkid.classList.remove('hidden');
         }
