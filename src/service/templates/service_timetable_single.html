@@ -221,17 +221,17 @@
         uservkid.classList.add('hidden');
         useremail.classList.add('hidden');
         username.innerText = name;
-        if (number !== null) {
+        if (number !== null && number !== "") {
             usernumber.innerText = 'Позвонить: ' + number;
             usernumber.href = 'tel:' + number;
             usernumber.classList.remove('hidden');
         }
-        if (vkid !== null) {
+        if (vkid !== null && vkid !== "") {
             uservkid.innerText = 'Написать в ВК vk.com/id' + vkid;
             uservkid.href = 'https://vk.me/id' + vkid;
             uservkid.classList.remove('hidden');
         }
-        if (email !== null) {
+        if (email !== null && email !== "") {
             useremail.innerText = 'Написать: ' + email;
             useremail.href = 'mailto:' + email;
             useremail.classList.remove('hidden');

@@ -103,7 +103,7 @@
                 <td rowspan='{{ m_value.rowspan }}' {% if forloop.parentloop.parentloop.first and cell.time_start|util_is_started:service  == 'started' %}{# Uncomment to enable STARTED color: #}{#class='started'#}{% endif %}>
                         <label>
                             <input type='checkbox' name='order={{ machine }}&&{{ cell.time_start }}&&{{ cell.time_end }}&&{{ day.dateyear }}' data-price='{{ item_info.price|util_by_key:machine }}' data-timestep='{{ item_info.timestep|util_by_key:machine }}' data-timestart='{{ cell.time_start }}' data-timeend='{{ cell.time_end }}' data-dateyear='{{ day.dateyear }}' class='hidden'/>
-                            <span><div>V</div></span>
+                            <span><div>+</div></span>
                         </label>
                     </td>
                 {% endif %}
@@ -209,17 +209,17 @@
         uservkid.classList.add('hidden');
         useremail.classList.add('hidden');
         username.innerText = name;
-        if (number !== null) {
+        if (number !== null && number !== "") {
             usernumber.innerText = 'Позвонить: ' + number;
             usernumber.href = 'tel:' + number;
             usernumber.classList.remove('hidden');
         }
-        if (vkid !== null) {
+        if (vkid !== null && vkid !== "") {
             uservkid.innerText = 'Написать в ВК vk.com/id' + vkid;
             uservkid.href = 'https://vk.me/id' + vkid;
             uservkid.classList.remove('hidden');
         }
-        if (email !== null) {
+        if (email !== null && email !== "") {
             useremail.innerText = 'Написать: ' + email;
             useremail.href = 'mailto:' + email;
             useremail.classList.remove('hidden');
