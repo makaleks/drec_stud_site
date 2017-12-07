@@ -789,7 +789,7 @@ textarea {
     margin-left: calc(-50vw + 50%);
 }
 #washing .full-width>.card {
-    min-width: 700px;
+    /*min-width: 700px;*/
     max-width: 100%;
     text-align: center;
 }

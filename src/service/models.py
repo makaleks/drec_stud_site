@@ -176,10 +176,13 @@ class Service(models.Model):
             lst = final_lst[0]
             earliest_time = None
             now = timezone.now().time()
+            I = 0
             for it in list(lst['items'].values()):
+                I+=1
                 t_list = it['time']
                 for t in t_list:
-                    if ((t['time_end'] > now) 
+                    if ((t['time_end'] > now 
+                            or t['time_end'] == datetime.time(0,0,0)) 
                         and (earliest_time == None 
                             or earliest_time > t['time_start'])):
                         earliest_time = t['time_start']
