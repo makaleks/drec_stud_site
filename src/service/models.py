@@ -187,6 +187,8 @@ class Service(models.Model):
                             or earliest_time > t['time_start'])):
                         earliest_time = t['time_start']
                         break
+                if not earliest_time:
+                    earliest_time = datetime.time(23, 59, 59)
             for i in range(len(lst['time_layout'])):
                 if lst['time_layout'][i]['time_start'] >= earliest_time:
                     lst['time_layout'] = lst['time_layout'][i:]
@@ -198,7 +200,8 @@ class Service(models.Model):
                     if t[i]['time_start'] >= earliest_time:
                         t = t[i:]
                         t_start = datetime.datetime.combine(datetime.date.min, t[0]['time_start'])
-                        while (t_start - td).time() >= earliest_time:
+                        while (t_start >= datetime.datetime.min + td
+                                and (t_start - td).time() >= earliest_time):
                             t.insert(0, {'time_start': (t_start - td).time(), 'time_end': t[0]['time_start'], 'closed': True})
                             t_start = datetime.datetime.combine(datetime.date.min, t[0]['time_start'])
                         break
