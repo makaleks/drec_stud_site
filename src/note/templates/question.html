@@ -1,11 +1,72 @@
 {% extends 'core/base.html' %}
-
+{% load utils_extra_filters %}
 {% block content %}
-    <section class="card">
-        <h2>{{ question.title }}</h2>
-            <div>
-                <p>{{ question.text }}</p>
+<section class='card'>
+    <h2>{{ question.title }}</h2>
+    <h3>{{ question.text }}</h3>
+    <p>Вопрос задан {{ question.created }}</p>
+    {% if question.is_public %}
+        {% if question.author.avatar_url %}
+            <img src='{{ question.author.avatar_url }}' class='qa-avatar' />
+        {% else %}
+            <img src='{{ STATIC_URL }}img/vk.svg' class='qa-avatar' />
+        {% endif %}
+        <p class='inline'>{{ question.author.get_full_name }} <a href='{{ question.get_absolute_url }}'>Ссылка</a></p>
+    {% else %}
+        <img src='{{ STATIC_URL }}img/vk.svg' class='qa-avatar' />
+        <p class='inline'>Аноним <a href='{{ question.get_absolute_url }}'>Ссылка</a></p>
+    {% endif %}
+    <hr />
+<!--
+    {% for comment in comments %}
+        <div class='comment {% if comment.author.is_staff %}qa-with-border{% endif %}' id='CT{{ commemnt.number }}'>
+            {% if comment.author.avatar_url %}
+                <img src='{{ comment.author.avatar_url }}' class='qa-avatar' />
+            {% else %}
+                <img src='{{ STATIC_URL }}img/vk.svg' class='qa-avatar' />
+            {% endif %}
+            <div class='qa-comment-text'>
+                <span>{{ comment.author.get_full_name }} ФИО</span>
+                {% if comment.answer.number %}
+                    <p>Ответ <a href='#CT{{ comment.answer.number }}'>{{ comment.answer.get_full_name }}</a></p>
+                {% endif %}
+                <p>{{ comment.text }}</p>
+                <a data-comment-num='{{ comment.number }} 123' href='#' name='answer' class='block'>Ответить</a>
+                <small>Написан {{ comment.date }}</small>
+                {% if comment.author.id == user.id %}
+                    <a href='/notes/student_council/delete?id={{ comment.id }}'>Удалить</a>
+                {% endif %}
+                <hr>
             </div>
-            <p class="card-text"><small class="text-muted">{% if question.is_public %}Спросил {{ question.author.get_full_name }}<br>{% endif %}Обновлено {{ question.edited }} <a href='{{ question.get_absolute_url }}'>Ссылка</a></small></p>
-        </section>
+        </div>
+    {% endfor %}
+-->
+</section>
+<form action='' method='post' id='comment'>
+    {% csrf_token %}
+    <div class='card'>
+        <input type='checkbox' class='hidden' id='qa-isanswer'>
+        <input type='text' class='hissen' name='answerto' id='answerto'>
+        <p id='qa-answerval'><label for='qa-isanswer' onclick='document.getElementById("answerto").value="";'>X</label> Ответ <a id='qa-answer-name'></a></p>
+        <textarea rows=3 required></textarea>
+        <input required type='checkbox' value='Я проверил текст на ошибки'>
+        <input type='submit' value='Отправить' />
+    </div>
+</form>
+{% endblock %}
+{% block body_extras %}
+<script>
+
+window.addEventListener('load', function() {
+        var answers = document.getElementsByName('answer');
+
+        for (var item of answers) {
+            item.addEventListener('click', function() {
+                document.getElementById('qa-answer-name').innerText = item.parentNode.getElementsByTagName('span')[0].innerText;
+                document.getElementById('answerto').value = item.getAttribute('data-comment-num');
+                document.getElementById('qa-isanswer').checked = true;
+            });
+        }
+    });
+</script>
 {% endblock %}

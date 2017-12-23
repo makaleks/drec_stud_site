@@ -1,0 +1,11 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+    <section class="card">
+        <h2>{{ question.title }}</h2>
+            <div>
+                <p>{{ question.text }}</p>
+            </div>
+            <p class="card-text"><small class="text-muted">{% if question.is_public %}Спросил {{ question.author.get_full_name }}<br>{% endif %}Обновлено {{ question.edited }} <a href='{{ question.get_absolute_url }}'>Ссылка</a></small></p>
+        </section>
+{% endblock %}

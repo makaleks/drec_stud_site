@@ -45,6 +45,11 @@ class ServiceAdmin(SortableAdminMixin, VersionAdmin):
             return ['slug']
         else:
             return []
+    #def get_inline_instances(self, request, obj=None):
+    #    if obj and obj.is_single_item:
+    #        return []
+    #    else:
+    #        return super(ServiceAdmin, self).get_inline_instances(request, obj)
 
 @admin.register(Item)
 class ItemAdmin(SortableAdminMixin, VersionAdmin):

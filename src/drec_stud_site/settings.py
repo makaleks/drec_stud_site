@@ -151,6 +151,8 @@ SOCIAL_AUTH_VK_OAUTH2_EXTRA_DATA = ['photo_100']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = module.DEBUG
 
+QUESTION_DEFAULT_APPROVED = module.QUESTION_DEFAULT_APPROVED
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = module.SECRET_KEY
 

@@ -211,32 +211,5 @@
             document.querySelector('#preresult').classList.add('hidden');
         });
     });
-
-    function showuserinfo(name, vkid, number, email) {
-        var username = document.querySelector('#userinfo_name'),
-            uservkid = document.querySelector('#userinfo_vkid'),
-            usernumber = document.querySelector('#userinfo_number'),
-            useremail = document.querySelector('#userinfo_email');
-        usernumber.classList.add('hidden');
-        uservkid.classList.add('hidden');
-        useremail.classList.add('hidden');
-        username.innerText = name;
-        if (number !== null && number !== "") {
-            usernumber.innerText = 'Позвонить: ' + number;
-            usernumber.href = 'tel:' + number;
-            usernumber.classList.remove('hidden');
-        }
-        if (vkid !== null && vkid !== "") {
-            uservkid.innerText = 'Написать в ВК vk.com/id' + vkid;
-            uservkid.href = 'https://vk.me/id' + vkid;
-            uservkid.classList.remove('hidden');
-        }
-        if (email !== null && email !== "") {
-            useremail.innerText = 'Написать: ' + email;
-            useremail.href = 'mailto:' + email;
-            useremail.classList.remove('hidden');
-        }
-    };
-
 </script>
 {% endblock %}

@@ -141,6 +141,8 @@ Attention: all projects have some secret data, that can`t be published anywhere.
 # vk.com social network
 SOCIAL_AUTH_VK_OAUTH2_KEY = '000'
 SOCIAL_AUTH_VK_OAUTH2_SECRET = 'SecretSecret'
+# Default values
+QUESTION_DEFAULT_APPROVED = True
 # Default secrets
 DEBUG = True
 SECRET_KEY = 'DefaultDjangoSecretNeverUsed'

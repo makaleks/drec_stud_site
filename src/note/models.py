@@ -3,6 +3,9 @@ from precise_bbcode.fields import BBCodeTextField
 from django.db import models
 from django.conf import settings
 
+def get_default_approved():
+    return settings.QUESTION_DEFAULT_APPROVED
+
 # Create your models here.
 
 class Note(models.Model):
@@ -25,6 +28,7 @@ class Question(models.Model):
     title = models.CharField(max_length = 32, unique = True, blank = False, null = False, verbose_name = 'Заголовок')
     text = BBCodeTextField(blank = False, null = False, verbose_name = 'Текст')
     is_public = models.BooleanField(default = True, null = False, verbose_name = 'Автор виден всем')
+    is_approved = models.BooleanField(default = get_default_approved, blank = True, null = False, verbose_name = 'Одобрено')
     def __str__(self):
         return '{0}, {1}'.format(self.title, self.author)
     def get_absolute_url(self):
@@ -32,4 +36,4 @@ class Question(models.Model):
     class Meta:
         verbose_name = 'Вопрос'
         verbose_name_plural = 'Вопросы'
-        ordering = ['created']
+        ordering = ['is_approved', 'created']

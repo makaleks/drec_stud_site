@@ -25,11 +25,11 @@ admin.site.register(Note, NoteAdmin)
 
 
 class QuestionAdmin(VersionAdmin):
-    list_display = ('author', 'title', 'edited', 'created')
+    list_display = ('author', 'title', 'is_approved', 'edited', 'created')
     def save_model(self, request, obj, form, change):
         if change:
             fields = [{field: str(getattr(obj, field))} for field in form.changed_data]
-            logger.info('{0} \'{1}\' was {2}'.format(self.model.__title__, str(obj), 'edited in {0}'.format(str(fields)) if fields else 'just saved'), extra={'user': request.user.get_full_name()})
+            logger.info('{0} \'{1}\' was {2}'.format(self.model.__name__, str(obj), 'edited in {0}'.format(str(fields)) if fields else 'just saved'), extra={'user': request.user.get_full_name()})
         else:
             fields = [{f.name: str(getattr(obj, f.name))} for f in obj._meta.fields]
             logger.info('{0} \'{1}\' was created as {2}'.format(self.model.__name__, str(obj), str(fields)), extra={'user': request.user.get_full_name()})
