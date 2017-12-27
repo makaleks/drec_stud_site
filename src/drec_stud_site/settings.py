@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'social_django',
     'reversion',
     'precise_bbcode',
+    'background_task',
     # disable to save media on delete/update
     'django_cleanup',
     'adminsortable2',

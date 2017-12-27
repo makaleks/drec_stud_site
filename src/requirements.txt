@@ -1,14 +1,14 @@
 # Framework
-Django==1.11.3
+Django==2.0
 
 # Python server
 gunicorn==19.7.1
 
 # PostgreSQL library
-psycopg2==2.7.1
+psycopg2==2.7.3.2
 
 # Social network authorization
-social-auth-app-django==1.2.0
+social-auth-app-django==2.1.0
 
 # Image library
 Pillow==4.2.1
@@ -20,10 +20,10 @@ django-cleanup==1.0.1
 django-markdown-deux==1.0.5
 
 # Models can be made sortable in Admin Panel
-django-admin-sortable2
+django-admin-sortable2==0.6.18
 
 # Model version are stored separately, so they can be restored
-django-reversion==2.0.10
+django-reversion==2.0.12
 
 # BBCode
 django-precise-bbcode==1.2.8
@@ -43,3 +43,5 @@ progressbar2==3.34.3
 # Timezone support
 pytz==2017.2
 
+# Simple schedules
+django-background-tasks==1.1.12
