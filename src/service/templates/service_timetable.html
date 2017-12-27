@@ -71,7 +71,7 @@
                             <table class='table_main'>
                                 <tr>
                                     <td colspan={{ day.items.items|length }}>
-                                        <table style='margin:1px;'>
+                                        <table>
                                             <tr>
                                                 {% for machine_name in day.items %}
                                                 <th style='word-break:normal;vertical-align:top;'>{{ machine_name }}<br /><small>({{ item_info.price|util_by_key:machine_name }} руб.)</small></th>
@@ -82,26 +82,26 @@
 <!-- break trailing spaces for nicer appeal -->
 {% for machine,m_value in day.items.items %}
     <td>
-        <table style='margin:1px;'>
+        <table>
         <!-- print cells -->
         {% for cell in m_value.time %}
             <tr>
                 <!-- if not done yet -->
                 {% if cell.closed %}
-                    <td class='ended'></td>
+                    <td style='padding:0;min-width:100px;max-width:100px;' class='ended'></td>
                 <!-- can`t be selected -->
                 {% elif forloop.parentloop.parentloop.first and cell.time_start|util_is_started:service == 'ended' %}
-                    <td class='ended' rowspan='{{ m_value.rowspan }}'></td>
+                    <td style='padding:0;min-width:100px;max-width:100px;' class='ended' rowspan='{{ m_value.rowspan }}'></td>
                 <!-- users: display next/previous from selected even if closed -->
                 {% elif cell.user %}
-                    <td class={% if cell.user == user %}'choisen'{% elif not cell.closed or cell.show_info %}'selected'{% elif cell.closed %}'ended'{% endif %} {% if not cell.closed %}rowspan='{{ m_value.rowspan }}'{% endif %}>
+                    <td style='padding:0;min-width:100px;max-width:100px;' class={% if cell.user == user %}'choisen'{% elif not cell.closed or cell.show_info %}'selected'{% elif cell.closed %}'ended'{% endif %} {% if not cell.closed %}rowspan='{{ m_value.rowspan }}'{% endif %}>
                         {% if cell.show_info or user.is_staff and cell.user != user %}
                                 <label class='userinfo' for='modal_userinfo_check' onclick='showuserinfo("{{ cell.user.get_full_name }}", "{{ cell.user.account_id }}", "{{ cell.user.phone_number }}", "{{ cell.user.email }}");' title='Посмотреть инфо о заказавшем(-ей)'></label>
                         {% endif %}
                     </td>
                 <!-- can be selected -->
                 {% else %}
-                <td rowspan='{{ m_value.rowspan }}' {% if forloop.parentloop.parentloop.first and cell.time_start|util_is_started:service  == 'started' %}{# Uncomment to enable STARTED color: #}{#class='started'#}{% endif %}>
+                <td style='padding:0;min-width:100px;max-width:100px;' rowspan='{{ m_value.rowspan }}' {% if forloop.parentloop.parentloop.first and cell.time_start|util_is_started:service  == 'started' %}{# Uncomment to enable STARTED color: #}{#class='started'#}{% endif %}>
                         <label>
                             <input type='checkbox' name='order={{ machine }}&&{{ cell.time_start }}&&{{ cell.time_end }}&&{{ day.dateyear }}' data-price='{{ item_info.price|util_by_key:machine }}' data-timestep='{{ item_info.timestep|util_by_key:machine }}' data-timestart='{{ cell.time_start }}' data-timeend='{{ cell.time_end }}' data-dateyear='{{ day.dateyear }}' class='hidden'/>
                             <span><div>+</div></span>
