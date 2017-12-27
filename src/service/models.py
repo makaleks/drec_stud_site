@@ -171,14 +171,13 @@ class Service(models.Model):
             if num != 0:
                 result_lst.append(types.SimpleNamespace(t_steps_per_order = num))
         def final_prepare_first_day(final_lst):
-            if not final_lst:
+            # Removes leading passed cells
+            if not final_lst or not final_lst[0]['items']:
                 return
             lst = final_lst[0]
             earliest_time = None
             now = timezone.now().time()
-            I = 0
             for it in list(lst['items'].values()):
-                I+=1
                 t_list = it['time']
                 for t in t_list:
                     if ((t['time_end'] > now 
