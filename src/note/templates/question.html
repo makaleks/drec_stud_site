@@ -2,6 +2,8 @@
 {% load utils_extra_filters %}
 {% block content %}
 <section class='card'>
+    <!-- Used to scroll onload -->
+    <a name='start'></a>
     <h2>{{ question.title }}</h2>
     <h3>{{ question.text }}</h3>
     <p>Вопрос задан {{ question.created }}</p>

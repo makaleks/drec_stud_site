@@ -42,7 +42,7 @@
             <ul>
                 {% for question in question_list %}
                     {% if question.is_approved %}
-                    <li><a href='{{ question.pk }}'>{{ question.title }}{% if question.is_public %} ({{ question.author.get_full_name }}){% endif %}</a></li>
+                    <li><a href='{{ question.pk }}#start'>{{ question.title }}{% if question.is_public %} ({{ question.author.get_full_name }}){% endif %}</a></li>
                     {% endif %}
                 {% endfor %}
             </ul>
