@@ -139,12 +139,14 @@ class Service(models.Model):
     def get_timetable_list(self):
         # cleans trailing 'closed' marks
         def clean_starting(time_lst):
+            # Flag to 'break' double loop
             clean_flag = True
             index = 0
             result = {}
             while clean_flag == True:
                 for it in time_lst.values():
-                    if 'closed' not in it['time'][index]:
+                    if ('closed' not in it['time'][index]
+                        and 'weekend' not in it['time'][index]):
                         clean_flag = False
                         if index == 0:
                             result['time_start'] = it['time'][0]['time_start']
@@ -170,41 +172,54 @@ class Service(models.Model):
                     num = 0
             if num != 0:
                 result_lst.append(types.SimpleNamespace(t_steps_per_order = num))
-        def final_prepare_first_day(final_lst):
+        def final_prepare_first_day(final_lst, latest_time):
             # Removes leading passed cells
+            # 'latest_time' is used in 'weekend' case
             if not final_lst or not final_lst[0]['items']:
                 return
+            # First day
             lst = final_lst[0]
             earliest_time = None
             now = timezone.now().time()
+            # Weekends have no 'time_start' or 'time_end'
+            weekend_lst = []
+            # Find the earliest time
             for it in list(lst['items'].values()):
-                t_list = it['time']
-                for t in t_list:
-                    if ((t['time_end'] > now 
-                            or t['time_end'] == datetime.time(0,0,0)) 
-                        and (earliest_time == None 
-                            or earliest_time > t['time_start'])):
-                        earliest_time = t['time_start']
-                        break
-                if not earliest_time:
-                    earliest_time = datetime.time(23, 59, 59)
+                if 'weekend' not in it['time'][0]:
+                    t_list = it['time']
+                    for t in t_list:
+                        if ((t['time_end'] > now 
+                                or t['time_end'] == datetime.time(0,0,0)) 
+                            and (earliest_time == None 
+                                or earliest_time > t['time_start'])):
+                            earliest_time = t['time_start']
+                            break
+                    if not earliest_time:
+                        earliest_time = datetime.time(23, 59, 59)
+            # Remove all before 'earliest'
             for i in range(len(lst['time_layout'])):
                 if lst['time_layout'][i]['time_start'] >= earliest_time:
                     lst['time_layout'] = lst['time_layout'][i:]
                     break
             td = (datetime.datetime.combine(datetime.date.min, self.time_step) - datetime.datetime.min)
+            # Fill [earliest, next time_start] 
+            # with 'closed' cells with duration=1
             for k in lst['items']:
                 t = lst['items'][k]['time']
-                for i in range(len(t)):
-                    if t[i]['time_start'] >= earliest_time:
-                        t = t[i:]
-                        t_start = datetime.datetime.combine(datetime.date.min, t[0]['time_start'])
-                        while (t_start >= datetime.datetime.min + td
-                                and (t_start - td).time() >= earliest_time):
-                            t.insert(0, {'time_start': (t_start - td).time(), 'time_end': t[0]['time_start'], 'closed': True})
+                if 'weekend' not in t[0]:
+                    for i in range(len(t)):
+                        if t[i]['time_start'] >= earliest_time:
+                            t = t[i:]
                             t_start = datetime.datetime.combine(datetime.date.min, t[0]['time_start'])
-                        break
-                lst['items'][k]['time'] = t
+                            while (t_start >= datetime.datetime.min + td
+                                    and (t_start - td).time() >= earliest_time):
+                                t.insert(0, {'time_start': (t_start - td).time(), 'time_end': t[0]['time_start'], 'closed': True})
+                                t_start = datetime.datetime.combine(datetime.date.min, t[0]['time_start'])
+                            break
+                    lst['items'][k]['time'] = t
+                else:
+                    # A big single cell
+                    lst['items'][k]['time'] = [{'weekend': True, 'time_start': earliest_time, 'time_end': latest_time}]
         # collect available_time from all Items
         items = {}
         for item in list(self.items.all().order_by('name')):
@@ -212,6 +227,8 @@ class Service(models.Model):
         weekdays = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье']
         # timedelta is available for datetime only
         now = timezone.now()
+        # To be used in final_prepare_first_day
+        latest_time_first_day = None
         # start generating result
         result_lst = []
         for i in range(self.days_to_show):
@@ -221,19 +238,21 @@ class Service(models.Model):
                 'items': {},
                 'time_layout': []
             })
-            # time layout
+            # This is used twice:
+            # First: item names to create time layout
+            # Second: time layout
             tmp_lst = []
             for name, value in items.items():
                 result_lst[i]['items'][name] = {}
                 result_lst[i]['items'][name]['time'] = items[name][i]
+                # If not set, 'weekend' case will not be set
+                result_lst[i]['items'][name]['rowspan'] = 1
                 if 'weekend' not in items[name][i][0].keys():
                     tmp_lst.append(name)
             if not tmp_lst:
-                result_lst[i]['time_layout'] = [{'time_start': 'Отгул', 'time_end': 'Отгул'}]
-                for it in result_lst[i]['items']:
-                    it['rowspan'] = int(1)
+                result_lst[i]['global_weekend'] = True
             else:
-                # get gcd
+                # get gcd to make cells smaller if all of them are big
                 tmp_lst = list(self.items.all().filter(name__in = tmp_lst))
                 for m in result_lst[i]['items'].values():
                     get_closed_for_gdc(m['time'], tmp_lst)
@@ -260,7 +279,12 @@ class Service(models.Model):
                     })
                     t_start += td
                 result_lst[i]['time_layout'] = tmp_lst
-        final_prepare_first_day(result_lst)
+                if i == 0:
+                    # latest in layout
+                    latest_time_first_day = tmp_lst[-1]['time_end']
+        # Make first day smaller
+        if 'global_weekend' not in result_lst[0]:
+            final_prepare_first_day(result_lst, latest_time_first_day)
         return result_lst
     def get_item_info(self):
         result_lst = {'price':{}, 'timestep':{}}
@@ -493,7 +517,11 @@ class Item(models.Model):
             day = today + datetime.timedelta(days = i)
             time_sources = self.get_working_time(day)
             if time_sources['weekend'] == True:
-                result_time_list[i] = [{'weekend': True}]
+                # Why 'list' type was used:
+                # If not in list, it will be harder to use 'closed' case
+                # It is not good to permanently say that 'non-list'
+                # is 'weekend' and 'list' is 'not weekend'
+                result_time_list.append([{'weekend': True}])
             else:
                 lst = self.gen_list_of_intervals(
                         time_sources['works_from'], 
