@@ -163,7 +163,7 @@
                 <div class='inline right' id='vk_quick'>
                     {% if user.is_authenticated %}
                         <label for='modal_refill_check'>
-                            <a class='m-btn m-dark'>
+                            <a class='m-btn m-dark' style='padding-left:28px;padding-right:28px'>
                                 <span>На счету: {{ user.account|urlencode }}руб.</span>
                             </a>
                         </label>
@@ -229,7 +229,7 @@
                             <p>Привет, {{ user.get_short_name }}</p>
                             <a href='/logout/?next={{ request.path }}' class='btn btn-vk'>Выйти</a>
                             <label for='modal_refill_check'>
-                                <a class='m-btn m-dark'>
+                                <a class='m-btn m-dark' style='padding-left:28px;padding-right:28px'>
                                     <span>На счету: {{ user.account|urlencode }}руб.</span>
                                 </a>
                             </label>
