@@ -46,20 +46,25 @@ class UserCreationForm(forms.ModelForm):
             raise forms.ValidationError('Неверный формат почты')
 
         # Unique phone
-        if phone_number and check_unique(User, 'phone_number', phone_number) is False:
-            raise forms.ValidationError('Этот номер телефона уже зарегистрирован')
+        if phone_number:
+            user = check_unique(User, 'phone_number', phone_number)
+            if user:
+                raise forms.ValidationError('Этот номер телефона уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number))
         # Unique and valid account_id
-        if check_unique(User, 'account_id', account_id) is False:
-            raise forms.ValidationError('Эта ссылка на аккаунт уже зарегистрирована')
         id_num = get_id_by_url_vk(account_id)
         if not id_num:
             raise forms.ValidationError('Не удалось получить id из социальной сети. Это точно существующий пользователь?')
         else:
             self.cleaned_data['account_id'] = id_num
             account_id = id_num
+        user = check_unique(User, 'account_id', account_id)
+        if user:
+            raise forms.ValidationError('Эту ссылку на аккаунт уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number))
         # Unique email (optional)
-        if (len(email) != 0) and (check_unique(User, 'email', email) is False):
-            raise forms.ValidationError('Эта почта уже зарегистрирована')
+        if len(email) != 0:
+            user = check_unique(User, 'email', email)
+            if user:
+                raise forms.ValidationError('Эту почту уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number))
         return self.cleaned_data
 
     class Meta:
@@ -111,22 +116,26 @@ class UserChangeForm(forms.ModelForm):
             raise forms.ValidationError('Неверный формат почты')
 
         # Unique phone
-        if phone_number and ((check_unique(User, 'phone_number', phone_number) is False)
-            and (phone_number != self.instance.phone_number)):
-            raise forms.ValidationError('Этот номер телефона уже зарегистрирован')
+        if (phone_number and phone_number != self.instance.phone_number):
+            user = check_unique(User, 'phone_number', phone_number)
+            if user:
+                raise forms.ValidationError('Этот номер телефона уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number))
         # Unique and valid account_id
-        if ((check_unique(User, 'account_id', account_id) is False)
-            and (account_id != self.instance.account_id)):
-            raise forms.ValidationError('Эта ссылка на аккаунт уже зарегистрирована')
         id_num = get_id_by_url_vk(account_id)
         if not id_num:
             raise forms.ValidationError('Не удалось получить id из социальной сети. Это точно существующий пользователь?')
         else:
             self.cleaned_data['account_id'] = id_num
             account_id = id_num
+        if account_id != self.instance.account_id:
+            user = check_unique(User, 'account_id', account_id)
+            if user:
+                raise forms.ValidationError('Эту ссылку на аккаунт уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number))
         # Unique email (optional)
-        if (len(email) != 0) and (check_unique(User, 'email', email) is False) and email != self.instance.email:
-            raise forms.ValidationError('Эта почта уже зарегистрирована')
+        if len(email) != 0 and email != self.instance.email:
+            user = check_unique(User, 'email', email)
+            if user:
+                raise forms.ValidationError('Эту почту уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number))
         # Uncomment to enable #passwordAuth
         #self.cleaned_data['password'] = self.instance.password
         return self.cleaned_data
