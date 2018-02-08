@@ -186,7 +186,7 @@
                     {% if user.is_staff %}
                         {% if request.path|util_contains_string:'^/$' %}
                             <a href='/admin/news/news/add/' class='btn btn-vk'>
-                                <span>Новая новость</span>
+                                <span>Добавить новость</span>
                             </a>
                         {% elif request.path|util_contains_string:'^/surveys/' %}
                             <a href='/admin/survey/survey/add/' class='btn btn-vk'>
