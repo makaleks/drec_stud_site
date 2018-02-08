@@ -50,6 +50,7 @@ class SurveyDetailView(DetailView):
         else:
             a = Answer(survey = Survey.objects.all().filter(pk = data['survey_pk']).first(), user = request.user)
             a_data = AnswerData(value = data['survey_result'])
+            a_data.survey = survey
         if a.survey.finished < timezone.now():
             finished = True
         elif a.survey.started > timezone.now():

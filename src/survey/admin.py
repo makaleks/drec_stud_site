@@ -6,6 +6,7 @@ from .models import Survey, Answer, AnswerData
 @admin.register(Survey)
 class SurveyAdmin(admin.ModelAdmin):
     list_display = ('title', 'started', 'finished')
+    exclude = ['report']
     def get_readonly_fields(self, request, obj=None):
         if obj:
             return ['is_anonymous']

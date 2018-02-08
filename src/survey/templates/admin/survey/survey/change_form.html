@@ -295,7 +295,8 @@
                     multipletext: 'Многострочное поле',
                     radiogroup: 'Выбор одного',
                     rating: 'Оценка',
-                    text: 'Простое поле',
+                    text: 'Текстовое поле',
+                    panel: 'Панель',
                   },
                   survey: {
                     addToToolbox: 'Добавить в панель инструментов',
@@ -311,6 +312,7 @@
                 //showEmbededSurveyTab: true,
                 // Important! Never remove!
                 generateValidJSON: true,
+                questionTypes: ['radiobutton', 'checkbox', 'text', 'dropdown', 'matrix', 'matrixdropdown', 'panel', 'rating'],
             };
             // See example at https://github.com/surveyjs/editor/blob/master/src/localization/french.ts
             SurveyEditor.editorLocalization.locales['ru'] = russianStrings;
@@ -351,6 +353,7 @@
             else {
                 form['allow_rewrite']['onclick'] = f_rewrite;
             }
+            if (form.is_anonymous != undefined){
             if (form['is_anonymous'].addEventListener) {
                 form['is_anonymous'].addEventListener('click', f_anonymous, false);
             }
@@ -359,7 +362,10 @@
             }
             else {
                 form['is_anonymous']['onclick'] = f_anonymous;
-            }
+            }}
+            // Style bug fix
+            //delete_link = document.getElementsByClassName('deletelink')[0];
+            //delete_link.style.height = null;
         }
     </script>
 <!-- END CUSTOM -->
