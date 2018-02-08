@@ -116,7 +116,7 @@ class UserChangeForm(forms.ModelForm):
             raise forms.ValidationError('Неверный формат почты')
 
         # Unique phone
-        if (phone_number and phone_number != self.instance.phone_number):
+        if (phone_number and str(phone_number) != self.instance.phone_number):
             user = check_unique(User, 'phone_number', phone_number)
             if user:
                 raise forms.ValidationError('Этот номер телефона уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number))
@@ -127,7 +127,7 @@ class UserChangeForm(forms.ModelForm):
         else:
             self.cleaned_data['account_id'] = id_num
             account_id = id_num
-        if account_id != self.instance.account_id:
+        if str(account_id) != self.instance.account_id:
             user = check_unique(User, 'account_id', account_id)
             if user:
                 raise forms.ValidationError('Эту ссылку на аккаунт уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number))
