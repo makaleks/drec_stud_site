@@ -7,7 +7,7 @@ import json
 import datetime
 import openpyxl
 
-from .sheet_pipeline import pipeline_order, form
+from .sheet_pipeline import pipeline_order
 
 # Create your models here.
 
@@ -20,7 +20,7 @@ class Survey(models.Model):
     finished        = models.DateTimeField(blank = False, null = True, verbose_name = 'Дата конца')
     is_anonymous    = models.BooleanField(default = False, null = False, verbose_name = 'Анонимный (навсегда!))')
     allow_rewrite   = models.BooleanField(default = True, null = False, verbose_name = 'Разрешить исправлять')
-    #sheet           = models.FileField(upload_to='surveys', blank = True, null = True)
+    sheet           = models.FileField(upload_to='surveys', blank = True, null = True, verbose_name = 'Свежий отчёт')
     def __str__(self):
         return self.title
     def is_started():
@@ -199,7 +199,9 @@ class Survey(models.Model):
         col = 1 if self.is_anonymous else 2
         for i in range(len(layout)):
             row = 1
+            # Text only
             if layout[i]['type'] == 'text':
+                # Header
                 color = openpyxl.styles.PatternFill(fill_type = 'solid', start_color = possible_colors[col % len(possible_colors)], end_color = possible_colors[col % len(possible_colors)])
                 pos = _get_pos(col, row)
                 ws[pos].value = layout[i]['title']
@@ -207,6 +209,7 @@ class Survey(models.Model):
                 for side in ['left','right','top','bottom']:
                     getattr(ws[pos].border, side).border_style = 'thin'
                 row += 1
+                # Answers
                 for answ_data_single in answ_data:
                     if not self.is_anonymous and answ_data_single.answer:
                         pos = _get_pos(col - 1, row)

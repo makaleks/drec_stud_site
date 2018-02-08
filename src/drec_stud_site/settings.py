@@ -139,6 +139,7 @@ STATICFILES_DIRS = (
 )
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'media')
+SURVEY_SHEET_ROOT = os.path.join(MEDIA_ROOT, 'surveys')
 
 AUTH_USER_MODEL = 'user.User'
 

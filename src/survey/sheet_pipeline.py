@@ -15,7 +15,6 @@
 # Each 'name' (aka 'id') is converted to 'title'
 
 import json
-import openpyxl
 
 def _get_answ_len(question):
     return len(question['structure']['choices'])
@@ -83,32 +82,5 @@ def percent(source):
             val = (vals[i]*100) / in_total
             question['results'][-1][i] = val
         question['results'][-1].append(100)
-
-def form(wb, pipeline_order,lines, possible_colors):
-    ws = wb.active
-    ws.column_dimensions['A'].width = 30
-    # Columns
-    for i in range(2, ws.max_column + 1):
-        ws.column_dimensions[openpyxl.utils.cell.get_column_letter(i)].width = 25
-    # Rows
-    for i in range(len(lines)):
-        row = ws.max_row - (i + 1)*(len(pipeline_order) + 1) + 1
-        # height
-        ws.row_dimensions[row].height = 30
-        # alignment
-        ws['A' + str(row)].alignment = openpyxl.styles.Alignment(wrapText = True)
-        # color on first column
-        color = openpyxl.styles.PatternFill(fill_type = 'solid', start_color = possible_colors[i % len(possible_colors)], end_color = possible_colors[i % len(possible_colors)])
-        for j in range(len(pipeline_order)):
-            pos = 'A' + str(row + j + 1)
-            ws[pos].fill = color
-            for side in ['left','right','top','bottom']:
-                getattr(ws[pos].border, side).border_style = 'thin'
-        # color on top row
-        for c in range(1, ws.max_column + 1):
-            pos = openpyxl.utils.cell.get_column_letter(c) + str(row)
-            ws[pos].fill = color
-            for side in ['left','right','top','bottom']:
-                getattr(ws[pos].border, side).border_style = 'thin'
 
 pipeline_order = [{'Всего': total}, {'Проценты': percent}]
