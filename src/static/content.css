@@ -707,6 +707,7 @@ textarea {
 .m-btn.m-selected {
     background-color: #666;
     color: #fff;
+    display: block;
 }
 .m-btn.m-mobiletiny {
     padding: 1em;
@@ -765,7 +766,8 @@ textarea {
 .m-dark {
     background-color: #666;
     color: #fff;
-}/* SURVEY */
+}
+/* SURVEY */
 #survey table {
     table-layout: fixed;
     display: block;

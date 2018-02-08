@@ -15,6 +15,7 @@
 .m-btn.m-selected {
     background-color: #666;
     color: #fff;
+    display: block;
 }
 .m-btn.m-mobiletiny {
     padding: 1em;
