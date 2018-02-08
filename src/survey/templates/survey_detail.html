@@ -12,7 +12,11 @@
         </div>
         <div id='resultContainer' class='hidden'>
             <div class='card'>
-                Results;
+                {% if survey.sheet %}
+                <a href='{{ survey.sheet.url }}'>Ссылка на Excel</a>
+                {% else %}
+                    Файла с результатами нет. Скорее всего никто ещё не проголосовал.
+                {% endif %}
             </div>
         </div>
     {% endif %}
