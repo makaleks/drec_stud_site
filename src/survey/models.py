@@ -81,8 +81,13 @@ class Survey(models.Model):
                 to_append['choices'] = []
                 to_append['title'] = source['title'] if 'title' in source else source['name']
                 if source['type'] != 'text':
-                    if 'rateValues' in source:
-                        to_append['choices'] = source['rateValues']
+                    if source['type'] == 'rating':
+                        if 'rateValues' not in source:
+                            to_append['choices'] = [{'text': str(i), 'value': str(i)} for i in range(1,6)]
+                        else:
+                            to_append['choices'] = source['rateValues']
+                            for i in range(len(to_append['choices'])):
+                                to_append['choices'][i] = {'text': to_append['choices'][i], 'value': to_append['choices'][i]}
                     else:
                         to_append['choices'] = source['choices']
                     for c in to_append['choices']:
