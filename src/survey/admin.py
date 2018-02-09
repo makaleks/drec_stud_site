@@ -11,6 +11,11 @@ class SurveyAdmin(admin.ModelAdmin):
             return ['is_anonymous', 'sheet']
         else:
             return []
+    def get_exclude(self, request, obj=None):
+        if not obj:
+            return ['sheet']
+        else:
+            return []
 
 @admin.register(Answer)
 class AnswerAdmin(admin.ModelAdmin):
