@@ -1,17 +1,34 @@
-{% extends 'core/base.html' %}
-{% block head_extras %}
-<script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.bundle.min.js'></script>
-{% endblock %}
+{# require lib Chart.js, current: <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.bundle.min.js'></script> #}
 
-{% block content %}
-<section class='card'>
-    <a class='m-btn chart-btn' onclick='pie(0);'>Pie type</a><a class='m-btn chart-btn' onclick='bar(0);'>Bar type</a>
-    <div class='chart-container'>
-        <canvas class='chart' id='chart_0'></canvas>
-    </div>
-</section>
+<a class='m-btn chart-btn' onclick='pie($id$);'>Pie type</a><a class='m-btn chart-btn' onclick='bar($id$);'>Bar type</a>
+<div class='chart-container'>
+    <canvas class='chart' id='chart_$id$'></canvas>
+</div>
+<script>
+    temp[$id$] = {
+        "Да": 321,
+        "Нет": 123,
+        "Воздержались": 10
+    };
+    config[$id$] = {
+    	isdataloaded:0,
+        labels: [],
+        data: {
+            labels: [],
+            datasets: [{
+                data:[]
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    };
+</script>
+
+{# extend only once #}
 <script>
     var config = [];
+    var temp = [];
     var chrt = [];
     var borderPattern = [['#7E7F81', '#60409F', '#226593', '#2F7878', '#9F8036', '#9F6328', '#9F3E53'],
                         ['#97989B', '#734DBF', '#297AB0', '#389090', '#BF9A41', '#BF7730', '#BF4A63'],
@@ -24,38 +41,15 @@
     for(i = 0; i < 7; i++)
         for(j = 0; j < 7; j++)
             backPattern[i][j] = hex2rgba(borderPattern[i][j], 0.2);
-    config[0] = {
-        labels: ['132', '456'],
-        data: {
-            labels: ['январь', 'февраль', 'март', 'апрель'],
-            datasets: [
-                {
-                    borderWidth: 1,
-                    backgroundColor: backPattern[6],
-                    borderColor: borderPattern[6],
-                    label: '2017',
-                    data: [12, 14, 16, 18]
-                },
-                {
-                    borderWidth: 1,
-                    backgroundColor: backPattern[3],
-                    borderColor: borderPattern[3],
-                    label: '2018',
-                    data: [20, 22, 30, 40]
-                }
-            ]
-        },
-        options: {
-            responsive: true
-        }
-    };
     function bar(id) {
+        if(!(config[id].isdataloaded))loadData(id);
         if(chrt[id] !== undefined) chrt[id].destroy();
         config[id].type = 'bar';
         config[id].options.scales = {'yAxes':[{'ticks':{'beginAtZero':true}}]};
         chrt[id] = new Chart(document.querySelector('#chart_' + id), config[id]);
     };
     function pie(id) {
+        if(!(config[id].isdataloaded))loadData(id);
         if(chrt[id] !== undefined) chrt[id].destroy();
         config[id].type = 'pie';
         delete config[id].options.scales;
@@ -71,5 +65,12 @@
         else
             return ('rgb(' + r + ', ' + g + ', ' + b + ')');
     };
+    function loadData(id) {
+        var key;
+        for(key in temp[id]) {
+            config[id].labels.push(key);
+            config[id].data.datasets[0].data.push(temp[id][key]);
+        }
+        config[id].isdataloaded=1;
+    }
 </script>
-{% endblock %}
