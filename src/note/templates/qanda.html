@@ -34,10 +34,10 @@
                 <p><a href='#{{ answer.commented_object.id }}'{% if answer.commented_object.author == request.user %} style='background:#FF0000;color:#FFFFFF;'{% endif %}>{{ answer.commented_object.author.get_full_name }}</a>, </p>
                 {% endif %}
                 <p>{{ answer.text }}</p>
-                <a style='display: inline-block;' data-comment-num='{{ answer.id }}' href='#{{ answer.id }}' name='answer' class='block'>Ответить</a> <a style='display: inline-block;' href='{{ question.get_absolute_url }}#{{ answer.id }}'>Ссылка</a><br/>
+                <a style='display: inline-block;' data-comment-num='{{ answer.id }}' href='#{{ answer.id }}' name='answer' class='block'>{% if answer.author == request.user %}Изменить{% else %}Ответить{% endif %}</a> <a style='display: inline-block;' href='{{ question.get_absolute_url }}#{{ answer.id }}'>Ссылка</a><br/>
                 <small>Изменён {{ answer.edited }}</small>
                 {% if answer.author == request.user %}
-                    <a href='/notes/student_council/delete?id={{ answer.id }}'>Удалить</a>
+                    <a href='delete?id={{ answer.id }}'>Удалить</a>
                 {% endif %}
                 <hr>
             </div>
@@ -49,7 +49,7 @@
     <div class='card'>
         <input type='checkbox' class='hidden' id='qa-isanswer'>
         <input type='text' class='hidden' name='answerto' id='answerto'>
-        <p id='qa-answerval'><label for='qa-isanswer' onclick='document.getElementById("answerto").value="";'>X</label> Ответ получит <a id='qa-answer-name'>{{ question.author }}</a></p>
+        <p id='qa-answerval'><label for='qa-isanswer' onclick='document.getElementById("answerto").value="";'>[X]</label> => <a id='qa-answer-name'>{{ question.author.get_full_name }}</a></p>
 
         <textarea rows=3 name='text'required ></textarea>
         <input required type='checkbox' id='self_checked'><label for='self_checked'> Я проверил текст на ошибки</label>

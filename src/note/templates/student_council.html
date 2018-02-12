@@ -61,7 +61,7 @@
             {{ form.text.errors }}
             <p>{{ form.text }}</p>
             {{ form.is_public.errors }}
-            <p><label for='{{ form.is_public.id_for_label }}'>Не скрывать автора</label> {{ form.is_public }}</p>
+            <p>{{ form.is_public }}<label for='{{ form.is_public.id_for_label }}'>Не скрывать автора</label></p>
             {{ form.check_to_send.errors }}
             <p>{{ form.check_to_send }} <label for='{{ form.check_to_send.id_for_label }}'>Мой вопрос ещё не был занят никем до меня и относится к ФРТК</label></p>
             <input type='submit' id='submit' value='Отправить'/>

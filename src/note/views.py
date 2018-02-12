@@ -40,6 +40,16 @@ class QuestionDetailView(DetailView):
     model = Question
     template_name = 'qanda.html'
     status = ''
+    def get(self, request, *args, **kwargs):
+        path = request.path
+        arg = request.GET.get('id')
+        if path[-6:] == 'delete':
+            question = self.get_object()
+            if request.user == question.author and question.answers.filter(id=arg).exists():
+                answ = question.answers.get(id=arg)
+                answ.delete()
+            return HttpResponseRedirect(path[:-6] + '#start')
+        return super(QuestionDetailView, self).get(self, request, *args, **kwargs)
     def post(self, request, *args, **kwargs):
         data = request.POST.dict()
         if request.user.is_authenticated:
