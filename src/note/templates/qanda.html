@@ -22,7 +22,7 @@
     {% for answer in question.get_answers %}
         <section class='card'>
         <div class='comment {% if answer.author.is_staff %}qa-with-border{% endif %}' id='CT{{ answer.id }}'>
-            <!--<a name='{{ answer.id }}'/>-->
+            <a name='{{ answer.id }}'/>
             {% if answer.author.avatar_url %}
                 <img src='{{ answer.author.avatar_url }}' class='qa-avatar' />
             {% else %}
