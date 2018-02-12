@@ -51,4 +51,4 @@ class Question(models.Model):
     class Meta:
         verbose_name = 'Вопрос'
         verbose_name_plural = 'Вопросы'
-        ordering = ['is_approved', 'created']
+        ordering = ['is_approved', '-created']
