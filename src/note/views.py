@@ -48,7 +48,7 @@ class QuestionDetailView(DetailView):
             if request.user == question.author and question.answers.filter(id=arg).exists():
                 answ = question.answers.get(id=arg)
                 answ.delete()
-            return HttpResponseRedirect(path[:-6] + '#start')
+            return HttpResponseRedirect(path[:-6])
         return super(QuestionDetailView, self).get(self, request, *args, **kwargs)
     def post(self, request, *args, **kwargs):
         data = request.POST.dict()
