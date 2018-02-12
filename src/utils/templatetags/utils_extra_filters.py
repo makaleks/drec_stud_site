@@ -1,9 +1,11 @@
 from django import template
 from django.utils import timezone
+from django.contrib.contenttypes.models import ContentType
 import datetime
 import re
 
 from service.models import Participation
+from comment.models import Comment
 
 register = template.Library()
 
@@ -68,3 +70,8 @@ def util_to_list(lst):
 @register.filter
 def util_by_index(lst,i):
     return lst[i]
+
+@register.filter
+def util_is_comment_to_comment(com):
+    return com.object_type == ContentType.objects.get(app_label='comment', model = 'comment')
+

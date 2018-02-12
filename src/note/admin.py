@@ -25,7 +25,7 @@ admin.site.register(Note, NoteAdmin)
 
 
 class QuestionAdmin(VersionAdmin):
-    list_display = ('author', 'title', 'is_approved', 'edited', 'created')
+    list_display = ('id', 'author', 'title', 'is_approved', 'edited', 'created')
     def save_model(self, request, obj, form, change):
         if change:
             fields = [{field: str(getattr(obj, field))} for field in form.changed_data]

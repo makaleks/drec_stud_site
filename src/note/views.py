@@ -1,10 +1,12 @@
 from django.views.generic.edit import FormView
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
-from django.http import HttpResponseBadRequest
+from django.http import HttpResponseBadRequest, HttpResponseRedirect
 from .models import Note, Question
 from .forms import QuestionForm
 from django.views.generic.detail import DetailView
+from django.contrib.contenttypes.models import ContentType
+from comment.models import Comment
 
 
 # Create your views here.
@@ -36,7 +38,32 @@ class StudentCouncilView(FormView):
 
 class QuestionDetailView(DetailView):
     model = Question
-    template_name = 'question.html'
+    template_name = 'qanda.html'
+    status = ''
+    def post(self, request, *args, **kwargs):
+        data = request.POST.dict()
+        if request.user.is_authenticated:
+            text = data['text']
+            object_id = data['answerto']
+            question = self.get_object()
+            # Comment or edit existing
+            if object_id:
+                comment = Comment.objects.all().filter(id = object_id)
+                if not comment.exists() or comment.first().author != request.user:
+                    comment = Comment(author = request.user, text = text)
+                    comment.object_type = ContentType.objects.get(app_label='comment', model = 'comment')
+                    comment.object_id = object_id
+                else:
+                    comment = comment.first()
+                    comment.text = text
+            # Comment the Question
+            else:
+                comment = Comment(author = request.user, text = text)
+                comment.object_type = ContentType.objects.get(app_label = 'note', model = 'question')
+                comment.object_id = question.id
+                comment.text = text
+            comment.save()
+        return HttpResponseRedirect('')
 
 class NoteDetailView(DetailView):
     model = Note

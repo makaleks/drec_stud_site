@@ -2,6 +2,8 @@
 from precise_bbcode.fields import BBCodeTextField
 from django.db import models
 from django.conf import settings
+from django.contrib.contenttypes.fields import GenericRelation
+from comment.models import Comment
 
 def get_default_approved():
     return settings.QUESTION_DEFAULT_APPROVED
@@ -29,10 +31,23 @@ class Question(models.Model):
     text = BBCodeTextField(blank = False, null = False, verbose_name = 'Текст')
     is_public = models.BooleanField(default = True, null = False, verbose_name = 'Автор виден всем')
     is_approved = models.BooleanField(default = get_default_approved, blank = True, null = False, verbose_name = 'Одобрено')
+    answers = GenericRelation(Comment, content_type_field = 'object_type', object_id_field = 'object_id')
     def __str__(self):
         return '{0}, {1}'.format(self.title, self.author)
     def get_absolute_url(self):
         return '/notes/student_council/{0}/'.format(self.id)
+    def get_answers(self):
+        def _recursive(result, obj):
+            result.append(obj)
+            lst = list(obj.comments.all())
+            for l in lst:
+                _recursive(result, l)
+        lst = list(self.answers.all())
+        result = []
+        for l in lst:
+            _recursive(result, l)
+        result.sort(key=lambda x: x.created)
+        return result
     class Meta:
         verbose_name = 'Вопрос'
         verbose_name_plural = 'Вопросы'
