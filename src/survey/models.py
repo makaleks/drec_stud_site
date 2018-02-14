@@ -159,7 +159,8 @@ class Survey(models.Model):
             if l > max_len:
                 max_len = l
         for i in range(len(lines)):
-            l = len(layout[i]['choices'])
+            # -1 is for 'question' column
+            l = len(lines[i]['header']) - 1
             if l < max_len:
                 for j in range(len(pipeline_order)):
                     # Insert [i:i] syntax for case, when it is wider
@@ -177,7 +178,7 @@ class Survey(models.Model):
         ws.column_dimensions['A'].width = 30
         # Columns
         for i in range(2, ws.max_column + 1):
-            ws.column_dimensions[openpyxl.utils.cell.get_column_letter(i)].width = 25
+            ws.column_dimensions[openpyxl.utils.cell.get_column_letter(i)].width = 15
         # Rows
         for i in range(len(lines)):
             row = ws.max_row - (i + 1)*(len(pipeline_order) + 1) + 1
@@ -192,8 +193,9 @@ class Survey(models.Model):
                 ws[pos].fill = color
                 for side in ['left','right','top','bottom']:
                     getattr(ws[pos].border, side).border_style = 'thin'
-            # color on top row
+            # color and align on top row
             for c in range(1, ws.max_column + 1):
+                ws[pos].alignment = openpyxl.styles.Alignment(wrapText = True)
                 pos = openpyxl.utils.cell.get_column_letter(c) + str(row)
                 ws[pos].fill = color
                 for side in ['left','right','top','bottom']:
