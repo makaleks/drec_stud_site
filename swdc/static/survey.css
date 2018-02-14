@@ -279,7 +279,9 @@ label.sv_q_checkbox>[type='checkbox']:disabled:checked~span:after {
 /*-root*/
 .sv_q_rating{}
 /*-item*/
-.sv_q_rating_item{}
+.sv_q_rating_item {
+    display: inline-block;
+}
 
 /*root*/
 .sv_main{}
