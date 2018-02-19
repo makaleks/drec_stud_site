@@ -1,6 +1,6 @@
 {% extends 'core/base.html' %}
 {% block head_extras %}
-<link type='text/css' rel='stylesheet' href='https://surveyjs.azureedge.net/0.12.23/survey.css' />
+<link type='text/css' rel='stylesheet' href='{{ STATIC_URL }}web_copy/surveyjs/surveyjs-0.12.23/survey.css' />
 <link type='text/css' rel='stylesheet' href='{{ STATIC_URL }}survey.css' />
 {% endblock %}
 
@@ -32,10 +32,10 @@
 {% endblock %}
 
 {% block body_extras %}
-<script src='https://cdnjs.cloudflare.com/ajax/libs/node-waves/0.7.5/waves.min.js'></script>
-<script src='https://unpkg.com/jquery@3.2.1/dist/jquery.slim.min.js'></script>
-<script src='https://cdn.rawgit.com/mgalante/jquery.redirect/master/jquery.redirect.js'></script>
-<script src='https://surveyjs.azureedge.net/0.12.23/survey.jquery.min.js'></script>
+<script src='{{ STATIC_URL}}web_copy/surveyjs/waves-0.7.5/waves.min.js'></script>
+<script src='{{ STATIC_URL}}web_copy/jquery/jquery-3.2.1.min.js'></script>
+<script src='{{ STATIC_URL}}web_copy/surveyjs/jquery-redirect-1.1.1/jquery.redirect.js'></script>
+<script src='{{ STATIC_URL}}web_copy/surveyjs/surveyjs-0.12.23/survey.jquery.min.js'></script>
 <script>
     Survey.defaultStandardCss.header += ' card';
     Survey.defaultStandardCss.row += ' card';

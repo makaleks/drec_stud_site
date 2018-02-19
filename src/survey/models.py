@@ -203,6 +203,7 @@ class Survey(models.Model):
         # End formatting
         # Start text answers
         ws = wb.create_sheet('Текст')
+        ws.row_dimensions[1].height = 30
         col = 1 if self.is_anonymous else 2
         for i in range(len(layout)):
             row = 1

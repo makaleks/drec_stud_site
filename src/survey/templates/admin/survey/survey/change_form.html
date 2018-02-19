@@ -70,14 +70,14 @@
 
 {% block admin_change_form_document_ready %}
 <!-- START CUSTOM -->
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.3.0/knockout-min.js"></script>
-<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" src="{{ STATIC_URL }}web_copy/jquery/jquery-2.1.4.min.js"></script>
+<script src="{{ STATIC_URL }}web_copy/surveyjs/bootstrap-3.3.6/bootstrap.min.js"></script>
+<script src="{{ STATIC_URL }}web_copy/surveyjs/knockout-3.3.0/knockout-min.js"></script>
+<link href="{{ STATIC_URL }}web_copy/surveyjs/bootstrap-3.3.6/bootstrap.min.css" type="text/css" rel="stylesheet" />
 
-<link href="https://surveyjs.azureedge.net/0.12.21/surveyeditor.css" type="text/css" rel="stylesheet" />
-<script src="https://surveyjs.azureedge.net/0.12.21/survey.ko.min.js"></script>
-<script src="https://surveyjs.azureedge.net/0.12.21/surveyeditor.js"></script>
+<link href="{{ STATIC_URL }}web_copy/surveyjs/surveyeditor-0.12.21/surveyeditor.css" type="text/css" rel="stylesheet" />
+<script src="{{ STATIC_URL }}web_copy/surveyjs/surveyeditor-0.12.21/survey.ko.min.js"></script>
+<script src="{{ STATIC_URL }}web_copy/surveyjs/surveyeditor-0.12.21/surveyeditor.js"></script>
     <script type="text/javascript">
         window.onload = function() {
             var russianStrings = {

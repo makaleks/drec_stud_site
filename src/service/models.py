@@ -610,7 +610,7 @@ class Order(models.Model):
     class Meta:
         verbose_name = 'Заказ'
         verbose_name_plural = 'Заказы'
-        ordering = ['-approved', '-date_start', 'time_start']
+        ordering = ['approved', '-date_start', 'time_start']
 
 class Participation(models.Model):
     order   = models.ForeignKey(Order, on_delete = models.CASCADE, related_name = 'participations', blank = False, null = False, verbose_name = 'Событие')
