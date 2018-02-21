@@ -563,7 +563,7 @@ textarea {
     stroke: currentcolor; /* Color for svg written */
     transition: bottom .4s cubic-bezier(1, 0, 0, 1);
 }
-#modal_check:checked~#modal {
+#modal_check:not(:checked)~#modal {
     bottom: -100%;
 }
 #modal>.container {
