@@ -9,7 +9,8 @@
     <meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' />
 
     <link type='text/css' rel='stylesheet' href='{{ STATIC_URL }}web_copy/normalize/normalize.css' />
-    <link type='text/css' rel='stylesheet' href='{{ STATIC_URL }}content.css' />
+    <link type='text/css' rel='stylesheet' href='{{ STATIC_URL }}css/content.css' />
+    <script src='{{ STATIC_URL }}js/base.js'></script>
     <!--[if lt IE 9]>
         <script>
             document.createElement('header');
@@ -40,7 +41,6 @@
             unsecure: true,
             api: 4
         };
-
         function $buo_f() {
             var e = document.createElement('script');
             e.src = 'https://browser-update.org/update.min.js';
@@ -51,7 +51,6 @@
         } catch (e) {
             window.attachEvent('onload', $buo_f)
         }
-
     </script>
 
     <noscript>
@@ -131,8 +130,8 @@
         <div class='card modal_userinfo'>
             <h3 id='userinfo_name'>Имя</h3>
             <a id='userinfo_number'>Позвонить: </a><br />
-            <a id='userinfo_vkid' target='_blank'>Написать в ВК</a><br />
-            <a id='userinfo_email'>Написать на почту</a><br />
+            <a id='userinfo_vkid' target='_blank'>Написать в ВК: </a><br />
+            <a id='userinfo_email'>Написать на почту: </a><br />
             <label for='modal_userinfo_check' class='m_close'>
                 <svg class='close' viewBox='0 0 10 10'>
                     <path d='M2 8l6-6M2 2l6 6'/>
@@ -140,7 +139,7 @@
             </label>
         </div>
     </div>
-    
+
     <input type='checkbox' id='modal_refill_check' class='hidden' />
     <label id='modal_refill_back' for='modal_refill_check'>
     </label>
@@ -184,15 +183,19 @@
                 </div>
                 <div class='inline'>
                     {% if user.is_staff %}
-                        <a href='/admin' class='btn btn-vk'>
-                            <span>В админку</span>
-                        </a>
-                        <a href='/admin/news/news/add/' class='btn btn-vk'>
-                            <span>Добавить новость</span>
-                        </a>
-                        <a href='/admin/survey/survey/add/' class='btn btn-vk'>
-                            <span>Добавить опрос</span>
-                        </a>
+                        {% if request.path|util_contains_string:'^/$' %}
+                            <a href='/admin/news/news/add/' class='btn btn-vk'>
+                                <span>Добавить новость</span>
+                            </a>
+                        {% elif request.path|util_contains_string:'^/surveys/' %}
+                            <a href='/admin/survey/survey/add/' class='btn btn-vk'>
+                                <span>Добавить опрос</span>
+                            </a>
+                        {% else %}
+                            <a href='/admin' class='btn btn-vk'>
+                                <span>В админку</span>
+                            </a>
+                        {% endif %}
                     {% endif %}
                 </div>
             </div>
@@ -269,30 +272,6 @@
         </svg>
     </label>
     <script>
-        (function() {
-            var bottom = document.querySelector('#bottom_menu'),
-                top = document.querySelector('#top');
-            document.querySelector("#showside").addEventListener('change',
-                function(){
-                    if(this.checked) document.body.style.overflow = "hidden";
-                    else document.body.style.overflow = "auto";
-                }, false);
-            if (getComputedStyle(bottom).display !== 'none') {
-                window.addEventListener('scroll', scrollPage, false);
-                document.body.addEventListener('scroll', scrollPage, false);
-                var height = bottom.getBoundingClientRect().height;
-            }
-
-            function scrollPage() {
-                if (top.getBoundingClientRect().bottom <= height) {
-                    bottom.classList.add('sticky');
-                    top.style.paddingBottom = height + 'px';
-                } else {
-                    bottom.classList.remove('sticky');
-                    top.style.paddingBottom = 0 + 'px';
-                }
-            }
-        })();
 
     </script>
     {% block body_extras %}

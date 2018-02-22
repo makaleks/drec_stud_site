@@ -216,6 +216,11 @@ body {
     display: block;
     align-items: center;
 }
+#vk_quick m-btn,
+#vk_header m-btn {
+    padding-left:28px;
+    padding-right:28px;
+}
 #nav {
     width: 100%;
 }

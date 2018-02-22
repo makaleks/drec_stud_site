@@ -1,22 +1,4 @@
 {% extends 'core/base.html' %}
-{% block head_extras %}
-<style>
-    #tab-nav-1:checked~div.tab:nth-of-type(1),
-    #tab-nav-2:checked~div.tab:nth-of-type(2),
-    #tab-nav-3:checked~div.tab:nth-of-type(3),
-    #tab-nav-4:checked~div.tab:nth-of-type(4),
-    #tab-nav-5:checked~div.tab:nth-of-type(5),
-    #tab-nav-6:checked~div.tab:nth-of-type(6) {
-        display: block;
-    }
-    
-    #tab-nav-newans:checked~div.newans {
-        display: block;
-    }
-
-</style>
-{% endblock %}
-<!---->
 {% block content %}
 <section class='card'>
     <h2>FAQs(Frequently Asked Questions) или ЧаВо(Частые вопросы)</h2>
