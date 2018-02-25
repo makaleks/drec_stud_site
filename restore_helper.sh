@@ -39,7 +39,7 @@ while true ; do
         --noclear) NOCLEAR_FLAG=1 ; shift ;;
         --restore) RESTORE_FLAG=1 ; shift ;;
         -h|--help) printf "\
-restore_helper.sh - restore and bashup database and static files.
+restore_helper.sh - restore and backup database and static files.
 Arguments:
   -h,--help        - show this help
   -d,--directory   - select directory to restore to/from
@@ -97,15 +97,15 @@ if [ $RESTORE_FLAG -eq 1 ]; then
 else
     # Check DIRECTORY
     if [ -z "$DIRECTORY" ]; then
-        if [ ! -d 'collected_static' ] || [ ! -d 'media' ] || [ ! -d 'src' ]; then
-            echo `Some of "collected_static", "media" or "src" not found at "$PWD"`; exit 1;
+        if [ ! -d 'collected_static' ] || [ ! -d 'media' ] || [ ! -d 'logs' ] || [ ! -d 'src' ]; then
+            echo `Some of "collected_static", "media", "logs" or "src" not found at "$PWD"`; exit 1;
         fi
     else
         if [ ${DIRECTORY: -1} != '/' ]; then
             DIRECTORY="${DIRECTORY}/"
         fi
-        if [ ! -d "${DIRECTORY}collected_static" ] || [ ! -d "${DIRECTORY}media"] || [ ! -d "${DIRECTORY}src" ]; then
-            echo "Some of \"collected_static\", \"media\" or \"src\" not found at \"$DIRECTORY\""; exit 1;
+        if [ ! -d "${DIRECTORY}collected_static" ] || [ ! -d "${DIRECTORY}media"] || [ ! -d "${DIRECTORY}logs" ] || [ ! -d "${DIRECTORY}src" ]; then
+            echo "Some of \"collected_static\", \"media\", \"logs\" or \"src\" not found at \"$DIRECTORY\""; exit 1;
         fi
     fi
     # Check FILE extention
@@ -131,7 +131,7 @@ else
         DIRECTORY='.'
     fi
     pushd $DIRECTORY
-    zip -r ${FILE} media collected_static $PGDUMP_FILE
+    zip -r ${FILE} media collected_static logs $PGDUMP_FILE
     popd
     # Clear mess if not canceled
     if [ $NOCLEAR_FLAG -eq 0 ]; then
