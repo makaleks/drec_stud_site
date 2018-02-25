@@ -320,7 +320,7 @@ class Item(models.Model):
     # 'id' field will be added automatically 
     name        = models.CharField(max_length = 64, unique = True, blank = False, null = False, verbose_name = 'Название/номер')
     service     = models.ForeignKey(Service, on_delete = models.CASCADE, related_name = 'items', blank = False, null = False, verbose_name = 'Сервис')
-    price       = models.PositiveSmallIntegerField(blank = True, null = True, verbose_name = 'Цена за шаг времени', default = 0)
+    price       = models.PositiveSmallIntegerField(blank = True, null = True, verbose_name = 'Цена за шаг времени', default = None)
     location    = models.CharField(max_length = 124, blank = True, null = True, verbose_name = 'Расположение')
     t_steps_per_order   = models.PositiveSmallIntegerField(default = 1, 
             validators = [MinValueValidator(1)],
@@ -536,7 +536,7 @@ class Item(models.Model):
                 result_time_list.append(lst)
         return result_time_list
     def get_price(self):
-        return self.price if self.price else self.service.default_price
+        return self.price if self.price != None else self.service.default_price
     def __str__(self):
         return self.name
     class Meta:
