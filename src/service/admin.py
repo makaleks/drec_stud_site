@@ -2,12 +2,12 @@ from django.contrib import admin
 from .models import WorkingTime, WorkingTimeException, Service, Item, Order
 from django.contrib.contenttypes.admin import GenericStackedInline
 from reversion.admin import VersionAdmin
-from adminsortable2.admin import SortableAdminMixin
+from adminsortable2.admin import SortableAdminMixin, SortableInlineAdminMixin
 from django import forms
 
 # Register your models here.
 
-class ItemInline(admin.TabularInline):
+class ItemInline(SortableInlineAdminMixin, admin.TabularInline):
     model = Item
     extra = 0
     verbose_name = 'Элемент'
@@ -58,7 +58,7 @@ class ItemAdmin(SortableAdminMixin, VersionAdmin):
     inlines = [WorkingTimeInline, WorkingTimeExceptionInline]
 
 @admin.register(Order)
-class OrderAdmin(admin.ModelAdmin, VersionAdmin):
+class OrderAdmin(VersionAdmin):
     list_display = ('id', 'user_info', 'item_id', 'approved', 'date_start', 'time_start', 'time_end')
     list_filter = ['date_start', 'item_id']
     def user_info(self, obj):

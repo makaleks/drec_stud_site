@@ -70,23 +70,9 @@
 
 {% block admin_change_form_document_ready %}
 <!-- START CUSTOM -->
-    <script src='/static/web_copy/ckeditor-4.7.x/ckeditor.js'></script>
+    <script src='{{ STATIC_URL }}web_copy/ckeditor-4.7.x/ckeditor.js'></script>
     <script src='{{ STATIC_URL }}settings/ckeditor_settings.js'></script>
-    <script type='text/javascript'>
-        window.onload = function() {
-            var id1 = 'id_text_preview';
-            var p1 = document.getElementById(id1).parentNode;
-            var label1 = p1.getElementsByTagName('label')[0];
-            label1.style.float = 'none';
-            CKEDITOR.replace(id1, options);
-
-            var id2 = 'id_text';
-            var p2 = document.getElementById(id2).parentNode;
-            var label2 = p2.getElementsByTagName('label')[0];
-            label2.style.float = 'none';
-            CKEDITOR.replace(id2, options);
-        }
-    </script>
+    <script src='{{ STATIC_URL }}js/textarea_to_ckeditor.js'></script>
 <!-- END CUSTOM -->
     <script type="text/javascript"
             id="django-admin-form-add-constants"
