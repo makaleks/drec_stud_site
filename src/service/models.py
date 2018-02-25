@@ -302,7 +302,7 @@ class Service(models.Model):
         return result_lst
     def clean(self):
         if self.default_works_to < self.default_works_from:
-            raise ValidationError('Please use time of single day')
+            raise ValidationError('Пожалуйста, используйте время работы в течение 1 суток')
     # Django doesn`t call full_clean (clean_fields, clean, validate_unique)
     # no save() by default
     def save(self, *args, **kwargs):
