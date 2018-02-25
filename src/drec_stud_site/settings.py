@@ -248,7 +248,7 @@ LOGGING = {
     'formatters': {
         'user_formatter': {
             # never set default 'user'
-            'format': '%(asctime)s: %(user)s - %(message)s',
+            'format': '%(asctime)s: %(levelname)s %(user)s - %(message)s',
             # default formatter includes milliseconds
             'datefmt': '%Y-%m-%d %H:%M:%S',
         },
@@ -270,10 +270,12 @@ LOGGING = {
         },
         'django': {
             'handlers': ['console', 'file_django'],
+            'level': 'INFO',
             'propagate': True,
         },
         'payment_logs': {
             'handlers': ['file_payment'],
+            'level': 'INFO',
             'propagate': True,
         },
     },

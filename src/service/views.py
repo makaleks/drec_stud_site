@@ -61,31 +61,33 @@ class ServiceListView(ListView):
         log_error = False
         log_str = '\n'
         if user_id and _is_int(user_id) and int(user_id) > 0 and _is_decimal(amount) and Decimal(amount) > 0:
-            user = User.objects.get(id = user_id)
-            if not user:
+            user = User.objects.filter(id = user_id)
+            if not user.exists():
                 log_error = True
                 log_str += '- NO_USER - can`t add {0}$ to account with id={1}\n'.format(amount, user_id)
-            # Be careful with the following code!
-            # See https://tech.yandex.com/money/doc/dg/reference/notification-p2p-incoming-docpage/#verify-notification
-            hash_source = '{notification_type}&{operation_id}&{amount}&{currency}&{datetime}&{sender}&{codepro}&{notification_secret}&{label}'.format(
-                    notification_type = data['notification_type'],
-                    operation_id = data['operation_id'],
-                    amount = data['amount'],
-                    currency = data['currency'],
-                    datetime = data['datetime'],
-                    sender = data['sender'],
-                    codepro = data['codepro'],
-                    notification_secret = settings.PAYMENT_SECRET_YANDEX,
-                    label = data['label']
-            )
-            m = hashlib.sha1(hash_source)
-            if m.hexdigest() != data['sha1_hash']:
-                log_error = True
-                log_str += '- HASH_ERROR - required {0} != recieved {1}\n'.format(data['sha1_hash'], m.hexdigest())
             else:
-                user.account += Decimal(amount)
-                user.save()
-                log_str += '- SUCCESS - for user {0}({1}) +{2} = {3}\n'.format(user_id, user.get_full_name(), amount, user.account)
+                user = user.first()
+                # Be careful with the following code!
+                # See https://tech.yandex.com/money/doc/dg/reference/notification-p2p-incoming-docpage/#verify-notification
+                hash_source = '{notification_type}&{operation_id}&{amount}&{currency}&{datetime}&{sender}&{codepro}&{notification_secret}&{label}'.format(
+                        notification_type = data['notification_type'],
+                        operation_id = data['operation_id'],
+                        amount = data['amount'],
+                        currency = data['currency'],
+                        datetime = data['datetime'],
+                        sender = data['sender'],
+                        codepro = data['codepro'],
+                        notification_secret = settings.PAYMENT_SECRET_YANDEX,
+                        label = data['label']
+                ).encode('utf-8')
+                m = hashlib.sha1(hash_source)
+                if m.hexdigest() != data['sha1_hash']:
+                    log_error = True
+                    log_str += '- HASH_ERROR - required {0} != recieved {1}\n'.format(data['sha1_hash'], m.hexdigest())
+                else:
+                    user.account += Decimal(amount)
+                    user.save()
+                    log_str += '- SUCCESS - for user {0}({1}) +{2} = {3}\n'.format(user_id, user.get_full_name(), amount, user.account)
         else:
             log_error = True
             log_str += '- FORMAT_ERROR - some error with user_id={0} and amount={1}\n'.format(user_id, amount)
