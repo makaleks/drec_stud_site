@@ -218,7 +218,7 @@ LOGGING = {
         },
     },
     'handlers': {
-        'file_events': {
+        'file_user_events': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
             'formatter': 'user_formatter',
@@ -231,6 +231,13 @@ LOGGING = {
             'filename': os.path.join(PROJECT_ROOT, 'logs/django_events.log'),
             'formatter': 'verbose',
         },
+        'file_payment': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            #'formatter': 'user_formatter',
+            'filename': os.path.join(PROJECT_ROOT, 'logs/payment_events.log'),
+            'formatter': 'simple',
+        },
         'console': {
             'level': 'INFO',
             'filters': ['require_debug_true'],
@@ -241,28 +248,33 @@ LOGGING = {
     'formatters': {
         'user_formatter': {
             # never set default 'user'
-            'format': '%(user)s %(asctime)s - %(message)s',
+            'format': '%(asctime)s: %(user)s - %(message)s',
             # default formatter includes milliseconds
             'datefmt': '%Y-%m-%d %H:%M:%S',
         },
         'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s',
+            'format': '####################\n%(asctime)s %(levelname)s %(module)s %(process)d %(thread)d %(message)s\n',
             'datefmt': '%Y-%m-%d %H:%M:%S',
         },
         'simple': {
-            'format': '%(levelname)s %(message)s'
+            'format': '%(asctime)s %(levelname)s: %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
         },
     },
     'loggers': {
         'site_events': {
-            'handlers': ['file_events'],
+            'handlers': ['file_user_events'],
             'level': 'INFO',
             # don`t pass to handlers of higher level (default: True)
             'propagate': False,
         },
         'django': {
             'handlers': ['console', 'file_django'],
-            'propagete': True,
+            'propagate': True,
+        },
+        'payment_logs': {
+            'handlers': ['file_payment'],
+            'propagate': True,
         },
     },
 }

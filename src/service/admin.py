@@ -58,7 +58,7 @@ class ItemAdmin(SortableAdminMixin, VersionAdmin):
     inlines = [WorkingTimeInline, WorkingTimeExceptionInline]
 
 @admin.register(Order)
-class OrderAdmin(admin.ModelAdmin):
+class OrderAdmin(admin.ModelAdmin, VersionAdmin):
     list_display = ('id', 'user_info', 'item_id', 'approved', 'date_start', 'time_start', 'time_end')
     list_filter = ['date_start', 'item_id']
     def user_info(self, obj):

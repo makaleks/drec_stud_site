@@ -9,11 +9,12 @@ from decimal import Decimal
 import datetime
 import json
 import re
+import hashlib
 from user.models import User
 from .models import Order, Item, Service, Participation
 
-# TODO: REMOVE THIS!!!
-import os
+import logging
+payment_logger = logging.getLogger('payment_logs')
 
 # Create your views here.
 
@@ -51,24 +52,51 @@ def _is_int(s):
 class ServiceListView(ListView):
     model = Service
     template_name = 'service_list.html'
+    # yandex payment logic
     def post(self, request, *args, **kwargs):
         data = request.POST.dict()
         user_id = data['label']
+        # 'payed' != 'recieved', set by 'payed'
         amount = data['withdraw_amount']
-        if user_id and _is_int(user_id) and int(user_id) > 0 and _is_decimal(amount):
+        log_error = False
+        log_str = '\n'
+        if user_id and _is_int(user_id) and int(user_id) > 0 and _is_decimal(amount) and Decimal(amount) > 0:
             user = User.objects.get(id = user_id)
-            if not user or not user.is_authenticated:
-                f = open(os.path.join(settings.MEDIA_ROOT, 'error_pay {0}.txt'.format(datetime.datetime.now())), 'w')
-                f.write(str(data))
-                f.close()
+            if not user:
+                log_error = True
+                log_str += '- NO_USER - can`t add {0}$ to account with id={1}\n'.format(amount, user_id)
+            # Be careful with the following code!
+            # See https://tech.yandex.com/money/doc/dg/reference/notification-p2p-incoming-docpage/#verify-notification
+            hash_source = '{notification_type}&{operation_id}&{amount}&{currency}&{datetime}&{sender}&{codepro}&{notification_secret}&{label}'.format(
+                    notification_type = data['notification_type'],
+                    operation_id = data['operation_id'],
+                    amount = data['amount'],
+                    currency = data['currency'],
+                    datetime = data['datetime'],
+                    sender = data['sender'],
+                    codepro = data['codepro'],
+                    notification_secret = settings.PAYMENT_SECRET_YANDEX,
+                    label = data['label']
+            )
+            m = hashlib.sha1(hash_source)
+            if m.hexdigest() != data['sha1_hash']:
+                log_error = True
+                log_str += '- HASH_ERROR - required {0} != recieved {1}\n'.format(data['sha1_hash'], m.hexdigest())
             else:
                 user.account += Decimal(amount)
                 user.save()
-        # TODO: REMOVE THIS!
-        f = open(os.path.join(settings.MEDIA_ROOT, 'root post {0}.txt'.format(datetime.datetime.now())), 'w')
-        f.write(str(data))
-        f.close()
-        return HttpResponse(str(data))
+                log_str += '- SUCCESS - for user {0}({1}) +{2} = {3}\n'.format(user_id, user.get_full_name(), amount, user.account)
+        else:
+            log_error = True
+            log_str += '- FORMAT_ERROR - some error with user_id={0} and amount={1}\n'.format(user_id, amount)
+        log_str += '####################'
+        if log_error:
+            log_str = '\n- Got {0}'.format(str(data)) + log_str
+            payment_logger.error(log_str)
+        else:
+            payment_logger.info(log_str)
+        # Return OK to yandex
+        return HttpResponse(status=200)
 
 class ServiceDetailView(DetailView):
     model = Service
