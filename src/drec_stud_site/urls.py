@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.contrib.auth.views import LogoutView
 from django.views.generic import TemplateView
 #from user.views import render_login_success
+from user.views import EmergencyLoginView
 
 handler400 = 'utils.views.error_view_400'
 handler403 = 'utils.views.error_view_403'
@@ -28,6 +29,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^social/', include('social_django.urls', namespace='social')),
     url(r'^logout/$', LogoutView.as_view()),
+    url(r'^login/$', EmergencyLoginView.as_view(template_name='core/login.html'), name='emergency-login'),
     url(r'^services/', include('service.urls')),
     url(r'^surveys/', include('survey.urls')),
     url(r'^notes/', include('note.urls')),

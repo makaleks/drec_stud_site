@@ -21,5 +21,6 @@ def custom_context(request):
             'vk': {
                 'key': settings.SOCIAL_AUTH_VK_OAUTH2_KEY
             }
-        }
+        },
+        'is_emergency_login_mode': settings.IS_EMERGENCY_LOGIN_MODE
     }

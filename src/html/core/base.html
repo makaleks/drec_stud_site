@@ -177,9 +177,15 @@
                         </a>
                     {% else %}
                         <img src='{{ STATIC_URL }}img/vk.svg' />
-                        <a href='{% url "social:begin" "vk-oauth2" %}?next={{ request.path }}' class='btn btn-vk'>
-                            <span>Войти через ВК</span>
-                        </a>
+                        {% if not is_emergency_login_mode %}
+                            <a href='{% url "social:begin" "vk-oauth2" %}?next={{ request.path }}' class='btn btn-vk'>
+                                <span>Войти через ВК</span>
+                            </a>
+                        {% else %}
+                            <a href='/login?next={{ request.path }}' class='btn btn-vk'>
+                                <span>Войти</span>
+                            </a>
+                        {% endif %}
                     {% endif %}
                 </div>
                 <div class='inline'>
@@ -238,7 +244,11 @@
                         <img src='{{ STATIC_URL }}img/vk.svg' />
                         <section>
                             <p>Привет, гость</p>
-                            <a href='{% url "social:begin" "vk-oauth2" %}?next={{ request.path }}' class='btn btn-vk'>Войти через ВК</a>
+                            {% if not is_emergency_login_mode %}
+                                <a href='{% url "social:begin" "vk-oauth2" %}?next={{ request.path }}' class='btn btn-vk'>Войти через ВК</a>
+                            {% else %}
+                                <a href='/login?next={{ request.path }}' class='btn btn-vk'>Войти</a>
+                            {% endif %}
                         </section>
                     {% endif %}
                 </article>

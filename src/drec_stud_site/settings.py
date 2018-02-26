@@ -165,11 +165,12 @@ PAYMENT_TEXT_YANDEX = module.PAYMENT_TEXT_YANDEX
 PAYMENT_SUCCESS_REDIRECT_YANDEX = module.PAYMENT_SUCCESS_REDIRECT_YANDEX
 PAYMENT_SECRET_YANDEX = module.PAYMENT_SECRET_YANDEX
 PAYMENT_ACCOUNT_YANDEX = module.PAYMENT_ACCOUNT_YANDEX
+IS_EMERGENCY_LOGIN_MODE = module.IS_EMERGENCY_LOGIN_MODE
 
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.vk.VKOAuth2',
     # Uncomment to return #passwordAuth
-    #'django.contrib.auth.backends.ModelBackend',
+    'django.contrib.auth.backends.ModelBackend',
 )
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
 SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = ['last_name', 'first_name', 'patronymic_name']
@@ -196,6 +197,7 @@ SOCIAL_AUTH_PIPELINE = (
     # Force login, so you will be reloginned (not done by default)
     #'user.pipeline.force_login',
 )
+LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
