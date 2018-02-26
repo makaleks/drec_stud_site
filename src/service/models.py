@@ -302,7 +302,9 @@ class Service(models.Model):
         return result_lst
     def clean(self):
         if self.default_works_to < self.default_works_from:
-            raise ValidationError('Пожалуйста, используйте время работы в течение 1 суток')
+            raise ValidationError('Please, set working times in 1 day')
+        if self.is_single_item and self.items.count() != 1:
+            raise ValidationError('If is_single_item is set, their count must be = 1 too')
     # Django doesn`t call full_clean (clean_fields, clean, validate_unique)
     # no save() by default
     def save(self, *args, **kwargs):
@@ -539,6 +541,9 @@ class Item(models.Model):
         return self.price if self.price != None else self.service.default_price
     def __str__(self):
         return self.name
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super(Item, self).save(*args, **kwargs)
     class Meta:
         verbose_name = 'предмет сервиса'
         verbose_name_plural = 'предметы сервиса'

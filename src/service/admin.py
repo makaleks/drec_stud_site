@@ -4,6 +4,7 @@ from django.contrib.contenttypes.admin import GenericStackedInline
 from reversion.admin import VersionAdmin
 from adminsortable2.admin import SortableAdminMixin, SortableInlineAdminMixin
 from django import forms
+from django.http import QueryDict
 
 # Register your models here.
 
@@ -35,8 +36,32 @@ class WorkingTimeExceptionAdmin(admin.ModelAdmin):
     list_display = ('date_start', 'date_end', 'works_from', 'works_to')
     ordering = ['is_annual', 'date_start', 'date_end', 'works_from', 'works_to']
 
+class ServiceForm(forms.ModelForm):
+    def clean(self):
+        # 'self' was used in official tutorial in User override
+        self.cleaned_data = super(ServiceForm, self).clean()
+        if self.cleaned_data['default_works_to'] < self.cleaned_data['default_works_from']:
+            raise forms.ValidationError('Пожалуйста, установите время работы в пределах 1 дня')
+        if self.cleaned_data['is_single_item']:
+            got_item_forms_count =int(self.data.get('items-TOTAL_FORMS', 0))
+            to_delete_item_count = 0
+            cursor = 0
+            for i in range(0, got_item_forms_count):
+                if self.data.get('items-{0}-DELETE'.format(i), '') == 'on':
+                    to_delete_item_count += 1
+                else:
+                    cursor = i
+            if got_item_forms_count - to_delete_item_count != 1:
+                raise forms.ValidationError('Если установлено \'один предмет сервиса\', то их количество должно быть равно 1')
+        return self.cleaned_data
+    class Meta:
+        model = Service
+        # error fix: "Creating a ModelForm without either the 'fields' attribute or the 'exclude' attribute is prohibited"
+        exclude = []
+
 @admin.register(Service)
 class ServiceAdmin(SortableAdminMixin, VersionAdmin):
+    form = ServiceForm
     list_display = ('name', 'default_price', 'time_step', 'is_active','edited')
     inlines = [ItemInline, WorkingTimeInline, WorkingTimeExceptionInline]
     list_filter = ['name']
