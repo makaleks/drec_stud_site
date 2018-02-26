@@ -55,9 +55,9 @@ class ServiceListView(ListView):
     # yandex payment logic
     def post(self, request, *args, **kwargs):
         data = request.POST.dict()
-        user_id = data['label']
+        user_id = data.get('label', 0)
         # 'payed' != 'recieved', set by 'payed'
-        amount = data['withdraw_amount']
+        amount = data.get('withdraw_amount', 0)
         log_error = False
         log_str = '\n'
         if user_id and _is_int(user_id) and int(user_id) > 0 and _is_decimal(amount) and Decimal(amount) > 0:
@@ -83,7 +83,7 @@ class ServiceListView(ListView):
                 m = hashlib.sha1(hash_source)
                 if m.hexdigest() != data['sha1_hash']:
                     log_error = True
-                    log_str += '- HASH_ERROR - required {0} != recieved {1}\n'.format(data['sha1_hash'], m.hexdigest())
+                    log_str += '- HASH_ERROR - required {0} != recieved {1}\n'.format(m.hexdigest(), data['sha1_hash'])
                 else:
                     user.account += Decimal(amount)
                     user.save()

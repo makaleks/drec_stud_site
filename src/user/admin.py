@@ -18,8 +18,8 @@ logger = logging.getLogger('site_events')
 
 class UserCreationForm(forms.ModelForm):
     # Uncomment to enable #passwordAuth
-    password1 = forms.CharField(label = 'Пароль', widget = forms.PasswordInput)
-    password2 = forms.CharField(label = 'Подтверждение пароля', widget = forms.PasswordInput)
+    #password1 = forms.CharField(label = 'Пароль', widget = forms.PasswordInput)
+    #password2 = forms.CharField(label = 'Подтверждение пароля', widget = forms.PasswordInput)
 
     groups = forms.ModelMultipleChoiceField(label='Группы',widget=FilteredSelectMultiple('Группы',is_stacked=False),queryset=Group.objects.all())
     def clean(self):
@@ -74,20 +74,20 @@ class UserCreationForm(forms.ModelForm):
         exclude = []
         #fields = ('last_name', 'first_name', 'patronymic_name', 'group_number', 'account_id', 'email')
     # Uncomment all the following to enable #passwordAuth
-    def clean_password2(self):
-        # Check if 2 passwords are the same
-        password1 = self.cleaned_data.get('password1')
-        password2 = self.cleaned_data.get('password2')
-        if password1 and password2 and password1 != password2:
-            raise forms.ValidationError('Пароли не совпадают')
-        return password2
-    def save(self, commit = True):
-        # Save password in hashed format
-        user = super(UserCreationForm, self).save(commit=False)
-        user.set_password(self.cleaned_data['password1'])
-        if commit:
-            user.save()
-        return user
+    #def clean_password2(self):
+    #    # Check if 2 passwords are the same
+    #    password1 = self.cleaned_data.get('password1')
+    #    password2 = self.cleaned_data.get('password2')
+    #    if password1 and password2 and password1 != password2:
+    #        raise forms.ValidationError('Пароли не совпадают')
+    #    return password2
+    #def save(self, commit = True):
+    #    # Save password in hashed format
+    #    user = super(UserCreationForm, self).save(commit=False)
+    #    user.set_password(self.cleaned_data['password1'])
+    #    if commit:
+    #        user.save()
+    #    return user
     # Uncomment end
 
 class UserChangeForm(forms.ModelForm):
@@ -178,7 +178,9 @@ class UserAdmin(BaseUserAdmin, VersionAdmin):
             'classes': ('wide',),
             'fields': ('last_name','first_name','patronymic_name',
                 'group_number',
-                'account_id','password1','password2','card_uid',
+                # Uncomment to enable #passwordAuth
+                #'account_id','password1','password2','card_uid',
+                'account_id','card_uid',
                 'phone_number','email',
                 'is_staff','groups',
                 'avatar_url')}
