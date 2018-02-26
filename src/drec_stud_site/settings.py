@@ -204,7 +204,7 @@ SOCIAL_AUTH_SANITIZE_REDIRECTS = False
 # needs in nginx server settings: 'proxy_set_header Host $host;'
 USE_X_FORWARDED_HOST = True
 
-FILE_UPLOAD_PERMISSIONS = 0x644
+FILE_UPLOAD_PERMISSIONS = 0o644
 
 LOGGING = {
     # The only possible value, I know it`s strange
