@@ -101,7 +101,7 @@ class ServiceListView(ListView):
                     log_str += '- SUCCESS - for user {0}({1}) +{2} = {3}\n'.format(user_id, user.get_full_name(), amount, user.account)
         else:
             log_error = True
-            log_str += '- FORMAT_ERROR - some error with user_id=\'label\'={0} and amount=\'withdraw_amount\'={1}\n'.format(user_id, amount)
+            log_str += '- FORMAT_ERROR - some error with user_id(\'label\')={0} and amount(\'withdraw_amount\')={1}\n'.format(user_id, amount)
         log_str += '####################'
         if log_error:
             log_str = '\n- Got {0}'.format(str(data)) + log_str
