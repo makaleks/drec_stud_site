@@ -54,13 +54,24 @@ class ServiceListView(ListView):
     template_name = 'service_list.html'
     # yandex payment logic
     def post(self, request, *args, **kwargs):
+        def _create_lost_str(data):
+            to_ret = ''
+            required_keys = ['notification_type', 'operation_id', 'amount', 'currency', 'datetime', 'sender', 'codepro', 'label', 'sha1_hash']
+            for field in required_keys:
+                if not field in data:
+                    to_ret += '\'{0}\'\n'.format(field)
+            return to_ret
         data = request.POST.dict()
         user_id = data.get('label', 0)
         # 'payed' != 'recieved', set by 'payed'
         amount = data.get('withdraw_amount', 0)
         log_error = False
         log_str = '\n'
-        if user_id and _is_int(user_id) and int(user_id) > 0 and _is_decimal(amount) and Decimal(amount) > 0:
+        lost_str = _create_lost_str(data)
+        if lost_str:
+            log_error = True
+            log_str += '- FIELD_ERROR - the following fields were not found:\n{0}'.format(lost_str)
+        elif user_id and _is_int(user_id) and int(user_id) > 0 and _is_decimal(amount) and Decimal(amount) > 0:
             user = User.objects.filter(id = user_id)
             if not user.exists():
                 log_error = True

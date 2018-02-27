@@ -146,6 +146,8 @@ QUESTION_DEFAULT_APPROVED = True
 # Default secrets
 DEBUG = True
 SECRET_KEY = 'DefaultDjangoSecretNeverUsed'
+# Emergency mode: use passwords if SocialAuth is not available
+IS_EMERGENCY_LOGIN_MODE = False
 # https://money.yandex.com/
 PAYMENT_TEXT_YANDEX = 'The wallet for student council site.'
 PAYMENT_SUCCESS_REDIRECT_YANDEX = 'http://localhost/services/'
