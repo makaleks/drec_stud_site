@@ -190,11 +190,11 @@
                 </div>
                 <div class='inline'>
                     {% if user.is_staff %}
-                        {% if request.path|util_contains_string:'^/$' %}
+                        {% if request.path|util_contains_string:'^/$' and perms.news %}
                             <a href='/admin/news/news/add/' class='btn btn-vk'>
                                 <span>Добавить новость</span>
                             </a>
-                        {% elif request.path|util_contains_string:'^/surveys/' %}
+                        {% elif request.path|util_contains_string:'^/surveys/' and perms.surveys %}
                             <a href='/admin/survey/survey/add/' class='btn btn-vk'>
                                 <span>Добавить опрос</span>
                             </a>

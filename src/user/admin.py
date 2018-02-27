@@ -21,7 +21,7 @@ class UserCreationForm(forms.ModelForm):
     #password1 = forms.CharField(label = 'Пароль', widget = forms.PasswordInput)
     #password2 = forms.CharField(label = 'Подтверждение пароля', widget = forms.PasswordInput)
 
-    groups = forms.ModelMultipleChoiceField(label='Группы',widget=FilteredSelectMultiple('Группы',is_stacked=False),queryset=Group.objects.all())
+    groups = forms.ModelMultipleChoiceField(label='Группы',required=False,widget=FilteredSelectMultiple('Группы',is_stacked=False),queryset=Group.objects.all())
     def clean(self):
         phone_number    = self.cleaned_data.get('phone_number')
         last_name       = self.cleaned_data.get('last_name')
@@ -94,7 +94,7 @@ class UserChangeForm(forms.ModelForm):
     # Uncomment to enable #passwordAuth
     password = ReadOnlyPasswordHashField(label='Хэш от пароля')
 
-    groups = forms.ModelMultipleChoiceField(label='Группы',widget=FilteredSelectMultiple('Группы',is_stacked=False),queryset=Group.objects.all())
+    groups = forms.ModelMultipleChoiceField(label='Группы',required=False,widget=FilteredSelectMultiple('Группы',is_stacked=False),queryset=Group.objects.all())
     def clean(self):
         phone_number    = self.cleaned_data.get('phone_number')
         last_name       = self.cleaned_data.get('last_name')
@@ -161,7 +161,7 @@ class UserAdmin(BaseUserAdmin, VersionAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
     list_display = ('last_name', 'first_name', 'patronymic_name', 'group_number', 'is_staff')
-    list_filter = ('is_staff', 'group_number', 'groups')
+    list_filter = ('is_staff', 'groups', 'group_number')
     fieldsets = (
         # Uncomment to enable #passwordAuth
         #(None, {'fields': ('phone_number', 'password')}),

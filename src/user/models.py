@@ -29,7 +29,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     # USERNAME_FIELD and password are always required
     REQUIRED_FIELDS = ['last_name', 'first_name', 'patronymic_name', 'group_number', 'phone_number', 'email']
     is_superuser    = models.BooleanField(default = False, verbose_name = 'Разработчик')
-    is_staff        = models.BooleanField(default = False, verbose_name = 'Администратор')
+    is_staff        = models.BooleanField(default = False, verbose_name = 'Доступ к админке')
     is_active       = models.BooleanField(default = True)
     # uid is the info from plastic card
     # TODO: in production make this field REQUIRED
