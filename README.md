@@ -148,8 +148,12 @@ DEBUG = True
 SECRET_KEY = 'DefaultDjangoSecretNeverUsed'
 # Emergency mode: use passwords if SocialAuth is not available
 IS_EMERGENCY_LOGIN_MODE = False
+# If vk.com stopped giving id by name
+IS_ID_RECOGNITION_BROKEN_VK = False
 # https://money.yandex.com/
 PAYMENT_TEXT_YANDEX = 'The wallet for student council site.'
+PAYMENT_YANDEX_ENABLE_CARD = True
+PAYMENT_YANDEX_ENABLE_PHONE = False
 PAYMENT_SUCCESS_REDIRECT_YANDEX = 'http://localhost/services/'
 PAYMENT_SECRET_YANDEX = 'YandexMoneySecret'
 PAYMENT_ACCOUNT_YANDEX = 'YandexAccount'

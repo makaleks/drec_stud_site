@@ -4,6 +4,7 @@ from django import forms
 from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.admin.widgets import FilteredSelectMultiple
+from django.conf import settings
 # Uncomment to enable #passwordAuth
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
@@ -54,11 +55,12 @@ class UserCreationForm(forms.ModelForm):
                 raise forms.ValidationError('Этот номер телефона уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number))
         # Unique and valid account_id
         id_num = get_id_by_url_vk(account_id)
-        if not id_num:
-            raise forms.ValidationError('Не удалось получить id из социальной сети. Это точно существующий пользователь?')
-        else:
-            self.cleaned_data['account_id'] = id_num
-            account_id = id_num
+        if not settings.IS_ID_RECOGNITION_BROKEN_VK:
+            if not id_num:
+                raise forms.ValidationError('Не удалось получить id из социальной сети. Это точно существующий пользователь?')
+            else:
+                self.cleaned_data['account_id'] = id_num
+                account_id = id_num
         user = check_unique(User, 'account_id', account_id)
         if user:
             raise forms.ValidationError('Эту ссылку на аккаунт уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number))

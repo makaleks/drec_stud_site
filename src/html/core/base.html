@@ -146,7 +146,7 @@
     </label>
     <div class='container' id='modal_refill'>
         <div class='card modal_refill'>
-            <iframe src="https://money.yandex.ru/quickpay/shop-widget?writer=seller&targets={{ pay_yandex.payment_text|urlencode }}&targets-hint=&default-sum=2&button-text=11&payment-type-choice=on&mobile-payment-type-choice=on&fio=on&hint=&successURL={{ pay_yandex.success_redirect_url|urlencode }}&quickpay=shop&account={{ pay_yandex.account|urlencode }}&label={{ user.id|urlencode }}" width="450" height="223" frameborder="0" allowtransparency="true" scrolling="no"></iframe>
+            <iframe src="https://money.yandex.ru/quickpay/shop-widget?writer=seller&targets={{ pay_yandex.payment_text|urlencode }}&targets-hint=&default-sum=2&button-text=11&{% if pay_yandex.enable_card %}payment-type-choice=on&{% endif %}{% if pay_yandex.enable_phone %}mobile-payment-type-choice=on&{% endif %}fio=on&hint=&successURL={{ pay_yandex.success_redirect_url|urlencode }}&quickpay=shop&account={{ pay_yandex.account|urlencode }}&label={{ user.id|urlencode }}" width="450" height="223" frameborder="0" allowtransparency="true" scrolling="no"></iframe>
              <label for='modal_refill_check' class='m_close'>
                 <svg class='close' viewBox='0 0 10 10'>
                     <path d='M2 8l6-6M2 2l6 6'/>
