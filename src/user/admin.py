@@ -129,11 +129,12 @@ class UserChangeForm(forms.ModelForm):
                 raise forms.ValidationError('Этот номер телефона уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number))
         # Unique and valid account_id
         id_num = get_id_by_url_vk(account_id)
-        if not id_num:
-            raise forms.ValidationError('Не удалось получить id из социальной сети. Это точно существующий пользователь?')
-        else:
-            self.cleaned_data['account_id'] = id_num
-            account_id = id_num
+        if not settings.IS_ID_RECOGNITION_BROKEN_VK:
+            if not id_num:
+                raise forms.ValidationError('Не удалось получить id из социальной сети. Это точно существующий пользователь?')
+            else:
+                self.cleaned_data['account_id'] = id_num
+                account_id = id_num
         if str(account_id) != self.instance.account_id:
             user = check_unique(User, 'account_id', account_id)
             if user:
