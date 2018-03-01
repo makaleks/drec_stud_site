@@ -137,7 +137,7 @@ class Service(models.Model):
     def __str__(self):
         return self.name
     def get_timetable_list(self):
-        # cleans trailing 'closed' marks
+        # cleans leading 'closed' marks
         def clean_starting(time_lst):
             # Flag to 'break' double loop
             clean_flag = True
@@ -396,7 +396,7 @@ class Item(models.Model):
             item_result = wt_item.first()
         # same for service
         wt_service = get_working_time_query(self.service, day)
-        if wt_service.exists() and not servise_result:
+        if wt_service.exists() and not service_result:
             service_result = wt_service.first()
         if not service_result:
             service_result = {
