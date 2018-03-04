@@ -12,7 +12,7 @@ class ItemInline(SortableInlineAdminMixin, admin.TabularInline):
     model = Item
     extra = 0
     verbose_name = 'Элемент'
-    ordering = ['location', 'price']
+    ordering = ['order', 'location', 'price']
 
 class WorkingTimeInline(GenericStackedInline):
     model = WorkingTime
@@ -64,7 +64,7 @@ class ServiceAdmin(SortableAdminMixin, VersionAdmin):
     form = ServiceForm
     list_display = ('name', 'default_price', 'time_step', 'is_active','edited')
     inlines = [ItemInline, WorkingTimeInline, WorkingTimeExceptionInline]
-    list_filter = ['name']
+    list_filter = ['order', 'name']
     def get_readonly_fields(self, request, obj=None):
         if obj:
             return ['slug']
@@ -79,7 +79,7 @@ class ServiceAdmin(SortableAdminMixin, VersionAdmin):
 @admin.register(Item)
 class ItemAdmin(SortableAdminMixin, VersionAdmin):
     list_display = ('id', 'name', 'is_active', 'created')
-    list_filter = ['location', 'is_active']
+    list_filter = ['order', 'location', 'is_active']
     inlines = [WorkingTimeInline, WorkingTimeExceptionInline]
 
 @admin.register(Order)

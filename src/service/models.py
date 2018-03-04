@@ -116,7 +116,7 @@ class Service(models.Model):
     # URL part. Django accepts only exactly 'slug' field in urls.py
     slug        = models.SlugField(max_length = 16, blank = False, null = False, unique = True, verbose_name = 'Фрагмент URL на английском (навсегда)')
     name        = models.CharField(max_length = 64, blank = False, null = False, unique = True, verbose_name = 'Название')
-    description = models.CharField(max_length = 124, blank = False, null = False, verbose_name = 'Краткое описание')
+    announcements = models.TextField(max_length = 124, blank = True, null = True, verbose_name = 'Объявления')
     instruction = BBCodeTextField(blank = True, null = True, verbose_name = 'Инструкция и подробное описание')    
     image       = models.FileField(validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'gif', 'svg'])], blank = False, null = False, verbose_name = 'Картинка')
     time_step   = models.TimeField(blank = False, null = False, verbose_name = 'Минимальное время использования (шаг времени)')
@@ -131,13 +131,14 @@ class Service(models.Model):
     working_times       = GenericRelation(WorkingTime, content_type_field = 'content_type', object_id_field = 'object_id')
     working_time_exceptions = GenericRelation(WorkingTimeException, content_type_field = 'content_type', object_id_field = 'object_id')
     responsible_user    = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.SET_NULL, blank = True, null = True, verbose_name = 'Ответственное лицо')
+    responsible_room    = models.CharField(max_length = 32, blank = True, null = True, verbose_name = 'Комната ответственного')
     request_document        = models.FileField(validators=[FileExtensionValidator(allowed_extensions=['doc', 'docx', 'pdf', 'odt', 'png', 'jpg', 'jpeg'])], blank = True, null = True, verbose_name = 'Служебка (doc/docx/pdf/odt/png/jpg/jpeg)')
     is_single_item      = models.BooleanField(default = False, blank = False, null = False, verbose_name = 'Один предмет сервиса')
     order   = models.PositiveSmallIntegerField(default = 0, blank = False, null = False, verbose_name = 'Порядок показа')
     def __str__(self):
         return self.name
     def get_timetable_list(self):
-        # cleans leading 'closed' marks
+        # cleans trailing 'closed' marks
         def clean_starting(time_lst):
             # Flag to 'break' double loop
             clean_flag = True
@@ -145,7 +146,7 @@ class Service(models.Model):
             result = {}
             while clean_flag == True:
                 for it in time_lst.values():
-                    if ('closed' not in it['time'][index]
+                    if (it['time'] and 'closed' not in it['time'][index]
                         and 'weekend' not in it['time'][index]):
                         clean_flag = False
                         if index == 0:
@@ -185,7 +186,7 @@ class Service(models.Model):
             weekend_lst = []
             # Find the earliest time
             for it in list(lst['items'].values()):
-                if 'weekend' not in it['time'][0]:
+                if it['time'] and 'weekend' not in it['time'][0]:
                     t_list = it['time']
                     for t in t_list:
                         if ((t['time_end'] > now 
@@ -206,7 +207,13 @@ class Service(models.Model):
             # with 'closed' cells with duration=1
             for k in lst['items']:
                 t = lst['items'][k]['time']
-                if 'weekend' not in t[0]:
+                # Empty case
+                if not t:
+                    t_start = datetime.datetime.combine(datetime.date.min, earliest_time)
+                    while t_start < datetime.datetime.combine(datetime.datetime.min, latest_time):
+                        t.append({'time_start': t_start.time(), 'time_end': (t_start + td).time(), 'closed': True})
+                        t_start += td
+                elif 'weekend' not in t[0]:
                     for i in range(len(t)):
                         if t[i]['time_start'] >= earliest_time:
                             t = t[i:]
@@ -381,7 +388,7 @@ class Item(models.Model):
                     'works_to': datetime.time(0,0,0),
                     'weekend': True}
         # PRIORITY: Service < Item < WorkingTime < WorkingTimeException
-        # working_time_exceptions
+        # item working_time_exceptions
         item_result = service_result = {}
         wte_item = get_working_time_exception_query(self, day)
         if wte_item.exists():
@@ -390,7 +397,7 @@ class Item(models.Model):
         wte_service = get_working_time_exception_query(self.service, day)
         if wte_service.exists():
             service_result = wte_service.first()
-        # working_times
+        # item working_times
         wt_item = get_working_time_query(self, day)
         if wt_item.exists() and not item_result:
             item_result = wt_item.first()
@@ -398,6 +405,7 @@ class Item(models.Model):
         wt_service = get_working_time_query(self.service, day)
         if wt_service.exists() and not service_result:
             service_result = wt_service.first()
+        # Filling service working time
         if not service_result:
             service_result = {
                 'works_from': self.service.default_works_from,
@@ -410,6 +418,7 @@ class Item(models.Model):
                 'works_to': service_result.works_to,
                 'weekend': service_result.weekend
             }
+        # Filling item from service
         if not item_result:
             item_result = service_result
         else:
