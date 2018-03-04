@@ -116,7 +116,7 @@ class Service(models.Model):
     # URL part. Django accepts only exactly 'slug' field in urls.py
     slug        = models.SlugField(max_length = 16, blank = False, null = False, unique = True, verbose_name = 'Фрагмент URL на английском (навсегда)')
     name        = models.CharField(max_length = 64, blank = False, null = False, unique = True, verbose_name = 'Название')
-    announcements = models.TextField(max_length = 124, blank = True, null = True, verbose_name = 'Объявления')
+    announcements = BBCodeTextField(blank = True, null = True, verbose_name = 'Объявления')
     instruction = BBCodeTextField(blank = True, null = True, verbose_name = 'Инструкция и подробное описание')    
     image       = models.FileField(validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'gif', 'svg'])], blank = False, null = False, verbose_name = 'Картинка')
     time_step   = models.TimeField(blank = False, null = False, verbose_name = 'Минимальное время использования (шаг времени)')

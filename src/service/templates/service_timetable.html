@@ -1,6 +1,11 @@
 {% extends 'core/base.html' %}
 {% load utils_extra_filters %}
 {% block content %}
+{% if not user.is_authenticated %}
+    <div class='card'>
+        <h1>Для заказа необходимо войти на сайт</h1>
+    </div>
+{% endif %}
 <section class='card'>
     <h2 class='lightgrey'>{{ service.name }}</h2>
     {% if service.responsible_user %}
@@ -25,17 +30,18 @@
         <p><b>Чтобы выбрать или отменить выбор интервала нажми на него</b></p>
     </div>
 </section>
-<!--<section class='card'>
+<section class='card'>
     <h2 class='lightgray'>Объявления</h2>
     <div>
         <div class='card-maintext'>
-            <ul>
-                <li>Обнаружен радужный носок с понями 2 числа на полу в 19:37 за пропажей к охране(или ответственным за стиралку)</li>
-                <li>Временно недоступна 5 стиралка, к 5 числу отремонтируют</li>
-            </ul>
+            {% if service.announcements.rendered %}
+                {{ service.announcements.rendered }}
+            {% else %}
+                Объявлений нет
+            {% endif %}
         </div>
     </div>
-</section>-->
+</section>
 {% if service.instruction.rendered %}
 <section class='card'>
     <input id='show_rules' type='checkbox' hidden class='shownews' />
@@ -48,7 +54,7 @@
 {% endif %}
 <form action='' method='post' id='washing'>
     {% csrf_token %}
-        {% with time_list=service.get_timetable_list %}
+    {% with time_list=service.get_timetable_list %}
         {% with item_info=service.get_item_info %}
             {% for day in time_list|util_add_user_info:user %}
                 <div class='full-width'>
@@ -98,7 +104,7 @@
                 <!-- users: display next/previous from selected even if closed -->
                 {% elif cell.user %}
                     <td style='padding:0;min-width:100px;max-width:100px;' class={% if cell.user == user %}'choisen'{% elif not cell.closed or cell.show_info %}'selected'{% elif cell.closed %}'ended'{% endif %} {% if not cell.closed %}rowspan='{{ m_value.rowspan }}'{% endif %}>
-                        {% if cell.user != user %}
+                        {% if user.is_authenticated and cell.user != user %}
                         <label class='userinfo' for='modal_userinfo_check' onclick='showuserinfo("{{ cell.user.get_full_name }}", "{{ cell.user.account_id }}", "{% if cell.user.phone_number is not None %}{{ cell.user.phone_number }}{% endif %}", "{% if cell.user.email is not None %}{{ cell.user.email }}{% endif %}");' title='Посмотреть инфо о заказавшем(-ей)'></label>
                         {% endif %}
                     </td>
@@ -150,25 +156,32 @@
                     </div>
             {% endfor %}
         {% endwith %}
-        {% endwith %}
-    <div class='card hidden' id='preresult'>
-        <p id='pretext'></p>
-    </div>
-    <div class='card' id='finalresult'>
-        <p id='finaltext'>
-            Вы ничего не выбрали
-        </p>
-        <p>
-            <input id='show_agree' type='checkbox' class='shownews' required />
-            <label for='show_agree'>Я прочитал(-а) и обязуюсь выполнять правила пользования</label>
-        </p>
-        <input type='hidden' name='type' value='order' />
-        <input id='finalcancel' type='button' value='Сбросить' />
-        <input id='finalsubmit' class='full' type='submit' value='Подтверждаю' />
-    </div>
+    {% endwith %}
+    {% if user.is_authenticated %}
+        <div class='card hidden' id='preresult'>
+            <p id='pretext'></p>
+        </div>
+        <div class='card' id='finalresult'>
+            <p id='finaltext'>
+                Вы ничего не выбрали
+            </p>
+            <p>
+                <input id='show_agree' type='checkbox' class='shownews' required />
+                <label for='show_agree'>Я прочитал(-а) и обязуюсь выполнять правила пользования</label>
+            </p>
+            <input type='hidden' name='type' value='order' />
+            <input id='finalcancel' type='button' value='Сбросить' />
+            <input id='finalsubmit' class='full' type='submit' value='Подтверждаю' />
+        </div>
+    {% else %}
+        <div class='card'>
+            <h1>Для заказа необходимо войти на сайт</h1>
+        </div>
+    {% endif %}
 </form>
 {% endblock %}
 {% block body_extras %}
+{% if user.is_authenticated %}
 <script>
     window.addEventListener('load', function() {
         var preview = document.querySelector('#pretext'),
@@ -219,4 +232,5 @@
         });
     });
 </script>
+{% endif %}
 {% endblock %}
