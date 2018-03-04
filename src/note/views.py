@@ -6,6 +6,7 @@ from .models import Note, Question
 from .forms import QuestionForm
 from django.views.generic.detail import DetailView
 from django.contrib.contenttypes.models import ContentType
+from django.conf import settings
 from comment.models import Comment
 
 
@@ -21,12 +22,27 @@ class StudentCouncilView(FormView):
     model = Note
     template_name = 'student_council.html'
     form_class = QuestionForm
-    success_url = '/notes/student_council'
+    success_url = '/notes/student_council?status=success'
+    status = ''
     def get_context_data(self, **kwargs):
         context = super(StudentCouncilView, self).get_context_data(**kwargs)
         context['note'] = Note.objects.all().filter(slug = 'student_council').first()
         context['question_list'] = Question.objects.all()
+        note = {}
+        if self.status:
+            status = self.status
+            if status == 'success' and not settings.QUESTION_DEFAULT_APPROVED:
+                note['text'] = 'Вопрос отправлен и скоро, после одобрения, будет опубликован'
+                note['enabled'] = True
+                note['type'] = self.status
+        context['notification'] = note
         return context
+    def get(self, request, *args, **kwargs):
+        data = request.GET.dict()
+        status = data.get('status')
+        if status:
+            self.status = status
+        return super(StudentCouncilView, self).get(request, *args, **kwargs)
     def form_valid(self, form):
         if not self.request.user.is_authenticated:
             form.add_error(None, 'Сначала нужно войти на сайт!')
