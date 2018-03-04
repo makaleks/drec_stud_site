@@ -9,6 +9,12 @@
 </style>
 {% endblock %}
 {% block content %}
+{% if not user.is_authenticated %}
+<!-- TODO: fix style hardcoded for <div> show -->
+    <span class='card'>
+        <h1>Для заказа необходимо войти на сайт</h1>
+    </span>
+{% endif %}
 <section class='card'>
     <h2 class='lightgrey'>{{ service.name }}</h2>
     {% if service.responsible_user %}
@@ -37,6 +43,18 @@
 </span>
 {% endif %}
 <div class='tab' style='padding:0;'>
+<section class='card'>
+    <h2 class='lightgray'>Объявления</h2>
+    <div>
+        <div class='card-maintext'>
+            {% if service.announcements.rendered %}
+                {{ service.announcements.rendered }}
+            {% else %}
+                Объявлений нет
+            {% endif %}
+        </div>
+    </div>
+</section>
 {% if service.instruction.rendered %}
 <section class='card'>
     <input id='show_rules' type='checkbox' hidden class='shownews' />
@@ -127,18 +145,24 @@
         {% endfor %}
     {% endwith %}
     {% endwith %}
-    <div class='card hidden' id='preresult'>
-        <p id='pretext'></p>
-    </div>
-    <div class='card' id='finalresult'>
-        <p id='finaltext'>
-            Вы ничего не выбрали
-        </p>
-    <textarea rows=5 style='width:100%;max-width:100%;min-height:3ex;' name='title' placeholder='Пояснить причину заказа(если вы просто участвуете в мероприятии, оставьте пустым)' style='width: 100%;'></textarea><br />
-        <input type='hidden' name='type' value='order' />
-        <input id='finalcancel' type='button' value='Сбросить' />
-        <input id='finalsubmit' type='submit' value='Подтверждаю' />
-    </div>
+    {% if user.is_authenticated %}
+        <div class='card hidden' id='preresult'>
+            <p id='pretext'></p>
+        </div>
+        <div class='card' id='finalresult'>
+            <p id='finaltext'>
+                Вы ничего не выбрали
+            </p>
+        <textarea rows=5 style='width:100%;max-width:100%;min-height:3ex;' name='title' placeholder='Пояснить причину заказа(если вы просто участвуете в мероприятии, оставьте пустым)' style='width: 100%;'></textarea><br />
+            <input type='hidden' name='type' value='order' />
+            <input id='finalcancel' type='button' value='Сбросить' />
+            <input id='finalsubmit' type='submit' value='Подтверждаю' />
+        </div>
+    {% else %}
+        <div class='card'>
+            <h1>Для заказа необходимо войти на сайт</h1>
+        </div>
+    {% endif %}
 </form>
 </div>
 {% if service.responsible_user == user %}
@@ -167,6 +191,7 @@
 {% endif %}
 {% endblock %}
 {% block body_extras %}
+{% if user.is_authenticated %}
 <script>
     window.addEventListener('load', function() {
         var preview = document.querySelector('#pretext'),
@@ -217,4 +242,5 @@
         });
     });
 </script>
+{% endif %}
 {% endblock %}
