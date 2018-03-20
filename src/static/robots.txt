@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /admin
+Disallow: /static
+Disallow: /media
+Disallow: /social
+Disallow: /login
+Disallow: /logout

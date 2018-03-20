@@ -64,6 +64,9 @@ http {
         location / {
             proxy_pass http://localhost:8080;
         }
+        location /robots.txt {
+            alias /home/dev/drec_stud_site/collected_static/robots.txt;
+        }
         location /static/ {
             alias /home/dev/drec_stud_site/collected_static/;
         }
