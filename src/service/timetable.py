@@ -384,14 +384,20 @@ class Timetable:
         else:
             return self.end
     last = property(get_last, set_last, doc = 'timetable last datetime')
-    def __init__(self, timestep, start = datetime.datetime.min, end = datetime.datetime.min + datetime.timedelta(days = 1), first = datetime.datetime.min, last = datetime.datetime.min + datetime.timedelta(days = 1), timesteps_per_order = 1):
+    def __init__(self, timestep, 
+            start = datetime.datetime.min, 
+            end = datetime.datetime.min + datetime.timedelta(days = 1), 
+            first = datetime.datetime.min, 
+            last = datetime.datetime.min + datetime.timedelta(days = 1), 
+            timesteps_per_order = 1,
+            is_open = True):
         self._set_timestep(timestep)
         self.set_timesteps_per_order(timesteps_per_order)
         self.set_start_end(start, end)
         self.set_first_last(first, last)
         self._max_days = 1 # timetable is for 1 day by default
         self._ordered_lst = []
-        self.is_open = True
+        self.is_open = is_open
     def __str__(self):
         return '{0}[{1}-{2}-{3}-{4}]'.format(self.__class__.__name__, self.start.strftime('%H:%M'), self.first.strftime('%H:%M') if hasattr(self, 'first') else 'unset', self.last.strftime('%H:%M') if hasattr(self, 'last') else 'unset', self.end.strftime('%H:%M'))
     def __repr__(self):

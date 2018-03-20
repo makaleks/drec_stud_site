@@ -206,19 +206,18 @@ class Service(models.Model):
         #print(' Adding service {0}'.format(service_timetable))
         timetables.add_timetable({'': service_timetable})
         for t in list(self.items.all()):
-            if t.is_active:
-                #print('# Next')
-                item_timetable_info = t.get_timetable(date)
-                if item_timetable_info['is_weekend']:
-                    #print('weekend')
-                    item_timetable = service_timetable
-                    item_timetable.is_open = False
-                else:
-                    #print('own for {0}'.format(t.name))
-                    item_timetable = item_timetable_info['timetable']
-                #print(item_timetable)
-                #print(' Adding {0}'.format(item_timetable))
-                timetables.add_timetable({t.name: item_timetable}, item_timetable_info['is_exception'])
+            #print('# Next')
+            item_timetable_info = t.get_timetable(date)
+            if not t.is_active or item_timetable_info['is_weekend']:
+                #print('weekend')
+                item_timetable = service_timetable
+                item_timetable.is_open = False
+            else:
+                #print('own for {0}'.format(t.name))
+                item_timetable = item_timetable_info['timetable']
+            #print(item_timetable)
+            #print(' Adding {0}'.format(item_timetable))
+            timetables.add_timetable({t.name: item_timetable}, item_timetable_info['is_exception'] if item_timetable_info else False)
         # Start check if all items are closed
         is_not_all_weekend = False
         # need to be called, because the result uses copy()
