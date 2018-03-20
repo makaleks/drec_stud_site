@@ -84,7 +84,7 @@ class ItemAdmin(SortableAdminMixin, VersionAdmin):
 
 @admin.register(Order)
 class OrderAdmin(VersionAdmin):
-    list_display = ('id', 'user_info', 'item_id', 'is_approved', 'date_start', 'time_start', 'time_end')
+    list_display = ('id', 'item', 'user_info', 'item_id', 'is_approved', 'date_start', 'time_start', 'time_end')
     list_filter = ['date_start', 'item_id']
     def user_info(self, obj):
         return '{0}, {1}'.format(obj.user.group_number, obj.user.get_full_name())

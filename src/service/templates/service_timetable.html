@@ -32,6 +32,11 @@
             <tr style='vertical-align:bottom;'>
                 <td>{{ t.start|date:'H:i' }}</td>
             </tr>
+            {% if forloop.last %}
+                <tr style='vertical-align:bottom;'>
+                    <td>{{ t.end|date:'H:i' }}</td>
+                </tr>
+            {% endif %}
         {% endfor %}
     </table>
     <!-- print machines -->
@@ -65,6 +70,13 @@
                 <label>
                     <input type='checkbox' name='order={{ i_name }}&&{{ cell.start.time }}&&{{ cell.end.time }}&&{{ cell.start.date|date:'Y-m-d' }}' data-price='{{ i_value.price }}' data-timestart='{{ cell.start.time }}' data-timeend='{{ cell.end.time }}' data-item='{{ i_name }}' class='hidden'/>
                     <span><div>+</div></span>
+                </label>
+            {% elif cell.orders and cell.orders|util_is_current_user_order:user %}
+                <label>
+                    {% with order=cell.orders|first %}
+                    <input type='checkbox' name='cancel={{ order.id }}' data-price='-{{ i_value.price }}' data-timestart='{{ cell.start.time }}' data-timeend='{{ cell.end.time }}' data-item='{{ i_name }}' class='hidden'/>
+                        <span><div>-</div></span>
+                    {% endwith %}
                 </label>
             {% endif %}
         </td>

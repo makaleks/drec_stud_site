@@ -101,8 +101,8 @@ def util_orders_to_json(orders):
 def util_is_current_user_order(orders, user):
     for o in orders:
         if 'user' in o.extra_data and o.extra_data['user'] == user:
-            return True
-    return False
+            return o.id
+    return 0
 
 @register.filter
 def util_is_other_user_order(orders, user):

@@ -573,7 +573,8 @@ class Order(models.Model):
     item        = models.ForeignKey(Item, on_delete = models.CASCADE, related_name = 'orders', blank = False, null = False, verbose_name = 'Предмет сервиса')
     user        = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.CASCADE, related_name = 'orders', blank = False, null = False, verbose_name = 'Пользователь')
     title       = models.TextField(blank = True, null = True, verbose_name = 'Назначение заказа')
-    is_approved    = models.BooleanField(default = True, blank = False, null = False, verbose_name = 'Одобрено')
+    is_approved = models.BooleanField(default = True, blank = False, null = False, verbose_name = 'Одобрено')
+    payed       = models.PositiveSmallIntegerField(blank = False, null = False, verbose_name = 'Оплачено')
     # time_start > time_end is normal, we say it means 'finish next day'
     def contains_midnight(self):
         return self.time_start > self.time_end and self.time_end != datetime.time(0,0,0)

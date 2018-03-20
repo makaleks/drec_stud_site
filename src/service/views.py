@@ -153,6 +153,8 @@ class ServiceDetailView(DetailView):
             data = request.POST.dict()
             if data.get('type') == 'order':
                 order_lst = []
+                undo_order_ids = []
+                undo_order_lst = []
                 participation_lst = []
                 title = data['title'] if data.get('title') else ''
                 if self.object.request_document:
@@ -164,9 +166,16 @@ class ServiceDetailView(DetailView):
                         order_lst.append({'name': tmp[0], 'time_start': datetime.datetime.strptime(tmp[1], '%H:%M').time(), 'time_end': datetime.datetime.strptime(tmp[2], '%H:%M').time(), 'date_start': datetime.datetime.strptime(tmp[3], '%Y-%m-%d').date()})
                     if k[:14] == 'participation=':
                         participation_lst.append(k[14:])
-                names = []
-                for l in order_lst:
-                    names.append(l['name'])
+                    if k[:7] == 'cancel=':
+                        undo_order_ids.append(int(k[7:]))
+                undo_order_lst = list(
+                        Order.objects.filter(
+                            Q(date_start__gt=timezone.now().date()) 
+                            | (
+                                Q(date_start__exact=timezone.now().date()) 
+                                & Q(time_start__gte=timezone.now().time())
+                                ), user = request.user,
+                            id__in=undo_order_ids))
                 items = list(Item.objects.all())
                 items_dict = {}
                 for i in items:
@@ -174,6 +183,8 @@ class ServiceDetailView(DetailView):
                 total_price = 0
                 for l in order_lst:
                     total_price += items_dict[l['name']].get_price()
+                for l in undo_order_lst:
+                    total_price -= l.payed
                 exception_participations = [l[0] for l in list(Participation.objects.all().filter(id__in = participation_lst).values_list('id'))]
                 participation_lst = list(filter(lambda el: el not in exception_participations, participation_lst))
                 # We will save participations if order (even zero-length)
@@ -188,11 +199,13 @@ class ServiceDetailView(DetailView):
                     for l in order_lst:
                         final_orders.append(Order(date_start = l['date_start'], 
                             time_start = l['time_start'], time_end = l['time_end'],
-                            item = items_dict[l['name']], user = request.user, title = title, is_approved = is_approved))
+                            item = items_dict[l['name']], user = request.user, title = title, is_approved = is_approved, payed = items_dict[l['name']].get_price()))
                     for o in final_orders:
                         o.clean()
                     for o in final_orders:
                         o.save()
+                    for o in undo_order_lst:
+                        o.delete()
                     request.user.account -= total_price
                     request.user.save()
 

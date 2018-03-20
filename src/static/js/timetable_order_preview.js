@@ -38,7 +38,7 @@ var PRICE_PREVIEW = (function() {
             }
         }
         if (len) {
-            preview_node.innerHTML = '<p>Итого интервалов: ' + len + (total ? (' за ' + total + ' руб.') : '') + '. <a href="#finaltext">К оплате</a></p>';
+            preview_node.innerHTML = '<p>Итого интервалов: ' + len + (total ? (' за ' + total + ' руб.') : '') + ' <a href="#finaltext">К оплате</a></p>';
             result_node.innerHTML = 'Выбрано интервалов: ' + len;
             if (total)
                 result_node.innerHTML += '<br />Итого ' + 'нужно оплатить: ' + total + ' руб.';
