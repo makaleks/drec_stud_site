@@ -4,12 +4,13 @@
 {% load utils_extra_filters %}
 
 <head>
+    <!-- if not 'safe', will be rendered as part of the <body> -->
+    {{ webmaster_tags.yandex|safe }}
+    {{ webmaster_tags.google|safe }}
     <title>Сайт студсовета</title>
     <meta charset='UTF-8' />
     <meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' />
 
-    {{ webmaster_tags.yandex }}
-    {{ webmaster_tags.google }}
 
     <link type='text/css' rel='stylesheet' href='{{ STATIC_URL }}web_copy/normalize/normalize.css' />
     <link type='text/css' rel='stylesheet' href='{{ STATIC_URL }}content.css' />
