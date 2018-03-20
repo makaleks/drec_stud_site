@@ -1,22 +1,8 @@
-{% extends 'core/base.html' %}
+{% extends 'service_base.html' %}
+
 {% load utils_extra_filters %}
-{% block content %}
-{% if not user.is_authenticated %}
-    <div class='card'>
-        <h1>Для заказа необходимо войти на сайт</h1>
-    </div>
-{% endif %}
-<section class='card'>
-    <h2 class='lightgrey'>{{ service.name }}</h2>
-    {% if service.responsible_user %}
-    <div>
-        Ответственный: <label style='text-decoration:underline;color:blue;' for='modal_userinfo_check' onclick='showuserinfo("{{ service.responsible_user.get_full_name }}", "{{ service.responsible_user.account_id }}", "{{ service.responsible_user.phone_number }}", "{{ service.responsible_user.email }}");'>{{ service.responsible_user.get_full_name }} (группа {{ service.responsible_user.group_number }}{% if service.responsible_room %}, комната {{ service.responsible_room }}{% endif %})</label>
-        {% if service.request_document %}
-            <br><a href={{ service.request_document.url }}>Образец служебки</a>
-        {% endif %}
-    </div>
-    {% endif %}
-    <div>
+
+{% block additional_info %}
         <p>
             <b>Что&nbsp;значат&nbsp;цвета?</b>
         </p>
@@ -27,210 +13,83 @@
             <span class='preview choisen'></span> - Этот интервал был выбран вами<br />
             <span class='preview started'></span> - Этот интервал можно выбирать, но он уже идет и прошло меньше половины(?)
         </p>
-        <p><b>Чтобы выбрать или отменить выбор интервала нажми на него</b></p>
-    </div>
-</section>
-<section class='card'>
-    <h2 class='lightgray'>Объявления</h2>
-    <div>
-        <div class='card-maintext'>
-            {% if service.announcements.rendered %}
-                {{ service.announcements.rendered }}
-            {% else %}
-                Объявлений нет
-            {% endif %}
-        </div>
-    </div>
-</section>
-{% if service.instruction.rendered %}
-<section class='card'>
-    <input id='show_rules' type='checkbox' hidden class='shownews' />
-    <div class='cutted'><h2 class='lightgray'>Правила пользования</h2><label class='link-underline' for='show_rules'><a class='lightred'>&nbsp;Ознакомиться&nbsp;</a></label></div>
-    <div class='full'><div class='card-maintext'>
-        {{ service.instruction.rendered }}
-        </div>
-    <label class='link-underline' for='show_rules'><a class='lightred'>&nbsp;Скрыть&nbsp;</a></label></div>
-</section>
-{% endif %}
-<form action='' method='post' id='washing'>
-    {% csrf_token %}
-    {% with time_list=service.get_timetable_list %}
-        {% with item_info=service.get_item_info %}
-            {% for day in time_list|util_add_user_info:user %}
-                <div class='full-width'>
-                    <div class='card'>
-                        <input id='show_day_{{ forloop.revcounter0 }}' type='checkbox' hidden class='shownews' {% if forloop.first %}checked{% endif %}/>
-                        <div class='cutted'><h2>{{ day.day }}</h2><label class='link-underline' for='show_day_{{ forloop.revcounter0 }}'><a class='lightred'>&nbsp;Открыть&nbsp;</a></label></div>
-                        <div class='full'>
-                            {% if day.global_weekend %}
-                                <h3>Закрыто</h3>
-                            {% else %}
-                                {% if day.items %}
-                                    <table class='table_aside'>
-                                        <tr>
-                                            <th>Время</th>
-                                        </tr>
-                                        {% for t in day.time_layout %}
-                                            <tr style='vertical-align:bottom;'>
-                                                <td>{{ t.time_start }}</td>
-                                            </tr>
-                                        {% endfor %}
-                                    </table>
-                                    <!-- print machines -->
-                                    <table class='table_main'>
-                                        <tr>
-                                            <td colspan={{ day.items.items|length }}>
-                                                <table>
-                                                    <tr>
-                                                        {% for machine_name in day.items %}
-                                                        <th style='word-break:normal;vertical-align:top;'>{{ machine_name }}<br /><small>({{ item_info.price|util_by_key:machine_name }} руб.)</small></th>
-                                                        {% endfor %}
-                                                    </tr>
-                                                </table>
-                                                <tr>
-<!-- break trailing spaces for nicer appeal -->
-{% for machine,m_value in day.items.items %}
-    <td>
-        <table>
-        <!-- print cells -->
-        {% for cell in m_value.time %}
-            <tr>
-                <!-- if not done yet -->
-                {% if cell.closed or cell.weekend %}
-                <td style='padding:0;min-width:100px;max-width:100px;' class='ended' {% if cell.weekend %}rowspan='{{ day.time_layout|length }}'{% endif %}></td>
-                <!-- can`t be selected -->
-                {% elif forloop.parentloop.parentloop.first and cell.time_start|util_is_started:service == 'ended' %}
-                    <td style='padding:0;min-width:100px;max-width:100px;' class='ended' rowspan='{{ m_value.rowspan }}'></td>
-                <!-- users: display next/previous from selected even if closed -->
-                {% elif cell.user %}
-                    <td style='padding:0;min-width:100px;max-width:100px;' class={% if cell.user == user %}'choisen'{% elif not cell.closed or cell.show_info %}'selected'{% elif cell.closed %}'ended'{% endif %} {% if not cell.closed %}rowspan='{{ m_value.rowspan }}'{% endif %}>
-                        {% if user.is_authenticated and cell.user != user %}
-                        <label class='userinfo' for='modal_userinfo_check' onclick='showuserinfo("{{ cell.user.get_full_name }}", "{{ cell.user.account_id }}", "{% if cell.user.phone_number is not None %}{{ cell.user.phone_number }}{% endif %}", "{% if cell.user.email is not None %}{{ cell.user.email }}{% endif %}");' title='Посмотреть инфо о заказавшем(-ей)'></label>
-                        {% endif %}
-                    </td>
-                <!-- can be selected -->
-                {% else %}
-                <td style='padding:0;min-width:100px;max-width:100px;' rowspan='{{ m_value.rowspan }}' {% if forloop.parentloop.parentloop.first and cell.time_start|util_is_started:service  == 'started' %}{# Uncomment to enable STARTED color: #}{#class='started'#}{% endif %}>
-                        <label>
-                            <input type='checkbox' name='order={{ machine }}&&{{ cell.time_start }}&&{{ cell.time_end }}&&{{ day.dateyear }}' data-price='{{ item_info.price|util_by_key:machine }}' data-timestep='{{ item_info.timestep|util_by_key:machine }}' data-timestart='{{ cell.time_start }}' data-timeend='{{ cell.time_end }}' data-dateyear='{{ day.dateyear }}' class='hidden'/>
-                            <span><div>+</div></span>
-                        </label>
-                    </td>
-                {% endif %}
-            </tr>
-                {% if not cell.closed %}
-                    {% if not cell.weekend %}
-                        {% with current_range=m_value.rowspan|util_range %}
-                        {% for i in current_range %}
-                            {% if not forloop.last %}
-                                <tr></tr>
-                            {% endif %}
-                        {% endfor %}
-                        {% endwith %}
-                    {% else %}
-                        {% with current_range=day.time_layout|length|util_range %}
-                        {% for i in current_range %}
-                            {% if not forloop.last %}
-                                <tr></tr>
-                            {% endif %}
-                        {% endfor %}
-                        {% endwith %}
-                    {% endif %}
-                {% endif %}
-            {% endfor %}
-                                    </tr>
-        </table>
-    </td>
-{% endfor %}
-<!-- break end -->
-                                        </tr>
-                                    </table>
-                                    <br /><br />
-                                {% else %}
-                                    <h3>Ничем пользоваться</h3>
-                                {% endif %}
-                            {%  endif %}
-                            <label class='link-underline' for='show_day_{{ forloop.revcounter0 }}'><a class='lightred'>&nbsp;Скрыть&nbsp;</a></label>
-                            </div>
-                        </div>
-                    </div>
-            {% endfor %}
-        {% endwith %}
-    {% endwith %}
-    {% if user.is_authenticated %}
-        <div class='card hidden' id='preresult'>
-            <p id='pretext'></p>
-        </div>
-        <div class='card' id='finalresult'>
-            <p id='finaltext'>
-                Вы ничего не выбрали
-            </p>
-            <p>
-                <input id='show_agree' type='checkbox' class='shownews' required />
-                <label for='show_agree'>Я прочитал(-а) и обязуюсь выполнять правила пользования</label>
-            </p>
-            <input type='hidden' name='type' value='order' />
-            <input id='finalcancel' type='button' value='Сбросить' />
-            <input id='finalsubmit' class='full' type='submit' value='Подтверждаю' />
-        </div>
-    {% else %}
-        <div class='card'>
-            <h1>Для заказа необходимо войти на сайт</h1>
-        </div>
-    {% endif %}
-</form>
 {% endblock %}
-{% block body_extras %}
-{% if user.is_authenticated %}
-<script>
-    window.addEventListener('load', function() {
-        var preview = document.querySelector('#pretext'),
-            finalview = document.querySelector('#finaltext'),
-            currentprice = 0,
-            price = 0,
-            addwash = 0,
-            removewash = 0,
-            inputs = document.querySelector('#washing').querySelectorAll('input[type=checkbox].hidden');
 
-        for (var item of inputs) {
-            item.addEventListener('change', function() {
-                price = parseInt(this.getAttribute('data-price'), 10);
-                if (this.checked) {
-                    if (price > 0) {
-                        addwash++;
-                    } else {
-                        removewash++;
-                    }
-                    currentprice += price;
-                } else {
-                    if (price > 0) {
-                        addwash--;
-                    } else {
-                        removewash--;
-                    }
-                    currentprice -= price;
-                }
-                if (addwash > 0) {
-                    preview.innerHTML = ((addwash > 0) ? ('Заказано: ' + addwash) : '') + ' Итого: ' + currentprice + 'руб. <a href="#finaltext">К оплате</a>';
-                    document.querySelector('#preresult').classList.remove('hidden');
-                    finalview.innerHTML = 'Выбрано интервалов: ' + addwash + '<br />Итого ' + ((currentprice >= 0) ? ('нужно оплатить: ' + currentprice) : ('вам вернут: ' + (-currentprice))) + ' руб.';
-                } else {
-                    finalview.innerHTML = 'Вы ничего не выбрали';
-                    document.querySelector('#preresult').classList.add('hidden');
-                }
-            });
-        }
-        document.querySelector('#finalcancel').addEventListener('click', function() {
-            addwash = 0;
-            removewash = 0;
-            currentprice = 0;
-            for (var item of inputs) {
-                item.checked = false;
-            };
-            finalview.innerHTML = 'Вы ничего не выбрали';
-            document.querySelector('#preresult').classList.add('hidden');
-        });
-    });
-</script>
-{% endif %}
+{% block form_attributes %}
+    id='washing'
+{% endblock %}
+
+{% block day_attributes %}
+    class='full-width'
+{% endblock %}
+
+{% block single_day %}
+    <table class='table_aside'>
+        <tr>
+            <th>Время</th>
+        </tr>
+        {% for t in day.timetable %}
+            <tr style='vertical-align:bottom;'>
+                <td>{{ t.start|date:'H:i' }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <!-- print machines -->
+    <table class='table_main'>
+        <tr>
+            <td colspan={{ day.items.items|length }}>
+                <table>
+                    <tr>
+                        {% for i_name,i_value in day.items.items %}
+                        <th style='word-break:normal;vertical-align:top;'>{{ i_name }}<br /><small>({{ i_value.price }} руб.)</small></th>
+                        {% endfor %}
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <!-- second 'items' on Python dict. is 'get pair of key and value'-->
+            {% for i_name,i_value in day.items.items %}
+                <td>
+                    <table>
+                        <!-- print cells -->
+                        {% for cell in i_value.time %}
+<!-- break trailing spaces for nicer appeal -->
+<tr>
+    {% if cell.is_open %}
+        <td style='padding:0;min-width:100px;max-width:100px;' rowspan='{{ i_value.rowspan }}' class={% if cell.orders and  cell.orders|util_is_current_user_order:user %}'choisen'{% elif cell.orders %}'selected'{% endif %}>
+            {% if cell.orders and user.is_authenticated and cell.orders|util_is_other_user_order:user %}
+                <label class='userinfo' for='modal_userinfo_check' onclick='show_orders({{ cell.orders|util_orders_to_json }});' title='Посмотреть инфо о заказавшем(-ей)'></label>
+            <!-- means 'not current user' -->
+            {% elif not cell.orders %}
+                <label>
+                    <input type='checkbox' name='order={{ i_name }}&&{{ cell.start.time }}&&{{ cell.end.time }}&&{{ cell.start.date|date:'Y-m-d' }}' data-price='{{ i_value.price }}' data-timestart='{{ cell.start.time }}' data-timeend='{{ cell.end.time }}' data-item='{{ i_name }}' class='hidden'/>
+                    <span><div>+</div></span>
+                </label>
+            {% endif %}
+        </td>
+    {% else %}
+        <td style='padding:0;min-width:100px;max-width:100px;' class='ended'>
+            {% if user.is_authenticated and cell.orders %}
+                <label class='userinfo' for='modal_userinfo_check' onclick='show_orders({{ cell.orders|util_orders_to_json }});' title='Посмотреть инфо о заказавшем(-ей)'></label>
+            {% endif %}
+        </td>
+    {% endif %}
+</tr>
+    {% if cell.is_open %}
+        {% with current_range=i_value.rowspan|util_range %}
+        {% for i in current_range %}
+            {% if not forloop.last %}
+                <tr></tr>
+            {% endif %}
+        {% endfor %}
+        {% endwith %}
+    {% endif %}
+<!-- break end -->
+                        {% endfor %}
+                    </table>
+                </td>
+            {% endfor %}
+        </tr>
+    </table>
 {% endblock %}

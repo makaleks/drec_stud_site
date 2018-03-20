@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import WorkingTime, WorkingTimeException, Service, Item, Order
+from .models import WorkingTime, WorkingTimeException, Service, Item, Order,Participation
 from django.contrib.contenttypes.admin import GenericStackedInline
 from reversion.admin import VersionAdmin
 from adminsortable2.admin import SortableAdminMixin, SortableInlineAdminMixin
@@ -28,20 +28,20 @@ class WorkingTimeExceptionInline(GenericStackedInline):
 
 @admin.register(WorkingTime)
 class WorkingTimeAdmin(admin.ModelAdmin):
-    list_display = ('weekday', 'works_from', 'works_to')
-    ordering = ['weekday', 'works_from', 'works_to']
+    list_display = ('weekday', 'is_weekend', 'works_from', 'works_to')
+    ordering = ['weekday', 'is_weekend', 'works_from', 'works_to']
 
 @admin.register(WorkingTimeException)
 class WorkingTimeExceptionAdmin(admin.ModelAdmin):
-    list_display = ('date_start', 'date_end', 'works_from', 'works_to')
-    ordering = ['is_annual', 'date_start', 'date_end', 'works_from', 'works_to']
+    list_display = ('date_start', 'date_end', 'is_weekend', 'works_from', 'works_to')
+    ordering = ['is_annual', 'date_start', 'date_end', 'is_weekend', 'works_from', 'works_to']
 
 class ServiceForm(forms.ModelForm):
     def clean(self):
         # 'self' was used in official tutorial in User override
         self.cleaned_data = super(ServiceForm, self).clean()
-        if self.cleaned_data['default_works_to'] < self.cleaned_data['default_works_from']:
-            raise forms.ValidationError('Пожалуйста, установите время работы в пределах 1 дня')
+        #if self.cleaned_data['default_works_to'] < self.cleaned_data['default_works_from']:
+        #    raise forms.ValidationError('Пожалуйста, установите время работы в пределах 1 дня')
         if self.cleaned_data['is_single_item']:
             got_item_forms_count =int(self.data.get('items-TOTAL_FORMS', 0))
             to_delete_item_count = 0
@@ -62,7 +62,7 @@ class ServiceForm(forms.ModelForm):
 @admin.register(Service)
 class ServiceAdmin(SortableAdminMixin, VersionAdmin):
     form = ServiceForm
-    list_display = ('name', 'default_price', 'time_step', 'is_active','edited')
+    list_display = ('name', 'default_price', 'timestep', 'is_active','edited')
     inlines = [ItemInline, WorkingTimeInline, WorkingTimeExceptionInline]
     list_filter = ['order', 'name']
     def get_readonly_fields(self, request, obj=None):
@@ -84,9 +84,13 @@ class ItemAdmin(SortableAdminMixin, VersionAdmin):
 
 @admin.register(Order)
 class OrderAdmin(VersionAdmin):
-    list_display = ('id', 'user_info', 'item_id', 'approved', 'date_start', 'time_start', 'time_end')
+    list_display = ('id', 'user_info', 'item_id', 'is_approved', 'date_start', 'time_start', 'time_end')
     list_filter = ['date_start', 'item_id']
     def user_info(self, obj):
         return '{0}, {1}'.format(obj.user.group_number, obj.user.get_full_name())
     def item_id(self, obj):
         return obj.item.id
+
+@admin.register(Participation)
+class ParticipationAdmin(VersionAdmin):
+    list_display = ('order', 'user')

@@ -133,8 +133,8 @@ class ServiceDetailView(DetailView):
                 note['text'] = 'Это уведомление не должно было появиться! Сообщите о нём администрации'
                 note['type'] = 'danger'
         context['notification'] = note
-        if self.object.is_single_item:
-            to_approve = list(self.object.items.first().orders.all().filter(approved = False))
+        if self.object.request_document:
+            to_approve = list(self.object.items.first().orders.all().filter(is_approved = False))
             context['to_approve'] = to_approve
         return context
     def get(self, request, *args, **kwargs):
@@ -149,14 +149,14 @@ class ServiceDetailView(DetailView):
             # TODO: check required 'Rules accepted' checkbox
             self.object = self.get_object()
             status = 'success'
-            approved = True
+            is_approved = True
             data = request.POST.dict()
             if data.get('type') == 'order':
                 order_lst = []
                 participation_lst = []
                 title = data['title'] if data.get('title') else ''
                 if self.object.request_document:
-                    approved = False
+                    is_approved = False
                     status = 'info'
                 for k in data.keys():
                     if k[:6] == 'order=':
@@ -175,7 +175,7 @@ class ServiceDetailView(DetailView):
                 for l in order_lst:
                     total_price += items_dict[l['name']].get_price()
                 exception_participations = [l[0] for l in list(Participation.objects.all().filter(id__in = participation_lst).values_list('id'))]
-                participation_lst = filter(lambda el: el not in exception_participations, participation_lst)
+                participation_lst = list(filter(lambda el: el not in exception_participations, participation_lst))
                 # We will save participations if order (even zero-length)
                 # also can be saved, so if it is possible to save 
                 # part. but not to save orders nothing will be saved
@@ -188,7 +188,7 @@ class ServiceDetailView(DetailView):
                     for l in order_lst:
                         final_orders.append(Order(date_start = l['date_start'], 
                             time_start = l['time_start'], time_end = l['time_end'],
-                            item = items_dict[l['name']], user = request.user, title = title, approved = approved))
+                            item = items_dict[l['name']], user = request.user, title = title, is_approved = is_approved))
                     for o in final_orders:
                         o.clean()
                     for o in final_orders:
@@ -206,13 +206,15 @@ class ServiceDetailView(DetailView):
                 #tmp = data['name'].split('&&')
                 #data['result'] = str(total_price)
                 #return HttpResponse(final_orders)
-            elif data.get('type') == 'approve':
+            elif data.get('type') == 'approve' and request.user.is_staff:
                 lst = []
                 for k in data.keys():
                     if k[:3] == 'id=':
                         lst.append(k[3:])
                 orders = Order.objects.all().filter(pk__in=lst)
                 for o in orders:
-                    o.approved = True
+                    o.is_approved = True
                     o.save()
+            else:
+                status = 'danger'
         return HttpResponseRedirect('?status={0}'.format(status))

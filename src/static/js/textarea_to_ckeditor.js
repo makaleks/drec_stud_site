@@ -1,13 +1,7 @@
+;
 // Remember to add 
 // <script src='{{ STATIC_URL }}settings/ckeditor_settings.js'></script>
 // to have 'options' accessable
-
-function util_add_handler(elem, event_str, handler) {
-    if (elem.addEventListener)
-        elem.addEventListener(event_str, handler);
-    else
-        elem.attachEvent('on' + event_str, handler);
-}
 
 function textarea_to_ckeditor() {
     areas = document.getElementsByTagName('textarea');

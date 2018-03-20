@@ -1,246 +1,55 @@
-{% extends 'core/base.html' %}
-{% load utils_extra_filters %} <!-- THIS PAGE NOT WORKS, IN PROCESS -->
-{% block head_extras %}
-<style>
-    #tab-main:checked~div.tab:nth-of-type(1),
-    #tab-nav-answer:checked~div.tab.answer{
-        display: block;
-    }
-</style>
-{% endblock %}
-{% block content %}
-{% if not user.is_authenticated %}
-<!-- TODO: fix style hardcoded for <div> show -->
-    <span class='card'>
-        <h1>Для заказа необходимо войти на сайт</h1>
-    </span>
-{% endif %}
-<section class='card'>
-    <h2 class='lightgrey'>{{ service.name }}</h2>
-    {% if service.responsible_user %}
-    <div>
-        Ответственный: <label style='text-decoration:underline;color:blue;' for='modal_userinfo_check' onclick='showuserinfo("{{ service.responsible_user.get_full_name }}", "{{ service.responsible_user.account_id }}", "{{ service.responsible_user.phone_number }}", "{{ service.responsible_user.email }}");'>{{ service.responsible_user.get_full_name }}, {{ service.responsible_user.group_number }}</label>
-        {% if service.request_document %}
-            <br><a href={{ service.request_document.url }}>Образец служебки</a>
-        {% endif %}
-    </div>
-    {% endif %}
-    <div>
-        <p><b>Чтобы выбрать или отменить выбор интервала нажми на него</b></p>
-        <p>Note: когда поставят замки, использование кнопки 'принять участие' станет обязательным</p>
-    </div>
-</section>
-<input type='radio' class='hidden' name='tabs' id='tab-main' checked>
-{% if service.responsible_user == user %}
-<input type='radio' class='hidden' name='tabs' id='tab-nav-answer'>
-<span class='card'>
-    <label for='tab-main' class='card tablabel'>
-        <h3>Оставить заявку</h3>
-    </label>
-    <label for='tab-nav-answer' class='card tablabel'>
-        <h3>Одобрить заявку</h3>
-    </label>
-</span>
-{% endif %}
-<div class='tab' style='padding:0;'>
-<section class='card'>
-    <h2 class='lightgray'>Объявления</h2>
-    <div>
-        <div class='card-maintext'>
-            {% if service.announcements.rendered %}
-                {{ service.announcements.rendered }}
-            {% else %}
-                Объявлений нет
-            {% endif %}
-        </div>
-    </div>
-</section>
-{% if service.instruction.rendered %}
-<section class='card'>
-    <input id='show_rules' type='checkbox' hidden class='shownews' />
-    <div class='cutted'><h2 class='lightgray'>Правила пользования</h2><label class='link-underline' for='show_rules'><a class='lightred'>&nbsp;Ознакомиться&nbsp;</a></label></div>
-    <div class='full'><div class='card-maintext'>
-        {{ service.instruction.rendered }}
-        </div>
-    <label class='link-underline' for='show_rules'><a class='lightred'>&nbsp;Скрыть&nbsp;</a></label></div>
-</section>
-{% endif %}
-<!--<section class='card'>
-    <h2 class='lightgray'>Объявления</h2>
-    <div>
-        <div class='card-maintext'>
-            <ul>
-                <li>Обнаружен радужный носок с понями 2 числа на полу в 19:37 в КДС за пропажей к охране(или ответственным за стиралку)</li>
-                <li>Временно недоступна КДС, к 5 числу переклеят обои</li>
-            </ul>
-        </div>
-    </div>
-</section>-->
-<form action='' method='post' id='service'>
-    {% csrf_token %}
-    {% with time_list=service.get_timetable_list %}
-    {% with item_info=service.get_item_info %}
-        {% for day in time_list|util_add_user_info:user %}
-            <div class='card'>
-                <input id='show_day_{{ forloop.revcounter0 }}' type='checkbox' hidden class='shownews' {% if forloop.first %}checked{% endif %}/>
-                <div class='cutted'><h2>{{ day.day }}</h2><label class='link-underline' for='show_day_{{ forloop.revcounter0 }}'><a class='lightred'>&nbsp;Открыть&nbsp;</a></label></div>
-                <div class='full'>
-                    {% if not day.time_layout %}
-                        <h3>Закрыто</h3>
-                    {% else %}
-                        <table>
-                            {% for t in day.time_layout %}
-                            {% with i=forloop.counter0 %}
-                            {% with item_dict=day|util_by_key:'items' %}
-                            {% with item=item_dict.values|util_to_list|first %}
-                            {% with cell=item.time|util_by_index:i %}
-                            {% if not cell.closed %}
-                            <!-- !(first && ended) -->
-                                {% if not forloop.parentloop.first or not cell.time_start|util_is_started:service == 'ended' %}
-                                <tr>
-                                    <th class='time' style='vertical-align:middle;text-align:center;'>{{ t.time_start }}<br />-<br />{{ t.time_end }}</th>
-                                    {% if cell.user %}
-                                    <td>
-                                        <!-- TODO: <h2/> for title, <span class='celltext'/> for description-->
-                                        <span class='celltext'>{% if cell.title %}{{ cell.title }}{% else %}Заказал {{ cell.user.get_full_name }}{% endif %}</span>
-                                    </td>
-                                    <td>
-                                        <label>
-                                            {% if not cell.participated %}
-                                                <input type='checkbox' class='servselector hidden' name='participation={{ cell.id }}' />
-                                                <a class='m-btn m-mobiletiny servoff'>Принять участие</a>
-                                                <a class='m-btn m-mobiletiny m-selected servon'>Участие заявлено (отменить?)</a>
-                                            {% else %}
-                                                Вы участвуете
-                                            {% endif %}
-                                        </label>
-                                    </td>
-                                    {% else %}
-                                    <td>
-                                        <span class='celltext'>Время свободно</span>
-                                    </td>
-                                    <td>
-                                        <label>
-                                            <!-- To pay for this, add data-price='{{ service.default_price }}' -->
-                                            <input type='checkbox' class='servselector hidden' name='order={{ service.items.first }}&&{{ cell.time_start }}&&{{ cell.time_end }}&&{{ day.dateyear }}' data-timestep='{{ service.time_step }}' data-timestart='{{ cell.time_start }}' data-timeend='{{ cell.time_end }}' data-dateyear='{{ day.dateyear }}' />
-                                            <a class='m-btn m-mobiletiny servoff'>Зарезервировать</a>
-                                            <a class='m-btn m-mobiletiny m-selected servon'>Выбрано</a>
-                                        </label>
-                                    </td>
-                                    {% endif %}
-                                </tr>
-                                {% endif %}
-                            {% endif %}
-                            {% endwith %}
-                            {% endwith %}
-                            {% endwith %}
-                            {% endwith %}
-                            {% endfor %}
-                        </table>
-                        <br /><br />
-                    {% endif %}
-                    <label class='link-underline' for='show_day_{{ forloop.revcounter0 }}'><a class='lightred'>&nbsp;Скрыть&nbsp;</a></label>
-                </div>
-            </div>
-        {% endfor %}
-    {% endwith %}
-    {% endwith %}
-    {% if user.is_authenticated %}
-        <div class='card hidden' id='preresult'>
-            <p id='pretext'></p>
-        </div>
-        <div class='card' id='finalresult'>
-            <p id='finaltext'>
-                Вы ничего не выбрали
-            </p>
-        <textarea rows=5 style='width:100%;max-width:100%;min-height:3ex;' name='title' placeholder='Пояснить причину заказа(если вы просто участвуете в мероприятии, оставьте пустым)' style='width: 100%;'></textarea><br />
-            <input type='hidden' name='type' value='order' />
-            <input id='finalcancel' type='button' value='Сбросить' />
-            <input id='finalsubmit' type='submit' value='Подтверждаю' />
-        </div>
-    {% else %}
-        <div class='card'>
-            <h1>Для заказа необходимо войти на сайт</h1>
-        </div>
-    {% endif %}
-</form>
-</div>
-{% if service.responsible_user == user %}
-<div class='tab card answer'>
-<form action='' method='post' id='service-approve'>
-    {% csrf_token %}
-    {% for order in to_approve %}
-        <div class='card'>
-            <input type='checkbox' name='id={{ order.id }}' id='{{ order.id }}' />
-            <label for='{{ order.id }}'>
-            {{ order.date_start|date:'Y.m.d' }}: {{ order.time_start|date:'H:i' }}-{{ order.time_end|date:'H:i' }}, {{ order.user.get_full_name }}
-            {% if order.title %}
-            <br /><span style='font-weight:bold;'>{{ order.title }}</span>
-            {% endif %}
-            </label>
-        </div>
-    {% endfor %}
-    <p>
-        <input id='show_agree' type='checkbox' class='shownews' required />
-        <label for='show_agree'>Я гарантирую, что данные служебки были мною получены</label>
-    </p>
-    <input type='hidden' name='type' value='approve' />
-    <input id='finalsubmit-approve' type='submit' value='Утвердить' />
-</form>
-</div>
-{% endif %}
-{% endblock %}
-{% block body_extras %}
-{% if user.is_authenticated %}
-<script>
-    window.addEventListener('load', function() {
-        var preview = document.querySelector('#pretext'),
-            finalview = document.querySelector('#finaltext'),
-            currentprice = 0,
-            price = 0,
-            addwash = 0,
-            removewash = 0,
-            inputs = document.querySelector('#service').querySelectorAll('input[type=checkbox]');
+{% extends 'service_base.html' %}
 
-        for (var item of inputs) {
-            item.addEventListener('change', function() {
-                price = parseInt(this.getAttribute('data-price'), 10);
-                if (this.checked) {
-                    if (price > 0) {
-                        addwash++;
-                    } else {
-                        removewash++;
-                    }
-                    currentprice += price;
-                } else {
-                    if (price > 0) {
-                        addwash--;
-                    } else {
-                        removewash--;
-                    }
-                    currentprice -= price;
-                }
-                if (addwash > 0) {
-                    preview.innerHTML = ((addwash > 0) ? ('Выбрано: ' + addwash) : '') + ' <a href="#finaltext">К подтверждению</a>';
-                    document.querySelector('#preresult').classList.remove('hidden');
-                    finalview.innerHTML = 'Выбрано интервалов: ' + addwash;
-                } else {
-                    finalview.innerHTML = 'Вы ничего не выбрали';
-                    document.querySelector('#preresult').classList.add('hidden');
-                }
-            });
-        }
-        document.querySelector('#finalcancel').addEventListener('click', function() {
-            addwash = 0;
-            removewash = 0;
-            currentprice = 0;
-            for (var item of inputs) {
-                item.checked = false;
-            };
-            finalview.innerHTML = 'Вы ничего не выбрали';
-            document.querySelector('#preresult').classList.add('hidden');
-        });
-    });
-</script>
-{% endif %}
+{% load utils_extra_filters %}
+
+{% block form_attributes %}
+    id='service'
+{% endblock %}
+
+{% block single_day %}
+    <table>
+        {% with i_value=day.items.values|util_to_list|first %}
+        {% for cell in i_value.time %}
+            <tr>
+                <th class='time' style='vertical-align:middle;text-align:center;'>{{ cell.start|date:'G:i' }}<br />-<br />{{ cell.end|date:'G:i' }}</th>
+                {% if cell.orders %}
+                    {% with order=cell.orders|first %}
+                    {% with participation=order.extra_data.participations|util_to_list|first %}
+                    <td>
+                        <!-- TODO: <h2/> for title, <span class='celltext'/> for description-->
+                        <span class='celltext'>{% if order.extra_data.title %}{{ order.extra_data.title }}{% else %}{{ cell.orders|util_get_single_item_orders_str }}{% endif %}</span>
+                    </td>
+                    <td>
+                        <label>
+                            {% if participation.user != user %}
+                                    <input type='checkbox' class='servselector hidden' name='participation={{ order.id }}' />
+                                <a class='m-btn m-mobiletiny servoff'>Участвовать</a>
+                                <a class='m-btn m-mobiletiny m-selected servon'>Выбрано</a>
+                            {% else %}
+                                Вы участвуете
+                            {% endif %}
+                        </label>
+                    </td>
+                    {% endwith %}
+                    {% endwith %}
+                {% else %}
+                    <td>
+                        <span class='celltext'>Время свободно</span>
+                    </td>
+                    <td>
+                        <label>
+                            <input type='checkbox' class='servselector hidden' name='order={{ day.items.keys|util_to_list|first }}&&{{ cell.start.time }}&&{{ cell.end.time }}&&{{ cell.start.date|date:'Y-m-d' }}' data-price='{{ i_value.price }}' data-timestart='{{ cell.start.time }}' data-timeend='{{ cell.end.time }}' data-item='{{ service.name }}' />
+                            <a class='m-btn m-mobiletiny servoff'>Зарезервировать</a>
+                            <a class='m-btn m-mobiletiny m-selected servon'>Выбрано</a>
+                        </label>
+                    </td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+        {% endwith %}
+    </table>
+{% endblock %}
+
+{% block final_inputs %}
+    <textarea rows=5 style='width:100%;max-width:100%;min-height:3ex;' name='title' placeholder='Пояснить причину заказа (если оставить пустым, будет показано ФИО)'></textarea><br />
 {% endblock %}

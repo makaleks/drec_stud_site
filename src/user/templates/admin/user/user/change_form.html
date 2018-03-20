@@ -69,13 +69,15 @@
 
 {% block admin_change_form_document_ready %}
 <!-- START CUSTOM -->
-    <script src="{{ STATIC_URL }}web_copy/vk_openapi/openapi-150.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}web_copy/vk_openapi/openapi-573.js" type="text/javascript"></script>
     <script type='text/javascript'>
             var request = null;
         window.onload = function() {
             // VK init
+            VK.version = 573;
             VK.init({
-                apiId: {{ social.vk.key }}
+                apiId: {{ social.vk.key }},
+                apiVersion: 573
             });
             // Start independent utility
             function add_checkbox_callback(checkbox, callback) {
@@ -143,7 +145,7 @@
                             account_name = account_name.substr(2);
                     }
                     // End remove dust
-                    VK.Api.call('users.get', {user_ids: account_name, fields: "photo_100"}, function(r) {
+                    VK.Api.call('users.get', {user_ids: account_name, fields: "photo_100", v: "573"}, function(r) {
                         if(r.response) {
                             var resp = r.response[0];
                             //uid_backup = resp.uid;

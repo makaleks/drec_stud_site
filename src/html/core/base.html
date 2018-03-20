@@ -129,10 +129,9 @@
     </label>
     <div class='container' id='modal_userinfo'>
         <div class='card modal_userinfo'>
-            <h3 id='userinfo_name'>Имя</h3>
-            <a id='userinfo_number'>Позвонить: </a><br />
-            <a id='userinfo_vkid' target='_blank'>Написать в ВК: </a><br />
-            <a id='userinfo_email'>Написать на почту: </a><br />
+            <div id='modal_userinfo_content'>
+                Здесь должен быть текст
+            </div>
             <label for='modal_userinfo_check' class='m_close'>
                 <svg class='close' viewBox='0 0 10 10'>
                     <path d='M2 8l6-6M2 2l6 6'/>
@@ -163,7 +162,7 @@
                 <div class='inline right' id='vk_quick'>
                     {% if user.is_authenticated %}
                         <label for='modal_refill_check'>
-                            <a class='m-btn m-dark' style='padding-left:28px;padding-right:28px'>
+                            <a class='m-btn m-dark' style='padding-left:28px;padding-right:28px;display:inline-block;'>
                                 <span>На счету: {{ user.account|urlencode }}руб.</span>
                             </a>
                         </label>
@@ -235,7 +234,7 @@
                             <p>Привет, {{ user.get_short_name }}</p>
                             <a href='/logout/?next={{ request.path }}' class='btn btn-vk'>Выйти</a>
                             <label for='modal_refill_check'>
-                                <a class='m-btn m-dark' style='padding-left:18px;padding-right:18px'>
+                                <a class='m-btn m-dark' style='padding-left:18px;padding-right:18px;'>
                                     <span>На счету: {{ user.account|urlencode }}руб.</span>
                                 </a>
                             </label>
@@ -308,29 +307,25 @@
             }
         })();
     function showuserinfo(name, vkid, number, email) {
-        var username = document.querySelector('#userinfo_name'),
-            uservkid = document.querySelector('#userinfo_vkid'),
-            usernumber = document.querySelector('#userinfo_number'),
-            useremail = document.querySelector('#userinfo_email');
-        usernumber.classList.add('hidden');
-        uservkid.classList.add('hidden');
-        useremail.classList.add('hidden');
-        username.innerText = name;
+        var elem = document.getElementById('modal_userinfo_content');
+        var s = '';
+        if (name !== null && name !== "") {
+            s += '<h3>' + name + '</h3>';
+        }
         if (number !== null && number !== "") {
-            usernumber.innerText = 'Позвонить: ' + number;
-            usernumber.href = 'tel:' + number;
-            usernumber.classList.remove('hidden');
+            s += '<a href="tel:' + number + '">Позвонить: ' 
+                + number + '</a><br/>';
         }
         if (vkid !== null && vkid !== "") {
-            uservkid.innerText = 'Написать в ВК: vk.com/id' + vkid;
-            uservkid.href = 'https://vk.me/id' + vkid;
-            uservkid.classList.remove('hidden');
+            // target="_blank" means 'open in new tab/window'
+            s += '<a target="_blank" href="https://vk.me/id' + vkid 
+                + '">Написать в ВК: vk.com/id' + vkid + '</a><br/>';
         }
         if (email !== null && email !== "") {
-            useremail.innerText = 'Написать: ' + email;
-            useremail.href = 'mailto:' + email;
-            useremail.classList.remove('hidden');
+            s += '<a href="mailto:' + email + '">Написать на почту: ' 
+                + email + '</a><br />';
         }
+        elem.innerHTML = s;
     };
     </script>
     {% block body_extras %}

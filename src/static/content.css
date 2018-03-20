@@ -563,7 +563,7 @@ textarea {
     stroke: currentcolor; /* Color for svg written */
     transition: bottom .4s cubic-bezier(1, 0, 0, 1);
 }
-#modal_check:not(:checked)~#modal {
+#modal_check:checked~#modal {
     bottom: -100%;
 }
 #modal>.container {
@@ -695,7 +695,7 @@ textarea {
     background-color: #eee;
     outline: none;
     border-radius: 2px;
-    display: inline-block;
+    display: block;
     min-height: 36px;
     line-height: 36px;
     padding: 0 2rem;
@@ -707,7 +707,6 @@ textarea {
 .m-btn.m-selected {
     background-color: #666;
     color: #fff;
-    display: block;
 }
 .m-btn.m-mobiletiny {
     padding: 1em;
