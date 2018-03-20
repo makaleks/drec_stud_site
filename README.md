@@ -160,6 +160,9 @@ PAYMENT_YANDEX_ENABLE_PHONE = False
 PAYMENT_SUCCESS_REDIRECT_YANDEX = 'http://localhost/services/'
 PAYMENT_SECRET_YANDEX = 'YandexMoneySecret'
 PAYMENT_ACCOUNT_YANDEX = 'YandexAccount'
+
+WEBMASTER_TAG_YANDEX = '<meta...'
+WEBMASTER_TAG_GOOGLE = '<meta...'
 ```
 
 ### Scripts-tools
