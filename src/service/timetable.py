@@ -115,6 +115,7 @@ class Timetable:
         start_i = 0
         end_i = len(self._ordered_lst)
         result = []
+        found = False
         # Binary search of some orders, that correspond to 'interval'
         while start_i != end_i:
             middle = (start_i + end_i) // 2
@@ -124,6 +125,7 @@ class Timetable:
                     and interval.start < self._ordered_lst[middle].end):
                 #print('Toggle 1, i = {0} = {1}'.format(middle, self._ordered_lst[middle]))
                 start_i = end_i = middle
+                found = True
                 break
             #0...|inter|.....N
             #0.......#ord#...N
@@ -131,6 +133,7 @@ class Timetable:
                     and interval.end <= self._ordered_lst[middle].end):
                 #print('Toggle 2, i = {0} = {1}'.format(middle, self._ordered_lst[middle]))
                 start_i = end_i = middle
+                found = True
                 break
             #0...|inter|.....N
             #0.#long_order#.N
@@ -138,6 +141,7 @@ class Timetable:
                     and self._ordered_lst[middle].end >= interval.end):
                 #print('Toggle 3, i = {0} = {1}'.format(middle, self._ordered_lst[middle]))
                 start_i = end_i = middle
+                found = True
                 break
             if interval.end <= self._ordered_lst[middle].start:
                 #print('i={0} - to end_i({1},{2}) - Changed interval.end({3}) <= order.start({4})'.format(middle, start_i,end_i,interval, self._ordered_lst[middle]))
@@ -151,7 +155,8 @@ class Timetable:
                     start_i += 1
                 else:
                     start_i = middle
-        #print('final i = {0}'.format(start_i))
+        if not found:
+            return []
         result.append(self._ordered_lst[start_i])
         # Find possible before
         i = start_i
