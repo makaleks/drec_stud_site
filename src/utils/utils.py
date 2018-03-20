@@ -50,8 +50,8 @@ def get_id_by_url_vk(s):
     attempts = 3
     while attempts:
         try:
-            s = vk_api.users.get(user_ids = s)
-            return s[0]['uid']
+            s = vk_api.users.get(user_ids = s, v = 573)
+            return s[0]['id']
         except BaseException as e:
             if not isinstance(e, ReadTimeout):
                 return None
