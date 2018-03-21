@@ -8,8 +8,8 @@ logger = logging.getLogger('site_events')
 # Register your models here.
 
 class NewsAdmin(VersionAdmin):
-    list_display = ('title', 'id', 'edited', 'created')
     history_latest_first = True
+    list_display = ('title', 'id', 'edited', 'created')
     def save_model(self, request, obj, form, change):
         if change:
             fields = [{field: str(getattr(obj, field))} for field in form.changed_data]

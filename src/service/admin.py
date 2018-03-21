@@ -27,12 +27,14 @@ class WorkingTimeExceptionInline(GenericStackedInline):
     ordering = ['is_annual', 'date_start', 'date_end', 'works_from', 'works_to']
 
 @admin.register(WorkingTime)
-class WorkingTimeAdmin(admin.ModelAdmin):
+class WorkingTimeAdmin(VersionAdmin):
+    history_latest_first = True
     list_display = ('weekday', 'is_weekend', 'works_from', 'works_to')
     ordering = ['weekday', 'is_weekend', 'works_from', 'works_to']
 
 @admin.register(WorkingTimeException)
-class WorkingTimeExceptionAdmin(admin.ModelAdmin):
+class WorkingTimeExceptionAdmin(VersionAdmin):
+    history_latest_first = True
     list_display = ('date_start', 'date_end', 'is_weekend', 'works_from', 'works_to')
     ordering = ['is_annual', 'date_start', 'date_end', 'is_weekend', 'works_from', 'works_to']
 
@@ -61,6 +63,7 @@ class ServiceForm(forms.ModelForm):
 
 @admin.register(Service)
 class ServiceAdmin(SortableAdminMixin, VersionAdmin):
+    history_latest_first = True
     form = ServiceForm
     list_display = ('name', 'default_price', 'timestep', 'is_active','edited')
     inlines = [ItemInline, WorkingTimeInline, WorkingTimeExceptionInline]
@@ -78,12 +81,14 @@ class ServiceAdmin(SortableAdminMixin, VersionAdmin):
 
 @admin.register(Item)
 class ItemAdmin(SortableAdminMixin, VersionAdmin):
+    history_latest_first = True
     list_display = ('id', 'name', 'is_active', 'created')
     list_filter = ['order', 'location', 'is_active']
     inlines = [WorkingTimeInline, WorkingTimeExceptionInline]
 
 @admin.register(Order)
 class OrderAdmin(VersionAdmin):
+    history_latest_first = True
     list_display = ('id', 'item', 'user_info', 'item_id', 'is_approved', 'date_start', 'time_start', 'time_end')
     list_filter = ['date_start', 'item_id']
     def user_info(self, obj):
@@ -93,4 +98,5 @@ class OrderAdmin(VersionAdmin):
 
 @admin.register(Participation)
 class ParticipationAdmin(VersionAdmin):
+    history_latest_first = True
     list_display = ('order', 'user')

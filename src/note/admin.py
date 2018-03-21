@@ -9,6 +9,7 @@ logger = logging.getLogger('site_events')
 # Register your models here.
 
 class NoteAdmin(SortableAdminMixin, VersionAdmin):
+    history_latest_first = True
     list_display = ('name', 'edited')
     def save_model(self, request, obj, form, change):
         if change:
@@ -25,6 +26,7 @@ admin.site.register(Note, NoteAdmin)
 
 
 class QuestionAdmin(VersionAdmin):
+    history_latest_first = True
     list_display = ('id', 'author', 'title', 'is_approved', 'edited', 'created')
     def save_model(self, request, obj, form, change):
         if change:

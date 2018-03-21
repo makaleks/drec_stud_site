@@ -161,6 +161,7 @@ class UserChangeForm(forms.ModelForm):
 
 
 class UserAdmin(BaseUserAdmin, VersionAdmin):
+    history_latest_first = True
     form = UserChangeForm
     add_form = UserCreationForm
     list_display = ('last_name', 'first_name', 'patronymic_name', 'group_number', 'is_staff')
