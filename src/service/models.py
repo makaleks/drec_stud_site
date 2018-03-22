@@ -641,7 +641,7 @@ class Participation(models.Model):
             raise ValidationError('Participation already exists!')
     def save(self, *args, **kwargs):
         self.clean()
-        return super(Order, self).save(*args, **kwargs)
+        return super(Participation, self).save(*args, **kwargs)
     class Meta:
         verbose_name = 'Участие'
         verbose_name_plural = 'Участия'

@@ -38,13 +38,13 @@ var PRICE_PREVIEW = (function() {
             }
         }
         if (len) {
-            preview_node.innerHTML = '<p>Итого интервалов: ' + len + (total ? (' за ' + total + ' руб.') : '') + ' <a href="#finaltext">К оплате</a></p>';
+            preview_node.innerHTML = '<p>Итого интервалов: ' + len + (total ? (' за <span style="white-space:nowrap;">' + total + ' руб.</span>') : '') + ' <a href="#finaltext">К оплате</a></p>';
             result_node.innerHTML = 'Выбрано интервалов: ' + len;
             if (total)
-                result_node.innerHTML += '<br />Итого ' + 'нужно оплатить: ' + total + ' руб.';
+                result_node.innerHTML += '<br />Итого ' + 'нужно оплатить: <span style="white-space:nowrap;">' + total + ' руб.</span>';
             var table = '<br/><br/>Будет заказано:<br/><table style="border:none;">';
             for (var name in groups) {
-                table += '<tr><td style="vertical-align:top;padding:10px;border:none;width:auto;">' + name + '</td><td style="padding:10px;border:none;width:auto;text-align:left;">';
+                table += '<tr><td style="vertical-align:top;padding:10px;border:none;width:auto;"><span style="white-space:nowrap;">' + name + '</span></td><td style="padding:10px;border:none;width:auto;text-align:left;">';
                 for (var i = 0; i < groups[name].length; i++) {
                     var time_start = groups[name][i].getAttribute('data-timestart');
                     var time_end = groups[name][i].getAttribute('data-timeend');
