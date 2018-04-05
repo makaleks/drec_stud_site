@@ -19,9 +19,9 @@ payment_logger = logging.getLogger('payment_logs')
 # Create your views here.
 
 def unlock(request, slug):
-    uid = request.GET.get('uid')
+    card_uid = request.GET.get('uid')
     today = timezone.now()
-    orders = Order.objects.all().filter(Q(user__uid = uid, item__service__slug = slug, date_start = today.date(), time_start__lte = today.time()) & (Q(time_end__gt = today.time()) | Q(time_end = datetime.time(0,0,0))))
+    orders = Order.objects.all().filter(Q(user__card_uid = card_uid, item__service__slug = slug, date_start = today.date(), time_start__lte = today.time()) & (Q(time_end__gt = today.time()) | Q(time_end = datetime.time(0,0,0))))
     #return HttpResponse(str([vars(o) for o in orders]))
     if orders:
         return HttpResponse('yes')
@@ -34,7 +34,7 @@ def to_H_M(t):
 def list_update(request, slug):
     today = timezone.now()
     orders = Order.objects.all().filter(Q(date_start = today.date(), item__service__slug = slug) & (Q(time_end__gt = today.time()) | Q(time_end = datetime.time(0,0,0))) | Q(date_start__gt = today.date())).order_by('date_start', 'time_end')
-    return HttpResponse(json.dumps([{'uid': o.user.uid, 'date_start': str(o.date_start), 'time_start': to_H_M(o.time_start), 'time_end': to_H_M(o.time_end)} for o in orders]))
+    return HttpResponse(json.dumps([{'uid': o.user.card_uid, 'date_start': str(o.date_start), 'time_start': to_H_M(o.time_start), 'time_end': to_H_M(o.time_end)} for o in orders]))
 
 def _is_decimal(s):
     try:
