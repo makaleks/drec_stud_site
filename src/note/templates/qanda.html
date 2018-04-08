@@ -12,10 +12,14 @@
         {% else %}
             <img src='{{ STATIC_URL }}img/vk.svg' class='qa-avatar' />
         {% endif %}
-        <p class='inline'>{{ question.author.get_full_name }} <a href='{{ question.get_absolute_url }}'>Ссылка</a></p>
+        <p class='inline'>{{ question.author.get_full_name }}
+        <!--<a href='{{ question.get_absolute_url }}'>Ссылка</a>-->
+        </p>
     {% else %}
         <img src='{{ STATIC_URL }}img/vk.svg' class='qa-avatar' />
-        <p class='inline'>Аноним <a href='{{ question.get_absolute_url }}'>Ссылка</a></p>
+        <p class='inline'>Аноним
+        <!--<a href='{{ question.get_absolute_url }}'>Ссылка</a>-->
+        </p>
     {% endif %}
 </section>
 
@@ -34,7 +38,9 @@
                 <p><a href='#{{ answer.commented_object.id }}'{% if answer.commented_object.author == request.user %} style='background:#FF0000;color:#FFFFFF;'{% endif %}>{{ answer.commented_object.author.get_full_name }}</a>, </p>
                 {% endif %}
                 <p>{{ answer.text }}</p>
-                <a style='display: inline-block;' data-comment-num='{{ answer.id }}' href='#{{ answer.id }}' name='answer' class='block'>{% if answer.author == request.user %}Изменить{% else %}Ответить{% endif %}</a> <a style='display: inline-block;' href='{{ question.get_absolute_url }}#{{ answer.id }}'>Ссылка</a><br/>
+                <a style='display: inline-block;' data-comment-num='{{ answer.id }}' href='#{{ answer.id }}' name='answer' class='block'>{% if answer.author == request.user %}Изменить{% else %}Ответить{% endif %}</a>
+                <!--<a style='display: inline-block;' href='{{ question.get_absolute_url }}#{{ answer.id }}'>Ссылка</a>-->
+                <br/>
                 <small>Изменён {{ answer.edited }}</small>
                 {% if answer.author == request.user %}
                     <a href='delete?id={{ answer.id }}'>Удалить</a>

@@ -3,6 +3,8 @@ from django.db import models
 from django.utils import timezone
 from precise_bbcode.fields import BBCodeTextField
 
+from utils.model_aliases import DefaultImageField
+
 # Create your models here.
 
 class News(models.Model):
@@ -12,7 +14,7 @@ class News(models.Model):
     # Preview will be shown before spoiler
     text_preview = BBCodeTextField(blank = True, verbose_name = 'Превью')
     text    = BBCodeTextField(blank = True, verbose_name = 'Текст')
-    image   = models.ImageField(blank = True)
+    image   = DefaultImageField(blank = True, null = True)
     # Useful + 'view on site' in /admin available
     def get_absolute_url(self):
         return '/?news={}'.format(self.id)

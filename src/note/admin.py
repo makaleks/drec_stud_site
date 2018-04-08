@@ -37,6 +37,6 @@ class QuestionAdmin(VersionAdmin):
             logger.info('{0} \'{1}\' was created as {2}'.format(self.model.__name__, str(obj), str(fields)), extra={'user': request.user.get_full_name()})
         super(QuestionAdmin, self).save_model(request, obj, form, change)
     def delete_model(self, request, obj):
-        logger.info('{0} \'{1}\' was deleted'.format(self.model.__title__, str(obj)), extra={'user': request.user.get_full_name()})
+        logger.info('{0} \'{1}\' was deleted'.format(self.model.title, str(obj)), extra={'user': request.user.get_full_name()})
         super(QuestionAdmin, self).delete_model(request, obj)
 admin.site.register(Question, QuestionAdmin)

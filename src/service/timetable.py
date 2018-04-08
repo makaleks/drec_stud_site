@@ -64,24 +64,39 @@ class TimetableElement:
 
 
 class TimeIntervalCursor:
-    def __init__(self, start, timestep, stop, timesteps_num = 1):
+    def __init__(self, start, timestep, stop, timesteps_num = 1, reverse = False):
         if not isinstance(start, datetime.datetime) or not isinstance(timestep, datetime.timedelta) or not isinstance(stop, datetime.datetime):
             raise TypeError('need start({0}) = datetime and timestep({1}) = timedelta and stop({2}) = datetime'.format(start.__class__.__name__, timestep.__class__.__name__, stop.__class__.__name__))
         self.start = start
-        self.end = start + timestep*timesteps_num
         self.timestep = timestep
-        self._stop = stop
+        self.stop = stop
         self.timesteps_num = timesteps_num
+        self.reverse = reverse
+        if not reverse:
+            self.it = start
+            self.next = start + timestep*timesteps_num
+        else:
+            self.it = stop
+            self.next = stop - timestep*timesteps_num
     def __iter__(self):
         return self
     def __next__(self):
-        if self.end > self._stop:
-            raise StopIteration
+        if not self.reverse:
+            if self.next > self.stop:
+                raise StopIteration
+            else:
+                to_ret = TimetableElement(self.it, self.next, timesteps_num = self.timesteps_num)
+                self.it = self.next
+                self.next += self.timestep*self.timesteps_num
+                return to_ret
         else:
-            to_ret = TimetableElement(self.start, self.end, timesteps_num = self.timesteps_num)
-            self.start = self.end
-            self.end += self.timestep*self.timesteps_num
-            return to_ret
+            if self.next < self.start:
+                raise StopIteration
+            else:
+                to_ret = TimetableElement(self.next, self.it, timesteps_num = self.timesteps_num)
+                self.it = self.next
+                self.next -= self.timestep*self.timesteps_num
+                return to_ret
 
 class Timetable:
     _max_days = 1 # timetable is for 1 day by default
@@ -215,6 +230,17 @@ class Timetable:
             it.is_open = False
             it.orders = self._get_orders(it)
             result.append(it)
+        # If orders found, return
+        for r in result:
+            if r.orders:
+                return result
+        # Else if orders not found, attach nearest
+        if hasattr(self, '_before_crop_start') and result:
+            for it in TimeIntervalCursor(self._before_crop_start, self.timestep, self.start, reverse = True):
+                orders = self._get_orders(it)
+                if orders:
+                    result[0].orders = [orders[-1]]
+                    break
         return result
     def gen_tail(self):
         if not self.is_ready():
@@ -445,6 +471,8 @@ class TimetableList:
         for k in self._timetables:
             self._timetables[k].set_start(start)
             self._timetables[k].set_first(first)
+            # Attach '_before_crop_start'
+            self._timetables[k]._before_crop_start = self._final_start
         self._final_start = start
     def clear_closed_rows(self):
         if not self._timetables:

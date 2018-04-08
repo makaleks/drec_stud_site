@@ -2,12 +2,14 @@ from django import template
 from django.utils import timezone
 from django.contrib.contenttypes.models import ContentType
 from user.models import User
+from django.forms import ModelForm
 import datetime
 import re
 import json
 
 from service.models import Participation
 from comment.models import Comment
+
 
 register = template.Library()
 
@@ -120,3 +122,22 @@ def util_get_single_item_orders_str(orders):
         for o in orders[1:]:
             s += '<br/>[{0}-{1}] {2}'.format(o.start.strftime('%H:%M'), o.end.strftime('%H:%M'), o.extra_data['user'].get_full_name())
         return s
+
+@register.filter
+def util_get_field_verbose_name(model, field):
+    if isinstance(field, str):
+        f = model._meta.get_field(field)
+        if f:
+            return f.verbose_name
+        else:
+            return None
+    else:
+        return None
+
+
+@register.filter
+def util_get_form_field_verbose_name(form, field):
+    if isinstance(form, ModelForm):
+        return util_get_field_verbose_name(form._meta.model, field)
+    else:
+        return None

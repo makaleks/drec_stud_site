@@ -9,6 +9,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from comment.models import Comment
 
+import json
+
 
 # Create your views here.
 
@@ -24,18 +26,22 @@ class StudentCouncilView(FormView):
     form_class = QuestionForm
     success_url = '/notes/student_council?status=success'
     status = ''
+    # used to save navigation position
+    # missed keys are interpreted as 'False'
+    tab = {}
     def get_context_data(self, **kwargs):
         context = super(StudentCouncilView, self).get_context_data(**kwargs)
         context['note'] = Note.objects.all().filter(slug = 'student_council').first()
         context['question_list'] = Question.objects.all()
-        note = {}
+        modal = {}
         if self.status:
             status = self.status
             if status == 'success' and not settings.QUESTION_DEFAULT_APPROVED:
-                note['text'] = 'Вопрос отправлен и скоро, после одобрения, будет опубликован'
-                note['enabled'] = True
-                note['type'] = self.status
-        context['notification'] = note
+                modal['text'] = 'Вопрос отправлен и скоро, после одобрения, будет опубликован'
+                modal['enabled'] = True
+                modal['type'] = self.status
+        context['notification'] = modal
+        context['tab'] = self.tab
         return context
     def get(self, request, *args, **kwargs):
         data = request.GET.dict()
@@ -44,13 +50,16 @@ class StudentCouncilView(FormView):
             self.status = status
         return super(StudentCouncilView, self).get(request, *args, **kwargs)
     def form_valid(self, form):
+        self.tab['new_question'] = True
         if not self.request.user.is_authenticated:
             form.add_error(None, 'Сначала нужно войти на сайт!')
             return self.form_invalid(form)
         else:
             form.instance.author = self.request.user
-        form.save()
         return super(StudentCouncilView, self).form_valid(form)
+    def form_invalid(self, form):
+        self.tab['new_question'] = True
+        return super(StudentCouncilView, self).form_invalid(form)
 
 class QuestionDetailView(DetailView):
     model = Question

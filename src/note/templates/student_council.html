@@ -1,13 +1,15 @@
 {% extends 'core/base.html' %}
+{% load utils_extra_filters %}
+
 {% block head_extras %}
 <style>
     #tab-main:checked~div.tab:nth-of-type(1),
-    #tab-nav-answer:checked~div.tab.answer,
-    #tab-nav-newans:checked~div.tab.newans {
+    #tab-question-list:checked~div.tab.question_list,
+    #tab-new-question:checked~div.tab.new_question {
         display: block;
     }
     
-    #tab-nav-newans:checked~div.newans {
+    #tab-new-question:checked~div.new_question {
         display: block;
     }
 </style>
@@ -17,17 +19,24 @@
 <section class='card'>
     <h2>Студсовет</h2>
 </section>
-<input type='radio' class='hidden' name='tabs' id='tab-main' checked>
-<input type='radio' class='hidden' name='tabs' id='tab-nav-answer'>
-<input type='radio' class='hidden' name='tabs' id='tab-nav-newans'>
+<!-- Try to set last page as default. Missed key are interpreted as 'False' -->
+<input type='radio' class='hidden' name='tabs' id='tab-main' 
+{% if not tab.new_question and not tab.question_list %}
+checked{% endif %}>
+<input type='radio' class='hidden' name='tabs' id='tab-question-list' 
+{% if tab.question_list %}
+checked{% endif %}>
+<input type='radio' class='hidden' name='tabs' id='tab-new-question' 
+{% if tab.new_question %}
+checked{% endif %}>
 <span class='card'>
     <label for='tab-main' class='card tablabel'>
         <h3>Основные положения</h3>
     </label>
-    <label for='tab-nav-answer' class='card tablabel'>
+    <label for='tab-question-list' class='card tablabel'>
         <h3>Заданные вопросы</h3>
     </label>
-    <label for='tab-nav-newans' class='card tablabel'>
+    <label for='tab-new-question' class='card tablabel'>
         <h3>Вопрос студсовету</h3>
     </label>
 </span>
@@ -35,7 +44,7 @@
     <h2 class='lightgrey'>Основные положения</h2>
     <div>{{ note.text.rendered }}</div>
 </div>
-<div class='card tab answer'>
+<div class='card tab question_list'>
     <h2>Заданные вопросы</h2>
     <div>
         <div class='card-maintext'>
@@ -49,17 +58,24 @@
         </div>
     </div>
 </div>
-<div class='newans card tab'>
+<div class='new_question card tab'>
     <h2>Вопрос студсовету</h2>
     {% if user.is_authenticated %}
         <h3>Задайте свой вопрос</h3>
-        <form method='post'>
+        <!-- enctype must be set for file upload -->
+        <form method='post' enctype="multipart/form-data">
             {% csrf_token %}
             {{ form.non_field_errors }}
+
             {{ form.title.errors }}
             <p><label for='{{ form.title.id_for_label }}'>Заголовок</label> {{ form.title }}</p>
             {{ form.text.errors }}
+
             <p>{{ form.text }}</p>
+
+            {{ form.attachment.errors }}
+            <table><tr><td><label for='{{ form.attachment.id_for_label }}'>{{ form|util_get_form_field_verbose_name:'attachment' }}</label></td></tr><tr><td>{{ form.attachment }}</td></tr></table>
+
             {{ form.is_public.errors }}
             <p>{{ form.is_public }}<label for='{{ form.is_public.id_for_label }}'>Не скрывать автора</label></p>
             {{ form.check_to_send.errors }}

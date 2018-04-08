@@ -16,6 +16,8 @@ import types
 
 from .timetable import Timetable, TimetableList, OrderedInterval
 
+from utils.model_aliases import DefaultImageField
+
 # Create your models here.
 
 # Set working hours on each weekday
@@ -120,7 +122,7 @@ class Service(models.Model):
     name        = models.CharField(max_length = 64, blank = False, null = False, unique = True, verbose_name = 'Название')
     announcements = BBCodeTextField(blank = True, null = True, verbose_name = 'Объявления')
     instruction = BBCodeTextField(blank = True, null = True, verbose_name = 'Инструкция и подробное описание')    
-    image       = models.FileField(validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'gif', 'svg'])], blank = False, null = False, verbose_name = 'Картинка')
+    image       = DefaultImageField(blank = False, null = False)
     timestep    = models.TimeField(blank = False, null = False, verbose_name = 'Минимальное время использования (шаг времени)')
     max_time_steps  = models.PositiveSmallIntegerField(blank = False, null = False, default = 1, verbose_name = 'Максимальное число шагов времени непрерывного использования')
     default_price   = models.PositiveSmallIntegerField(blank = True, null = True, verbose_name = 'Цена по-умолчанию за шаг времени', default = 0)
