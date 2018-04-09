@@ -153,6 +153,8 @@ SECRET_KEY = 'DefaultDjangoSecretNeverUsed'
 IS_EMERGENCY_LOGIN_MODE = False
 # If vk.com stopped giving id by name
 IS_ID_RECOGNITION_BROKEN_VK = False
+# Redirect to question on each admin access
+IS_AGRESSIVE_QUESTION_NOTIFICATION = True
 # https://money.yandex.com/
 PAYMENT_TEXT_YANDEX = 'The wallet for student council site.'
 PAYMENT_YANDEX_ENABLE_CARD = True

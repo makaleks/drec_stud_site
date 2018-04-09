@@ -28,7 +28,11 @@ admin.site.register(Note, NoteAdmin)
 
 class QuestionAdmin(CustomBaseAdmin, VersionAdmin):
     history_latest_first = True
-    list_display = ('author', 'title', 'id_link', 'is_approved', 'edited', 'created')
+    list_display = ('author', 'title', 'id_link', 'is_approved', 'is_answered', 'edited', 'created')
+    def is_answered(self, obj):
+        return obj.is_staff_answered()
+    is_answered.short_description = 'Ответ студсовета'
+    is_answered.boolean = True
     def save_model(self, request, obj, form, change):
         if change:
             fields = [{field: str(getattr(obj, field))} for field in form.changed_data]

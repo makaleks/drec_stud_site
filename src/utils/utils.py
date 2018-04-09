@@ -4,6 +4,7 @@ import importlib
 import re
 import vk
 from requests.exceptions import ReadTimeout
+from note.models import Question
 
 
 # Check that some field is unique for now
@@ -60,4 +61,11 @@ def get_id_by_url_vk(s):
                 continue
     # Return the same is no internet connection
     return s
-    
+
+def util_get_new_question_num():
+    num = Question.objects.filter(is_approved = False).count()
+    started_questions = list(Question.objects.filter(is_approved = True))
+    for q in started_questions:
+        if not q.is_staff_answered:
+            num += 1
+    return num

@@ -58,6 +58,12 @@ class Question(models.Model):
             _recursive(result, l)
         result.sort(key=lambda x: x.created)
         return result
+    def is_staff_answered(self):
+        answers = list(self.answers.all())
+        for a in answers:
+            if a.author.is_staff:
+                return True
+        return False
     class Meta:
         verbose_name = 'Вопрос'
         verbose_name_plural = 'Вопросы'

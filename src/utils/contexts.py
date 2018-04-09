@@ -1,5 +1,6 @@
 # coding: utf-8
 from django.conf import settings
+from .utils import util_get_new_question_num
 
 def custom_context(request):
     return {
@@ -25,6 +26,8 @@ def custom_context(request):
             }
         },
         'is_emergency_login_mode': settings.IS_EMERGENCY_LOGIN_MODE,
+        'is_agressive_question_notification': settings.IS_AGRESSIVE_QUESTION_NOTIFICATION,
+        'util_get_new_question_num': util_get_new_question_num(),
         'webmaster_tags': {
             'yandex': settings.WEBMASTER_TAG_YANDEX,
             'google': settings.WEBMASTER_TAG_GOOGLE,

@@ -196,7 +196,11 @@
                 </div>
                 <div class='inline'>
                     {% if user.is_staff %}
-                        {% if request.path|util_contains_string:'^/$' and perms.news %}
+                        {% if is_agressive_question_notification %}
+                            <a href='/admin/note/question/' class='btn btn-vk' style='background-color:red;'>
+                                <span>Вопросов: {{ util_get_new_question_num }}</span>
+                            </a>
+                        {% elif request.path|util_contains_string:'^/$' and perms.news %}
                             <a href='/admin/news/news/add/' class='btn btn-vk'>
                                 <span>Добавить новость</span>
                             </a>
