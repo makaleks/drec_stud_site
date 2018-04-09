@@ -4,6 +4,7 @@
 <section class='card' style='margin-bottom:10px;'>
     <h2>{{ question.title }}</h2>
     <h3>{{ question.text }}</h3>
+    {% if question.attachment %}<a href='{{ question.attachment.url }}'>Приложение ({{ question.get_attachment_extention }})</a>{% endif %}
     <p>Вопрос задан {{ question.created }}</p>
     <hr />
     {% if question.is_public %}
@@ -42,6 +43,7 @@
                 <p><a href='#{{ answer.commented_object.id }}'{% if answer.commented_object.author == request.user %} style='background:#FF0000;color:#FFFFFF;'{% endif %}>{{ answer.commented_object.author.get_full_name }}</a>, </p>
                 {% endif %}
                 <p>{{ answer.text }}</p>
+                {% if answer.attachment %}<a href='{{ answer.attachment.url }}'>Приложение ({{ answer.get_attachment_extention }})</a>{% endif %}
                 <a style='display: inline-block;' data-comment-num='{{ answer.id }}' href='#{{ answer.id }}' name='answer' class='block'>{% if answer.author == request.user %}Изменить{% else %}Ответить{% endif %}</a>
                 <!---->
                 <a style='display: inline-block;' href='{{ question.get_absolute_url }}#{{ answer.id }}'>Ссылка</a>

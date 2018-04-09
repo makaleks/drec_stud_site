@@ -4,6 +4,7 @@ from django.db import models
 from django.urls import reverse
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
+from os.path import splitext
 from comment.models import Comment
 
 from utils.model_aliases import DefaultDocumentField
@@ -46,6 +47,8 @@ class Question(models.Model):
         return '{0}, {1}'.format(self.title, self.author)
     def get_absolute_url(self):
         return reverse('note:question-detail', args=[self.id])
+    def get_attachment_extention(self):
+        return splitext(self.attachment.name)[1]
     def get_answers(self):
         def _recursive(result, obj):
             result.append(obj)
