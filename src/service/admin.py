@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import WorkingTime, WorkingTimeException, Service, Item, Order,Participation
 from django.contrib.contenttypes.admin import GenericStackedInline
+from utils.custom_admins import CustomBaseAdmin
 from reversion.admin import VersionAdmin
 from adminsortable2.admin import SortableAdminMixin, SortableInlineAdminMixin
 from django import forms
@@ -62,10 +63,10 @@ class ServiceForm(forms.ModelForm):
         exclude = []
 
 @admin.register(Service)
-class ServiceAdmin(SortableAdminMixin, VersionAdmin):
+class ServiceAdmin(CustomBaseAdmin, SortableAdminMixin, VersionAdmin):
     history_latest_first = True
     form = ServiceForm
-    list_display = ('name', 'default_price', 'timestep', 'is_active','edited')
+    list_display = ('name', 'id_link', 'default_price', 'timestep', 'is_active','edited')
     inlines = [ItemInline, WorkingTimeInline, WorkingTimeExceptionInline]
     list_filter = ['order', 'name']
     def get_readonly_fields(self, request, obj=None):

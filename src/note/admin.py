@@ -1,4 +1,5 @@
 from django.contrib import admin
+from utils.custom_admins import CustomBaseAdmin
 from reversion.admin import VersionAdmin
 from adminsortable2.admin import SortableAdminMixin
 from .models import Note, Question
@@ -8,9 +9,9 @@ logger = logging.getLogger('site_events')
 
 # Register your models here.
 
-class NoteAdmin(SortableAdminMixin, VersionAdmin):
+class NoteAdmin(CustomBaseAdmin, SortableAdminMixin, VersionAdmin):
     history_latest_first = True
-    list_display = ('name', 'edited')
+    list_display = ('name', 'id_link', 'edited')
     def save_model(self, request, obj, form, change):
         if change:
             fields = [{field: str(getattr(obj, field))} for field in form.changed_data]
@@ -25,9 +26,9 @@ class NoteAdmin(SortableAdminMixin, VersionAdmin):
 admin.site.register(Note, NoteAdmin)
 
 
-class QuestionAdmin(VersionAdmin):
+class QuestionAdmin(CustomBaseAdmin, VersionAdmin):
     history_latest_first = True
-    list_display = ('id', 'author', 'title', 'is_approved', 'edited', 'created')
+    list_display = ('author', 'title', 'id_link', 'is_approved', 'edited', 'created')
     def save_model(self, request, obj, form, change):
         if change:
             fields = [{field: str(getattr(obj, field))} for field in form.changed_data]
