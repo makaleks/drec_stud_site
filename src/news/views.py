@@ -40,13 +40,24 @@ class NewsListView(ListView):
                         raise
             queryset = queryset.filter(edited__gt = last).order_by('-created')
         else:
+            y_queryset = None
+            n_queryset = None
             if years:
-                queryset = queryset.filter(created__year__in = years.split('-')).order_by('-created')
+                y_queryset = queryset.filter(created__year__in = years.split('-'))
             if news:
-                queryset = queryset.filter(pk__in = news.split('-')).order_by('-created')
+                n_queryset = queryset.filter(pk__in = news.split('-'))
                 # Show like DetailView list
-                self.render_archive = False
-                self.show_hidden = True
+                if not years:
+                    self.show_hidden = True
+            self.render_archive = False
+            if y_queryset and n_queryset:
+                queryset = (y_queryset | n_queryset).order_by('-created')
+            elif y_queryset:
+                queryset = y_queryset.order_by('-created')
+            elif n_queryset:
+                queryset = n_queryset.order_by('-created')
+            else:
+                queryset = News.objects.none()
         return queryset
     # Template context
     def get_context_data(self, **kwargs):
