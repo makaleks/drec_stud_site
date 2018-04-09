@@ -66,6 +66,6 @@ def util_get_new_question_num():
     num = Question.objects.filter(is_approved = False).count()
     started_questions = list(Question.objects.filter(is_approved = True))
     for q in started_questions:
-        if not q.is_staff_answered:
+        if not q.is_staff_answered():
             num += 1
     return num
