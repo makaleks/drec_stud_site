@@ -1,8 +1,10 @@
 # coding: utf-8
+from precise_bbcode.fields import BBCodeTextField
 from django.db import models
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
+from os.path import splitext
 
 from utils.model_aliases import DefaultDocumentField
 
@@ -11,8 +13,8 @@ from utils.model_aliases import DefaultDocumentField
 class Comment(models.Model):
     author      = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.CASCADE, related_name = 'comments')
     created = models.DateTimeField(auto_now_add = True, verbose_name = 'Время создания')
-    edited = models.DateTimeField(auto_now_add = True, verbose_name = 'Время редактирования')
-    text        = models.CharField(max_length = 512, blank = False, null = False, verbose_name = 'Текст')
+    edited = models.DateTimeField(auto_now = True, verbose_name = 'Время редактирования')
+    text        = BBCodeTextField(max_length = 512, blank = False, null = False, verbose_name = 'Текст')
     comments    = GenericRelation('comment.Comment',
                     content_type_field='object_type', 
                     object_id_field='object_id')
@@ -29,7 +31,9 @@ class Comment(models.Model):
     def get_attachment_extention(self):
         return splitext(self.attachment.name)[1]
     def first_text(self):
-        text = self.text;
+        text = self.text.rendered;
+        if not text:
+            return ''
         return text if len(text) <= 20 else text[:17] + '...'
     class Meta:
         verbose_name = u'Комментарий'

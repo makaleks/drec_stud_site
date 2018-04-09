@@ -1,9 +1,16 @@
 {% extends 'core/base.html' %}
 {% load utils_extra_filters %}
+
+<!-- Reserve space to scroll enough on small screens -->
+<!-- Otherwise, the 'comment' form may overflow the content -->
+{% block content_style %}
+margin-bottom: 25em;
+{% endblock %}
+
 {% block content %}
 <section class='card' style='margin-bottom:10px;'>
     <h2>{{ question.title }}</h2>
-    <h3>{{ question.text }}</h3>
+    <h3>{{ question.text.rendered }}</h3>
     {% if question.attachment %}<a href='{{ question.attachment.url }}'>Приложение ({{ question.get_attachment_extention }})</a>{% endif %}
     <p>Вопрос задан {{ question.created }}</p>
     <hr />
@@ -42,8 +49,8 @@
                 {% if answer|util_is_comment_to_comment %}
                 <p><a href='#{{ answer.commented_object.id }}'{% if answer.commented_object.author == request.user %} style='background:#FF0000;color:#FFFFFF;'{% endif %}>{{ answer.commented_object.author.get_full_name }}</a>, </p>
                 {% endif %}
-                <p>{{ answer.text }}</p>
-                {% if answer.attachment %}<a href='{{ answer.attachment.url }}'>Приложение ({{ answer.get_attachment_extention }})</a>{% endif %}
+                <p>{{ answer.text.rendered }}</p>
+                {% if answer.attachment %}<p><a href='{{ answer.attachment.url }}'>Приложение ({{ answer.get_attachment_extention }})</a></p>{% endif %}
                 <a style='display: inline-block;' data-comment-num='{{ answer.id }}' href='#{{ answer.id }}' name='answer' class='block'>{% if answer.author == request.user %}Изменить{% else %}Ответить{% endif %}</a>
                 <!---->
                 <a style='display: inline-block;' href='{{ question.get_absolute_url }}#{{ answer.id }}'>Ссылка</a>
@@ -58,24 +65,43 @@
         </div>
     </section>
     {% endfor %}
-<form action='' method='post' id='comment'>
-    {% csrf_token %}
-    <div class='card'>
-        <input type='checkbox' class='hidden' id='qa-isanswer'>
-        <input type='text' class='hidden' name='answerto' id='answerto'>
-        <p id='qa-answerval'><label for='qa-isanswer' onclick='document.getElementById("answerto").value="";'>[X]</label> => <a id='qa-answer-name'>{{ question.author.get_full_name }}</a></p>
+{% if user.is_authenticated %}
+    <form method='post' id='comment' enctype='multipart/form-data'>
+        {% csrf_token %}
+        <div class='card'>
+            <!--{{ form.errors }}
+                {{ form.non_field_errors }}-->
+            <input type='checkbox' class='hidden' id='qa-isanswer'>
+            {{ form.answerto }}
+            <p id='qa-answerval'><label for='qa-isanswer' onclick='document.getElementById("answerto").value="";'>[X]</label> => <a id='qa-answer-name'>{{ question.author.get_full_name }}</a></p>
+    
+            {{ form.text.errors }}
+            <p>{{ form.text }}</p>
+            {{ form.check_to_send.errors }}
 
-        <textarea rows=3 name='text'required ></textarea>
-        <input required type='checkbox' id='self_checked'><label for='self_checked'> Я проверил текст на ошибки</label>
+            {{ form.attachment.errors }}
+            <table><tr><td>{{ form.attachment }}</td><td><label for='{{ form.attachment.id_for_label }}'>{{ form|util_get_form_field_verbose_name:'attachment' }}</label></td></tr></table>
 
-        <input type='submit' value='Отправить' />
-    </div>
-</form>
+            <p>{{ form.check_to_send }} <label for='{{ form.check_to_send.id_for_label }}'> Я проверил текст на ошибки</label><input type='submit' style='float:right;' value='Отправить' /></p>
+        </div>
+    </form>
+{% else %}
+    <p>Войдите, чтобы написать ответ!</p>
+{% endif %}
 {% endblock %}
 {% block body_extras %}
+<!-- START textareaToEditor -->
+<script src='{{ STATIC_URL }}web_copy/ckeditor-4.7.x/ckeditor.js'></script>
+<script src='{{ STATIC_URL }}settings/ckeditor_settings.js'></script>
 <script>
-
-window.addEventListener('load', function() {
+    // Set textarea height smaller
+    options['height'] = '5em';
+</script>
+<script src='{{ STATIC_URL }}js/utils.js'></script>
+<script src='{{ STATIC_URL }}js/textarea_to_ckeditor.js'></script>
+<!-- END textareaToEditor -->
+<script>
+util_add_handler(window, 'load', function() {
         var answers = document.getElementsByName('answer');
 
         for (var item of answers) {

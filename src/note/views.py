@@ -1,10 +1,13 @@
 from django.views.generic.edit import FormView
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
-from django.http import HttpResponseBadRequest, HttpResponseRedirect
+from django.http import HttpResponseBadRequest, HttpResponseRedirect, HttpResponseForbidden
+from django.urls import reverse
 from .models import Note, Question
 from .forms import QuestionForm
+from comment.forms import CommentForm
 from django.views.generic.detail import DetailView
+from django.views.generic.edit import FormMixin
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from comment.models import Comment
@@ -69,49 +72,58 @@ class StudentCouncilView(FormView):
             return self.form_invalid(form)
         else:
             form.instance.author = self.request.user
+        form.save()
         return super(StudentCouncilView, self).form_valid(form)
     def form_invalid(self, form):
         self.tab['new_question'] = True
         return super(StudentCouncilView, self).form_invalid(form)
 
-class QuestionDetailView(DetailView):
+class QuestionDetailView(FormMixin, DetailView):
     model = Question
+    form_class = CommentForm
     template_name = 'qanda.html'
-    status = ''
-    def get(self, request, *args, **kwargs):
-        path = request.path
-        arg = request.GET.get('id')
-        if path[-6:] == 'delete':
-            question = self.get_object()
-            if request.user == question.author and question.answers.filter(id=arg).exists():
-                answ = question.answers.get(id=arg)
-                answ.delete()
-            return HttpResponseRedirect(path[:-6])
-        return super(QuestionDetailView, self).get(self, request, *args, **kwargs)
+    def get_success_url(self):
+        return reverse('note:question-detail', kwargs={'pk': self.object.pk})
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = self.get_form()
+        return context
     def post(self, request, *args, **kwargs):
-        data = request.POST.dict()
-        if request.user.is_authenticated:
-            text = data['text']
-            object_id = data['answerto']
-            question = self.get_object()
-            # Comment or edit existing
-            if object_id:
-                comment = Comment.objects.all().filter(id = object_id)
-                if not comment.exists() or comment.first().author != request.user:
-                    comment = Comment(author = request.user, text = text)
-                    comment.object_type = ContentType.objects.get(app_label='comment', model = 'comment')
-                    comment.object_id = object_id
-                else:
+        if not request.user.is_authenticated:
+            return HttpResponseForbidden()
+        self.object = self.get_object()
+        answerto = request.POST.dict().get('answerto')
+        #is_comment_to_comment = False
+        if answerto:
+            if isinstance(answerto, str) and answerto.isdigit():
+                answerto = int(answerto)
+                comment = Comment.objects.filter(id = answerto)
+                if comment.exists():
                     comment = comment.first()
-                    comment.text = text
-            # Comment the Question
+                    if comment.author == request.user:
+                        form = CommentForm(instance = comment, data = request.POST, files = request.FILES)
+                    else:
+                        form = CommentForm(data = request.POST, files = request.FILES)
+                        form.instance.commented_object = comment
+                        #is_comment_to_comment = True
+                else:
+                    return HttpResponseBadRequest()
             else:
-                comment = Comment(author = request.user, text = text)
-                comment.object_type = ContentType.objects.get(app_label = 'note', model = 'question')
-                comment.object_id = question.id
-                comment.text = text
-            comment.save()
-        return HttpResponseRedirect('')
+                return HttpResponseBadRequest()
+        else:
+            form = CommentForm(data = request.POST, files = request.FILES)
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        if not form.instance.commented_object:
+            form.instance.commented_object = self.object
+        form.save()
+        return super(QuestionDetailView, self).form_valid(form)
+    def form_invalid(self, form):
+        return super(QuestionDetailView, self).form_invalid(form)
 
 class NoteDetailView(DetailView):
     model = Note

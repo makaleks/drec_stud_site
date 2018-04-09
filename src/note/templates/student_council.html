@@ -64,9 +64,10 @@ checked{% endif %}>
     {% if user.is_authenticated %}
         <h3>Задайте свой вопрос</h3>
         <!-- enctype must be set for file upload -->
-        <form method='post' enctype="multipart/form-data">
+        <form method='post' enctype='multipart/form-data'>
             {% csrf_token %}
-            {{ form.non_field_errors }}
+            <!--{{ form.errors }}
+                {{ form.non_field_errors }}-->
 
             {{ form.title.errors }}
             <p><label for='{{ form.title.id_for_label }}'>Заголовок</label> {{ form.title }}</p>
@@ -87,4 +88,12 @@ checked{% endif %}>
         <p>Войдите, чтобы задать свой вопрос!</p>
     {% endif %}
 </div>
+{% endblock %}
+
+{% block body_extras %}
+<!-- START textareaToEditor -->
+<script src='{{ STATIC_URL }}web_copy/ckeditor-4.7.x/ckeditor.js'></script>
+<script src='{{ STATIC_URL }}settings/ckeditor_settings.js'></script>
+<script src='{{ STATIC_URL }}js/utils.js'></script>
+<script src='{{ STATIC_URL }}js/textarea_to_ckeditor.js'></script>
 {% endblock %}
