@@ -13,12 +13,16 @@
             <img src='{{ STATIC_URL }}img/vk.svg' class='qa-avatar' />
         {% endif %}
         <p class='inline'>{{ question.author.get_full_name }}
-        <!--<a href='{{ question.get_absolute_url }}'>Ссылка</a>-->
+        <!---->
+        <a href='{{ question.get_absolute_url }}'>Ссылка</a>
+        <!---->
         </p>
     {% else %}
         <img src='{{ STATIC_URL }}img/vk.svg' class='qa-avatar' />
         <p class='inline'>Аноним
-        <!--<a href='{{ question.get_absolute_url }}'>Ссылка</a>-->
+        <!---->
+        <a href='{{ question.get_absolute_url }}'>Ссылка</a>
+        <!---->
         </p>
     {% endif %}
 </section>
@@ -39,7 +43,9 @@
                 {% endif %}
                 <p>{{ answer.text }}</p>
                 <a style='display: inline-block;' data-comment-num='{{ answer.id }}' href='#{{ answer.id }}' name='answer' class='block'>{% if answer.author == request.user %}Изменить{% else %}Ответить{% endif %}</a>
-                <!--<a style='display: inline-block;' href='{{ question.get_absolute_url }}#{{ answer.id }}'>Ссылка</a>-->
+                <!---->
+                <a style='display: inline-block;' href='{{ question.get_absolute_url }}#{{ answer.id }}'>Ссылка</a>
+                <!---->
                 <br/>
                 <small>Изменён {{ answer.edited }}</small>
                 {% if answer.author == request.user %}

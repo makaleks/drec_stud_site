@@ -7,10 +7,6 @@
     {% endfor %}{
         display: block;
     }
-
-    #tab-nav-newans:checked~div.newans {
-        display: block;
-    }
 </style>
 {% endblock %}
 <!---->
@@ -21,7 +17,6 @@
 {% for n in note_list %}
 <input type='radio' class='hidden' name='tabs' id='tab-nav-{{ forloop.counter }}'{% if forloop.first %}checked{% endif %}>
 {% endfor %}
-<input type='radio' class='hidden' name='tabs' id='tab-nav-newans'>
 
 <span class='card'>
     {% for n in note_list %}
@@ -33,22 +28,8 @@
 {% for n in note_list %}
     <div class='card tab'>
         <h2>{{ n.name }}</h2>
-        <p>{{ n.text.rendered }}</p>
+        <div style='padding-bottom:1em;'>{{ n.text.rendered }}</div>
+        <small class='text-muted'>Обновлено {{ n.edited }} <a href='{% url 'note:note-id-detail' n.pk %}'>Ссылка</a></small>
     </div>
 {% endfor %}
-<div class='newans'>
-    <section class='card'>
-        <h2 class='lightgray'>Последние вопросы</h2>
-        <div>
-            <p class='card-maintext'>
-                <ul>
-                    {% for question in question_list %}
-                    <li><a href='{{ question.pk }}'>{{ question.title }}{% if question.is_public %} ({{ question.author.get_full_name }}){% endif %}</a></li>
-                    {% endfor %}
-                </ul>
-            </p>
-        </div>
-    </section>
-    </div>
-</div>
 {% endblock %}

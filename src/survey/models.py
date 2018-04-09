@@ -21,6 +21,8 @@ class Survey(models.Model):
     is_anonymous    = models.BooleanField(default = False, null = False, verbose_name = 'Анонимный (навсегда!))')
     allow_rewrite   = models.BooleanField(default = True, null = False, verbose_name = 'Разрешить исправлять')
     sheet           = models.FileField(upload_to='surveys', blank = True, null = True, verbose_name = 'Свежий отчёт')
+    def get_absolute_url(self):
+        return reverse('survey:survey_detail', args = [self.pk])
     def __str__(self):
         return self.title
     def is_started():
@@ -31,8 +33,6 @@ class Survey(models.Model):
         self.started = start
         self.finished = end
         self.save(update_fields=['started', 'finished'])
-    def get_absolute_url(self):
-        return reverse('survey_detail', args = (self.pk,))
     def get_edit_url(self):
         return reverse('survey_edit', args=(self.pk,))
     def save(self, *args, **kwargs):

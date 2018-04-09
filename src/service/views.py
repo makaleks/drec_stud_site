@@ -18,6 +18,7 @@ payment_logger = logging.getLogger('payment_logs')
 
 # Create your views here.
 
+# Check unlock
 def unlock(request, slug):
     card_uid = request.GET.get('uid')
     today = timezone.now()
@@ -31,6 +32,7 @@ def unlock(request, slug):
 def to_H_M(t):
     return re.sub(r'(?P<part>^|:)0', '\g<part>', t.strftime('%H:%M'))
 
+# get orders
 def list_update(request, slug):
     today = timezone.now()
     orders = Order.objects.all().filter(Q(date_start = today.date(), item__service__slug = slug) & (Q(time_end__gt = today.time()) | Q(time_end = datetime.time(0,0,0))) | Q(date_start__gt = today.date())).order_by('date_start', 'time_end')
@@ -78,7 +80,7 @@ class ServiceListView(ListView):
                 log_str += '- NO_USER - can`t add {0}$ to account with id={1}\n'.format(amount, user_id)
             else:
                 user = user.first()
-                # Be careful with the following code!
+                # BE CAREFUL with the following code!
                 # See https://tech.yandex.com/money/doc/dg/reference/notification-p2p-incoming-docpage/#verify-notification
                 hash_source = '{notification_type}&{operation_id}&{amount}&{currency}&{datetime}&{sender}&{codepro}&{notification_secret}&{label}'.format(
                         notification_type = data['notification_type'],

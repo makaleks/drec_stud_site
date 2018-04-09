@@ -178,17 +178,17 @@
                         {% else %}
                             <img src='{{ STATIC_URL }}img/vk.svg' />
                         {% endif %}
-                        <a href='/logout/?next={{ request.path }}' class='btn btn-vk'>
+                        <a href='{% url 'logout' %}?next={{ request.path }}' class='btn btn-vk'>
                             <span>Привет, {{ user.get_short_name }}</span>
                         </a>
                     {% else %}
                         <img src='{{ STATIC_URL }}img/vk.svg' />
                         {% if not is_emergency_login_mode %}
-                            <a href='{% url "social:begin" "vk-oauth2" %}?next={{ request.path }}' class='btn btn-vk'>
+                            <a href='{% url 'social:begin' 'vk-oauth2' %}?next={{ request.path }}' class='btn btn-vk'>
                                 <span>Войти через ВК</span>
                             </a>
                         {% else %}
-                            <a href='/login?next={{ request.path }}' class='btn btn-vk'>
+                            <a href='{% url 'emergency-login' %}?next={{ request.path }}' class='btn btn-vk'>
                                 <span>Войти</span>
                             </a>
                         {% endif %}
@@ -239,7 +239,7 @@
                         {% endif %}
                         <section>
                             <p>Привет, {{ user.get_short_name }}</p>
-                            <a href='/logout/?next={{ request.path }}' class='btn btn-vk'>Выйти</a>
+                            <a href='{% url 'logout' %}?next={{ request.path }}' class='btn btn-vk'>Выйти</a>
                             <label for='modal_refill_check'>
                                 <a class='m-btn m-dark' style='padding-left:18px;padding-right:18px;'>
                                     <span>На счету: {{ user.account|urlencode }}руб.</span>
@@ -253,7 +253,7 @@
                             {% if not is_emergency_login_mode %}
                                 <a href='{% url "social:begin" "vk-oauth2" %}?next={{ request.path }}' class='btn btn-vk'>Войти через ВК</a>
                             {% else %}
-                                <a href='/login?next={{ request.path }}' class='btn btn-vk'>Войти</a>
+                            <a href='{% url 'emergency-login' %}?next={{ request.path }}' class='btn btn-vk'>Войти</a>
                             {% endif %}
                         </section>
                     {% endif %}

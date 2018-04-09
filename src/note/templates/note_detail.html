@@ -2,9 +2,7 @@
 {% block content %}
     <section class='card'>
         <h2>{{ note.name }}</h2>
-        <div>
-            <div class='card-maintext cutted'>{{ note.text.rendered }}</div>
-        </div>
+        <div style='padding-bottom:1em;'>{{ note.text.rendered }}</div>
         <small class='text-muted'>Обновлено {{ note.edited }} <a href='{{ note.get_absolute_url }}'>Ссылка</a></small>
     </section>
 {% endblock %}

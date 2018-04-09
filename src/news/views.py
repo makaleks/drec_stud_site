@@ -19,9 +19,11 @@ class NewsListView(ListView):
         queryset = News.objects.all()
         years = self.request.GET.get('years')
         news = self.request.GET.get('news')
+        # Get last year=today-year
         if not years and not news:
             now = timezone.now()
             days = range(2)
+            # For case 29 February
             for i in days:
                 try:
                     last = now.replace(year = now.year - 1,
@@ -30,6 +32,7 @@ class NewsListView(ListView):
                             else now.month - 1 
                                 if now.month != 1 
                                 else 12, 
+                        # 29 February
                         day = (now - datetime.timedelta(days = 1 + i)).day)
                     break
                 except Exception as e:
@@ -50,14 +53,16 @@ class NewsListView(ListView):
         context = super(NewsListView, self).get_context_data(**kwargs)
         context['render_archive'] = self.render_archive
         context['show_hidden'] = self.show_hidden
+        context['last_year'] = timezone.now().date().year - 1
         return context
 
 def archive_draw(request):
     return render(request, 'archive_select.html', {'form': ArchiveSelectForm()})
 
-def archive_process(request):
+def archive_get(request):
     # use 'name' from urls.py
     lst = request.GET.getlist('vals')
-    if '-1' in lst: lst.remove('-1')
+    if '-1' in lst: 
+        lst.remove('-1')
     s = '/{}'.format('' if not lst else '?years={}'.format('-'.join(lst)))
     return redirect(s)

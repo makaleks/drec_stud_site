@@ -42,7 +42,8 @@ checked{% endif %}>
 </span>
 <div class='card tab'>
     <h2 class='lightgrey'>Основные положения</h2>
-    <div>{{ note.text.rendered }}</div>
+    <div style='padding-bottom:1em;'>{{ note.text.rendered }}</div>
+    <small class='text-muted'>Обновлено {{ note.edited }} <a href='{{ note.get_absolute_url }}'>Ссылка</a></small>
 </div>
 <div class='card tab question_list'>
     <h2>Заданные вопросы</h2>

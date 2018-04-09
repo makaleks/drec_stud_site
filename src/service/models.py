@@ -1,6 +1,7 @@
 # coding: utf-8
 # NOTE: all times use the pattern [X, Y)
 from django.db import models
+from django.urls import reverse
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -140,6 +141,8 @@ class Service(models.Model):
     is_single_item      = models.BooleanField(default = False, blank = False, null = False, verbose_name = 'Один предмет сервиса')
     is_finished_hidden  = models.BooleanField(default = True, blank = False, null = False, verbose_name = 'Скрывать прошедшие интервалы')
     order   = models.PositiveSmallIntegerField(default = 0, blank = False, null = False, verbose_name = 'Порядок показа')
+    def get_absolute_url(self):
+        return reverse('service:service', args=[self.slug])
     def __str__(self):
         return self.name
     # Return { 'works_from', 'works_to', 'is_weekend', 'is_exception' }

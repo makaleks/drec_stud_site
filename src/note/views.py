@@ -17,8 +17,21 @@ import json
 class NoteListView(ListView):
     model = Note
     template_name = 'note_list.html'
+    # For Notes get_absolute_url (see models.py)
+    tab = {}
     def get_queryset(self, **kwargs):
         return Note.objects.all().exclude(slug = 'student_council')
+    def get_context_data(self, **kwargs):
+        context = super(NoteListView, self).get_context_data(**kwargs)
+        context['tab'] = self.tab
+        return context
+    def get(self, request, *args, **kwargs):
+        data = request.GET.dict()
+        # For Notes get_absolute_url (see models.py)
+        tab = data.get('tab')
+        if tab:
+            self.tab[tab] = True
+        return super(NoteListView, self).get(request, *args, **kwargs)
 
 class StudentCouncilView(FormView):
     model = Note

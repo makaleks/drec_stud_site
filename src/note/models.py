@@ -1,6 +1,7 @@
 # coding: utf-8
 from precise_bbcode.fields import BBCodeTextField
 from django.db import models
+from django.urls import reverse
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
 from comment.models import Comment
@@ -18,6 +19,12 @@ class Note(models.Model):
     slug    = models.SlugField(max_length = 16, blank = True, null = True, verbose_name = 'URL')
     text    = BBCodeTextField(blank = True, null = False, verbose_name = 'Текст')
     order   = models.PositiveSmallIntegerField(default = 0, blank = False, null = False, verbose_name = 'Порядок показа')
+    def get_absolute_url(self):
+        #if self.slug != 'student_council':
+        #    return reverse('note:note-id-detail', args=[self.id])
+        #else:
+        #    return reverse('note:note-slug-detail', args=[self.slug])
+        return reverse('note:note-id-detail', args=[self.id])
     def __str__(self):
         return self.name
     class Meta:
@@ -38,7 +45,7 @@ class Question(models.Model):
     def __str__(self):
         return '{0}, {1}'.format(self.title, self.author)
     def get_absolute_url(self):
-        return '/notes/student_council/{0}/'.format(self.id)
+        return reverse('note:question-detail', args=[self.id])
     def get_answers(self):
         def _recursive(result, obj):
             result.append(obj)

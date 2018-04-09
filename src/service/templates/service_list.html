@@ -4,7 +4,7 @@
 <section class='card'>
     <h2 class='lightgray'>Доступные сервисы:</h2>
     {% for service in service_list %}
-        <a href='/services/{{ service.slug }}/'>
+        <a href='{% url 'service:service' service.slug %}'>
             <div class='card service_card'>
                 <img class='card-img' src='{{ service.image.url }}' />
                 <p>{{ service.name }}</p>
