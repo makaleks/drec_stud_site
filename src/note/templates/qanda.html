@@ -1,6 +1,76 @@
 {% extends 'core/base.html' %}
 {% load utils_extra_filters %}
 
+{% block head_extras %}
+<style>
+#comment>input:checked + div>label:before {
+    content: 'открыть ';
+}
+#comment>input:checked ~ .spoiler {
+    display: none;
+}
+#comment>input + div>label:before {
+    content: 'закрыть ';
+}
+#comment>input ~ .spoiler {
+    display: block;
+}
+#comment {
+    width: calc(700px - 2em);
+    min-width: calc(700px - 2em);
+}
+@media (max-width: 860px) {
+    #comment {
+        min-width: calc(100% - 45px);
+        width: -webkit-calc(100% - 45px);
+        width: -moz-calc(100% - 45px);
+        width: calc(100% - 45px);
+        max-width: -webkit-calc(100% - 45px);
+        max-width: -moz-calc(100% - 45px);
+        max-width: calc(100% - 45px);
+
+        max-height: calc(100vh - 1rem);
+        overflow: auto;
+    }
+    #comment>input + div>label:before {
+        content: 'открыть ';
+    }
+    #comment>input ~ .spoiler {
+        display: none;
+    }
+    #comment>input:checked + div>label:before {
+        content: 'закрыть ';
+    }
+    #comment>input:checked ~ .spoiler {
+        display: block;
+    }
+}
+@media (max-width: 480px) {
+    #comment {
+        min-width: calc(100% - 1em);
+        width: -webkit-calc(100% - 1em);
+        width: -moz-calc(100% - 1em);
+        width: calc(100% - 1em);
+        max-width: -webkit-calc(100% - 1em);
+        max-width: -moz-calc(100% - 1em);
+        max-width: calc(100% - 1em);
+    }
+    #comment>input + div>label:before {
+        content: 'открыть ';
+    }
+    #comment>input ~ .spoiler {
+        display: none;
+    }
+    #comment>input:checked + div>label:before {
+        content: 'закрыть ';
+    }
+    #comment>input:checked ~ .spoiler {
+        display: block;
+    }
+}
+</style>
+{% endblock %}
+
 <!-- Reserve space to scroll enough on small screens -->
 <!-- Otherwise, the 'comment' form may overflow the content -->
 {% block content_style %}
@@ -66,9 +136,15 @@ margin-bottom: 25em;
     </section>
     {% endfor %}
 {% if user.is_authenticated %}
-    <form method='post' id='comment' enctype='multipart/form-data'>
-        {% csrf_token %}
-        <div class='card'>
+    <!-- copy of Hamburger svg style -->
+    <div class='card' id='comment'>
+        <!-- Start spoiler logic -->
+        <input type='checkbox' id='showeditor-switch' style='display:none;'>
+        <div style='text-align:center;' id='label-open'><label  id='my' for='showeditor-switch' style='background: rgba(128, 136, 144, 0.8);cursor:pointer;display:block;' class='btn btn-vk'>форму ответа</label></div>
+        <!-- End spoiler logic -->
+        <div class='spoiler'>
+        <form method='post' enctype='multipart/form-data'>
+            {% csrf_token %}
             <!--{{ form.errors }}
                 {{ form.non_field_errors }}-->
             <input type='checkbox' class='hidden' id='qa-isanswer'>
@@ -76,15 +152,16 @@ margin-bottom: 25em;
             <p id='qa-answerval'><label for='qa-isanswer' onclick='document.getElementById("answerto").value="";'>[X]</label> => <a id='qa-answer-name'>{{ question.author.get_full_name }}</a></p>
     
             {{ form.text.errors }}
-            <p>{{ form.text }}</p>
+            {{ form.text }}
             {{ form.check_to_send.errors }}
 
             {{ form.attachment.errors }}
-            <table><tr><td>{{ form.attachment }}</td><td><label for='{{ form.attachment.id_for_label }}'>{{ form|util_get_form_field_verbose_name:'attachment' }}</label></td></tr></table>
+            <table><tr><td><label for='{{ form.attachment.id_for_label }}'>{{ form|util_get_form_field_verbose_name:'attachment' }}</label></td></tr><tr><td>{{ form.attachment }}</td></tr></table>
 
             <p>{{ form.check_to_send }} <label for='{{ form.check_to_send.id_for_label }}'> Я проверил текст на ошибки</label><input type='submit' style='float:right;' value='Отправить' /></p>
+        </form>
         </div>
-    </form>
+    </div>
 {% else %}
     <p>Войдите, чтобы написать ответ!</p>
 {% endif %}
