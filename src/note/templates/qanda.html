@@ -19,6 +19,9 @@
     width: calc(700px - 2em);
     min-width: calc(700px - 2em);
 }
+.qa-avatar {
+    border-radius: .25em;
+}
 @media (max-width: 860px) {
     #comment {
         min-width: calc(100% - 45px);
@@ -116,6 +119,8 @@ margin-bottom: 25em;
             {% endif %}
             <div class='qa-comment-text'>
                 <span>{{ answer.author.get_full_name }}</span>
+                <!-- for 'qa-answerval' display -->
+                <span class='hidden'>{{ answer.author.get_short_name }}</span>
                 {% if answer|util_is_comment_to_comment %}
                 <p><a href='#{{ answer.commented_object.id }}'{% if answer.commented_object.author == request.user %} style='background:#FF0000;color:#FFFFFF;'{% endif %}>{{ answer.commented_object.author.get_full_name }}</a>, </p>
                 {% endif %}
@@ -147,10 +152,10 @@ margin-bottom: 25em;
             {% csrf_token %}
             <!--{{ form.errors }}
                 {{ form.non_field_errors }}-->
-            <input type='checkbox' class='hidden' id='qa-isanswer'>
+            <input type='checkbox' class='hidden' id='qa-isanswer' autocomplete='off'>
             {{ form.answerto }}
-            <p id='qa-answerval'><label for='qa-isanswer' onclick='document.getElementById("answerto").value="";'>[X]</label> => <a id='qa-answer-name'>{{ question.author.get_full_name }}</a></p>
-    
+            <div id='qa-answerval' style='width:100%;'><label for='qa-isanswer' onclick='document.getElementById("answerto").value="";' class='btn btn-vk' style='display:block;cursor:pointer;background-color:red;'><span id='qa-answer-name'></span> получит ответ</label></div>
+
             {{ form.text.errors }}
             {{ form.text }}
             {{ form.check_to_send.errors }}
@@ -186,7 +191,7 @@ util_add_handler(window, 'load', function() {
             item.addEventListener('click', function(ev) {
                 ev = ev || window.event;// IE8-
                 elem = ev.currentTarget;
-                document.getElementById('qa-answer-name').innerText = elem.parentNode.getElementsByTagName('span')[0].innerText;
+                document.getElementById('qa-answer-name').innerText = elem.parentNode.getElementsByTagName('span')[1].innerText;
                 document.getElementById('answerto').value = elem.getAttribute('data-comment-num');
                 document.getElementById('qa-isanswer').checked = true;
             });
