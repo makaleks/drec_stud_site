@@ -120,13 +120,12 @@ margin-bottom: 25em;
             <div class='qa-comment-text'>
                 <span>{{ answer.author.get_full_name }}</span>
                 <!-- for 'qa-answerval' display -->
-                <span class='hidden'>{{ answer.author.get_short_name }}</span>
                 {% if answer|util_is_comment_to_comment %}
                 <p><a href='#{{ answer.commented_object.id }}'{% if answer.commented_object.author == request.user %} style='background:#FF0000;color:#FFFFFF;'{% endif %}>{{ answer.commented_object.author.get_full_name }}</a>, </p>
                 {% endif %}
                 <p>{{ answer.text.rendered }}</p>
                 {% if answer.attachment %}<p><a href='{{ answer.attachment.url }}'>Приложение ({{ answer.get_attachment_extention }})</a></p>{% endif %}
-                <a style='display: inline-block;' data-comment-num='{{ answer.id }}' href='#{{ answer.id }}' name='answer' class='block'>{% if answer.author == request.user %}Изменить{% else %}Ответить{% endif %}</a>
+                <a style='display: inline-block;' data-comment-id='{{ answer.id }}' data-name='{{ answer.author.get_short_name }}' data-name-id='{{ answer.author.id }}' href='#{{ answer.id }}' name='answer' class='block'>{% if answer.author == request.user %}Изменить{% else %}Ответить{% endif %}</a>
                 <!---->
                 <a style='display: inline-block;' href='{{ question.get_absolute_url }}#{{ answer.id }}'>Ссылка</a>
                 <!---->
@@ -154,7 +153,7 @@ margin-bottom: 25em;
                 {{ form.non_field_errors }}-->
             <input type='checkbox' class='hidden' id='qa-isanswer' autocomplete='off'>
             {{ form.answerto }}
-            <div id='qa-answerval' style='width:100%;'><label for='qa-isanswer' onclick='document.getElementById("answerto").value="";' class='btn btn-vk' style='display:block;cursor:pointer;background-color:red;'><span id='qa-answer-name'></span> получит ответ</label></div>
+            <div id='qa-answerval' style='width:100%;'><label for='qa-isanswer' onclick='document.getElementById("answerto").value="";' class='btn btn-vk' style='display:block;cursor:pointer;background-color:red;'><span id='qa-answer-name'></span></label></div>
 
             {{ form.text.errors }}
             {{ form.text }}
@@ -191,8 +190,16 @@ util_add_handler(window, 'load', function() {
             item.addEventListener('click', function(ev) {
                 ev = ev || window.event;// IE8-
                 elem = ev.currentTarget;
-                document.getElementById('qa-answer-name').innerText = elem.parentNode.getElementsByTagName('span')[1].innerText;
-                document.getElementById('answerto').value = elem.getAttribute('data-comment-num');
+                id = elem.getAttribute('data-comment-id')
+                name = elem.getAttribute('data-name');
+                name_id = elem.getAttribute('data-name-id');
+                if ({{ request.user.id }} == name_id)
+                    document.getElementById('qa-answer-name').innerText 
+                        = 'изменить свой ответ (id=' + id + ')';
+                else
+                    document.getElementById('qa-answer-name').innerText 
+                        = 'ответ получит ' + name;
+                document.getElementById('answerto').value = id;
                 document.getElementById('qa-isanswer').checked = true;
             });
         }
