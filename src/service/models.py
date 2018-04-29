@@ -259,10 +259,10 @@ class Service(models.Model):
         lst.extend(final_timetables[''].gen_tail())
         result['timetable'] = lst
         return result
-    # Return {'date','datestr',
+    # Return [{'date','datestr',
     #   'is_weekend': bool,
     #   'items': {'name': ...}
-    # }
+    # }]
     # or None if not working
     def gen_timetable_layout(self):
         # is_active is immediate

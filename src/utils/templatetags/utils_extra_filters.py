@@ -134,7 +134,6 @@ def util_get_field_verbose_name(model, field):
     else:
         return None
 
-
 @register.filter
 def util_get_form_field_verbose_name(form, field):
     if isinstance(form, ModelForm):

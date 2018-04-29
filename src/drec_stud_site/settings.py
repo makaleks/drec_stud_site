@@ -144,6 +144,11 @@ SURVEY_SHEET_ROOT = os.path.join(MEDIA_ROOT, 'surveys')
 
 AUTH_USER_MODEL = 'user.User'
 
+# Datetime formats
+FORMAT_MODULE_PATH = [
+    'drec_stud_site.formats',
+]
+
 spec = util.spec_from_file_location('setting_additions', os.path.join(PROJECT_ROOT, 'setting_additions.py'))
 module = util.module_from_spec(spec)
 spec.loader.exec_module(module)
