@@ -47,7 +47,7 @@
         {% for survey in survey_list_finished %}
             <div class='tagged tag_hostel'>
                 <div class='card'>
-                    <a href='{{ survey.get_absolute_url }}' class='survey_list'>{{ survey.title }}</a>
+                    <span class='survey_list'>{{ survey.title }}</span>
                     <br />
                     {{ survey.description }}
                     <br />
