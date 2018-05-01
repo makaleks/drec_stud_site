@@ -89,22 +89,31 @@ class Survey(models.Model):
                             for i in range(len(to_append['choices'])):
                                 to_append['choices'][i] = {'text': to_append['choices'][i], 'value': to_append['choices'][i]}
                     else:
-                        to_append['choices'] = source['choices']
+                        if type(source['choices']) == list and all(type(s) == str for s in source['choices']):
+                            to_append['choices'] = [{'value': s, 'text': s} for s in source['choices']]
+                        else:
+                            to_append['choices'] = source['choices']
                     for c in to_append['choices']:
                         if not 'text' in c:
                             c['text'] = c['name']
                 to_append['group_name'] = group_name
-                if not to_append:
-                    print('# found!\n  {0}'.format(source))
+                #f = open('test.txt', 'a')
+                #f.write('\n\nappend:\n{0}\n\n'.format(to_append))
+                #f.close()
                 result.append(to_append)
         source = json.loads(self.structure)
         pages = source['pages']
         result = []
         groups = []
         is_first = True
+        #f = open('test.txt','w')
+        #tmp = json.dumps(pages,indent=2,ensure_ascii=False)
+        #f.write('input: \n{0}\n'.format(str(tmp)))
+        #f.close()
         for p in pages:
-            _process(p['elements'], result, '', groups)
-            is_first = False
+            if 'elements' in p:
+                _process(p['elements'], result, '', groups)
+                is_first = False
         return result, groups
     def gen_sheet(self):
         def _get_pos(col, row):
@@ -226,7 +235,13 @@ class Survey(models.Model):
                         for side in ['left','right','top','bottom']:
                             getattr(ws[pos].border, side).border_style = 'thin'
                     pos = _get_pos(col, row)
-                    ws[pos].value = json.loads(answ_data_single.value)[layout[i]['name']]
+                    #f = open('test.txt', 'a')
+                    #f.write('single: {0}\n\n'.format(answ_data_single.value))
+                    #f.close()
+                    answ_value = json.loads(answ_data_single.value)
+                    key = layout[i]['name']
+                    str_value = answ_value[key] if key in answ_value else '-'
+                    ws[pos].value = str_value
                     ws[pos].alignment = openpyxl.styles.Alignment(wrapText = True)
                     ws.row_dimensions[row].height = 30
                     row += 1
