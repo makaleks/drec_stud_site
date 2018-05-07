@@ -2,7 +2,10 @@
 from django.db import models
 # Uncomment to enable #passwordAuth
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.utils import timezone
+from django.db.models import Q
 from service.models import Service
+from survey.models import Survey, Answer
 from .managers import UserManager
 
 # Create your models here.
@@ -49,6 +52,12 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.first_name
     def __str__(self):
         return '{0} (id={1})'.format(self.get_full_name(), self.id)
+    def get_surveys_to_pass(self):
+        now = timezone.now()
+        passed = self.answers.filter(Q(survey__started__lte = now) & Q(survey__finished__gt = now)).values_list('survey__id', flat = True)
+        actual = Survey.objects.filter(Q(started__lte = now) & Q(finished__gt = now))
+        return actual.exclude(id__in = passed).count()
+        #return Survey.objects.filter(
     class Meta:
         ordering            = ['is_superuser', 'is_staff', 'group_number', 'last_name']
         verbose_name        = 'Пользователя'

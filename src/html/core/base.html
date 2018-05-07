@@ -195,6 +195,7 @@
                     {% endif %}
                 </div>
                 <div class='inline'>
+                    {% with surveys_todo=user.get_surveys_to_pass %}
                     {% if user.is_staff %}
                         {% if is_agressive_question_notification and util_get_new_question_num %}
                             <a href='/admin/note/question/' class='btn btn-vk' style='background-color:red;'>
@@ -213,7 +214,13 @@
                                 <span>В админку</span>
                             </a>
                         {% endif %}
+                    {% elif surveys_todo %}
+                        <!-- goto surveys -->
+                        <a href='/surveys' class='btn btn-vk'>
+                            <span>Опросов: {{ surveys_todo }}</span>
+                        </a>
                     {% endif %}
+                    {% endwith %}
                 </div>
             </div>
         </div>

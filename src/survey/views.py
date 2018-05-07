@@ -17,11 +17,26 @@ class SurveyListView(TemplateView):
         #years = self.request.GET.get('years')
         #if years:
         #    queryset = queryset.filter(Q(started__year__in = years.split('-')) | Q(started__year__in = years.split('-'))).order_by('-started')
+        answered = list(self.request.user.answers.filter(Q(survey__started__lte = now) & Q(survey__finished__gt = now)).values_list('survey__id', flat = True))
         queryset = Survey.objects.all()
-        queyset_now = queryset.filter(Q(started__lte = now) & Q(finished__gt = now))
-        queryset_finished = queryset.filter(finished__lt = now)
-        context['survey_list_now'] = list(queyset_now)
-        context['survey_list_finished'] = list(queryset_finished)
+        queryset_finished = list(queryset.filter(finished__lt = now))
+        queyset_not_finished = list(queryset.filter(Q(started__lte = now) & Q(finished__gt = now)))
+        queryset_now = []
+        queryset_editable = []
+        queryset_uneditable = []
+        for q in queyset_not_finished:
+            if q.id in answered:
+                if q.allow_rewrite:
+                    queryset_editable.append(q)
+                else:
+                    queryset_uneditable.append(q)
+            else:
+                queryset_now.append(q)
+        queryset_finished = queryset_uneditable + queryset_finished
+
+        context['survey_list_now'] = queryset_now
+        context['survey_list_editable'] = queryset_editable
+        context['survey_list_finished'] = queryset_finished
         return context
 
 class SurveyDetailView(DetailView):
