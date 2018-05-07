@@ -36,7 +36,7 @@
                 <hr>
             </div>
         {% endfor %}
-    {% else %}
+    {% elif not survey_list_editable %}
         <h2>Текущих опросов нет<h2>
     {% endif %}
 </section>
