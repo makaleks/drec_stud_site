@@ -198,9 +198,10 @@
                     {% with surveys_todo=user.get_surveys_to_pass %}
                     {% if user.is_staff %}
                         {% if is_agressive_question_notification and util_get_new_question_num %}
-                            <a href='/admin/note/question/' class='btn btn-vk' style='background-color:red;'>
+                            <!-- TODO: survey targets -->
+                            <!--<a href='/admin/note/question/' class='btn btn-vk' style='background-color:red;'>
                                 <span>Вопросов: {{ util_get_new_question_num }}</span>
-                            </a>
+                            </a>-->
                         {% elif request.path|util_contains_string:'^/$' and perms.news %}
                             <a href='/admin/news/news/add/' class='btn btn-vk'>
                                 <span>Добавить новость</span>
