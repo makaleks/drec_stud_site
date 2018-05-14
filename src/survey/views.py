@@ -25,16 +25,13 @@ class SurveyListView(TemplateView):
         queryset_editable = []
         queryset_uneditable = []
         for q in queyset_not_finished:
-            if q.is_anonymous:
-                queryset_uneditable.append(q)
-            elif q.id in answered:
-                if q.allow_rewrite:
+            if q.id in answered:
+                if q.allow_rewrite and not q.is_anonymous:
                     queryset_editable.append(q)
                 else:
-                    queryset_uneditable.append(q)
+                    queryset_finished.append(q)
             else:
                 queryset_now.append(q)
-        queryset_finished = queryset_uneditable + queryset_finished
 
         context['survey_list_now'] = queryset_now
         context['survey_list_editable'] = queryset_editable
