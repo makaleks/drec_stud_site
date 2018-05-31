@@ -5,6 +5,7 @@ import re
 import vk
 from requests.exceptions import ReadTimeout
 from note.models import Question
+from django.conf import settings
 
 
 # Check that some field is unique for now
@@ -51,7 +52,7 @@ def get_id_by_url_vk(s):
     attempts = 3
     while attempts:
         try:
-            s = vk_api.users.get(user_ids = s, v = 573)
+            s = vk_api.users.get(user_ids = s, v = 573, access_token = settings.SERVICE_KEY_VK)
             return s[0]['id']
         except BaseException as e:
             if not isinstance(e, ReadTimeout):

@@ -155,6 +155,7 @@ spec.loader.exec_module(module)
 SOCIAL_AUTH_VK_OAUTH2_KEY = module.SOCIAL_AUTH_VK_OAUTH2_KEY
 SOCIAL_AUTH_VK_OAUTH2_SECRET = module.SOCIAL_AUTH_VK_OAUTH2_SECRET
 SOCIAL_AUTH_VK_OAUTH2_EXTRA_DATA = ['photo_100']
+SERVICE_KEY_VK = module.SERVICE_KEY_VK
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = module.DEBUG
