@@ -230,7 +230,7 @@ class Survey(models.Model):
                 for answ_data_single in answ_data:
                     if not self.is_anonymous and answ_data_single.answer:
                         pos = _get_pos(col - 1, row)
-                        ws[pos].value = answ_data_single.answer.user.get_full_name() + str(answ_data_single.answer.user.group_number)
+                        ws[pos].value = answ_data_single.answer.user.get_full_name() + ' ' + str(answ_data_single.answer.user.group_number)
                         ws[pos].fill = color
                         for side in ['left','right','top','bottom']:
                             getattr(ws[pos].border, side).border_style = 'thin'
@@ -249,6 +249,41 @@ class Survey(models.Model):
         for i in range(1, ws.max_column + 1):
             ws.column_dimensions[openpyxl.utils.cell.get_column_letter(i)].width = 30
         # End text answers
+        # Start full answers
+        ws = wb.create_sheet('Ответ')
+        ws.row_dimensions[1].height = 30
+        row = 1
+        col = 1 if self.is_anonymous else 2
+        if not self.is_anonymous:
+            ws.column_dimensions['A'].width = 30
+        # question list
+        for i in range(0, len(layout)):
+            color = openpyxl.styles.PatternFill(fill_type = 'solid', start_color = possible_colors[(i + col) % len(possible_colors)], end_color = possible_colors[(i + col) % len(possible_colors)])
+            pos = _get_pos(i + col, row)
+            ws[pos].value = layout[i]['title']
+            ws[pos].fill = color
+            ws.column_dimensions[openpyxl.utils.cell.get_column_letter(i + col)].width = 30
+        row += 1
+        for answ_data_single in answ_data:
+            ws.row_dimensions[row].height = 30
+            col = 1
+            if not self.is_anonymous:
+                if answ_data_single.answer:
+                    pos = _get_pos(col, row)
+                    ws[pos].value = answ_data_single.answer.user.get_full_name() + ' ' + str(answ_data_single.answer.user.group_number)
+                    for side in ['left','right','top','bottom']:
+                        getattr(ws[pos].border, side).border_style = 'thin'
+                col += 1
+            answ_value = json.loads(answ_data_single.value)
+            for i in range(len(layout)):
+                pos = _get_pos(col, row)
+                key = layout[i]['name']
+                str_value = answ_value[key] if key in answ_value else '-'
+                ws[pos].value = str_value
+                ws[pos].alignment = openpyxl.styles.Alignment(wrapText = True)
+                col += 1
+            row += 1
+        # End full answers
         return wb
     class Meta:
         verbose_name        = 'Опрос'
