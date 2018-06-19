@@ -5,6 +5,8 @@ from django.http import Http404, HttpResponseRedirect
 
 from django.views.generic import TemplateView
 
+import urllib
+
 # Create your views here.
 
 def render_login_success(request):
@@ -61,8 +63,22 @@ class UserUidSetView(TemplateView):
                 user.card_uid = data['uid']
                 user.save()
                 status = 'success'
+                return HttpResponseRedirect('/user/long-logout?next=/user/uid&n12n-enable=1&n12n-type=success&n12n-timeout=5&n12n-text={0}'.format(urllib.parse.quote('Карта успешно привязана к аккаунту.')))
             else:
                 status = 'info'
         return HttpResponseRedirect('?status={0}'.format(status))
 
+def long_logout(request):
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect('/')
+    timeout = request.GET.get('timeout')
+    if not timeout:
+        timeout = 3
+    next_page = request.GET.get('next')
+    logout_text = request.GET.get('logout_text')
+    return render(request, 'long_logout.html', {
+        'timeout': timeout,
+        'next': next_page,
+        'logout_text': logout_text
+    })
 
