@@ -15,27 +15,70 @@
                 <img src='{{ user.avatar_url }}' alt='аватарка' style='width:100px;height:100px;float:left;border-radius:10%;'>
                 <div style='display:inline-block;margin-left:1em;;'>
                     <ul style='list-style-type:none;'>
-                        <li>{{ user.get_full_name }}{% if user.patronymic_name%} {{ user.patronymic_name }}{% endif %}</li>
+                        <li>{{ user.first_name }}{% if user.patronymic_name %} {{ user.patronymic_name }}{% endif %} {{ user.last_name }}</li>
                         <li>Группа {{ user.group_number }}</li>
                     </ul>
                 </div>
             </div>
+            <span id='hidden_selection'></span>
             {% if user.card_uid %}
                 <p style='color:green;font-weight:bold;'>Карта установлена</p>
             {% else %}
                 <p style='color:red;font-weight:bold;'>Карта не установлена</p>
             {% endif %}
-            <form action='' method='post'>
-                {% csrf_token %}
-                <p>
-                    <label for='uid'>Ввести новый UID карты</label><br />
-                    <input name='uid' id='uid' type='text' style='width:95%;'/>
-                </p>
-                <p>
-                    <input type='submit' value='Установить' />
-                </p>
-            </form>
+            <div id='interaction'>
+                <p>Считыватель карты сохранит uid в буфер обмена, поэтому сначала этот буфер необходимо освободить:</p>
+                <div style='text-align:center;'>
+                    <input value='Очистить буфер' onclick='click_handler()' type='button'/>
+                </div>
+            </div>
+            <div id='form' style='display:none'>
+                <form action='' method='post'>
+                    {% csrf_token %}
+                    <p style='font-weight:bold;'>Приложите карту к считывателю и вставьте uid из буфера обмена</p>
+                    <p>
+                        <label for='uid'>Новый UID карты</label><br />
+                        <input name='uid' id='uid' type='text' style='width:95%;'/>
+                    </p>
+                    <p>
+                        <input type='submit' value='Установить' />
+                    </p>
+                </form>
+            </div>
         </div>
     {% endif %}
 {% endblock %}
 
+{% block body_extras %}
+
+<script>
+
+function clear_buffer() {
+    e = document.getElementById('hidden_selection');
+    s = window.getSelection();
+    s.removeAllRanges();
+    range = document.createRange();
+    range.selectNode(e);
+    s.addRange(range);
+    document.execCommand('copy');
+    s.removeAllRanges();
+}
+
+function change_content() {
+    e_to_hide = document.getElementById('interaction');
+    e_to_show = document.getElementById('form');
+    e_to_hide.style.display = 'none';
+    e_to_show.style.display = 'block';
+    input = document.getElementById('uid');
+    input.focus();
+}
+
+function click_handler() {
+    clear_buffer();
+    change_content();
+}
+
+
+</script>
+
+{% endblock %}
