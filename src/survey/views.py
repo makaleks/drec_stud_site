@@ -17,7 +17,9 @@ class SurveyListView(TemplateView):
         #years = self.request.GET.get('years')
         #if years:
         #    queryset = queryset.filter(Q(started__year__in = years.split('-')) | Q(started__year__in = years.split('-'))).order_by('-started')
-        answered = list(self.request.user.answers.filter(Q(survey__started__lte = now) & Q(survey__finished__gt = now)).values_list('survey__id', flat = True))
+        answered = []
+        if self.request.user.is_authenticated:
+            answered = list(self.request.user.answers.filter(Q(survey__started__lte = now) & Q(survey__finished__gt = now)).values_list('survey__id', flat = True))
         queryset = Survey.objects.all()
         queryset_finished = list(queryset.filter(finished__lt = now))
         queyset_not_finished = list(queryset.filter(Q(started__lte = now) & Q(finished__gt = now)))
