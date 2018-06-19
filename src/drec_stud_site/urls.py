@@ -30,6 +30,7 @@ handler500 = 'utils.views.error_view_500'
 
 urlpatterns = [
     path('admin/',    admin.site.urls),
+    path('user/',     include('user.urls')),
     # URL name: 'logout' (see docs)
     path('social/',   include('social_django.urls')),
     path('logout/',   LogoutView.as_view(), name='logout'),
