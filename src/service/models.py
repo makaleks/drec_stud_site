@@ -15,11 +15,24 @@ from math import gcd
 import datetime
 import types
 
-from .timetable import Timetable, TimetableList, OrderedInterval
+from .timetable import Timetable, TimetableList, TimetableOrder
 
 from utils.model_aliases import DefaultImageField
 
 # Create your models here.
+
+def to_dt(date, time_start, time_end):
+    if not isinstance(date, datetime.date):
+        raise TypeError('date({0}) must be date'.format(date.__class__.__name__))
+    elif not isinstance(time_start, datetime.time):
+        raise TypeError('time({0}) must be date'.format(time_end.__class__.__name__))
+    elif not isinstance(time_end, datetime.time):
+        raise TypeError('time_end({0}) must be date'.format(time_end.__class__.__name__))
+    to_add = datetime.timedelta(days = 1 if time_start >= time_end else 0)
+    return {
+            'start': datetime.datetime.combine(date, time_start),
+            'end': datetime.datetime.combine(date + to_add, time_end)
+            }
 
 # Set working hours on each weekday
 class WorkingTime(models.Model):
@@ -163,21 +176,24 @@ class Service(models.Model):
         wte_service = get_working_time_exception_query(self, day)
         if wte_service.exists():
             exception = wte_service.first()
-            return {'works_from': exception.works_from,
-                    'works_to': exception.works_to,
+            dt = to_dt(day, exception.works_from, exception.works_to)
+            return {'works_from': dt['start'],
+                    'works_to': dt['end'],
                     'is_weekend': exception.is_weekend,
                     'is_exception': True}
         # working_time
         wt_service = get_working_time_query(self, day)
         if wt_service.exists():
             working_time = wt_service.first()
-            return {'works_from': working_time.works_from,
-                    'works_to': working_time.works_to,
+            dt = to_dt(day, working_time.works_from, working_time.works_to)
+            return {'works_from': dt['start'],
+                    'works_to': dt['end'],
                     'is_weekend': working_time.is_weekend,
                     'is_exception': False}
         # default
-        return {'works_from': self.default_works_from,
-                'works_to': self.default_works_to,
+        dt = to_dt(day, self.default_works_from, self.default_works_to)
+        return {'works_from': dt['start'],
+                'works_to': dt['end'],
                 'is_weekend': False,
                 'is_exception': False}
     # Return {'date','datestr',
@@ -207,7 +223,6 @@ class Service(models.Model):
                 last = service_working_time['works_to'],
                 end = service_working_time['works_to']
             )
-        service_timetable.set_date(date)
         #print(' Adding service {0}'.format(service_timetable))
         timetables.add_timetable({'': service_timetable})
         for t in list(self.items.all()):
@@ -243,20 +258,21 @@ class Service(models.Model):
         final_timetables = timetables.get_timetables()
         #for t in final_timetables.values():
         #    print('Stored start({0}) and end({1})'.format(t.start, t.end))
+        now = timezone.now()
         if self.is_finished_hidden and date == timezone.now().date():
-            timetables.crop_time_start(timezone.now(), leave_closed_cells_num = 1)
+            timetables.crop_start(now, leave_head_cell = True, floor_crop = True)
         final_timetables = timetables.get_timetables()
         result = {'date': s, 'is_weekend': False, 'items': {}}
         # Database needs to order properly
         for it in list(self.items.all()):
             t = final_timetables[it.name]
-            lst = t.gen_head()
-            lst.extend(t.gen_list())
-            lst.extend(t.gen_tail())
-            result['items'][it.name] = {'is_open': t.is_open, 'price': it.get_price(), 'rowspan': t.timesteps_per_order, 'time': lst}
-        lst = final_timetables[''].gen_head()
-        lst.extend(final_timetables[''].gen_list())
-        lst.extend(final_timetables[''].gen_tail())
+            lst = t.gen_head(now)
+            lst.extend(t.gen_list(now))
+            lst.extend(t.gen_tail(now))
+            result['items'][it.name] = {'is_open': t.is_open, 'price': it.get_price(), 'rowspan': t.timesteps_num, 'time': lst}
+        lst = final_timetables[''].gen_head(now)
+        lst.extend(final_timetables[''].gen_list(now))
+        lst.extend(final_timetables[''].gen_tail(now))
         result['timetable'] = lst
         return result
     # Return [{'date','datestr',
@@ -273,6 +289,7 @@ class Service(models.Model):
         for i in range(self.days_to_show):
             result.append(self.get_timetable(now + datetime.timedelta(days = i)))
         return result
+    # TODO: delete
     def get_timetable_list(self):
         # cleans trailing 'closed' marks
         def clean_starting(time_lst):
@@ -491,9 +508,10 @@ class Item(models.Model):
         wte_item = get_working_time_exception_query(self, day)
         if wte_item.exists():
             exception = wte_item.first()
-            return {'works_from': exception.works_from,
-                    'works_to': exception.works_to,
-                    'is_weekend': exception.weekend,
+            dt = to_dt(day, exception.works_from, exception.works_to)
+            return {'works_from': dt['start'],
+                    'works_to': dt['end'],
+                    'is_weekend': exception.is_weekend,
                     'is_exception': True}
         # get service working_time
         if not service_working_time:
@@ -506,8 +524,9 @@ class Item(models.Model):
         wt_item = get_working_time_query(self, day)
         if wt_item.exists() and not item_result:
             working_time = wt_item.first()
-            return {'works_from': working_time.works_from,
-                    'works_to': working_time.works_to,
+            dt = to_dt(day, working_time.works_from, working_time.works_to)
+            return {'works_from': dt['start'],
+                    'works_to': dt['end'],
                     'is_weekend': working_time.is_weekend,
                     'is_exception': False}
         # if no special for item, return service results
@@ -531,32 +550,30 @@ class Item(models.Model):
             return {'date': s, 'price': self.get_price(), 
                     'is_weekend': True, 'timetable': None, 
                     'is_exception': True}
-        else:
-            timetable = Timetable(
-                timestep = self.service.timestep,
-                start = working_time['works_from'], 
-                end = working_time['works_to'],
-                first = working_time['works_from'], 
-                last = working_time['works_to'],
-                timesteps_per_order = self.t_steps_per_order)
-            timetable.set_date(date)
-            raw_orders = list(self.orders.all().filter(is_approved = True).filter(models.Q(date_start = date) | models.Q(date_start = date - datetime.timedelta(days = 1)) | models.Q(date_start = date + datetime.timedelta(days = 1))))
-            timetable.add_ordered(raw_orders, 
-                    lambda o: OrderedInterval(
-                        start = datetime.datetime.combine(o.date_start,
-                            o.time_start),
-                        end = datetime.datetime.combine(o.date_start,
-                            o.time_end) + datetime.timedelta(days = 1 if o.time_start > o.time_end else 0),
-                        nid = o.pk,
-                        extra_data = {'user': o.user,
-                            'participations': list(o.participations.all()),
-                            'title': o.title}
-                    )
+        timetable = Timetable(
+            timestep = self.service.timestep,
+            start = working_time['works_from'], 
+            end = working_time['works_to'],
+            first = working_time['works_from'], 
+            last = working_time['works_to'],
+            timesteps_num = self.t_steps_per_order)
+        raw_orders = list(self.orders.all().filter(is_approved = True).filter(models.Q(date_start = date) | models.Q(date_start = date - datetime.timedelta(days = 1)) | models.Q(date_start = date + datetime.timedelta(days = 1))))
+        timetable.add_order(raw_orders, 
+                lambda o: TimetableOrder(
+                    start = datetime.datetime.combine(o.date_start,
+                        o.time_start),
+                    end = datetime.datetime.combine(o.date_start,
+                        o.time_end) + datetime.timedelta(days = 1 if o.time_start > o.time_end else 0),
+                    nid = o.pk,
+                    extra_data = {'user': o.user,
+                        'participations': list(o.participations.all()),
+                        'title': o.title}
                 )
-            #print('# Item end')
-            return {'date': s, 'price': self.get_price(), 
-                    'is_weekend': False, 'timetable': timetable,
-                    'is_exception': working_time['is_exception']}
+            )
+        #print('# Item end')
+        return {'date': s, 'price': self.get_price(), 
+                'is_weekend': False, 'timetable': timetable,
+                'is_exception': working_time['is_exception']}
     def get_price(self):
         return self.price if self.price != None else self.service.default_price
     def __str__(self):

@@ -92,6 +92,7 @@ class OrderAdmin(VersionAdmin):
     history_latest_first = True
     list_display = ('id', 'item', 'user_info', 'item_id', 'is_approved', 'date_start', 'time_start', 'time_end')
     list_filter = ['date_start', 'item_id']
+    ordering = ('is_approved', '-date_start', 'item', 'time_start', 'user')
     def user_info(self, obj):
         return '{0}, {1}'.format(obj.user.group_number, obj.user.get_full_name())
     def item_id(self, obj):

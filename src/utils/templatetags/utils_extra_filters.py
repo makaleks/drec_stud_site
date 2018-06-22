@@ -46,19 +46,23 @@ def util_add_user_info(lst, user):
     return lst
 
 @register.filter
-def util_is_started(time_start, service):
+def util_is_finished(dt_start, service):
     service_td = datetime.datetime.combine(datetime.date.min, service.time_after_now) - datetime.datetime.min
-    current_td = ((datetime.datetime.combine(
-            datetime.date.min, timezone.now().time()) 
-            - datetime.datetime.min) 
-        - (datetime.datetime.combine(datetime.date.min, time_start)
-            - datetime.datetime.min))
-    if current_td <= service_td and current_td.days >= 0:
-        return 'started'
-    elif current_td > service_td and current_td.days >= 0:
-        return 'ended'
-    else:
-        return 'ok'
+    now = timezone.now()
+    return now - service_td > dt_start
+
+@register.filter
+def util_get_min_time_str(t):
+    result = ''
+    if t is datetime.time.min:
+        return 'мгновение'
+    if t.hour:
+        result += '{0} {1}'.format(t.hour, 'час' if t.hour == 1 else 'часа' if t.hour <= 4 else 'часов')
+    if t.minute:
+        result += '{0} {1}'.format(t.minute, 'минута' if t.minute == 1 else 'минуты' if t.minute <= 4 else 'минут')
+    if not t.hour and t.second:
+        result += '{0} {1}'.format(t.second, 'час' if t.second == 1 else 'часа' if t.second <= 4 else 'часов')
+    return result
 
 @register.filter
 def util_contains_string(url, s):

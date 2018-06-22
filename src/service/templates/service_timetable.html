@@ -10,8 +10,8 @@
             <span class='preview'></span> - Этот интервал можно выбирать<br />
             <span class='preview ended'></span> - Этот интервал уже нельзя выбирать<br />
             <span class='preview selected'></span> - Этот интервал был кем-то выбран<br />
-            <span class='preview choisen'></span> - Этот интервал был выбран вами<br />
-            <span class='preview started'></span> - Этот интервал можно выбирать, но он уже идет и прошло меньше половины(?)
+            <span class='preview choisen'></span> - Этот интервал был выбран Вами<br />
+            <span class='preview started'></span> - Ваш интервал уже идёт, но его пока ещё можно отменить (лимит - {{ service.time_after_now|util_get_min_time_str }})
         </p>
 {% endblock %}
 
@@ -61,8 +61,14 @@
                         {% for cell in i_value.time %}
 <!-- break trailing spaces for nicer appeal -->
 <tr>
-    {% if cell.is_open %}
-        <td style='padding:0;min-width:100px;max-width:100px;' rowspan='{{ i_value.rowspan }}' class={% if cell.orders and  cell.orders|util_is_current_user_order:user %}'choisen'{% elif cell.orders %}'selected'{% endif %}>
+    {% if not cell.is_open or cell.is_open and cell.is_now and cell.start|util_is_finished:service %}
+    <td style='padding:0;min-width:100px;max-width:100px;' class='ended' {% if cell.is_open %}rowspan='{{ i_value.rowspan }}'{% endif %}>
+            {% if user.is_authenticated and cell.orders %}
+                <label class='userinfo' for='modal_userinfo_check' onclick='show_orders({{ cell.orders|util_orders_to_json }});' title='Посмотреть инфо о заказавшем(-ей)'></label>
+            {% endif %}
+        </td>
+    {% else %}
+    <td style='padding:0;min-width:100px;max-width:100px;' rowspan='{{ i_value.rowspan }}' class={% if cell.orders and  cell.orders|util_is_current_user_order:user %}{% if cell.is_now %}'started'{% else %}'choisen'{% endif %}{% elif cell.orders %}'selected'{% endif %}>
             {% if cell.orders and user.is_authenticated and cell.orders|util_is_other_user_order:user %}
                 <label class='userinfo' for='modal_userinfo_check' onclick='show_orders({{ cell.orders|util_orders_to_json }});' title='Посмотреть инфо о заказавшем(-ей)'></label>
             <!-- means 'not current user' -->
@@ -78,12 +84,6 @@
                         <span><div>-</div></span>
                     {% endwith %}
                 </label>
-            {% endif %}
-        </td>
-    {% else %}
-        <td style='padding:0;min-width:100px;max-width:100px;' class='ended'>
-            {% if user.is_authenticated and cell.orders %}
-                <label class='userinfo' for='modal_userinfo_check' onclick='show_orders({{ cell.orders|util_orders_to_json }});' title='Посмотреть инфо о заказавшем(-ей)'></label>
             {% endif %}
         </td>
     {% endif %}
