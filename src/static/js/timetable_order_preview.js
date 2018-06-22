@@ -38,11 +38,11 @@ var PRICE_PREVIEW = (function() {
             }
         }
         if (len) {
-            preview_node.innerHTML = '<p>Итого интервалов: ' + len + (total ? (' за <span style="white-space:nowrap;">' + total + ' руб.</span>') : '') + ' <a href="#finaltext">К оплате</a></p>';
+            preview_node.innerHTML = '<p>Итого интервалов: ' + (total > 0 ? '+' : '-') + len + (total ? (' за <span style="white-space:nowrap;">' + (total > 0 ? '-' : '+') + Math.abs(total) + ' руб.</span>') : '') + ' <a href="#finaltext">К оплате</a></p>';
             result_node.innerHTML = 'Выбрано интервалов: ' + len;
             if (total)
-                result_node.innerHTML += '<br />Итого ' + 'нужно оплатить: <span style="white-space:nowrap;">' + total + ' руб.</span>';
-            var table = '<br/><br/>Будет заказано:<br/><table style="border:none;">';
+                result_node.innerHTML += '<br />Итого ' + (total > 0 ? 'нужно оплатить' : 'будет возвращено') + ': <span style="white-space:nowrap;">' + Math.abs(total) + ' руб.</span>';
+            var table = '<br/><br/>Подробно:<br/><table style="border:none;">';
             for (var name in groups) {
                 table += '<tr><td style="vertical-align:top;padding:10px;border:none;width:auto;"><span style="white-space:nowrap;">' + name + '</span></td><td style="padding:10px;border:none;width:auto;text-align:left;">';
                 for (var i = 0; i < groups[name].length; i++) {
@@ -51,7 +51,7 @@ var PRICE_PREVIEW = (function() {
                     var price = groups[name][i].getAttribute('data-price');
                     var price_str = '';
                     if (price && price != '0')
-                        price_str = ', ' + price + ' руб.';
+                        price_str = ', ' + (price > 0 ? '-' : '+') + Math.abs(price) + ' руб.';
                     if (i != 0)
                         table += ', ';
                     table += '<span style="white-space:nowrap;">[' + time_start + '-' + time_end + price_str + ']</span>';
