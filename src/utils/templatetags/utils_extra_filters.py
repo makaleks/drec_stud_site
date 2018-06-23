@@ -52,6 +52,10 @@ def util_is_finished(dt_start, service):
     return now - service_td > dt_start
 
 @register.filter
+def util_get_late_price(price, service):
+    return int(price * service.late_cancel_multiplicator)
+
+@register.filter
 def util_get_min_time_str(t):
     result = ''
     if t is datetime.time.min:

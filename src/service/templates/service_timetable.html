@@ -80,7 +80,7 @@
             {% elif cell.orders and cell.orders|util_is_current_user_order:user %}
                 <label>
                     {% with order=cell.orders|first %}
-                    <input type='checkbox' name='cancel={{ order.id }}' data-price='-{{ i_value.price }}' data-timestart='{{ cell.start.time }}' data-timeend='{{ cell.end.time }}' data-item='{{ i_name }}' class='hidden'/>
+                    <input type='checkbox' name='cancel={{ order.id }}' data-price={% if cell.is_now %}'-{{ i_value.price|util_get_late_price:service }}'{% else %}'-{{ i_value.price }}'{% endif %} data-timestart='{{ cell.start.time }}' data-timeend='{{ cell.end.time }}' data-item='{{ i_name }}' class='hidden'/>
                         <span><div>-</div></span>
                     {% endwith %}
                 </label>

@@ -156,6 +156,9 @@ class ServiceDetailView(DetailView):
             status = 'success'
             is_approved = True
             data = request.POST.dict()
+            now = timezone.now()
+            service_td = datetime.datetime.combine(datetime.date.min, self.object.time_after_now) - datetime.datetime.min
+            before_now_time = now - service_td
             if data.get('type') == 'order':
                 order_lst = []
                 undo_order_ids = []
@@ -175,10 +178,10 @@ class ServiceDetailView(DetailView):
                         undo_order_ids.append(int(k[7:]))
                 undo_order_lst = list(
                         Order.objects.filter(
-                            Q(date_start__gt=timezone.now().date()) 
+                            Q(date_start__gt=before_now_time.date()) 
                             | (
-                                Q(date_start__exact=timezone.now().date()) 
-                                & Q(time_start__gte=timezone.now().time())
+                                Q(date_start__exact=before_now_time.date()) 
+                                & Q(time_start__gte=before_now_time.time())
                                 ), user = request.user,
                             id__in=undo_order_ids))
                 items = list(Item.objects.all())
@@ -189,7 +192,10 @@ class ServiceDetailView(DetailView):
                 for l in order_lst:
                     total_price += items_dict[l['name']].get_price()
                 for l in undo_order_lst:
-                    total_price -= l.payed
+                    if before_now_time + service_td * 2 > datetime.datetime.combine(l.date_start, l.time_start):
+                        total_price -= int(l.payed * self.object.late_cancel_multiplicator)
+                    else:
+                        total_price -= l.payed
                 exception_participations = [l[0] for l in list(Participation.objects.all().filter(id__in = participation_lst).values_list('id'))]
                 participation_lst = list(filter(lambda el: el not in exception_participations, participation_lst))
                 # We will save participations if order (even zero-length)
