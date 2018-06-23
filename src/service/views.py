@@ -158,7 +158,11 @@ class ServiceDetailView(DetailView):
             data = request.POST.dict()
             now = timezone.now()
             service_td = datetime.datetime.combine(datetime.date.min, self.object.time_after_now) - datetime.datetime.min
-            before_now_time = now - service_td
+            # Change the 2 following lines to enable #cancel_late_order
+            #before_now_time = now - service_td
+            #after_now_time = now + service_td
+            before_now_time = now 
+            after_now_time = now
             if data.get('type') == 'order':
                 order_lst = []
                 undo_order_ids = []
@@ -192,7 +196,7 @@ class ServiceDetailView(DetailView):
                 for l in order_lst:
                     total_price += items_dict[l['name']].get_price()
                 for l in undo_order_lst:
-                    if before_now_time + service_td * 2 > datetime.datetime.combine(l.date_start, l.time_start):
+                    if after_now_time * 2 > datetime.datetime.combine(l.date_start, l.time_start):
                         total_price -= int(l.payed * self.object.late_cancel_multiplicator)
                     else:
                         total_price -= l.payed
