@@ -13,20 +13,33 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url, include
+from django.urls import path, include 
+from django.conf.urls import handler400, handler403, handler404, handler500
 from django.contrib import admin
 from django.contrib.auth.views import LogoutView
 from django.views.generic import TemplateView
 #from user.views import render_login_success
+from user.views import EmergencyLoginView
+
+handler400 = 'utils.views.error_view_400'
+handler403 = 'utils.views.error_view_403'
+handler404 = 'utils.views.error_view_404'
+handler500 = 'utils.views.error_view_500'
+
+# Namespaces not needed, because all apps have default app_name namespace
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
-    url(r'^social/', include('social_django.urls', namespace='social')),
-    url(r'^logout/$', LogoutView.as_view()),
-    url(r'^services/', include('service.urls')),
-    url(r'^surveys/', include('survey.urls')),
-    url(r'^notes/', include('note.urls')),
-    url(r'^', include('news.urls')),
+    path('admin/',    admin.site.urls),
+    path('user/',     include('user.urls')),
+    # URL name: 'logout' (see docs)
+    path('social/',   include('social_django.urls')),
+    path('logout/',   LogoutView.as_view(), name='logout'),
+    path('login/',    EmergencyLoginView.as_view(template_name='core/login.html'), name='emergency-login'),
+    path('services/', include('service.urls')),
+    path('surveys/',  include('survey.urls')),
+    path('notes/',    include('note.urls')),
+    path('',          include('news.urls')),
+    # need from django.conf.urls import url
     #url(r'^login_success/', render_login_success),
     #url(r'^login/', TemplateView.as_view(template_name='login.html')),
 ]

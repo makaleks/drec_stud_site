@@ -1,17 +1,24 @@
 /* NEWS */
-
 .cutted {
     display: block;
 }
-
 .full {
     display: none;
+    padding-bottom: 1em;
 }
-
+.full>label,
+.cutted>label {
+    display: block;
+}
+.shownews:not(:checked)~.cutted {
+    padding-bottom: 1em;
+}
+.shownews:not(:checked)~.full {
+    display: none !important;
+}
 .shownews:checked~.cutted>label {
-    display: none;
+    display: none !important;
 }
-
 .shownews:checked~.full {
     display: block;
 }

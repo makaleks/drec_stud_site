@@ -1,4 +1,5 @@
 from django.contrib import admin
+from utils.custom_admins import CustomBaseAdmin
 from reversion.admin import VersionAdmin
 from .models import News
 
@@ -7,9 +8,9 @@ logger = logging.getLogger('site_events')
 
 # Register your models here.
 
-class NewsAdmin(VersionAdmin):
-    list_display = ('title', 'id', 'edited', 'created')
+class NewsAdmin(CustomBaseAdmin, VersionAdmin):
     history_latest_first = True
+    list_display = ('title', 'id_link', 'edited', 'created')
     def save_model(self, request, obj, form, change):
         if change:
             fields = [{field: str(getattr(obj, field))} for field in form.changed_data]

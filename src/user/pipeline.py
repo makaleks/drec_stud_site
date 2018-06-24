@@ -13,7 +13,7 @@ def load_user (uid, backend, response = {}, **kwargs):
     User = get_user_model()
     user = User.objects.get(account_id = uid)
     if user is None:
-        logger.info('unknown VK user with uid={0} tried to login'.format(uid), extra={'user': 'anonymous'})
+        logger.info('unknown VK user tried to login using uid={0}'.format(uid), extra={'user': 'anonymous'})
         raise LoginDeniedException('This user is unregistered.')
     if isinstance(backend, VKOAuth2):
         url = response['photo_100']

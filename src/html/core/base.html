@@ -4,12 +4,19 @@
 {% load utils_extra_filters %}
 
 <head>
+    <!-- if not 'safe', will be rendered as part of the <body> -->
+    {{ webmaster_tags.yandex|safe }}
+    {{ webmaster_tags.google|safe }}
     <title>Сайт студсовета</title>
     <meta charset='UTF-8' />
     <meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' />
 
+
     <link type='text/css' rel='stylesheet' href='{{ STATIC_URL }}web_copy/normalize/normalize.css' />
     <link type='text/css' rel='stylesheet' href='{{ STATIC_URL }}content.css' />
+    <style>
+        .errorlist {color:red;}
+    </style>
     <!--[if lt IE 9]>
         <script>
             document.createElement('header');
@@ -59,7 +66,7 @@
             <div>
                 <b>В вашем веб-браузере не включен javascript.</b>
                 Включите его или обновите свой браузер, чтобы сделать пребывание на этом сайте более безопасным, комфортным и продуктивным.
-                <a id='buorgul' href='https://browser-update.org/update-browser.html' target='_blank' rel='noopener'>Обновить браузер</a>
+                <a id='buorgul' href='http://browser-update.org/update-browser.html' target='_blank' rel='noopener'>Обновить браузер</a>
             </div>
             <style>
                 .buorg {
@@ -110,7 +117,7 @@
     </noscript>
 
     <div id='back'></div>
-    <input id='modal_check' type='checkbox' class='hidden' checked />
+    <input id='modal_check' type='checkbox' class='hidden'/>
     <div class='card {{ notification.type }} {% if not notification.enabled %}hidden{% endif %}' id='modal'>
         <div class='container'>
             <h3>
@@ -129,11 +136,24 @@
     </label>
     <div class='container' id='modal_userinfo'>
         <div class='card modal_userinfo'>
-            <h3 id='userinfo_name'>Имя</h3>
-            <a id='userinfo_number'>Позвонить: </a><br />
-            <a id='userinfo_vkid' target='_blank'>Написать в ВК</a><br />
-            <a id='userinfo_email'>Написать на почту</a><br />
+            <div id='modal_userinfo_content'>
+                Здесь должен быть текст
+            </div>
             <label for='modal_userinfo_check' class='m_close'>
+                <svg class='close' viewBox='0 0 10 10'>
+                    <path d='M2 8l6-6M2 2l6 6'/>
+                </svg>
+            </label>
+        </div>
+    </div>
+    
+    <input type='checkbox' id='modal_refill_check' class='hidden' />
+    <label id='modal_refill_back' for='modal_refill_check'>
+    </label>
+    <div class='container' id='modal_refill'>
+        <div class='card modal_refill'>
+            <iframe src="https://money.yandex.ru/quickpay/shop-widget?writer=seller&targets={{ pay_yandex.payment_text|urlencode }}&targets-hint=&default-sum=2&button-text=11&{% if pay_yandex.enable_card %}payment-type-choice=on&{% endif %}{% if pay_yandex.enable_phone %}mobile-payment-type-choice=on&{% endif %}fio=on&hint=&successURL={{ pay_yandex.success_redirect_url|urlencode }}&quickpay=shop&account={{ pay_yandex.account|urlencode }}&label={{ user.id|urlencode }}" width="450" height="223" frameborder="0" allowtransparency="true" scrolling="no"></iframe>
+             <label for='modal_refill_check' class='m_close'>
                 <svg class='close' viewBox='0 0 10 10'>
                     <path d='M2 8l6-6M2 2l6 6'/>
                 </svg>
@@ -142,72 +162,122 @@
     </div>
 
 
-    <article id='top'>
-        <div>
-            <h1>
-                Добро пожаловать на сайт ФРТК!
-            </h1>
-        </div>
-        <div style='padding-left:10px;padding-right:10px'>
-            <div id='bottom_menu'>
-                <div>
-                    <ul>
-                        <li class='link-underline red'><a href='/' {% if request.path|util_contains_string:'^/$' %}class='active'{% endif %}><span>Новости</span></a></li>
-                        <li class='link-underline red'><a href='/surveys/' {% if request.path|util_contains_string:'^/surveys/' %}class='active'{% endif %}><span>Опросы</span></a></li>
-                        <li class='link-underline red'><a href='/services/washing/' {% if request.path|util_contains_string:'^/services/washing/' %}class='active'{% endif %}><span>Стиралка</span></a></li>
-                        <li class='link-underline red'><a href='/services/' {% if request.path|util_contains_string:'^/services/$' %}class='active'{% endif %}><span>Другие сервисы</span></a></li>
-                        <li class='link-underline red'><a href='/notes/' {% if request.path|util_contains_string:'^/notes/' %}class='active'{% endif %}><span>FAQs</span></a></li>
-                        <li id='vk-menu'>
-                            {% if user.is_authenticated %}
-                                {% if user.avatar_url %}
-                                    <img src='{{ user.avatar_url }}' />
-                                {% else %}
-                                    <img src='{{ STATIC_URL }}img/vk.svg' />
-                                {% endif %}
-                                <a href='/logout/?next={{ request.path }}' class='btn btn-vk'>
-                                    <span>Привет, {{ user.get_short_name }}</span>
-                                </a>
-                            {% else %}
-                                <img src='{{ STATIC_URL }}img/vk.svg' />
-                                <a href='{% url "social:begin" "vk-oauth2" %}?next={{ request.path }}' class='btn btn-vk'>
+
+    <article id='top' style='background-color:white;background-image: url(/static/img/background.png);z-index=0;'>
+        <div id='quick_tool'>
+            <div class='container'>
+                <div class='inline right' id='vk_quick'>
+                    {% if user.is_authenticated %}
+                        <label for='modal_refill_check'>
+                            <a class='m-btn m-dark' style='padding-left:28px;padding-right:28px;display:inline-block;'>
+                                <span>На счету: {{ user.account|urlencode }}руб.</span>
+                            </a>
+                        </label>
+                        {% if user.avatar_url %}
+                            <img src='{{ user.avatar_url }}' />
+                        {% else %}
+                            <img src='{{ STATIC_URL }}img/vk.svg' />
+                        {% endif %}
+                        <a href='{% url 'logout' %}?next={{ request.path }}' class='btn btn-vk'>
+                            <span>Привет, {{ user.get_short_name }}</span>
+                        </a>
+                    {% else %}
+                        <img src='{{ STATIC_URL }}img/vk.svg' />
+                        {% if not is_emergency_login_mode %}
+                            <a href='{% url 'social:begin' 'vk-oauth2' %}?next={{ request.path }}' class='btn btn-vk'>
                                 <span>Войти через ВК</span>
-                                </a>
-                            {% endif %}
-                        </li>
-                    </ul>
+                            </a>
+                        {% else %}
+                            <a href='{% url 'emergency-login' %}?next={{ request.path }}' class='btn btn-vk'>
+                                <span>Войти</span>
+                            </a>
+                        {% endif %}
+                    {% endif %}
                 </div>
+                <div class='inline'>
+                    {% with surveys_todo=user.get_surveys_to_pass %}
+                    {% if user.is_staff %}
+                        {% if is_agressive_question_notification and util_get_new_question_num %}
+                            <a href='/admin/note/question/' class='btn btn-vk' style='background-color:red;'>
+                                <span>Вопросов: {{ util_get_new_question_num }}</span>
+                            </a>
+                        {% elif request.path|util_contains_string:'^/$' and perms.news %}
+                            <a href='/admin/news/news/add/' class='btn btn-vk'>
+                                <span>Добавить новость</span>
+                            </a>
+                        {% elif request.path|util_contains_string:'^/surveys/' and perms.surveys %}
+                            <a href='/admin/survey/survey/add/' class='btn btn-vk'>
+                                <span>Добавить опрос</span>
+                            </a>
+                        {% else %}
+                            <a href='/admin' class='btn btn-vk'>
+                                <span>В админку</span>
+                            </a>
+                        {% endif %}
+                    {% elif surveys_todo %}
+                        <!-- goto surveys -->
+                        <!-- TODO: survey targets -->
+                        <!--<a href='/surveys' class='btn btn-vk'>
+                            <span>Опросов: {{ surveys_todo }}</span>
+                        </a>-->
+                    {% endif %}
+                    {% endwith %}
+                </div>
+            </div>
+        </div>
+        <div id='welcome'>
+            <img src='{{ STATIC_URL }}img/header.svg' />
+        </div>
+        <div id='bottom_menu'>
+            <div>
+                <ul>
+                    <li class='link-underline red'><a href='/' {% if request.path|util_contains_string:'^/$' %}class='active'{% endif %}><span>Новости</span></a></li>
+                    <li class='link-underline red'><a href='/surveys/' {% if request.path|util_contains_string:'^/surveys/' %}class='active'{% endif %}><span>Опросы</span></a></li>
+                    <li class='link-underline red'><a href='/notes/student_council/' {% if request.path|util_contains_string:'^/notes/student_council' %}class='active'{% endif %}><span>Студсовет</span></a></li>
+                    <li class='link-underline red'><a href='/services/washing/' {% if request.path|util_contains_string:'^/services/washing/' %}class='active'{% endif %}><span>Стиралка</span></a></li>
+                    <li class='link-underline red'><a href='/services/' {% if request.path|util_contains_string:'^/services/$' %}class='active'{% endif %}><span>Другие сервисы</span></a></li>
+                    <li class='link-underline red'><a href='/notes/' {% if request.path|util_contains_string:'^/notes/(?!student_council)' %}class='active'{% endif %}><span>FAQs</span></a></li>
+                </ul>
             </div>
         </div>
         <aside id='header'>
             <div class='box link-underline'>
-                <article id='vk-header'>
-                    <section>
-                        {% if user.is_authenticated %}
-                            {% if user.avatar_url %}
-                                <img src='{{ user.avatar_url }}' />
-                            {% else %}
-                                <img src='{{ STATIC_URL }}img/vk.svg' />
-                            {% endif %}
-                            <section>
-                                <p>Привет, {{ user.get_short_name }}</p>
-                                <a href='/logout/?next={{ request.path }}' class='btn btn-vk'>Выйти</a>
-                            </section>
+                <article id='vk_header'>
+                    {% if user.is_authenticated %}
+                        {% if user.avatar_url %}
+                            <img src='{{ user.avatar_url }}' />
                         {% else %}
                             <img src='{{ STATIC_URL }}img/vk.svg' />
-                            <section>
-                                <p>Привет, гость</p>
-                                <a href='{% url "social:begin" "vk-oauth2" %}?next={{ request.path }}' class='btn btn-vk'>Войти через ВК</a>
-                            </section>
                         {% endif %}
-                    </section>
+                        <section>
+                            <p>Привет, {{ user.get_short_name }}</p>
+                            <a href='{% url 'logout' %}?next={{ request.path }}' class='btn btn-vk'>Выйти</a>
+                            <label for='modal_refill_check'>
+                                <a class='m-btn m-dark' style='padding-left:18px;padding-right:18px;'>
+                                    <span>На счету: {{ user.account|urlencode }}руб.</span>
+                                </a>
+                            </label>
+                        </section>
+                    {% else %}
+                        <img src='{{ STATIC_URL }}img/vk.svg' />
+                        <section>
+                            <p>Привет, гость</p>
+                            {% if not is_emergency_login_mode %}
+                                <a href='{% url "social:begin" "vk-oauth2" %}?next={{ request.path }}' class='btn btn-vk'>Войти через ВК</a>
+                            {% else %}
+                            <a href='{% url 'emergency-login' %}?next={{ request.path }}' class='btn btn-vk'>Войти</a>
+                            {% endif %}
+                        </section>
+                    {% endif %}
                 </article>
                 <nav id='nav' class='link-underline red'>
                     <ul>
                         <li><a href='/' {% if request.path|util_contains_string:'^/$' %}class='active'{% endif %}><span>Новости</span></a></li>
-                        <li><a href='surveys/' {% if request.path|util_contains_string:'^/surveys/' %}class='active'{% endif %}><span>Опросы</span></a></li>
+                        <li><a href='/surveys/' {% if request.path|util_contains_string:'^/surveys/' %}class='active'{% endif %}><span>Опросы</span></a></li>
+                        <li><a href='/notes/student_council/' {% if request.path|util_contains_string:'^/notes/student_council' %}class='active'{% endif %}><span>Студсовет</span></a></li>
                         <li><a href='/services/washing/' {% if request.path|util_contains_string:'^/services/washing/' %}class='active'{% endif %}><span>Стиралка</span></a></li>
                         <li><a href='/services/' {% if request.path|util_contains_string:'^/services/$' %}class='active'{% endif %}><span>Другие сервисы</span></a></li>
-                        <li><a href='/notes/' {% if request.path|util_contains_string:'^/notes/' %}class='active'{% endif %}><span>FAQs</span></a></li>
+                        <li><a href='/notes/' {% if request.path|util_contains_string:'^/notes/(?!student_council)' %}class='active'{% endif %}><span>FAQs</span></a></li>
                     </ul>
                 </nav>
             </div>
@@ -217,7 +287,7 @@
 
     <div id='wrapper'>
 
-        <main id='content' class='container'>
+        <main id='content' class='container' style='{% block content_style %}{% endblock %}'>
             {% block content %}
             {% endblock %}
         </main>
@@ -234,6 +304,11 @@
         (function() {
             var bottom = document.querySelector('#bottom_menu'),
                 top = document.querySelector('#top');
+            document.querySelector("#showside").addEventListener('change',
+                function(){
+                    if(this.checked) document.body.style.overflow = "hidden";
+                    else document.body.style.overflow = "auto";
+                }, false);
             if (getComputedStyle(bottom).display !== 'none') {
                 window.addEventListener('scroll', scrollPage, false);
                 document.body.addEventListener('scroll', scrollPage, false);
@@ -250,7 +325,27 @@
                 }
             }
         })();
-
+    function showuserinfo(name, vkid, number, email) {
+        var elem = document.getElementById('modal_userinfo_content');
+        var s = '';
+        if (name !== null && name !== "") {
+            s += '<h3>' + name + '</h3>';
+        }
+        if (number !== null && number !== "") {
+            s += '<a href="tel:' + number + '">Позвонить: ' 
+                + number + '</a><br/>';
+        }
+        if (vkid !== null && vkid !== "") {
+            // target="_blank" means 'open in new tab/window'
+            s += '<a target="_blank" href="https://vk.me/id' + vkid 
+                + '">Написать в ВК: vk.com/id' + vkid + '</a><br/>';
+        }
+        if (email !== null && email !== "") {
+            s += '<a href="mailto:' + email + '">Написать на почту: ' 
+                + email + '</a><br />';
+        }
+        elem.innerHTML = s;
+    };
     </script>
     {% block body_extras %}
     {% endblock %}

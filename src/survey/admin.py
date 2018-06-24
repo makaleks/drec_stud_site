@@ -1,14 +1,21 @@
 from django.contrib import admin
+from utils.custom_admins import CustomBaseAdmin
+from reversion.admin import VersionAdmin
 from .models import Survey, Answer, AnswerData
 
 # Register your models here.
 
 @admin.register(Survey)
-class SurveyAdmin(admin.ModelAdmin):
-    list_display = ('title', 'started', 'finished')
+class SurveyAdmin(CustomBaseAdmin, VersionAdmin):
+    list_display = ('title', 'id_link', 'started', 'finished')
     def get_readonly_fields(self, request, obj=None):
         if obj:
-            return ['is_anonymous']
+            return ['is_anonymous', 'sheet']
+        else:
+            return []
+    def get_exclude(self, request, obj=None):
+        if not obj:
+            return ['sheet']
         else:
             return []
 

@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'social_django',
     'reversion',
     'precise_bbcode',
+    'background_task',
     # disable to save media on delete/update
     'django_cleanup',
     'adminsortable2',
@@ -45,6 +46,7 @@ INSTALLED_APPS = [
     'user',
     'news',
     'note',
+    'comment',
     'service',
     'survey',
 ]
@@ -125,7 +127,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
@@ -138,8 +140,14 @@ STATICFILES_DIRS = (
 )
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'media')
+SURVEY_SHEET_ROOT = os.path.join(MEDIA_ROOT, 'surveys')
 
 AUTH_USER_MODEL = 'user.User'
+
+# Datetime formats
+FORMAT_MODULE_PATH = [
+    'drec_stud_site.formats',
+]
 
 spec = util.spec_from_file_location('setting_additions', os.path.join(PROJECT_ROOT, 'setting_additions.py'))
 module = util.module_from_spec(spec)
@@ -147,17 +155,40 @@ spec.loader.exec_module(module)
 SOCIAL_AUTH_VK_OAUTH2_KEY = module.SOCIAL_AUTH_VK_OAUTH2_KEY
 SOCIAL_AUTH_VK_OAUTH2_SECRET = module.SOCIAL_AUTH_VK_OAUTH2_SECRET
 SOCIAL_AUTH_VK_OAUTH2_EXTRA_DATA = ['photo_100']
+SERVICE_KEY_VK = module.SERVICE_KEY_VK
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = module.DEBUG
 
+QUESTION_DEFAULT_APPROVED = module.QUESTION_DEFAULT_APPROVED
+IS_AGRESSIVE_QUESTION_NOTIFICATION = module.IS_AGRESSIVE_QUESTION_NOTIFICATION
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = module.SECRET_KEY
+
+# The following key use YANDEX payment mechanics
+# You can set up this according to your project (see src/services/templates/):
+PAYMENT_TEXT_YANDEX = module.PAYMENT_TEXT_YANDEX
+PAYMENT_YANDEX_ENABLE_PHONE = module.PAYMENT_YANDEX_ENABLE_PHONE
+PAYMENT_YANDEX_ENABLE_CARD = module.PAYMENT_YANDEX_ENABLE_CARD
+PAYMENT_SUCCESS_REDIRECT_YANDEX = module.PAYMENT_SUCCESS_REDIRECT_YANDEX
+PAYMENT_SECRET_YANDEX = module.PAYMENT_SECRET_YANDEX
+PAYMENT_ACCOUNT_YANDEX = module.PAYMENT_ACCOUNT_YANDEX
+IS_EMERGENCY_LOGIN_MODE = module.IS_EMERGENCY_LOGIN_MODE
+IS_ID_RECOGNITION_BROKEN_VK = module.IS_ID_RECOGNITION_BROKEN_VK
+try:
+    WEBMASTER_TAG_YANDEX = module.WEBMASTER_TAG_YANDEX
+except AttributeError:
+    WEBMASTER_TAG_YANDEX = ''
+try:
+    WEBMASTER_TAG_GOOGLE = module.WEBMASTER_TAG_GOOGLE
+except AttributeError:
+    WEBMASTER_TAG_GOOGLE = ''
 
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.vk.VKOAuth2',
     # Uncomment to return #passwordAuth
-    #'django.contrib.auth.backends.ModelBackend',
+    'django.contrib.auth.backends.ModelBackend',
 )
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
 SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = ['last_name', 'first_name', 'patronymic_name']
@@ -184,6 +215,7 @@ SOCIAL_AUTH_PIPELINE = (
     # Force login, so you will be reloginned (not done by default)
     #'user.pipeline.force_login',
 )
+LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
@@ -191,6 +223,8 @@ SOCIAL_AUTH_SANITIZE_REDIRECTS = False
 # So social-auth will not set redirect-url with post
 # needs in nginx server settings: 'proxy_set_header Host $host;'
 USE_X_FORWARDED_HOST = True
+
+FILE_UPLOAD_PERMISSIONS = 0o644
 
 LOGGING = {
     # The only possible value, I know it`s strange
@@ -204,7 +238,7 @@ LOGGING = {
         },
     },
     'handlers': {
-        'file_events': {
+        'file_user_events': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
             'formatter': 'user_formatter',
@@ -217,6 +251,13 @@ LOGGING = {
             'filename': os.path.join(PROJECT_ROOT, 'logs/django_events.log'),
             'formatter': 'verbose',
         },
+        'file_payment': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            #'formatter': 'user_formatter',
+            'filename': os.path.join(PROJECT_ROOT, 'logs/payment_events.log'),
+            'formatter': 'simple',
+        },
         'console': {
             'level': 'INFO',
             'filters': ['require_debug_true'],
@@ -227,28 +268,35 @@ LOGGING = {
     'formatters': {
         'user_formatter': {
             # never set default 'user'
-            'format': '%(user)s %(asctime)s - %(message)s',
+            'format': '%(asctime)s: %(levelname)s %(user)s - %(message)s',
             # default formatter includes milliseconds
             'datefmt': '%Y-%m-%d %H:%M:%S',
         },
         'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s',
+            'format': '####################\n%(asctime)s %(levelname)s %(module)s %(process)d %(thread)d %(message)s\n',
             'datefmt': '%Y-%m-%d %H:%M:%S',
         },
         'simple': {
-            'format': '%(levelname)s %(message)s'
+            'format': '%(asctime)s %(levelname)s: %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
         },
     },
     'loggers': {
         'site_events': {
-            'handlers': ['file_events'],
+            'handlers': ['file_user_events'],
             'level': 'INFO',
             # don`t pass to handlers of higher level (default: True)
             'propagate': False,
         },
         'django': {
             'handlers': ['console', 'file_django'],
-            'propagete': True,
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'payment_logs': {
+            'handlers': ['file_payment'],
+            'level': 'INFO',
+            'propagate': True,
         },
     },
 }

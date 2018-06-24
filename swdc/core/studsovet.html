@@ -1,0 +1,59 @@
+{% extends 'core/base.html' %}
+{% block head_extras %}
+<style>
+    #tab-main:checked~div.tab:nth-of-type(1),
+    #tab-nav-answer:checked~div.tab.answer,
+    #tab-nav-newans:checked~div.tab.newans {
+        display: block;
+    }
+    
+    #tab-nav-newans:checked~div.newans {
+        display: block;
+    }
+
+</style>
+{% endblock %}
+<!---->
+{% block content %}
+<section class='card'>
+    <h2>Студсовет</h2>
+</section>
+<input type='radio' class='hidden' name='tabs' id='tab-main' checked>
+<input type='radio' class='hidden' name='tabs' id='tab-nav-answer'>
+<input type='radio' class='hidden' name='tabs' id='tab-nav-newans'>
+<span class='card'>
+    <label for='tab-main' class='card tablabel'>
+        <h3>Основные положения</h3>
+    </label>
+    <label for='tab-nav-answer' class='card tablabel'>
+        <h3>Заданные вопросы</h3>
+    </label>
+    <label for='tab-nav-newans' class='card tablabel'>
+        <h3>Вопрос студсовету</h3>
+    </label>
+</span>
+<div class='card tab'>
+    <h2 class='lightgrey'>Основные положения</h2>
+    <div><p>12</p></div>
+</div>
+<div class='card tab answer'>
+    <h2>Заданные вопросы</h2>
+    <div>
+        <div class='card-maintext'>
+            <ul>
+                <li><a href=''>Ворпос №1</a></li>
+                <li><a href=''>Вопрос №2</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class='newans card tab'>
+    <h2>Вопрос студсовету</h2>
+    <h3>Задайте свой вопрос</h3>
+    <form method='post'>
+        <textarea name='question' maxlength='384'></textarea>
+        <input type='checkbox' id='notstupid' /><label for='notstupid'>Мой вопрос ещё не был занят никем до меня и относится к ФРТК</label>
+        <input type='submit' />
+    </form>
+</div>
+{% endblock %}

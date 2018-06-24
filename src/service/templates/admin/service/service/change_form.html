@@ -52,7 +52,6 @@
 {% block field_sets %}
 {% for fieldset in adminform %}
   {% include "admin/includes/fieldset.html" %}
-  <div id='surveyEditorContainer'></div>
 {% endfor %}
 {% endblock %}
 
@@ -70,17 +69,41 @@
 
 {% block admin_change_form_document_ready %}
 <!-- START CUSTOM -->
-    <script src='/static/web_copy/ckeditor-4.7.x/ckeditor.js'></script>
+    <script src='{{ STATIC_URL }}web_copy/ckeditor-4.7.x/ckeditor.js'></script>
     <script src='{{ STATIC_URL }}settings/ckeditor_settings.js'></script>
+    <script src='{{ STATIC_URL }}js/utils.js'></script>
+    <script src='{{ STATIC_URL }}js/textarea_to_ckeditor.js'></script>
     <script type='text/javascript'>
-        window.onload = function() {
-            var id1 = 'id_instruction';
-            var p1 = document.getElementById(id1).parentNode;
-            var label1 = p1.getElementsByTagName('label')[0];
-            label1.style.float = 'none';
-            CKEDITOR.replace(id1, options);
-
-        }
+        // Remove inlines
+        /*util_add_handler(window, 'load', function() {
+            var checkbox_elem = document.getElementById('id_is_single_item');
+            var before = document.getElementsByClassName('submit-row')[0];
+            var inlines = new Array(3);
+            inlines[0] = document.getElementById('items-group');
+            inlines[1] = document.getElementById('service-workingtime-content_type-object_id-group');
+            inlines[2] = document.getElementById('service-workingtimeexception-content_type-object_id-group');
+            var checkbox_swap = function() {
+                if (checkbox_elem.checked) {
+                    for (var i = 0; i < inlines.length; i++)
+                        before.parentNode.removeChild(inlines[i]);
+                }
+                else {
+                    for (var i = 0; i < inlines.length; i++)
+                        before.parentNode.insertBefore(inlines[i], before);
+                }
+                form = document.getElementById('service_form');
+                alert(JSON.stringify(form));
+            };
+            if (checkbox_elem.addEventListener) {
+                checkbox_elem.addEventListener('click', checkbox_swap, false);
+            }
+            else if (checkbox_elem.attachEvent) {
+                checkbox_elem.attachEvent('onclick', checkbox_swap);
+            }
+            else {
+                checkbox_elem['onclick'] = checkbox_swap;
+            }
+        });*/
     </script>
 <!-- END CUSTOM -->
     <script type="text/javascript"

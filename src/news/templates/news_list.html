@@ -1,26 +1,41 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
+        <!-- DEMO CONTENT -->
+        <!-- END DEMO -->
     {% for post in news_list %}
-        <section class="card">
+        <section class='card'>
             {% if post.image %}
                 <img src='{{ post.image.url }}' class='card-img' />
             {% endif %}
             <h2>{{ post.title }}</h2>
-            {% if post.text %}
+            {% if post.text_preview.rendered %}
                 <div>
                     <!--!!!! Важно: необходим уникальный id внутри блока для input и label -->
-                    <input id="show_{{ post.id }}" type="checkbox" class="hidden shownews" />
-                    <p class="card-maintext cutted">{{ post.text_preview.rendered }} <label class="link-underline" for="show_{{ post.id }}"><a class="lightblue">&nbsp;Читать&nbsp;далее&nbsp;</a></label></p>
-                    <p class="card-maintext full">{{ post.text.rendered }} <label class="link-underline" for="show_{{ post.id }}"><a class="lightblue">&nbsp;Скрыть&nbsp;</a></label></p>
+                    <input id='show_{{ post.id }}' type='checkbox' class='hidden shownews' />
+                    <div class='card-maintext cutted'>{{ post.text_preview.rendered }}
+                    {% if post.text.rendered %}
+                        {% if not show_hidden %}
+                            <label class='link-underline' for='show_{{ post.id }}'>{% if post.text.rendered %}<a class='lightred'>&nbsp;Читать&nbsp;далее&nbsp;</a></label></div>
+                            <div class='card-maintext full'>{{ post.text.rendered }} <label class='link-underline' for='show_{{ post.id }}'><a class='lightred'>&nbsp;Скрыть&nbsp;</a></label></div>{% endif %}
+                        {% elif post.text.rendered %}
+                            <div class='card-maintext'>{{ post.text.rendered }}</div>
+                        {% endif %}
+                    {% endif %}
                 </div>
             {% endif %}
-            <p class="card-text"><small class="text-muted">Обновлено {{ post.edited }} <a href='{{ post.get_absolute_url }}'>Ссылка</a></small></p>
+            <small class='text-muted'>Обновлено {{ post.edited }} <a href='{{ post.get_absolute_url }}'>Ссылка</a></small>
         </section>
     {% endfor %}
     {% if render_archive %}
         <section class='card'>
-            <a href='archive'>Архив</a>
+            
+            <h2><a href='{% url 'news:news-archive' %}'>Архив</a></h2>
+            <div>
+                <p>Быстрый переход: <a href='?years={{ last_year }}'>{{ last_year }} (предыдущий год)</a>
+            </div>
+            
         </section>
     {% endif %}
+
 {% endblock %}

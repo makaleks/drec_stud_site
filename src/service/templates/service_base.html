@@ -1,0 +1,227 @@
+{% extends 'core/base.html' %}
+
+<!--
+
+This is the base class for 'service' templates.
+You must to inherit it for each service type, because all additional blocks are undefined.
+
+Additional blocks:
+> 'additional_info' - define additional information, that will be seen at the top of the content.
+> The following are used to help setting custom styles for each service type:
+-> 'form_attributes'
+-> 'day_attributes'
+> 'single_day' - set the service layout. You should understand the API (see models.py) to fill this.
+
+-->
+
+
+{% block head_extras %}
+<style>
+    #tab-main:checked~div.tab:nth-of-type(1),
+    #tab-nav-answer:checked~div.tab.answer{
+        display: block;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+    {% if not user.is_authenticated %}
+        <div class='card'>
+            <h1>Для заказа необходимо войти на сайт</h1>
+        </div>
+    {% endif %}
+    <section class='card'>
+        <h2 class='lightgrey'>{{ service.name }}</h2>
+        {% if service.responsible_user %}
+        <div>
+            Ответственный: <label style='text-decoration:underline;color:blue;' for='modal_userinfo_check' onclick='showuserinfo("{{ service.responsible_user.get_full_name }}", "{{ service.responsible_user.account_id }}", "{{ service.responsible_user.phone_number }}", "{{ service.responsible_user.email }}");'>{{ service.responsible_user.get_full_name }} ({% if service.responsible_room %}комната {{ service.responsible_room }}, {% endif %}группа {{ service.responsible_user.group_number }})</label>
+            {% if service.request_document %}
+                <br><a href={{ service.request_document.url }}>Образец служебки</a>
+            {% endif %}
+        </div>
+        {% endif %}
+        <div>
+            {% block additional_info %}
+            {% endblock %}
+            <p><b>Чтобы выбрать или отменить выбор интервала нажми на него</b></p>
+        </div>
+    </section>
+
+    <!-- start tabs -->
+    <input type='radio' class='hidden' name='tabs' id='tab-main' checked>
+    {% if service.request_document and service.responsible_user == user %}
+    <input type='radio' class='hidden' name='tabs' id='tab-nav-answer'>
+    <span class='card'>
+        <label for='tab-main' class='card tablabel'>
+            <h3>Оставить заявку</h3>
+        </label>
+        <label for='tab-nav-answer' class='card tablabel'>
+            <h3>Одобрить заявку</h3>
+        </label>
+    </span>
+    {% endif %}
+    <!-- end tabs -->
+
+    <div class='tab' style='padding:0;'>
+        <section class='card'>
+            <h2 class='lightgray'>Объявления</h2>
+            <div>
+                <div class='card-maintext'>
+                    {% if service.announcements.rendered %}
+                        {{ service.announcements.rendered }}
+                    {% else %}
+                        Объявлений нет
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+        {% if service.instruction.rendered %}
+        <section class='card'>
+            <input id='show_rules' type='checkbox' hidden class='shownews' />
+            <div class='cutted'><h2 class='lightgray'>Правила пользования</h2><label class='link-underline' for='show_rules'><a class='lightred'>&nbsp;Ознакомиться&nbsp;</a></label></div>
+            <div class='full'><div class='card-maintext'>
+                {{ service.instruction.rendered }}
+                </div>
+            <label class='link-underline' for='show_rules'><a class='lightred'>&nbsp;Скрыть&nbsp;</a></label></div>
+        </section>
+        {% endif %}
+        <form action='' method='post' {% block form_attributes %}{% endblock %}>
+            {% csrf_token %}
+            {% with time_list=service.gen_timetable_layout %}
+                <div id='timetables'>
+                    <!-- main loop -->
+                    {% for day in time_list %}
+                        <div {% block day_attributes %}{% endblock %}>
+                            <div class='card'>
+                                <input id='show_day_{{ forloop.revcounter0 }}' type='checkbox' hidden class='shownews' {% if forloop.first %}checked{% endif %}/>
+                                <div class='cutted'><h2>{{ day.date }}</h2><label class='link-underline' for='show_day_{{ forloop.revcounter0 }}'><a class='lightred'>&nbsp;Открыть&nbsp;</a></label></div>
+                                <div class='full'>
+                                    {% if day.is_weekend %}
+                                        <h3>Закрыто</h3>
+                                    {% else %}
+                                        {% if day.items %}
+                                            <!-- to extend -->
+                                            {% block single_day %}
+                                            {% endblock %}
+                                        {% else %}
+                                            <h3>Нечем пользоваться</h3>
+                                        {% endif %}
+                                    {%  endif %}
+                                    <br /><br />
+                                    <label class='link-underline' for='show_day_{{ forloop.revcounter0 }}'><a class='lightred'>&nbsp;Скрыть&nbsp;</a></label>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                </div>
+            {% endwith %}
+            {% if user.is_authenticated %}
+                <div class='card hidden' id='preresult'>
+                </div>
+                <div class='card' id='finalresult'>
+                    <p id='finaltext'>
+                        Вы ничего не выбрали
+                    </p>
+                    {% block final_inputs %}
+                    {% endblock %}
+                    <p>
+                        <input id='show_agree' type='checkbox' class='shownews' required />
+                        <label for='show_agree'>Я прочитал(-а) и обязуюсь выполнять правила пользования</label>
+                    </p>
+                    <input type='hidden' name='type' value='order' />
+                    <input id='finalcancel' type='button' value='Сбросить' />
+                    <input id='finalsubmit' class='full' type='submit' value='Подтверждаю' />
+                </div>
+            {% else %}
+                <div class='card'>
+                    <h1>Для заказа необходимо войти на сайт</h1>
+                </div>
+            {% endif %}
+        </form>
+    </div>
+{% if service.is_single_item and service.responsible_user == user %}
+    <div class='tab card answer'>
+        <form action='' method='post' id='service-approve'>
+            {% csrf_token %}
+            {% for order in to_approve %}
+                <div class='card'>
+                    <input type='checkbox' name='id={{ order.id }}' id='{{ order.id }}' />
+                    <label for='{{ order.id }}'>
+                    {{ order.date_start|date:'Y.m.d' }}: {{ order.time_start|date:'H:i' }}-{{ order.time_end|date:'H:i' }}, {{ order.user.get_full_name }}
+                    {% if order.title %}
+                    <br /><span style='font-weight:bold;'>{{ order.title }}</span>
+                    {% endif %}
+                    </label>
+                </div>
+            {% endfor %}
+            <p>
+                <input id='got_documents' type='checkbox' class='shownews' required />
+                <label for='got_documents'>Я гарантирую, что данные служебки были мною получены</label>
+            </p>
+            <input type='hidden' name='type' value='approve' />
+            <input id='finalsubmit-approve' type='submit' value='Утвердить' />
+        </form>
+    </div>
+{% endif %}
+
+{% endblock %}
+
+{% block body_extras %}
+    {% if user.is_authenticated %}
+    <script src='{{ STATIC_URL }}js/utils.js'></script>
+    <script src='{{ STATIC_URL }}js/timetable_order_preview.js'></script>
+    <script>
+        PRICE_PREVIEW.registerCheckboxes('timetables', 'preresult', 'finaltext');
+        // for case of page reload: texts are cleared, but checkboxes are saved
+        PRICE_PREVIEW.updateTexts();
+
+function show_orders(json_orders) {
+    if (!(json_orders instanceof Array)) {
+        return;
+    }
+    var html = '';
+    var elem = document.getElementById('modal_userinfo_content');
+    for (var i = 0; i < json_orders.length; i++) {
+        var s = '';
+        var order = json_orders[i];
+        var time_start = '', time_end = '', uname = '', 
+            vkid = '', unumber = '', uemail = '';
+        if (order.hasOwnProperty('user')) {
+            uname = order.user['name'];
+            unumber = order.user['phone_number'];
+            vkid = order.user['account_id'];
+            uemail = order.user['email'];
+            // <h3> will be a bit later
+            s += uname;
+        }
+        if (order.hasOwnProperty('time_start') 
+            && order.hasOwnProperty('time_end')) {
+            time_start = order['time_start'], time_end = order['time_end'];
+            // <h3> will be a bit later
+            if (s)
+                s += ' ';
+            s += '(' + time_start + '-' + time_end + ')';
+        }
+        s = '<h3>' + s + '</h3>';
+
+        if (unumber !== null && unumber !== '') {
+            s += '<a href="tel:' + unumber + '">Позвонить: ' 
+                + unumber + '</a><br/>';
+        }
+        if (vkid !== null && vkid !== '') {
+            // target="_blank" means 'open in new tab/window'
+            s += '<a target="_blank" href="https://vk.me/id' + vkid 
+                + '">Написать в ВК: vk.com/id' + vkid + '</a><br/>';
+        }
+        if (uemail !== null && uemail !== '') {
+            s += '<a href="mailto:' + uemail + '">Написать на почту: ' 
+                + uemail + '</a><br />';
+        }
+        html += s;
+    }
+    elem.innerHTML = html;
+}
+    </script>
+    {% endif %}
+{% endblock %}

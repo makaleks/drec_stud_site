@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
-<!--{% load staticfiles %}-->
+{% load staticfiles %}
+{% load utils_extra_filters %}
 
 <head>
     <title>Сайт студсовета</title>
@@ -20,7 +21,7 @@
             document.createElement('footer');
         </script>
     <![endif]-->
-    <!--{% block head_extras %}-->
+    {% block head_extras %}
     {% endblock %}
 </head>
 
@@ -139,89 +140,112 @@
             </label>
         </div>
     </div>
+    
+    <input type='checkbox' id='modal_refill_check' class='hidden' />
+    <label id='modal_refill_back' for='modal_refill_check'>
+    </label>
+    <div class='container' id='modal_refill'>
+        <div class='card modal_refill'>
+            <iframe src="https://money.yandex.ru/quickpay/shop-widget?writer=seller&targets=%D0%9E%D0%BF%D0%BB%D0%B0%D1%82%D0%B0%20%D1%81%D1%82%D0%B8%D1%80%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE%D0%B9%20%D0%BA%D0%BE%D0%BC%D0%BD%D0%B0%D1%82%D1%8B%20%D0%B2%20%D0%BE%D0%B1%D1%89%D0%B5%D0%B6%D0%B8%D1%82%D0%B8%D0%B8%20%E2%84%96%201&targets-hint=&default-sum=100&button-text=11&payment-type-choice=on&mobile-payment-type-choice=on&fio=on&hint=&successURL=https%3A%2F%2Ffrtk.mipt.ru%2Fservices%2Fwashing%2F&quickpay=shop&account=410012497029013" width="450" height="230" frameborder="0" allowtransparency="true" scrolling="no"></iframe>
+            <label for='modal_refill_check' class='m_close'>
+                <svg class='close' viewBox='0 0 10 10'>
+                    <path d='M2 8l6-6M2 2l6 6'/>
+                </svg>
+            </label>
+        </div>
+    </div>
+
 
 
     <article id='top'>
-        <div>
-            <h1>
-                Добро пожаловать на сайт ФРТК!
-            </h1>
-        </div>
-        <div style='padding-left:10px;padding-right:10px'>
-            <div id='bottom_menu'>
-                <div>
-                    <ul>
-                        <li class='link-underline red'><a href='/' class='active'><span>Новости</span></a></li>
-                        <li class='link-underline red'><a href='/surveys/'><span>Опросы</span></a></li>
-                        <li class='link-underline red'><a href='/services/washing/'><span>Стиралка</span></a></li>
-                        <li class='link-underline red'><a href='/services/'><span>Другие сервисы</span></a></li>
-                        <li class='link-underline red'><a href='/notes/'><span>FAQs</span></a></li>
-                        <li id='vk-menu'>
-                            <img src='{{ STATIC_URL }}img/vk.svg' />
-                            <a href='' class='btn btn-vk'>
-                                <span>Привет, гость</span>
-                                <br />
-                                <small>(Войти через ВК)</small>
+        <div id='quick_tool'>
+            <div class='container'>
+                <div class='inline right' id='vk_quick'>
+                    {% if user.is_authenticated %}
+                        <label for='modal_refill_check'>
+                            <a class='m-btn m-dark'>
+                                <span>На счету: {{ user.account|urlencode }}руб.</span>
                             </a>
-                            <!--
-                            {% if user.is_authenticated %}
-                                {% if user.avatar_url %}
-                                    <img src='{{ user.avatar_url }}' />
-                                {% else %}
-                                    <img src='{{ STATIC_URL }}img/vk.svg' />
-                                {% endif %}
-                                <a href='/logout/' class='btn btn-vk'>
-                                    <span>Привет, {{ user.get_short_name }}</span>
-                                </a>
-                            {% else %}
-                                <img src='{{ STATIC_URL }}img/vk.svg' />
-                                <a href='{% url "social:begin" "vk-oauth2" %}' class='btn btn-vk'>
-                                <span>Привет, гость</span>
-                                <br />
-                                <small>(Войти через ВК)</small>
-                                </a>
-                            {% endif %}
-                            -->
-                        </li>
-                    </ul>
+                        </label>
+                        {% if user.avatar_url %}
+                            <img src='{{ user.avatar_url }}' />
+                        {% else %}
+                            <img src='{{ STATIC_URL }}img/vk.svg' />
+                        {% endif %}
+                        <a href='/logout/?next={{ request.path }}' class='btn btn-vk'>
+                            <span>Привет, {{ user.get_short_name }}</span>
+                        </a>
+                    {% else %}
+                        <img src='{{ STATIC_URL }}img/vk.svg' />
+                        <a href='{% url "social:begin" "vk-oauth2" %}?next={{ request.path }}' class='btn btn-vk'>
+                            <span>Войти через ВК</span>
+                        </a>
+                    {% endif %}
                 </div>
+                <div class='inline'>
+                    {% if user.is_staff %}
+                        <a href='/admin' class='btn btn-vk'>
+                            <span>В админку</span>
+                        </a>
+                        <a href='/admin/news/news/add/' class='btn btn-vk'>
+                            <span>Добавить новость</span>
+                        </a>
+                        <a href='/admin/survey/survey/add/' class='btn btn-vk'>
+                            <span>Добавить опрос</span>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div id='welcome'>
+            <img src='{{ STATIC_URL }}img/header.svg' />
+        </div>
+        <div id='bottom_menu'>
+            <div>
+                <ul>
+                    <li class='link-underline red'><a href='/' {% if request.path|util_contains_string:'^/$' %}class='active'{% endif %}><span>Новости</span></a></li>
+                    <li class='link-underline red'><a href='/surveys/' {% if request.path|util_contains_string:'^/surveys/' %}class='active'{% endif %}><span>Опросы</span></a></li>
+                    <li class='link-underline red'><a href='/notes/student_council/' {% if request.path|util_contains_string:'^/notes/student_council' %}class='active'{% endif %}><span>Студсовет</span></a></li>
+                    <li class='link-underline red'><a href='/services/washing/' {% if request.path|util_contains_string:'^/services/washing/' %}class='active'{% endif %}><span>Стиралка</span></a></li>
+                    <li class='link-underline red'><a href='/services/' {% if request.path|util_contains_string:'^/services/$' %}class='active'{% endif %}><span>Другие сервисы</span></a></li>
+                    <li class='link-underline red'><a href='/notes/' {% if request.path|util_contains_string:'^/notes/(?!student_council)' %}class='active'{% endif %}><span>FAQs</span></a></li>
+                </ul>
             </div>
         </div>
         <aside id='header'>
             <div class='box link-underline'>
-                <article id='vk-header'>
-                    <img src='{{ STATIC_URL }}img/vk.svg' />
-                    <section>
-                        <p>Привет, гость</p>
-                        <a href='' class='btn btn-vk'>Войти через ВК</a>
-                        <!--
-                        {% if user.is_authenticated %}
-                            {% if user.avatar_url %}
-                                <img src='{{ user.avatar_url }}' />
-                            {% else %}
-                                <img src='{{ STATIC_URL }}img/vk.svg' />
-                            {% endif %}
-                            <section>
-                                <p>Привет, {{ user.get_short_name }}</p>
-                                <a href='/logout/' class='btn btn-vk'>Выйти</a>
-                            </section>
+                <article id='vk_header'>
+                    {% if user.is_authenticated %}
+                        {% if user.avatar_url %}
+                            <img src='{{ user.avatar_url }}' />
                         {% else %}
                             <img src='{{ STATIC_URL }}img/vk.svg' />
-                            <section>
-                                <p>Привет, гость</p>
-                                <a href='{% url "social:begin" "vk-oauth2" %}' class='btn btn-vk'>Войти через ВК</a>
-                            </section>
                         {% endif %}
-                        -->
-                    </section>
+                        <section>
+                            <p>Привет, {{ user.get_short_name }}</p>
+                            <a href='/logout/?next={{ request.path }}' class='btn btn-vk'>Выйти</a>
+                            <label for='modal_refill_check'>
+                                <a class='m-btn m-dark'>
+                                    <span>На счету: {{ user.account|urlencode }}руб.</span>
+                                </a>
+                            </label>
+                        </section>
+                    {% else %}
+                        <img src='{{ STATIC_URL }}img/vk.svg' />
+                        <section>
+                            <p>Привет, гость</p>
+                            <a href='{% url "social:begin" "vk-oauth2" %}?next={{ request.path }}' class='btn btn-vk'>Войти через ВК</a>
+                        </section>
+                    {% endif %}
                 </article>
                 <nav id='nav' class='link-underline red'>
                     <ul>
-                        <li><a href='/' class='active'><span>Новости</span></a></li>
-                        <li><a href='surveys/'><span>Опросы</span></a></li>
-                        <li><a href='/services/washing/'><span>Стиралка</span></a></li>
-                        <li><a href='/services/'><span>Другие сервисы</span></a></li>
-                        <li><a href='/notes/'><span>FAQs</span></a></li>
+                        <li><a href='/' {% if request.path|util_contains_string:'^/$' %}class='active'{% endif %}><span>Новости</span></a></li>
+                        <li><a href='/surveys/' {% if request.path|util_contains_string:'^/surveys/' %}class='active'{% endif %}><span>Опросы</span></a></li>
+                        <li><a href='/notes/student_council/' {% if request.path|util_contains_string:'^/notes/student_council' %}class='active'{% endif %}><span>Студсовет</span></a></li>
+                        <li><a href='/services/washing/' {% if request.path|util_contains_string:'^/services/washing/' %}class='active'{% endif %}><span>Стиралка</span></a></li>
+                        <li><a href='/services/' {% if request.path|util_contains_string:'^/services/$' %}class='active'{% endif %}><span>Другие сервисы</span></a></li>
+                        <li><a href='/notes/' {% if request.path|util_contains_string:'^/notes/(?!student_council)' %}class='active'{% endif %}><span>FAQs</span></a></li>
                     </ul>
                 </nav>
             </div>
@@ -232,7 +256,7 @@
     <div id='wrapper'>
 
         <main id='content' class='container'>
-            <!--{% block content %}-->
+            {% block content %}
             {% endblock %}
         </main>
     </div>
@@ -248,6 +272,11 @@
         (function() {
             var bottom = document.querySelector('#bottom_menu'),
                 top = document.querySelector('#top');
+            document.querySelector("#showside").addEventListener('change',
+                function(){
+                    if(this.checked) document.body.style.overflow = "hidden";
+                    else document.body.style.overflow = "auto";
+                }, false);
             if (getComputedStyle(bottom).display !== 'none') {
                 window.addEventListener('scroll', scrollPage, false);
                 document.body.addEventListener('scroll', scrollPage, false);
@@ -266,7 +295,7 @@
         })();
 
     </script>
-    <!--{% block body_extras %}-->
+    {% block body_extras %}
     {% endblock %}
 </body>
 

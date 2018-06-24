@@ -1,6 +1,7 @@
 # coding: utf-8
 # NOTE: all times use the pattern [X, Y)
 from django.db import models
+from django.urls import reverse
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -9,11 +10,29 @@ from django.core.validators import MinValueValidator, FileExtensionValidator
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from precise_bbcode.fields import BBCodeTextField
 from math import gcd
 import datetime
 import types
 
+from .timetable import Timetable, TimetableList, TimetableOrder
+
+from utils.model_aliases import DefaultImageField
+
 # Create your models here.
+
+def to_dt(date, time_start, time_end):
+    if not isinstance(date, datetime.date):
+        raise TypeError('date({0}) must be date'.format(date.__class__.__name__))
+    elif not isinstance(time_start, datetime.time):
+        raise TypeError('time({0}) must be date'.format(time_end.__class__.__name__))
+    elif not isinstance(time_end, datetime.time):
+        raise TypeError('time_end({0}) must be date'.format(time_end.__class__.__name__))
+    to_add = datetime.timedelta(days = 1 if time_start >= time_end else 0)
+    return {
+            'start': datetime.datetime.combine(date, time_start),
+            'end': datetime.datetime.combine(date + to_add, time_end)
+            }
 
 # Set working hours on each weekday
 class WorkingTime(models.Model):
@@ -36,9 +55,9 @@ class WorkingTime(models.Model):
             (EVERYDAY, 'Ежедневно'),
         )
     )
-    works_from  = models.TimeField(blank = False, null = False, default = datetime.time(0,0,0), verbose_name = 'Начало рабочего времени')
-    works_to    = models.TimeField(blank = False, null = False, default = datetime.time(0,0,0), verbose_name = 'Конец рабочего времени')
-    weekend     = models.BooleanField(default = False, blank = False, null = False, verbose_name = 'Выходной')
+    works_from  = models.TimeField(blank = False, null = False, default = datetime.time(0,0,0), verbose_name = 'Начало рабочего времени (включительно)')
+    works_to    = models.TimeField(blank = False, null = False, default = datetime.time(0,0,0), verbose_name = 'Конец рабочего времени (не включительно)')
+    is_weekend     = models.BooleanField(default = False, blank = False, null = False, verbose_name = 'Выходной')
     description = models.CharField(max_length = 64, blank = True, null = True, verbose_name = 'Описание')
     # Set possible only to Item & Service
     content_type    = models.ForeignKey(
@@ -60,11 +79,11 @@ class WorkingTime(models.Model):
 
 
 class WorkingTimeException(models.Model):
-    date_start   = models.DateField(blank = False, null = False, verbose_name = 'День начала')
-    date_end     = models.DateField(blank = False, null = False, verbose_name = 'День окончания')
-    works_from  = models.TimeField(blank = False, null = False, default = datetime.time(0,0,0), verbose_name = 'Начало рабочего времени')
-    works_to    = models.TimeField(blank = False, null = False, default = datetime.time(0,0,0), verbose_name = 'Конец рабочего времени')
-    weekend     = models.BooleanField(default = False, blank = False, null = False, verbose_name = 'Выходной')
+    date_start   = models.DateField(default = datetime.date.today, blank = False, null = False, verbose_name = 'День начала (включительно)')
+    date_end     = models.DateField(default = datetime.date.today, blank = False, null = False, verbose_name = 'День окончания (включительно)')
+    works_from  = models.TimeField(blank = False, null = False, default = datetime.time(0,0,0), verbose_name = 'Начало рабочего времени (включительно)')
+    works_to    = models.TimeField(blank = False, null = False, default = datetime.time(0,0,0), verbose_name = 'Конец рабочего времени (не включительно)')
+    is_weekend     = models.BooleanField(default = False, blank = False, null = False, verbose_name = 'Выходной')
     is_annual   = models.BooleanField(default = False, blank = False, null = False, verbose_name = 'Ежегодно')
     description = models.CharField(max_length = 64, blank = True, null = True, verbose_name = 'Описание')
     # Set possible only to Item & Service
@@ -92,7 +111,7 @@ def get_working_time_exception_query(source, day):
         # Remember [X, Y)
         # day & month
         models.Q(date_start__day__lte = day.day, 
-            date_end__day__gt = day.day, 
+            date_end__day__gte = day.day, 
             date_start__month__lte = day.month, 
             date_end__month__gte = day.month) 
         # year | is_annual
@@ -106,7 +125,7 @@ def get_working_time_query(source, day):
     return (source.working_times.all().filter(
         # everyday
         models.Q(weekday = WorkingTime.EVERYDAY)
-        # weekday returns [0,6], but we have [1,7]
+        # weekday() returns [0,6], but we have [1,7]
         | models.Q(weekday = day.weekday() + 1)
     ))
 
@@ -115,10 +134,10 @@ class Service(models.Model):
     # URL part. Django accepts only exactly 'slug' field in urls.py
     slug        = models.SlugField(max_length = 16, blank = False, null = False, unique = True, verbose_name = 'Фрагмент URL на английском (навсегда)')
     name        = models.CharField(max_length = 64, blank = False, null = False, unique = True, verbose_name = 'Название')
-    description = models.CharField(max_length = 124, blank = False, null = False, verbose_name = 'Краткое описание')
-    instruction = models.TextField(blank = True, null = True, verbose_name = 'Инструкция и подробное описание')    
-    image       = models.FileField(validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'gif', 'svg'])], blank = False, null = False, verbose_name = 'Картинка')
-    time_step   = models.TimeField(blank = False, null = False, verbose_name = 'Минимальное время использования (шаг времени)')
+    announcements = BBCodeTextField(blank = True, null = True, verbose_name = 'Объявления')
+    instruction = BBCodeTextField(blank = True, null = True, verbose_name = 'Инструкция и подробное описание')    
+    image       = DefaultImageField(blank = False, null = False)
+    timestep    = models.TimeField(blank = False, null = False, verbose_name = 'Минимальное время использования (шаг времени)')
     max_time_steps  = models.PositiveSmallIntegerField(blank = False, null = False, default = 1, verbose_name = 'Максимальное число шагов времени непрерывного использования')
     default_price   = models.PositiveSmallIntegerField(blank = True, null = True, verbose_name = 'Цена по-умолчанию за шаг времени', default = 0)
     edited      = models.DateTimeField(auto_now = True, verbose_name = 'Последнее редактирование этих данных')
@@ -127,20 +146,162 @@ class Service(models.Model):
     default_works_to    = models.TimeField(blank = False, null = False, default = datetime.time(00,00,00), verbose_name = 'Конец рабочего времени по-умолчанию')
     days_to_show        = models.PositiveSmallIntegerField(default = 3, validators = [MinValueValidator(1)], blank = False, null = False, verbose_name = 'Дней на заказ')
     time_after_now      = models.TimeField(blank = False, null = False, default = datetime.time(0,20,0), verbose_name = 'Времени на запись после начала')
+    late_cancel_multiplicator = models.FloatField(blank = False, null = False, validators = [MinValueValidator(0)], default = 1.0, verbose_name = 'На сколько умножить при отмене')
     working_times       = GenericRelation(WorkingTime, content_type_field = 'content_type', object_id_field = 'object_id')
     working_time_exceptions = GenericRelation(WorkingTimeException, content_type_field = 'content_type', object_id_field = 'object_id')
-    responsible_user    = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.SET_NULL, blank = True, null = True, verbose_name = 'ответственное лицо')
+    responsible_user    = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.SET_NULL, blank = True, null = True, verbose_name = 'Ответственное лицо')
+    responsible_room    = models.CharField(max_length = 32, blank = True, null = True, verbose_name = 'Комната ответственного')
+    request_document        = models.FileField(validators=[FileExtensionValidator(allowed_extensions=['doc', 'docx', 'pdf', 'odt', 'png', 'jpg', 'jpeg'])], blank = True, null = True, verbose_name = 'Служебка (doc/docx/pdf/odt/png/jpg/jpeg)')
+    is_single_item      = models.BooleanField(default = False, blank = False, null = False, verbose_name = 'Один предмет сервиса')
+    is_finished_hidden  = models.BooleanField(default = True, blank = False, null = False, verbose_name = 'Скрывать прошедшие интервалы')
+    order   = models.PositiveSmallIntegerField(default = 0, blank = False, null = False, verbose_name = 'Порядок показа')
+    def get_absolute_url(self):
+        return reverse('service:service', args=[self.slug])
     def __str__(self):
         return self.name
+    # Return { 'works_from', 'works_to', 'is_weekend', 'is_exception' }
+    # 'is_exception' means that Item can apply only its own exceptions
+    # or None if not working
+    def get_working_time(self, day):
+        # is_active is immediate
+        if not self.is_active:
+            return None
+        if isinstance(day, datetime.datetime):
+            day = day.date()
+        if not isinstance(day, datetime.date):
+            raise TypeError('day must be datetime.date')
+        # PRIORITY (extended: see Item): Service[default] <
+        # < Service[working_time] < Service[exception]
+
+        # exception
+        wte_service = get_working_time_exception_query(self, day)
+        if wte_service.exists():
+            exception = wte_service.first()
+            dt = to_dt(day, exception.works_from, exception.works_to)
+            return {'works_from': dt['start'],
+                    'works_to': dt['end'],
+                    'is_weekend': exception.is_weekend,
+                    'is_exception': True}
+        # working_time
+        wt_service = get_working_time_query(self, day)
+        if wt_service.exists():
+            working_time = wt_service.first()
+            dt = to_dt(day, working_time.works_from, working_time.works_to)
+            return {'works_from': dt['start'],
+                    'works_to': dt['end'],
+                    'is_weekend': working_time.is_weekend,
+                    'is_exception': False}
+        # default
+        dt = to_dt(day, self.default_works_from, self.default_works_to)
+        return {'works_from': dt['start'],
+                'works_to': dt['end'],
+                'is_weekend': False,
+                'is_exception': False}
+    # Return {'date','datestr',
+    #   'is_weekend': bool,
+    #   'items': {'name': {
+    #                       'is_open','price','rowspan',
+    #                       'time':[TimetableInterval]
+    #                     }
+    #            }
+    #   'timetable': [TimetableInterval]
+    # }
+    # or None if not working
+    def get_timetable(self, date):
+        # is_active is immediate
+        if not self.is_active:
+            return None
+        weekdays = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье']
+        s = '{0} {1}'.format(weekdays[date.weekday()], date.strftime('%d.%m'))
+        service_working_time = self.get_working_time(date)
+        if service_working_time['is_weekend']:
+            return {'date': s, 'is_weekend': True, 'items': None, 'timetable': None}
+        timetables = TimetableList(self.timestep)
+        # key = '' means 'service timetable' => it will be ignored
+        service_timetable = Timetable(self.timestep, 
+                start = service_working_time['works_from'],
+                first = service_working_time['works_from'],
+                last = service_working_time['works_to'],
+                end = service_working_time['works_to']
+            )
+        #print(' Adding service {0}'.format(service_timetable))
+        timetables.add_timetable({'': service_timetable})
+        for t in list(self.items.all()):
+            #print('# Next')
+            item_timetable_info = t.get_timetable(date)
+            if not t.is_active or item_timetable_info['is_weekend']:
+                #print('weekend')
+                item_timetable = service_timetable
+                item_timetable.is_open = False
+            else:
+                #print('own for {0}'.format(t.name))
+                item_timetable = item_timetable_info['timetable']
+            #print(item_timetable)
+            #print(' Adding {0}'.format(item_timetable))
+            timetables.add_timetable({t.name: item_timetable}, item_timetable_info['is_exception'] if item_timetable_info else False)
+        # Start check if all items are closed
+        is_not_all_weekend = False
+        # need to be called, because the result uses copy()
+        final_timetables = timetables.get_timetables()
+        for k in final_timetables:
+            #if k:
+            #    print(str(final_timetables[k].is_open))
+            if k and final_timetables[k].is_open:
+                is_not_all_weekend = True
+                break
+        if not is_not_all_weekend:
+            return {'date': s, 'is_weekend': True, 'items': None, 'timetable': None}
+        # End check if all items are closed
+        timetables.clear_closed_rows()
+        #print(str(timetables._timetables))
+        #print(timetables)
+        #print(final_timetables)
+        final_timetables = timetables.get_timetables()
+        #for t in final_timetables.values():
+        #    print('Stored start({0}) and end({1})'.format(t.start, t.end))
+        now = timezone.now()
+        if self.is_finished_hidden and date == timezone.now().date():
+            timetables.crop_start(now, leave_head_cell = True, floor_crop = True)
+        final_timetables = timetables.get_timetables()
+        result = {'date': s, 'is_weekend': False, 'items': {}}
+        # Database needs to order properly
+        for it in list(self.items.all()):
+            t = final_timetables[it.name]
+            lst = t.gen_head(now)
+            lst.extend(t.gen_list(now))
+            lst.extend(t.gen_tail(now))
+            result['items'][it.name] = {'is_open': t.is_open, 'price': it.get_price(), 'rowspan': t.timesteps_num, 'time': lst}
+        lst = final_timetables[''].gen_head(now)
+        lst.extend(final_timetables[''].gen_list(now))
+        lst.extend(final_timetables[''].gen_tail(now))
+        result['timetable'] = lst
+        return result
+    # Return [{'date','datestr',
+    #   'is_weekend': bool,
+    #   'items': {'name': ...}
+    # }]
+    # or None if not working
+    def gen_timetable_layout(self):
+        # is_active is immediate
+        if not self.is_active:
+            return None
+        result = []
+        now = timezone.now().date()
+        for i in range(self.days_to_show):
+            result.append(self.get_timetable(now + datetime.timedelta(days = i)))
+        return result
+    # TODO: delete
     def get_timetable_list(self):
         # cleans trailing 'closed' marks
         def clean_starting(time_lst):
+            # Flag to 'break' double loop
             clean_flag = True
             index = 0
             result = {}
             while clean_flag == True:
                 for it in time_lst.values():
-                    if 'closed' not in it['time'][index]:
+                    if (it['time'] and 'closed' not in it['time'][index]
+                        and 'weekend' not in it['time'][index]):
                         clean_flag = False
                         if index == 0:
                             result['time_start'] = it['time'][0]['time_start']
@@ -166,6 +327,60 @@ class Service(models.Model):
                     num = 0
             if num != 0:
                 result_lst.append(types.SimpleNamespace(t_steps_per_order = num))
+        def final_prepare_first_day(final_lst, latest_time):
+            # Removes leading passed cells
+            # 'latest_time' is used in 'weekend' case
+            if not final_lst or not final_lst[0]['items']:
+                return
+            # First day
+            lst = final_lst[0]
+            earliest_time = None
+            now = timezone.now().time()
+            # Weekends have no 'time_start' or 'time_end'
+            weekend_lst = []
+            # Find the earliest time
+            for it in list(lst['items'].values()):
+                if it['time'] and 'weekend' not in it['time'][0]:
+                    t_list = it['time']
+                    for t in t_list:
+                        if ((t['time_end'] > now 
+                                or t['time_end'] == datetime.time(0,0,0)) 
+                            and (earliest_time == None 
+                                or earliest_time > t['time_start'])):
+                            earliest_time = t['time_start']
+                            break
+                    if not earliest_time:
+                        earliest_time = datetime.time(23, 59, 59)
+            # Remove all before 'earliest'
+            for i in range(len(lst['time_layout'])):
+                if lst['time_layout'][i]['time_start'] >= earliest_time:
+                    lst['time_layout'] = lst['time_layout'][i:]
+                    break
+            td = (datetime.datetime.combine(datetime.date.min, self.time_step) - datetime.datetime.min)
+            # Fill [earliest, next time_start] 
+            # with 'closed' cells with duration=1
+            for k in lst['items']:
+                t = lst['items'][k]['time']
+                # Empty case
+                if not t:
+                    t_start = datetime.datetime.combine(datetime.date.min, earliest_time)
+                    while t_start < datetime.datetime.combine(datetime.datetime.min, latest_time):
+                        t.append({'time_start': t_start.time(), 'time_end': (t_start + td).time(), 'closed': True})
+                        t_start += td
+                elif 'weekend' not in t[0]:
+                    for i in range(len(t)):
+                        if t[i]['time_start'] >= earliest_time:
+                            t = t[i:]
+                            t_start = datetime.datetime.combine(datetime.date.min, t[0]['time_start'])
+                            while (t_start >= datetime.datetime.min + td
+                                    and (t_start - td).time() >= earliest_time):
+                                t.insert(0, {'time_start': (t_start - td).time(), 'time_end': t[0]['time_start'], 'closed': True})
+                                t_start = datetime.datetime.combine(datetime.date.min, t[0]['time_start'])
+                            break
+                    lst['items'][k]['time'] = t
+                else:
+                    # A big single cell
+                    lst['items'][k]['time'] = [{'weekend': True, 'time_start': earliest_time, 'time_end': latest_time}]
         # collect available_time from all Items
         items = {}
         for item in list(self.items.all().order_by('name')):
@@ -173,27 +388,32 @@ class Service(models.Model):
         weekdays = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье']
         # timedelta is available for datetime only
         now = timezone.now()
+        # To be used in final_prepare_first_day
+        latest_time_first_day = None
         # start generating result
         result_lst = []
         for i in range(self.days_to_show):
             result_lst.append({
                 'day': '{0} {1}'.format(weekdays[(now + datetime.timedelta(days = i)).date().weekday()], (now + datetime.timedelta(days = i)).strftime('%d.%m')),
+                'dateyear': str((now + datetime.timedelta(days = i)).date()),
                 'items': {},
                 'time_layout': []
             })
-            # time layout
+            # This is used twice:
+            # First: item names to create time layout
+            # Second: time layout
             tmp_lst = []
             for name, value in items.items():
                 result_lst[i]['items'][name] = {}
                 result_lst[i]['items'][name]['time'] = items[name][i]
+                # If not set, 'weekend' case will not be set
+                result_lst[i]['items'][name]['rowspan'] = 1
                 if 'weekend' not in items[name][i][0].keys():
                     tmp_lst.append(name)
             if not tmp_lst:
-                result_lst[i]['time_layout'] = [{'time_start': 'Отгул', 'time_end': 'Отгул'}]
-                for it in result_lst[i]['items']:
-                    it['rowspan'] = int(1)
+                result_lst[i]['global_weekend'] = True
             else:
-                # get gcd
+                # get gcd to make cells smaller if all of them are big
                 tmp_lst = list(self.items.all().filter(name__in = tmp_lst))
                 for m in result_lst[i]['items'].values():
                     get_closed_for_gdc(m['time'], tmp_lst)
@@ -220,18 +440,28 @@ class Service(models.Model):
                     })
                     t_start += td
                 result_lst[i]['time_layout'] = tmp_lst
+                if i == 0:
+                    # latest in layout
+                    latest_time_first_day = tmp_lst[-1]['time_end']
+        # Make first day smaller
+        if 'global_weekend' not in result_lst[0]:
+            final_prepare_first_day(result_lst, latest_time_first_day)
         return result_lst
+    # Return [{}]
+    # Return {item_name: {price, timesteps_per_order}}
     def get_item_info(self):
-        result_lst = {'price':{}}
+        result = {}
         for it in self.items.all():
-            if it.price:
-                result_lst['price'][it.name] = it.price
-            else:
-                result_lst['price'][it.name] = self.default_price
+            result[it.name] = {
+                    'price': it.get_price(),
+                    'timesteps_per_order': self.t_steps_per_order
+                }
         return result_lst
     def clean(self):
-        if self.default_works_to < self.default_works_from:
-            raise ValidationError('Please use time of single day')
+        #if self.default_works_to < self.default_works_from:
+        #    raise ValidationError('Please, set working times in 1 day')
+        if self.is_single_item and self.items.count() != 1:
+            raise ValidationError('If is_single_item is set, their count must be = 1 too')
     # Django doesn`t call full_clean (clean_fields, clean, validate_unique)
     # no save() by default
     def save(self, *args, **kwargs):
@@ -242,13 +472,14 @@ class Service(models.Model):
     class Meta:
         verbose_name = 'Сервис'
         verbose_name_plural = 'Сервисы'
+        ordering            = ['order']
 
 
 class Item(models.Model):
     # 'id' field will be added automatically 
     name        = models.CharField(max_length = 64, unique = True, blank = False, null = False, verbose_name = 'Название/номер')
     service     = models.ForeignKey(Service, on_delete = models.CASCADE, related_name = 'items', blank = False, null = False, verbose_name = 'Сервис')
-    price       = models.PositiveSmallIntegerField(blank = True, null = True, verbose_name = 'Цена за шаг времени', default = 0)
+    price       = models.PositiveSmallIntegerField(blank = True, null = True, verbose_name = 'Цена за шаг времени', default = None)
     location    = models.CharField(max_length = 124, blank = True, null = True, verbose_name = 'Расположение')
     t_steps_per_order   = models.PositiveSmallIntegerField(default = 1, 
             validators = [MinValueValidator(1)],
@@ -258,196 +489,103 @@ class Item(models.Model):
     created     = models.DateTimeField(auto_now_add = True, null = False, verbose_name = 'Введено в строй')
     working_times       = GenericRelation(WorkingTime, content_type_field = 'content_type', object_id_field = 'object_id')
     working_time_exceptions = GenericRelation(WorkingTimeException, content_type_field = 'content_type', object_id_field = 'object_id')
-    def _add_user_by_order(in_lst, order):
-        for l in in_lst:
-            if (
-                l['time_start'] <= order['time_start']
-                and (order['time_start'] < l['time_end']
-                    or l['time_end'] == datetime.time(0,0,0))
-            ):
-                #print(1)
-                #print(order['time_start'])
-                l['user'] = order['user']
-            elif (
-                # Remember [X, Y)
-                l['time_start'] < order['time_end']
-                and ((order['time_end'] <= l['time_end']
-                    and order['time_end'] != datetime.time(0,0,0))
-                or (l['time_end'] == datetime.time(0,0,0)
-                    and order['time_end'] != datetime.time(0,0,0)))
-            ):
-                #print(2)
-                #print(order['time_start'])
-                l['user'] = order['user']
-            elif (
-                order['time_start'] <= l['time_start']
-                and ((l['time_end'] <= order['time_end']
-                        and l['time_end'] != datetime.time(0,0,0))
-                    or order['time_end'] == datetime.time(0,0,0))
-            ):
-                #print(3)
-                #print(order['time_start'])
-                l['user'] = order['user']
-    def get_working_time(self, day):
-        if self.is_active == False or self.service.is_active == False:
-            return {'works_from': datetime.time(0,0,0),
-                    'works_to': datetime.time(0,0,0),
-                    'weekend': True}
-        # PRIORITY: Service < Item < WorkingTime < WorkingTimeException
-        # working_time_exceptions
+    order   = models.PositiveSmallIntegerField(default = 0, blank = False, null = False, verbose_name = 'Порядок показа')
+    # Return { 'works_from', 'works_to', 'is_weekend', 'is_exception' }
+    # or None if not working
+    # 'is_exception' means that Item can apply only its own exceptions
+    def get_working_time(self, day, service_working_time = None):
+        # is_active is immediate
+        if not self.is_active or not self.service.is_active:
+            return None
+        if isinstance(day, datetime.datetime):
+            day = day.date()
+        if not isinstance(day, datetime.date):
+            raise TypeError('day must be datetime.date')
+        # PRIORITY: Service[default] < Service[working_time] < 
+        # < Item[working_time] < Service[exception] < Item[exception]
+
+        # item working_time_exceptions
         item_result = service_result = {}
         wte_item = get_working_time_exception_query(self, day)
         if wte_item.exists():
-            item_result = wte_item.first()
-        # same for service
-        wte_service = get_working_time_exception_query(self.service, day)
-        if wte_service.exists():
-            service_result = wte_service.first()
-        # working_times
+            exception = wte_item.first()
+            dt = to_dt(day, exception.works_from, exception.works_to)
+            return {'works_from': dt['start'],
+                    'works_to': dt['end'],
+                    'is_weekend': exception.is_weekend,
+                    'is_exception': True}
+        # get service working_time
+        if not service_working_time:
+            service_working_time = self.service.get_working_time(day)
+        # service exception is more important 
+        # than item`s regular working_time
+        if service_working_time['is_exception']:
+            return service_working_time
+        # item working_times
         wt_item = get_working_time_query(self, day)
         if wt_item.exists() and not item_result:
-            item_result = wt_item.first()
-        # same for service
-        wt_service = get_working_time_query(self.service, day)
-        if wt_service.exists() and not servise_result:
-            service_result = wt_service.first()
-        if not service_result:
-            service_result = {
-                'works_from': self.service.default_works_from,
-                'works_to': self.service.default_works_to,
-                'weekend': False
-            }
-        else:
-            service_result = {
-                'works_from': service_result.works_from,
-                'works_to': service_result.works_to,
-                'weekend': service_result.weekend
-            }
-        if not item_result:
-            item_result = service_result
-        else:
-            item_result = {
-                'works_from': item_result.works_from,
-                'works_to': item_result.works_to,
-                'weekend': item_result.weekend
-            }
-        td = datetime.datetime.combine(datetime.date.min, 
-            self.service.time_step) - datetime.datetime.min
-        # service time start/end
-        sts = datetime.datetime.combine(datetime.date.min, 
-            service_result['works_from'])
-        ste = datetime.datetime.combine(datetime.date.min, 
-            service_result['works_to'])
-        if ste.time() == datetime.time(0,0,0):
-            ste += datetime.timedelta(days = 1)
-        to_prepend = []
-        to_append = []
-        t_start = datetime.datetime.combine(datetime.date.min, item_result['works_from'])
-        t_end = datetime.datetime.combine(datetime.date.min, item_result['works_to'])
-        if not item_result['weekend']:
-            if t_start < sts:
-                t_start = sts
-            elif t_start > sts:
-                while t_start > sts:
-                    to_prepend.append(
-                            {'time_start': sts.time(), 'time_end': (sts + td).time(), 'closed': True}
-                    )
-                    sts += td
-                t_start = sts
-            t_end = sts + (
-                ((datetime.datetime.combine(datetime.date.min, self.service.time_step) - datetime.datetime.min)*self.t_steps_per_order) 
-                * ((ste - sts) 
-                    // ((datetime.datetime.combine(datetime.date.min, self.service.time_step) - datetime.datetime.min)*self.t_steps_per_order))
-            )
-            if t_end > ste and ste.time() != datetime.time(0,0,0) or t_end.time() == datetime.time(0,0,0):
-                t_end = ste
-            elif t_end < ste:
-                while t_end < ste:
-                    to_append.insert(0, 
-                            {'time_start': (ste - td).time(), 'time_end': ste.time(), 'closed': True}
-                    )
-                    ste -= td
-                t_end = ste
-        orders = self.get_orders(day)
-        for o in orders:
-            Item._add_user_by_order(to_prepend, o)
-            Item._add_user_by_order(to_append, o)
-        return {
-            'works_from': t_start.time(),
-            'works_to': t_end.time(),
-            'weekend': item_result['weekend'],
-            'to_prepend': to_prepend,
-            'to_append': to_append
-        }
-    def get_orders(self, day):
-        orders = list(self.orders.all().filter(
-            models.Q(date_start = day)
-            | (models.Q(date_start = day - datetime.timedelta(days = 1),
-                    time_start__gt = models.F('time_end'))
-                # order {23:30, 00:00}
-                & ~models.Q(time_end = datetime.time(0,0,0)))
-        ).order_by('time_end'))
-        result_lst = [None]*len(orders)
-        for i in range(len(orders)):
-            result_lst[i] = {}
-            if orders[i].contains_midnight():
-                if orders[i].date_start != day:
-                    result_lst[i]['time_start'] = datetime.time(0,0,0)
-                    result_lst[i]['time_end'] = orders[i].time_end
-                else:
-                    result_lst[i]['time_end'] = datetime.time(0,0,0)
-                    result_lst[i]['time_start'] = orders[i].time_start
-            else:
-                    result_lst[i]['time_start'] = orders[i].time_start
-                    result_lst[i]['time_end'] = orders[i].time_end
-            result_lst[i]['user'] = orders[i].user
-            result_lst[i]['contains_midnight'] = orders[i].contains_midnight()
-        return result_lst
-    def gen_list_of_intervals(self, time_start, time_end):
-        # Python has timedelta only for datetime, not time
-        td = datetime.datetime.combine(datetime.date.min, 
-            self.service.time_step) - datetime.datetime.min
-        td *= self.t_steps_per_order
-        t_start = datetime.datetime.combine(datetime.date.min, time_start)
-        t_end = datetime.datetime.combine(datetime.date.min, time_end)
-        if t_end.time() == datetime.time(0,0,0):
-            t_end += datetime.timedelta(days = 1)
-        result_lst = []
-        while t_start + td <= t_end:
-            result_lst.append(
-                    {'time_start': t_start.time(), 'time_end': (t_start + td).time()}
-            )
-            t_start += td
-        return result_lst
-    def get_available_time(self):
-
-        result_time_list = []
-        dtime = timezone.now()
-        today = datetime.date.today()
-        for i in range(self.service.days_to_show):
-            day = today + datetime.timedelta(days = i)
-            time_sources = self.get_working_time(day)
-            if time_sources['weekend'] == True:
-                result_time_list[i] = [{'weekend': True}]
-            else:
-                lst = self.gen_list_of_intervals(
-                        time_sources['works_from'], 
-                        time_sources['works_to']
+            working_time = wt_item.first()
+            dt = to_dt(day, working_time.works_from, working_time.works_to)
+            return {'works_from': dt['start'],
+                    'works_to': dt['end'],
+                    'is_weekend': working_time.is_weekend,
+                    'is_exception': False}
+        # if no special for item, return service results
+        return service_working_time
+    # Return { 'date':         str(%d.%m),
+    #          'price':        int,
+    #          'is_weekend':   bool,
+    #          'timetable':    Timetable(start=first, end=last)
+    #          'is_exception': bool }
+    # or None if not working
+    def get_timetable(self, date):
+        # is_active is immediate
+        if not self.is_active:
+            return None
+        weekdays = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье']
+        working_time = self.get_working_time(date)
+        s = '{0} {1}'.format(weekdays[date.weekday()], date.strftime('%d.%m'))
+        #print('# Item start')
+        #print(str(working_time))
+        if not working_time or working_time['is_weekend']:
+            return {'date': s, 'price': self.get_price(), 
+                    'is_weekend': True, 'timetable': None, 
+                    'is_exception': True}
+        timetable = Timetable(
+            timestep = self.service.timestep,
+            start = working_time['works_from'], 
+            end = working_time['works_to'],
+            first = working_time['works_from'], 
+            last = working_time['works_to'],
+            timesteps_num = self.t_steps_per_order)
+        raw_orders = list(self.orders.all().filter(is_approved = True).filter(models.Q(date_start = date) | models.Q(date_start = date - datetime.timedelta(days = 1)) | models.Q(date_start = date + datetime.timedelta(days = 1))))
+        timetable.add_order(raw_orders, 
+                lambda o: TimetableOrder(
+                    start = datetime.datetime.combine(o.date_start,
+                        o.time_start),
+                    end = datetime.datetime.combine(o.date_start,
+                        o.time_end) + datetime.timedelta(days = 1 if o.time_start > o.time_end else 0),
+                    nid = o.pk,
+                    extra_data = {'user': o.user,
+                        'participations': list(o.participations.all()),
+                        'title': o.title}
                 )
-                orders = self.get_orders(day)
-                for o in orders:
-                    Item._add_user_by_order(lst, o)
-                #print('{0}:\n   {1}\n   {2}\n    {3}'.format(self.name, str(lst), str(time_sources['to_prepend']), str(time_sources['to_append'])))
-                lst[:0] = time_sources['to_prepend']
-                lst.extend(time_sources['to_append'])
-                result_time_list.append(lst)
-        return result_time_list
+            )
+        #print('# Item end')
+        return {'date': s, 'price': self.get_price(), 
+                'is_weekend': False, 'timetable': timetable,
+                'is_exception': working_time['is_exception']}
+    def get_price(self):
+        return self.price if self.price != None else self.service.default_price
     def __str__(self):
         return self.name
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super(Item, self).save(*args, **kwargs)
     class Meta:
         verbose_name = 'предмет сервиса'
         verbose_name_plural = 'предметы сервиса'
-        ordering = ['location', 'price']
+        ordering = ['order', 'location', 'price']
 
 
 class Order(models.Model):
@@ -456,6 +594,9 @@ class Order(models.Model):
     time_end    = models.TimeField(blank = False, null = False, verbose_name = 'Время конца')
     item        = models.ForeignKey(Item, on_delete = models.CASCADE, related_name = 'orders', blank = False, null = False, verbose_name = 'Предмет сервиса')
     user        = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.CASCADE, related_name = 'orders', blank = False, null = False, verbose_name = 'Пользователь')
+    title       = models.TextField(blank = True, null = True, verbose_name = 'Назначение заказа')
+    is_approved = models.BooleanField(default = True, blank = False, null = False, verbose_name = 'Одобрено')
+    payed       = models.PositiveSmallIntegerField(blank = False, null = False, verbose_name = 'Оплачено')
     # time_start > time_end is normal, we say it means 'finish next day'
     def contains_midnight(self):
         return self.time_start > self.time_end and self.time_end != datetime.time(0,0,0)
@@ -471,15 +612,17 @@ class Order(models.Model):
                     time_start__gt = models.F('time_end'))
                     # order {23:30, 00:00}
                     & ~models.Q(time_end = datetime.time(0,0,0)))
-            ) & ~models.Q(pk = self.pk)
+            ) & ~models.Q(pk = self.pk) & models.Q(item = self.item)
+            & models.Q(is_approved = True)
         ).order_by('time_end'))
         for o in order_lst:
             if (
+                # Remember [X, Y)
                 o.time_start <= self.time_start
-                and (self.time_start <= o.time_end
+                and (self.time_start < o.time_end
                     or o.time_end == datetime.time(0,0,0))
             ):
-                raise ValidationError('Order is in conflict with the order [{0}-{1})'.format(o.time_start, o.time_end))
+                raise ValidationError('Order [{0}-{1}] is in conflict with the order [{2}-{3}]'.format(self.time_start, self.time_end, o.time_start, o.time_end))
             elif (
                 # Remember [X, Y)
                 o.time_start < self.time_end
@@ -488,7 +631,7 @@ class Order(models.Model):
                 or (o.time_end == datetime.time(0,0,0)
                     and self.time_end != datetime.time(0,0,0)))
             ):
-                raise ValidationError('Order is in conflict with the order [{0}-{1})'.format(o.time_start, o.time_end))
+                raise ValidationError('Order [{0}-{1}] is in conflict with the order [{2}-{3})'.format(self.time_start, self.time_end, o.time_start, o.time_end))
             elif (
                 self.time_start <= o.time_start
                 and ((o.time_end <= self.time_end
@@ -502,11 +645,27 @@ class Order(models.Model):
     # Django doesn`t call full_clean (clean_fields, clean, validate_unique)
     # no save() by default
     def save(self, *args, **kwargs):
-        self.full_clean()
+        self.clean()
         return super(Order, self).save(*args, **kwargs)
     def __str__(self):
         return '{0} ({1} {2}-{3})'.format(self.item.name, self.date_start.strftime('%Y-%m-%d'), self.time_start.strftime('%H:%M:%S'), self.time_end.strftime('%H:%M:%S'))
+    def __repr__(self):
+        return self.__str__()
     class Meta:
         verbose_name = 'Заказ'
         verbose_name_plural = 'Заказы'
-        unique_together = (('date_start', 'time_start'), ('date_start', 'time_end'),)
+        ordering = ['is_approved', '-date_start', 'time_start']
+
+class Participation(models.Model):
+    order   = models.ForeignKey(Order, on_delete = models.CASCADE, related_name = 'participations', blank = False, null = False, verbose_name = 'Событие')
+    user    = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.CASCADE, related_name = 'participations', blank = False, null = False, verbose_name = 'Пользователь')
+    def clean(self):
+        if self.user.participations.filter(order = self.order).exists():
+            raise ValidationError('Participation already exists!')
+    def save(self, *args, **kwargs):
+        self.clean()
+        return super(Participation, self).save(*args, **kwargs)
+    class Meta:
+        verbose_name = 'Участие'
+        verbose_name_plural = 'Участия'
+        ordering = ['-order', 'user']

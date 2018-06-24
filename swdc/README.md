@@ -10,4 +10,4 @@
 - preview.sh - collect all html in preview folder to see in browser for testing
 
 ### See TODO list
-[TODO list](swdc/TODO.md)
+[TODO list](TODO.md)

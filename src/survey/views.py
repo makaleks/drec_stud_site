@@ -17,11 +17,27 @@ class SurveyListView(TemplateView):
         #years = self.request.GET.get('years')
         #if years:
         #    queryset = queryset.filter(Q(started__year__in = years.split('-')) | Q(started__year__in = years.split('-'))).order_by('-started')
+        answered = []
+        if self.request.user.is_authenticated:
+            answered = list(self.request.user.answers.filter(Q(survey__started__lte = now) & Q(survey__finished__gt = now)).values_list('survey__id', flat = True))
         queryset = Survey.objects.all()
-        queyset_now = queryset.filter(Q(started__lte = now) & Q(finished__gt = now))
-        queryset_finished = queryset.filter(finished__lt = now)
-        context['survey_list_now'] = list(queyset_now)
-        context['survey_list_finished'] = list(queryset_finished)
+        queryset_finished = list(queryset.filter(finished__lt = now))
+        queyset_not_finished = list(queryset.filter(Q(started__lte = now) & Q(finished__gt = now)))
+        queryset_now = []
+        queryset_editable = []
+        queryset_uneditable = []
+        for q in queyset_not_finished:
+            if q.id in answered:
+                if q.allow_rewrite and not q.is_anonymous:
+                    queryset_editable.append(q)
+                else:
+                    queryset_finished.append(q)
+            else:
+                queryset_now.append(q)
+
+        context['survey_list_now'] = queryset_now
+        context['survey_list_editable'] = queryset_editable
+        context['survey_list_finished'] = queryset_finished
         return context
 
 class SurveyDetailView(DetailView):
@@ -50,6 +66,7 @@ class SurveyDetailView(DetailView):
         else:
             a = Answer(survey = Survey.objects.all().filter(pk = data['survey_pk']).first(), user = request.user)
             a_data = AnswerData(value = data['survey_result'])
+            a_data.survey = survey
         if a.survey.finished < timezone.now():
             finished = True
         elif a.survey.started > timezone.now():

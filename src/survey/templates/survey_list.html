@@ -26,22 +26,49 @@
         <h2>Текущие опросы:</h2>
         {% for survey in survey_list_now %}
             <div class='tagged tag_hostel'>
-                <p><a href='{{ survey.get_absolute_url }}' class='survey_list'>{{ survey.title }}</a></p>
-                <!-- <small><span class='tag blue'>общежитие</span></small> -->
+                <div class='card'>
+                    <a href='{{ survey.get_absolute_url }}' class='survey_list'>{{ survey.title }}</a>
+                    <br />
+                    {{ survey.description }}
+                    <br />
+                    <small>Создано: {{ survey.started }}; Доступно до {{ survey.finished }};</small>
+                </div>
                 <hr>
             </div>
         {% endfor %}
-    {% else %}
+    {% elif not survey_list_editable %}
         <h2>Текущих опросов нет<h2>
     {% endif %}
 </section>
-<section class='card'>
+{% if survey_list_editable %}
+    <section class='card' style='background-color:rgb(120,255,120);'>
+        <h2>Изменить ответ</h2>
+        {% for survey in survey_list_editable %}
+            <div class='tagged tag_hostel'>
+                <div class='card'>
+                    <a href='{{ survey.get_absolute_url }}' class='survey_list'>{{ survey.title }}</a>
+                    <br />
+                    {{ survey.description }}
+                    <br />
+                    <small>Создано: {{ survey.started }}; Доступно до {{ survey.finished }};</small>
+                </div>
+                <hr>
+            </div>
+        {% endfor %}
+    </section>
+{% endif %}
+<section class='card' style='background-color:rgb(190,190,190);'>
     {% if survey_list_finished %}
         <h2>Прошедшие опросы:</h2>
         {% for survey in survey_list_finished %}
             <div class='tagged tag_hostel'>
-                <p>{#<a href='{{ survey.get_absolute_url }}' class='survey_list'>#}{{ survey.title }}{#</a>#}</p>
-                <!-- <small><span class='tag blue'>общежитие</span></small> -->
+                <div class='card'>
+                    <span class='survey_list'>{{ survey.title }}</span>
+                    <br />
+                    {{ survey.description }}
+                    <br />
+                    <small>Создано: {{ survey.started }}; Доступно до {{ survey.finished }};</small>
+                </div>
                 <hr>
             </div>
         {% endfor %}
