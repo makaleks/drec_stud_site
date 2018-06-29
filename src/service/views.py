@@ -196,7 +196,7 @@ class ServiceDetailView(DetailView):
                 for l in order_lst:
                     total_price += items_dict[l['name']].get_price()
                 for l in undo_order_lst:
-                    if after_now_time * 2 > datetime.datetime.combine(l.date_start, l.time_start):
+                    if after_now_time > datetime.datetime.combine(l.date_start, l.time_start):
                         total_price -= int(l.payed * self.object.late_cancel_multiplicator)
                     else:
                         total_price -= l.payed
