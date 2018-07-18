@@ -138,7 +138,7 @@ class Service(models.Model):
     instruction = BBCodeTextField(blank = True, null = True, verbose_name = 'Инструкция и подробное описание')    
     image       = DefaultImageField(blank = False, null = False)
     timestep    = models.TimeField(blank = False, null = False, verbose_name = 'Минимальное время использования (шаг времени)')
-    max_time_steps  = models.PositiveSmallIntegerField(blank = False, null = False, default = 1, verbose_name = 'Максимальное число шагов времени непрерывного использования')
+    max_continuous_orders = models.PositiveSmallIntegerField(blank = False, null = False, default = 1, verbose_name = 'Максимум непрерывных заказов на одну машинку')
     default_price   = models.PositiveSmallIntegerField(blank = True, null = True, verbose_name = 'Цена по-умолчанию за шаг времени', default = 0)
     edited      = models.DateTimeField(auto_now = True, verbose_name = 'Последнее редактирование этих данных')
     is_active   = models.BooleanField(default = True, blank = False, null = False, verbose_name = 'Работает')
@@ -146,7 +146,7 @@ class Service(models.Model):
     default_works_to    = models.TimeField(blank = False, null = False, default = datetime.time(00,00,00), verbose_name = 'Конец рабочего времени по-умолчанию')
     days_to_show        = models.PositiveSmallIntegerField(default = 3, validators = [MinValueValidator(1)], blank = False, null = False, verbose_name = 'Дней на заказ')
     time_after_now      = models.TimeField(blank = False, null = False, default = datetime.time(0,20,0), verbose_name = 'Времени на запись после начала')
-    late_cancel_multiplicator = models.FloatField(blank = False, null = False, validators = [MinValueValidator(0)], default = 1.0, verbose_name = 'На сколько умножить при отмене')
+    late_cancel_multiplicator = models.FloatField(blank = False, null = False, validators = [MinValueValidator(0)], default = 1.0, verbose_name = 'На сколько умножить при поздней отмене')
     working_times       = GenericRelation(WorkingTime, content_type_field = 'content_type', object_id_field = 'object_id')
     working_time_exceptions = GenericRelation(WorkingTimeException, content_type_field = 'content_type', object_id_field = 'object_id')
     responsible_user    = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.SET_NULL, blank = True, null = True, verbose_name = 'Ответственное лицо')
@@ -207,7 +207,7 @@ class Service(models.Model):
     #   'timetable': [TimetableInterval]
     # }
     # or None if not working
-    def get_timetable(self, date):
+    def get_timetable(self, date, user):
         # is_active is immediate
         if not self.is_active:
             return None
@@ -268,7 +268,7 @@ class Service(models.Model):
         for it in list(self.items.all()):
             t = final_timetables[it.name]
             lst = t.gen_head(now)
-            lst.extend(t.gen_list(now))
+            lst.extend(t.gen_list_limited(self.max_continuous_orders, 'user', user, now))
             lst.extend(t.gen_tail(now))
             result['items'][it.name] = {'is_open': t.is_open, 'price': it.get_price(), 'rowspan': t.timesteps_num, 'time': lst}
         lst = final_timetables[''].gen_head(now)
@@ -281,14 +281,14 @@ class Service(models.Model):
     #   'items': {'name': ...}
     # }]
     # or None if not working
-    def gen_timetable_layout(self):
+    def gen_timetable_layout(self, user):
         # is_active is immediate
         if not self.is_active:
             return None
         result = []
         now = timezone.now().date()
         for i in range(self.days_to_show):
-            result.append(self.get_timetable(now + datetime.timedelta(days = i)))
+            result.append(self.get_timetable(now + datetime.timedelta(days = i), user))
         return result
     # TODO: delete
     def get_timetable_list(self):
@@ -600,10 +600,8 @@ class Order(models.Model):
     # time_start > time_end is normal, we say it means 'finish next day'
     def contains_midnight(self):
         return self.time_start > self.time_end and self.time_end != datetime.time(0,0,0)
-    # Validation
-    def clean(self):
-        if self.date_start < datetime.date.today():
-            raise ValidationError('date_start can`t be before today()')
+    # Validate no orders overflow each other
+    def clean_time_limits(self):
         order_lst = list(Order.objects.all().filter(
             (
                 models.Q(date_start = self.date_start)
@@ -641,7 +639,34 @@ class Order(models.Model):
                     and o.contains_midnight() else False)
             ):
                 raise ValidationError('Order is in conflict with the order [{0}-{1})'.format(o.time_start, o.time_end))
-
+    def clean_user_orders_max(self):
+        dt = to_dt(self.date_start, self.time_start, self.time_end);
+        date = self.date_start
+        wt = self.item.get_working_time(date)
+        if datetime.datetime.combine(date, self.time_start) < wt['works_from']:
+           date -= datetime.timedelta(days = 1)
+        max_orders = self.item.service.max_continuous_orders
+        timetable = self.item.get_timetable(date)
+        if not timetable['timetable']:
+            raise ValidationError('Can`t get timetable for order({0}) for date({1})'.format(self, date))
+        else:
+            timetable = timetable['timetable']
+        layout = timetable.gen_list_limited(max_orders, 'user', self.user)
+        oi = -1
+        for l in layout:
+            oi += 1
+            if l.start == dt['start'] and l.end == dt['end']:
+                break
+        if oi == -1:
+            raise ValidationError('No interval for validation found!')
+        if not layout[oi].is_open:
+            raise ValidationError('Can`t save order({0}) (note: the limit is ({1})'.format(self, max_orders))
+    # Validation final
+    def clean(self):
+        if self.date_start < datetime.date.today():
+            raise ValidationError('date_start can`t be before today()')
+        self.clean_time_limits()
+        self.clean_user_orders_max()
     # Django doesn`t call full_clean (clean_fields, clean, validate_unique)
     # no save() by default
     def save(self, *args, **kwargs):

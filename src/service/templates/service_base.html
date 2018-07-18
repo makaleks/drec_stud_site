@@ -44,7 +44,6 @@ Additional blocks:
         <div>
             {% block additional_info %}
             {% endblock %}
-            <p><b>Чтобы выбрать или отменить выбор интервала нажми на него</b></p>
         </div>
     </section>
 
@@ -88,34 +87,32 @@ Additional blocks:
         {% endif %}
         <form action='' method='post' {% block form_attributes %}{% endblock %}>
             {% csrf_token %}
-            {% with time_list=service.gen_timetable_layout %}
-                <div id='timetables'>
-                    <!-- main loop -->
-                    {% for day in time_list %}
-                        <div {% block day_attributes %}{% endblock %}>
-                            <div class='card'>
-                                <input id='show_day_{{ forloop.revcounter0 }}' type='checkbox' hidden class='shownews' {% if forloop.first %}checked{% endif %}/>
-                                <div class='cutted'><h2>{{ day.date }}</h2><label class='link-underline' for='show_day_{{ forloop.revcounter0 }}'><a class='lightred'>&nbsp;Открыть&nbsp;</a></label></div>
-                                <div class='full'>
-                                    {% if day.is_weekend %}
-                                        <h3>Закрыто</h3>
+            <div id='timetables'>
+                <!-- main loop -->
+                {% for day in time_list %}
+                    <div {% block day_attributes %}{% endblock %}>
+                        <div class='card'>
+                            <input id='show_day_{{ forloop.revcounter0 }}' type='checkbox' hidden class='shownews' {% if forloop.first %}checked{% endif %}/>
+                            <div class='cutted'><h2>{{ day.date }}</h2><label class='link-underline' for='show_day_{{ forloop.revcounter0 }}'><a class='lightred'>&nbsp;Открыть&nbsp;</a></label></div>
+                            <div class='full'>
+                                {% if day.is_weekend %}
+                                    <h3>Закрыто</h3>
+                                {% else %}
+                                    {% if day.items %}
+                                        <!-- to extend -->
+                                        {% block single_day %}
+                                        {% endblock %}
                                     {% else %}
-                                        {% if day.items %}
-                                            <!-- to extend -->
-                                            {% block single_day %}
-                                            {% endblock %}
-                                        {% else %}
-                                            <h3>Нечем пользоваться</h3>
-                                        {% endif %}
-                                    {%  endif %}
-                                    <br /><br />
-                                    <label class='link-underline' for='show_day_{{ forloop.revcounter0 }}'><a class='lightred'>&nbsp;Скрыть&nbsp;</a></label>
-                                    </div>
+                                        <h3>Нечем пользоваться</h3>
+                                    {% endif %}
+                                {%  endif %}
+                                <br /><br />
+                                <label class='link-underline' for='show_day_{{ forloop.revcounter0 }}'><a class='lightred'>&nbsp;Скрыть&nbsp;</a></label>
                                 </div>
                             </div>
-                        {% endfor %}
-                </div>
-            {% endwith %}
+                        </div>
+                    {% endfor %}
+            </div>
             {% if user.is_authenticated %}
                 <div class='card hidden' id='preresult'>
                 </div>
@@ -224,4 +221,6 @@ function show_orders(json_orders) {
 }
     </script>
     {% endif %}
+
+{% block body_extras_2 %}{% endblock %}
 {% endblock %}

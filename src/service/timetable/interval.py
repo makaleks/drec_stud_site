@@ -6,6 +6,7 @@ class TimetableInterval:
     This class of Timetable interval.
     The used model is '[start, end)'
     The objects of this class should not be generated manually, so all fields are read-only.
+    Note: gen_list_limited() from Timetable can define additional ``group_size`` attribute to show the length of continuous orders by some user.
 
     :var start: readonly, interval start, always >= ``end``
     :var end: readonly, interval end, always <= ``start``

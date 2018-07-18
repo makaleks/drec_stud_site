@@ -123,6 +123,8 @@ class ServiceDetailView(DetailView):
         return ['service_timetable.html' if not self.object.is_single_item else 'service_timetable_single.html']
     def get_context_data(self, **kwargs):
         context = super(ServiceDetailView, self).get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            context['time_list'] = self.object.gen_timetable_layout(self.request.user)
         note = {}
         if self.status:
             status = self.status
