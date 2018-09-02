@@ -11,16 +11,33 @@ class Command(BaseCommand):
     help = 'Load new users using .txt file with JSON data'
     def add_arguments(self, parser):
         parser.add_argument('file', type=argparse.FileType('r'), help='Path to file')
+        parser.add_argument('allpossible', action='store_true')
     def handle(self, *args, **options):
         data = json.load(options['file'])
         self.stdout.write('{0}: {1}\n'.format(type(data), data))
         self.stdout.write('{0}: {1}\n'.format(type(settings.AUTH_USER_MODEL), settings.AUTH_USER_MODEL))
         user_class = get_django_model_by_string(settings.AUTH_USER_MODEL)
-        try:
-            with transaction.atomic():
-                for d in data:
-                    user = user_class(**d)
+        user = None
+        errors = []
+        if options['allpossible']:
+            for d in data:
+                user = user_class(**d)
+                try:
                     user.save()
-        except BaseException as e:
-            raise CommandError(str(e))
-        self.stdout.write(self.style.SUCCESS('Done! Successfully written {0} users!'.format(len(data))))
+                except BaseException as e:
+                    if user:
+                        errors.append(user.account_id)
+                        self.stdout.write(self.style.ERROR('The following user caused error\n{0}'.format(user.get_all_data()))
+                    else:
+                        errors.append('ERR')
+        else:
+            try:
+                with transaction.atomic():
+                    for d in data:
+                        user = user_class(**d)
+                        user.save()
+            except BaseException as e:
+                if user:
+                    self.stdout.write(self.style.ERROR('The following user caused error\n{0}'.format(user.get_all_data()))
+                raise CommandError(str(e))
+                self.stdout.write(self.style.SUCCESS('Done! Successfully written {0} users!{1}'.format(len(data), errors ? ' \nErrors:{0}'.format(errors):'')))

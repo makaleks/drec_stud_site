@@ -4,8 +4,12 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.utils import timezone
 from django.db.models import Q
+from django.core.exceptions import ValidationError
+from django.conf import settings
 from service.models import Service
 from survey.models import Survey, Answer
+from utils.validators import *
+from utils.utils import check_unique, get_id_by_url_vk
 from .managers import UserManager
 
 # Create your models here.
@@ -46,6 +50,20 @@ class User(AbstractBaseUser, PermissionsMixin):
     # Password hash requires 128 characters
     # Uncomment to enable #passwordAuth
     password        = models.CharField(default = make_random_password, max_length = 128, verbose_name = 'Хэш резервного пароля')
+    def get_all_data(self):
+        return {
+                'first_name':      first_name,
+                'last_name':       last_name,
+                'patronymic_name': patronymic_name,
+                'phone_number':    phone_number,
+                'account_id':      account_id,
+                'group_number':    group_number,
+                'account':         account,
+                'email':           email,
+                'is_staff':        is_staff,
+                'is_active':       is_active,
+                'card_uid':        card_uid,
+        }
     def get_full_name(self):
         return "{0} {1}".format(self.first_name, self.last_name)
     def get_short_name(self):
@@ -58,6 +76,48 @@ class User(AbstractBaseUser, PermissionsMixin):
         actual = Survey.objects.filter(Q(started__lte = now) & Q(finished__gt = now))
         return actual.exclude(id__in = passed).count()
         #return Survey.objects.filter(
+    def clean(self):
+        # Format of phone_number (optional)
+        if self.phone_number and is_valid_phone(self.phone_number) is False:
+            raise ValidationError({'phone_number': 'Неверный формат телефонного номера'})
+        # Format of name
+        if is_valid_name(self.last_name) is False:
+            raise ValidationError({'last_name': 'Неверный формат фамилии'})
+        if is_valid_name(self.first_name) is False:
+            raise ValidationError({'first_name': 'Неверный формат имени'})
+        if self.patronymic_name and is_valid_name(self.patronymic_name) is False:
+            raise ValidationError({'patronymic_name': 'Неверный формат отчества'})
+        # Format of group
+        if is_valid_group(self.group_number) is False:
+            raise ValidationError({'group_number': 'Неверный формат группы'})
+        # Format of email (optional)
+        if self.email and (is_valid_email(self.email) is False):
+            raise ValidationError({'email': 'Неверный формат почты'})
+
+        # Unique phone
+        if self.phone_number:
+            user = check_unique(User, 'phone_number', self.phone_number)
+            if user:
+                raise ValidationError({'phone_number': 'Этот номер телефона уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number)})
+        # Unique and valid account_id
+        id_num = get_id_by_url_vk(self.account_id)
+        if not settings.IS_ID_RECOGNITION_BROKEN_VK:
+            if not id_num:
+                raise ValidationError({'account_id': 'Не удалось получить id из социальной сети. Это точно существующий пользователь?'})
+            else:
+                self.account_id = id_num
+        user = check_unique(User, 'account_id', self.account_id)
+        if user:
+            raise ValidationError({'account_id': 'Эту ссылку на аккаунт уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number)})
+        # Unique email (optional)
+        if len(self.email) != 0:
+            user = check_unique(User, 'email', self.email)
+            if user:
+                raise ValidationError({'email': 'Эту почту уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number)})
+    def save(self, no_clean = False, *args, **kwargs):
+        if not no_clean:
+            self.full_clean()
+        return super(User, self).save(*args, **kwargs)
     class Meta:
         ordering            = ['is_superuser', 'is_staff', 'group_number', 'last_name']
         verbose_name        = 'Пользователя'
