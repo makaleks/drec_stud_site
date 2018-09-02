@@ -11,7 +11,7 @@ class Command(BaseCommand):
     help = 'Load new users using .txt file with JSON data'
     def add_arguments(self, parser):
         parser.add_argument('file', type=argparse.FileType('r'), help='Path to file')
-        parser.add_argument('allpossible', action='store_true')
+        parser.add_argument('--allpossible', action='store_true', help='Ignore possible errors, save all correct')
     def handle(self, *args, **options):
         data = json.load(options['file'])
         self.stdout.write('{0}: {1}\n'.format(type(data), data))
