@@ -38,6 +38,6 @@ class Command(BaseCommand):
                         user.save()
             except BaseException as e:
                 if user:
-                    self.stdout.write(self.style.ERROR('The following user caused error\n{0}'.format(user.get_all_data()))
+                    self.stdout.write(self.style.ERROR('The following user caused error\n{0}'.format(user.get_all_data())))
                 raise CommandError(str(e))
-                self.stdout.write(self.style.SUCCESS('Done! Successfully written {0} users!{1}'.format(len(data), errors ? ' \nErrors:{0}'.format(errors):'')))
+                self.stdout.write(self.style.SUCCESS('Done! Successfully written {0} users!{1}'.format(len(data), ' \nErrors:{0}'.format(errors) if errors else '')))
