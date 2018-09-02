@@ -97,7 +97,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         # Unique phone
         if self.phone_number:
             user = check_unique(User, 'phone_number', self.phone_number)
-            if user:
+            if user and user.pk != self.pk:
                 raise ValidationError({'phone_number': 'Этот номер телефона уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number)})
         # Unique and valid account_id
         id_num = get_id_by_url_vk(self.account_id)
@@ -107,12 +107,12 @@ class User(AbstractBaseUser, PermissionsMixin):
             else:
                 self.account_id = id_num
         user = check_unique(User, 'account_id', self.account_id)
-        if user:
+        if user and user.pk != self.pk:
             raise ValidationError({'account_id': 'Эту ссылку на аккаунт уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number)})
         # Unique email (optional)
         if len(self.email) != 0:
             user = check_unique(User, 'email', self.email)
-            if user:
+            if user and user.pk != self.pk:
                 raise ValidationError({'email': 'Эту почту уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number)})
     def save(self, no_clean = False, *args, **kwargs):
         if not no_clean:
