@@ -27,7 +27,7 @@ class Command(BaseCommand):
                 except BaseException as e:
                     if user:
                         errors.append(user.account_id)
-                        self.stdout.write(self.style.ERROR('The following user caused error\n{0}'.format(user.get_all_data()))
+                        self.stdout.write(self.style.ERROR('The following user caused error\n{0}'.format(user.get_all_data())))
                     else:
                         errors.append('ERR')
         else:
