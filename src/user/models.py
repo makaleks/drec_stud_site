@@ -52,17 +52,17 @@ class User(AbstractBaseUser, PermissionsMixin):
     password        = models.CharField(default = make_random_password, max_length = 128, verbose_name = 'Хэш резервного пароля')
     def get_all_data(self):
         return {
-                'first_name':      first_name,
-                'last_name':       last_name,
-                'patronymic_name': patronymic_name,
-                'phone_number':    phone_number,
-                'account_id':      account_id,
-                'group_number':    group_number,
-                'account':         account,
-                'email':           email,
-                'is_staff':        is_staff,
-                'is_active':       is_active,
-                'card_uid':        card_uid,
+                'first_name':      self.first_name,
+                'last_name':       self.last_name,
+                'patronymic_name': self.patronymic_name,
+                'phone_number':    self.phone_number,
+                'account_id':      self.account_id,
+                'group_number':    self.group_number,
+                'account':         self.account,
+                'email':           self.email,
+                'is_staff':        self.is_staff,
+                'is_active':       self.is_active,
+                'card_uid':        self.card_uid,
         }
     def get_full_name(self):
         return "{0} {1}".format(self.first_name, self.last_name)
