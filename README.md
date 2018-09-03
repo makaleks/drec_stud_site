@@ -27,7 +27,9 @@ This repository contains copies of some open libraries to be independent from CD
 
 All license files are available, this libraries are just linked, we are not their authors. 
 
-0. Don\`t forget to create `setting_additions.py` with any values, see **Project structure** below.
+The project uses **Python3**. 
+
+0. Don\`t forget to create `setting_additions.py` with any values, see **Project structure** below for details.
 
 1. Clone the repository:
 ```bash
