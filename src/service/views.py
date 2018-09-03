@@ -123,6 +123,8 @@ class ServiceDetailView(DetailView):
         return ['service_timetable.html' if not self.object.is_single_item else 'service_timetable_single.html']
     def get_context_data(self, **kwargs):
         context = super(ServiceDetailView, self).get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            context['time_list'] = self.object.gen_timetable_layout(self.request.user)
         note = {}
         if self.status:
             status = self.status
@@ -196,7 +198,7 @@ class ServiceDetailView(DetailView):
                 for l in order_lst:
                     total_price += items_dict[l['name']].get_price()
                 for l in undo_order_lst:
-                    if after_now_time * 2 > datetime.datetime.combine(l.date_start, l.time_start):
+                    if after_now_time > datetime.datetime.combine(l.date_start, l.time_start):
                         total_price -= int(l.payed * self.object.late_cancel_multiplicator)
                     else:
                         total_price -= l.payed

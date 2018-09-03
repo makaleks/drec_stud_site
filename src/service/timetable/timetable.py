@@ -158,6 +158,43 @@ class Timetable:
             it.orders = self.get_orders(it)
             result.append(it)
         return result
+    def gen_list_limited(self, limit, usr_field, usr_obj, now = None):
+        def is_ordered(elem, usr_field, usr_obj):
+            if not elem.is_open or not elem.orders:
+                return False
+            for o in elem.orders:
+                if not usr_field in o.extra_data:
+                    raise ValueError('order({0}) in elem({1}) does not contain \'{2}\' field'.format(o, elem, usr_field))
+                if o.extra_data[usr_field] == usr_obj:
+                    return True
+            return False
+        if not limit or not isinstance(limit, int) or limit <= 0:
+            raise TypeError('limit({0}) must be int > 0'.format(limit))
+        elif not usr_field or not isinstance(usr_field, str):
+            raise TypeError('usr_field({0}) must be the field of the \'extra\' Order field'.format(usr_field.__class__.__name__))
+        result = self.gen_list(now)
+        for i in range(len(result)):
+            result[i].group_size = 1 if is_ordered(result[i], usr_field, usr_obj) else 0
+        i = 0
+        while i < len(result):
+            if result[i].group_size:
+                j = i + 1
+                while j < len(result) and result[j].group_size: 
+                    j += 1
+                result[i].group_size = result[j - 1].group_size = j - i
+                i = j
+            i += 1
+        i = 0
+        while i < len(result):
+            if not result[i].group_size:
+                if i != 0 and i != len(result) - 1 and result[i - 1].group_size and result[i + 1].group_size and 1 + result[i - 1].group_size + result[i + 1].group_size >= limit:
+                    result[i].is_open = False
+                elif i != 0 and result[i - 1].group_size >= limit:
+                    result[i].is_open = False
+                elif i != len(result) - 1 and result[i + 1].group_size >= limit:
+                    result[i].is_open = False
+            i += 1
+        return result
     def gen_tail(self, now = None):
         result = []
         first_in_tail = self.get_last_start()
@@ -258,4 +295,4 @@ class Timetable:
     def __repr__(self):
         return str(self)
     def __len__(self):
-        return (self.end - self.start) // (self.timestep * self.timesteps_per_order)
+        return (self.end - self.start) // (self.timestep * self.timesteps_num)

@@ -13,6 +13,8 @@
             <span class='preview choisen'></span> - Этот интервал был выбран Вами<br />
             <span class='preview started'></span> - Ваш интервал уже идёт, но его пока ещё можно отменить (лимит - {{ service.time_after_now|util_get_min_time_str }})
         </p>
+        <p><b>Нажмите на интервал для выбора</b></p>
+        <p>Максимальное число заказов подряд (один за другим) для каждой машинки - {{ service.max_continuous_orders }}</p>
 {% endblock %}
 
 {% block form_attributes %}
@@ -62,7 +64,7 @@
 <!-- break trailing spaces for nicer appeal -->
 <tr>
     {% if not cell.is_open or cell.is_open and cell.is_now and cell.start|util_is_finished:service %}
-    <td style='padding:0;min-width:100px;max-width:100px;' class='ended' {% if cell.is_open %}rowspan='{{ i_value.rowspan }}'{% endif %}>
+        <td style='padding:0;min-width:100px;max-width:100px;' class='ended' {% if cell.is_open %}rowspan='{{ i_value.rowspan }}'{% endif %}>
             {% if user.is_authenticated and cell.orders %}
                 <label class='userinfo' for='modal_userinfo_check' onclick='show_orders({{ cell.orders|util_orders_to_json }});' title='Посмотреть инфо о заказавшем(-ей)'></label>
             {% endif %}
@@ -74,13 +76,15 @@
             <!-- means 'not current user' -->
             {% elif not cell.orders %}
                 <label>
-                    <input type='checkbox' name='order={{ i_name }}&&{{ cell.start.time }}&&{{ cell.end.time }}&&{{ cell.start.date|date:'Y-m-d' }}' data-price='{{ i_value.price }}' data-timestart='{{ cell.start.time }}' data-timeend='{{ cell.end.time }}' data-item='{{ i_name }}' class='hidden'/>
+                    <input type='checkbox' name='order={{ i_name }}&&{{ cell.start.time }}&&{{ cell.end.time }}&&{{ cell.start.date|date:'Y-m-d' }}' data-price='{{ i_value.price }}' data-timestart='{{ cell.start.time }}' data-timeend='{{ cell.end.time }}' data-item='{{ i_name }}' data-groupsize='{{ cell.group_size }}' class='hidden'/>
                     <span><div>+</div></span>
                 </label>
             {% elif cell.orders and cell.orders|util_is_current_user_order:user %}
                 <label>
                     {% with order=cell.orders|first %}
-                    <!--<input type='checkbox' name='cancel={{ order.id }}' data-price={% if cell.is_now %}'-{{ i_value.price|util_get_late_price:service }}'{% else %}'-{{ i_value.price }}'{% endif %} data-timestart='{{ cell.start.time }}' data-timeend='{{ cell.end.time }}' data-item='{{ i_name }}' class='hidden'/>-->
+                        {% if not cell.is_now %}
+                        <input type='checkbox' name='cancel={{ order.id }}' data-price={% if cell.is_now %}'-{{ i_value.price|util_get_late_price:service }}'{% else %}'-{{ i_value.price }}'{% endif %} data-timestart='{{ cell.start.time }}' data-timeend='{{ cell.end.time }}' data-item='{{ i_name }}' data-groupsize='{{ cell.group_size }}' class='hidden'/>
+                        {% endif %}
                         <span><div>-</div></span>
                     {% endwith %}
                 </label>
@@ -104,4 +108,127 @@
             {% endfor %}
         </tr>
     </table>
+{% endblock %}
+
+{% block body_extras_2 %}
+
+<script src='/static/js/utils.js'></script>
+<script>
+
+var onchange_reaction = function(ev) {
+    var get_input = function(row) {
+        input = row.getElementsByTagName('input')[0];
+        return input;
+    };
+    var get_td = function(row) {
+        td = row.getElementsByTagName('td')[0];
+        return td;
+    };
+    var fill_checked_total = function(arr, last_pos) {
+        var j = last_pos;
+        var num_checked = 0;
+        while (j >= 0 && arr[j]) {
+            num_checked++;
+            j--;
+        }
+        if (j != last_pos)
+            arr[j + 1] = num_checked; // first
+        arr[last_pos] = num_checked; // last
+    };
+    //console.log(ev);
+    max_num_checked = {{ service.max_continuous_orders }};
+    if (!max_num_checked)
+        return;
+    el = ev.target;
+    // checkbox -> label -> td -> tr -> tbody -> tr_list = rows
+    rows = el.parentNode.parentNode.parentNode.parentNode.children;
+    // get checked inputs
+    // set first and last array element to number of group
+    //      example: 0 1 1 1 1 0 => 0 4 1 1 4 0
+    checked_arr = [];
+    for (var i = 0; i < rows.length; i++) {
+        td = get_td(rows[i]);
+        input = get_input(rows[i]);
+        if (input) {
+            if ((input.checked && td.className == '') || td.className != '')
+                checked_arr.push(1);
+            else {
+                checked_arr.push(0);
+                if (checked_arr.length > 1 && checked_arr[checked_arr.length - 2]) 
+                    fill_checked_total(checked_arr, checked_arr.length - 2);
+            }
+        }
+        else if (rows[i].innerHTML != '') {
+            checked_arr.push(null);
+            if (checked_arr.length > 1 && checked_arr[checked_arr.length - 2]) 
+                fill_checked_total(checked_arr, checked_arr.length - 2);
+        }
+    }
+    fill_checked_total(checked_arr, checked_arr.length - 1);
+    // set 'closed' cells
+    for (var i = 0; i < checked_arr.length; i++) {
+        if (checked_arr[i] == 0) {
+            if (i != 0 
+                    && checked_arr[i - 1] >= max_num_checked)
+                checked_arr[i] = 'closed';
+            else if (i != checked_arr.length - 1
+                    && checked_arr[i + 1] >= max_num_checked)
+                checked_arr[i] = 'closed';
+            else if (i != 0 && i != checked_arr.length - 1
+                    && checked_arr[i - 1] && checked_arr[i + 1]
+                    && checked_arr[i - 1] + checked_arr[i + 1] + 1 
+                            >= max_num_checked)
+                checked_arr[i] = 'closed';
+        }
+    }
+    // finally, set 'closed' style
+    for (var i = 0, j = 0; i < rows.length && j < checked_arr.length; i++, j++) {
+        while (rows[i].innerHTML == '') // <tr></tr>
+            i++;
+        input = get_input(rows[i]);
+        if (input) {
+            if (!input.checked) {
+                td = get_td(rows[i]);
+                tr = td.parentNode;
+                if (checked_arr[j] == 'closed') {
+                    if (tr.children.length == 1) {
+                        // td -> tr
+                        new_td = document.createElement('td');
+                        new_td.className = 'ended';
+                        new_td.rowSpan = td.rowSpan;
+                        new_td.style['padding'] = td.style['padding'];
+                        new_td.style['min-width'] = td.style['min-width'];
+                        new_td.style['max-width'] = td.style['max-width'];
+                        td.style.display = 'none';
+                        tr.appendChild(new_td);
+                        //console.log('found');
+                    }
+                }
+                else if (tr.children.length == 2) {
+                    td.style.display = '';
+                    tr.removeChild(tr.children[tr.children.length - 1]);
+                }
+            }
+        }
+    }
+};
+
+// The default input 2D-array [day][item][input]
+var inputs_array = [];
+// Set all callbacks onload
+var timetable_inputs_list = document.getElementsByClassName('full-width');
+
+for (var i = 0; i < timetable_inputs_list.length; i++) {
+    var timetable_inputs = timetable_inputs_list[i].getElementsByTagName('input');
+    inputs_array.push([]);
+    for (var j = 0; j < timetable_inputs.length; j++) {
+        // 'c' means 'cancel'
+        if (!timetable_inputs[j].name || timetable_inputs[j].name[0] == 'c')
+            continue;
+        util_add_handler(timetable_inputs[j], 'change', onchange_reaction);
+    }
+}
+
+</script>
+
 {% endblock %}

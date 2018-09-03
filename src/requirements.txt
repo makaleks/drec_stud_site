@@ -32,7 +32,7 @@ django-precise-bbcode==1.2.8
 x-x==0.9
 
 # xlsx reader
-openpyxl==2.5.0
+openpyxl==2.4.8
 
 # Vk API (get user id by short link)
 vk==2.0.2

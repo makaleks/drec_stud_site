@@ -4,10 +4,8 @@ import sys, argparse, os, datetime, glob, getpass
 from os.path import isfile
 import re
 from openpyxl import load_workbook
-import vk
 import json
 import progressbar
-from requests.exceptions import ReadTimeout
 
 import datetime
 
@@ -99,7 +97,7 @@ def get_schema_by_start(start, input_format):
 
 group_cache = ''
 
-def get_line_by_schema(start, input_format, ws, vk_api):
+def get_line_by_schema(start, input_format, ws):
     global group_cache
     s = start
     result = {}
@@ -176,26 +174,7 @@ def get_line_by_schema(start, input_format, ws, vk_api):
                 tmp = tmp[2:]
             if tmp[-1] == '/':
                 tmp = tmp[:-1]
-            flag = True
-            while flag:
-                try:
-                    tmp = vk_api.users.get(user_ids=tmp)
-                    #print(str(tmp))
-                    result['account_id'] = tmp[0]['uid']
-                except BaseException as e:
-                    print('{0}\n'.format(e.__class__.__name__))
-                    if not isinstance(e, ReadTimeout):
-                        flag = False
-                        print('{0}\n'.format(vars(e)))
-                        print('{0}'.format(str(e)))
-                        print('\'{0}\''.format(tmp))
-                        print('vk id check 2: ')
-                        add_error_row('vk id', start, ws)
-                        return None
-                    else:
-                        print('Time out. Trying again...\n\n')
-                        continue
-                flag = False
+            result['account_id'] = tmp
         elif c == 'g':
             if not validators.is_valid_group(str(tmp)) and not group_cache:
                 print('\'{0}\''.format(tmp))
@@ -240,7 +219,10 @@ def main(argv):
     global _total_todo
     filename = 'drec_stud_site_backup_{0}'.format(datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S'))
 
-    parser = argparse.ArgumentParser(description='Fill database with users according to .xlsx or /*.csv*/ file.')
+    parser = argparse.ArgumentParser(
+            description='Fill database with users according to .xlsx or /*.csv*/ file.',
+            epilog='FORMAT values:\nn - full name (like \'lfp\', but in single cell)\nl - last name\nf - first name\np - patronymic name\ni - accound id\ng - group\nt - telephone\ne - email\n\nexample: ./xlsx_helper.py -f glfit -s A100 1_course.xlsx',
+            formatter_class=argparse.RawDescriptionHelpFormatter)
 
     parser.add_argument('-f', '--format', type=filter_format, default='', required=False, help='set format of file')
     parser.add_argument('-s', '--start', type=str, default='', required=False, help='set starting cell')
@@ -270,10 +252,9 @@ def main(argv):
     start = args.start if args.start else 'A1'
     
     schema = get_schema_by_start(start, args.format)
-    vk_api = vk.API(vk.Session())
     result = []
     s = start
-    line_dic = get_line_by_schema(start, schema, ws, vk_api)
+    line_dic = get_line_by_schema(start, schema, ws)
     print('First row is:   {0}\n'.format(str(line_dic)))
 
     status = ''
@@ -297,7 +278,7 @@ def main(argv):
     bar.update(0)
     
     while ws[s].value:
-        line_dic = get_line_by_schema(s, schema, ws, vk_api)
+        line_dic = get_line_by_schema(s, schema, ws)
         if line_dic:
             result.append(line_dic)
         bar.update(int(start[_get_cell_separation_pos(s):]))
@@ -311,7 +292,7 @@ def main(argv):
     #os.system(command_str)
     print('Done!\n')
     if _total_todo != 0:
-        print('TODO: fill {0} users (see \'users_todo.csv\' file\n'.format(_total_todo))
+        print('TODO: fill {0} users (see \'users_todo.csv\' file)\n'.format(_total_todo))
     else:
         os.remove(_todo_str)
 

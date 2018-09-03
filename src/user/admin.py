@@ -24,52 +24,7 @@ class UserCreationForm(forms.ModelForm):
 
     groups = forms.ModelMultipleChoiceField(label='Группы',required=False,widget=FilteredSelectMultiple('Группы',is_stacked=False),queryset=Group.objects.all())
     def clean(self):
-        phone_number    = self.cleaned_data.get('phone_number')
-        last_name       = self.cleaned_data.get('last_name')
-        first_name      = self.cleaned_data.get('first_name')
-        patronymic_name = self.cleaned_data.get('patronymic_name')
-        group_number    = self.cleaned_data.get('group_number')
-        account_id      = self.cleaned_data.get('account_id')
-        email           = self.cleaned_data.get('email')
-        # Format of phone_number (optional)
-        if phone_number and is_valid_phone(phone_number) is False:
-            raise forms.ValidationError('Неверный формат телефонного номера')
-        # Format of name
-        if is_valid_name(last_name) is False:
-            raise forms.ValidationError('Неверный формат фамилии')
-        if is_valid_name(first_name) is False:
-            raise forms.ValidationError('Неверный формат имени')
-        if patronymic_name and is_valid_name(patronymic_name) is False:
-            raise forms.ValidationError('Неверный формат отчества')
-        # Format of group
-        if is_valid_group(group_number) is False:
-            raise forms.ValidationError('Неверный формат группы')
-        # Format of email (optional)
-        if (len(email) != 0) and (is_valid_email(email) is False):
-            raise forms.ValidationError('Неверный формат почты')
-
-        # Unique phone
-        if phone_number:
-            user = check_unique(User, 'phone_number', phone_number)
-            if user:
-                raise forms.ValidationError('Этот номер телефона уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number))
-        # Unique and valid account_id
-        id_num = get_id_by_url_vk(account_id)
-        if not settings.IS_ID_RECOGNITION_BROKEN_VK:
-            if not id_num:
-                raise forms.ValidationError('Не удалось получить id из социальной сети. Это точно существующий пользователь?')
-            else:
-                self.cleaned_data['account_id'] = id_num
-                account_id = id_num
-        user = check_unique(User, 'account_id', account_id)
-        if user:
-            raise forms.ValidationError('Эту ссылку на аккаунт уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number))
-        # Unique email (optional)
-        if len(email) != 0:
-            user = check_unique(User, 'email', email)
-            if user:
-                raise forms.ValidationError('Эту почту уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number))
-        return self.cleaned_data
+        pass
 
     class Meta:
         model = User
@@ -98,52 +53,6 @@ class UserChangeForm(forms.ModelForm):
 
     groups = forms.ModelMultipleChoiceField(label='Группы',required=False,widget=FilteredSelectMultiple('Группы',is_stacked=False),queryset=Group.objects.all())
     def clean(self):
-        phone_number    = self.cleaned_data.get('phone_number')
-        last_name       = self.cleaned_data.get('last_name')
-        first_name      = self.cleaned_data.get('first_name')
-        patronymic_name = self.cleaned_data.get('patronymic_name')
-        group_number    = self.cleaned_data.get('group_number')
-        account_id      = self.cleaned_data.get('account_id')
-        email           = self.cleaned_data.get('email')
-        # Format of phone_number (optional)
-        if phone_number and is_valid_phone(phone_number) is False:
-            raise forms.ValidationError('Неверный формат телефонного номера')
-        # Format of name
-        if is_valid_name(last_name) is False:
-            raise forms.ValidationError('Неверный формат фамилии')
-        if is_valid_name(first_name) is False:
-            raise forms.ValidationError('Неверный формат имени')
-        if patronymic_name and is_valid_name(patronymic_name) is False:
-            raise forms.ValidationError('Неверный формат отчества')
-        # Format of group
-        if is_valid_group(group_number) is False:
-            raise forms.ValidationError('Неверный формат группы')
-        # Format of email (optional)
-        if (len(email) != 0) and (is_valid_email(email) is False):
-            raise forms.ValidationError('Неверный формат почты')
-
-        # Unique phone
-        if (phone_number and str(phone_number) != self.instance.phone_number):
-            user = check_unique(User, 'phone_number', phone_number)
-            if user:
-                raise forms.ValidationError('Этот номер телефона уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number))
-        # Unique and valid account_id
-        id_num = get_id_by_url_vk(account_id)
-        if not settings.IS_ID_RECOGNITION_BROKEN_VK:
-            if not id_num:
-                raise forms.ValidationError('Не удалось получить id из социальной сети. Это точно существующий пользователь?')
-            else:
-                self.cleaned_data['account_id'] = id_num
-                account_id = id_num
-        if str(account_id) != self.instance.account_id:
-            user = check_unique(User, 'account_id', account_id)
-            if user:
-                raise forms.ValidationError('Эту ссылку на аккаунт уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number))
-        # Unique email (optional)
-        if len(email) != 0 and email != self.instance.email:
-            user = check_unique(User, 'email', email)
-            if user:
-                raise forms.ValidationError('Эту почту уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number))
         # Uncomment to enable #passwordAuth
         #self.cleaned_data['password'] = self.instance.password
         return self.cleaned_data

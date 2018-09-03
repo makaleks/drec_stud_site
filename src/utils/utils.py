@@ -31,7 +31,8 @@ def get_django_model_by_string(s):
     module_name, class_name = s.rsplit('.', 1)
     return get_class_by_string(module_name + '.models.' + class_name)
 
-def get_id_by_url_vk(s):
+# You may set other number of request attempts
+def get_id_by_url_vk(s, attempts = 3):
     if not s:
         return None
     vk_api = vk.API(vk.Session())
@@ -48,8 +49,6 @@ def get_id_by_url_vk(s):
         s = s[2:]
     if s[-1] == '/':
         s = s[:-1]
-    # You may set this different
-    attempts = 3
     while attempts:
         try:
             s = vk_api.users.get(user_ids = s, v = 573, access_token = settings.SERVICE_KEY_VK)
