@@ -6,7 +6,6 @@ import re
 from openpyxl import load_workbook
 import json
 import progressbar
-from requests.exceptions import ReadTimeout
 
 import datetime
 

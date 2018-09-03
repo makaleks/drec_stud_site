@@ -20,6 +20,7 @@ class Command(BaseCommand):
         user = None
         errors = []
         if options['allpossible']:
+            filename = 'last_errors.txt'
             for d in data:
                 user = user_class(**d)
                 try:
@@ -30,6 +31,11 @@ class Command(BaseCommand):
                         self.stdout.write(self.style.ERROR('The following user caused error\n{0}'.format(user.get_all_data())))
                     else:
                         errors.append('ERR')
+            self.stdout.write(self.style.NOTICE(str(errors)))
+            self.stdout.write(self.style.NOTICE('See all at {0}'.format(filename))
+            f = open(filename, 'w')
+            f.write(json.dumps(errors, indent=4))
+            f.close()
         else:
             try:
                 with transaction.atomic():
@@ -40,4 +46,4 @@ class Command(BaseCommand):
                 if user:
                     self.stdout.write(self.style.ERROR('The following user caused error\n{0}'.format(user.get_all_data())))
                 raise CommandError(str(e))
-                self.stdout.write(self.style.SUCCESS('Done! Successfully written {0} users!{1}'.format(len(data), ' \nErrors:{0}'.format(errors) if errors else '')))
+        self.stdout.write(self.style.SUCCESS('Done! Successfully written {0} users!{1}'.format(len(data), ' \nErrors:{0}'.format(errors) if errors else '')))
