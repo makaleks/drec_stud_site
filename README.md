@@ -28,6 +28,7 @@ This repository contains copies of some open libraries to be independent from CD
 All license files are available, this libraries are just linked, we are not their authors. 
 
 The project uses **Python3**. 
+If `pip` gets crazy and downloads python2 packages, use `pip3`
 
 0. Don\`t forget to create `setting_additions.py` with any values, see **Project structure** below for details.
 
@@ -45,7 +46,7 @@ source env/bin/activate
 ```bash
 pip install -r src/requirements.txt
 ```
-4. To serve static files install Nginx. You must have in /etc/nginx/nginx.conf inside `server{}`:
+4. To serve static files install Nginx. You must have in /etc/nginx/nginx.conf inside `server{}` (replace `{your_path}` with path to project):
 ```nginx configuration file
 # Check the port - it should be similar to mentioned in gunicorn
 # Check you\`ve commented previous `location /`
@@ -67,13 +68,13 @@ http {
             proxy_pass http://localhost:8080;
         }
         location /robots.txt {
-            alias /home/dev/drec_stud_site/collected_static/robots.txt;
+            alias /home/{your_path}/drec_stud_site/collected_static/robots.txt;
         }
         location /static/ {
-            alias /home/dev/drec_stud_site/collected_static/;
+            alias /home/{your_path}/drec_stud_site/collected_static/;
         }
         location /media/ {
-            alias /home/dev/drec_stud_site/media/;
+            alias /home/{your_path}/drec_stud_site/media/;
         }
     }
 }
@@ -98,9 +99,18 @@ cd src/
 ./manage.py makemigrations
 ./manage.py migrate
 ```
-> If you got errors during `migrate`, try detecting Django apps separately:
-> "manage.py makemigrations user"
-8. (Optional) If you wish to insert some data for demonstration, run:
+> If you got errors during `makemigrations`:
+> 1. If you got 'virtualenv is not compatible with this system', try recreating `env/` (delete the previous one), providing the most full name of your python, like:  
+> `virtualenv -p python3.6 env`
+> 2. If you got some Postgres-related error, like 'peer authentitation failed', try to replace the authentication method for IPv4 local connection METHOD to 'trust' at *pg\_hba.conf* (see where *ph\_hba.conf* is placed in your distribution, may require `sudo ls` to find):  
+> `# IPv4 local connections`  
+> `hostall		all		127.0.0.1/32		trust`  
+> Then restart Postgres:  
+> `sudo systemctl restart postgresql`
+>
+> If you got errors during 'migrate', try detecting Django apps separately:  
+> `manage.py makemigrations user`
+8. (Optional) If you have a *.zip* of backup and wish to insert some data for demonstration, run:
 ```bash
 ./postgresql_helper.py -r
 ```
