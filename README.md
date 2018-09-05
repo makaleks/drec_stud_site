@@ -118,7 +118,7 @@ m.create_superuser('Lastname', 'Firstname', 'Patronymicname', *drec group number
 > "manage.py createsuperuser"
 10. Don`t forget to collect static files from all applications:
 ```bash
-manage.py collectstatic
+./manage.py collectstatic
 ```
 11. Start gunicorn to run Gunicorn server:
 ```bash
