@@ -36,7 +36,7 @@ The project uses **Python3**.
 git clone https://github.com/makaleks/drec_stud_site
 cd drec_stud_site
 ```
-2. (Optional) Install and run `virtualenv` to create your own virtual Python enviroment (`pip` will not require `sudo`) and enter it:
+2. (Optional, but recommended) Install and run `virtualenv` to create your own virtual Python enviroment (`pip` will not require `sudo`) and enter it:
 ```bash
 virtualenv env
 source env/bin/activate
