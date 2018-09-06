@@ -45,7 +45,7 @@ source env/bin/activate
 > If you get error at `source` command, try other shell (worked on *bash*, *zsh*)
 3. Stop stacking default config files:
 ```bash
-./keep_unchanged.py
+./keep_untracked.py
 ```
 4. Install all Python dependences
 ```bash
