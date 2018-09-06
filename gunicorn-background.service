@@ -1,0 +1,11 @@
+[Unit]
+Description=drec-stud
+After=nginx postgresql
+
+[Service]
+User=makaleks
+ExecStart=/home/drec_stud_site/env/bin/python /home/drec_stud_site/env/bin/gunicorn --reload -b localhost:8080 -w 4 --pythonpath /home/drec_stud_site/src drec_stud_site.wsgi:application
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target

@@ -45,3 +45,6 @@ pytz==2017.2
 
 # Simple schedules
 django-background-tasks==1.1.12
+
+# File cloud
+django-filebrowser-no-grappelli==3.7.4
