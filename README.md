@@ -42,11 +42,16 @@ cd drec_stud_site
 virtualenv env
 source env/bin/activate
 ```
-3. Install all Python dependences
+> If you get error at `source` command, try other shell (worked on *bash*, *zsh*)
+3. Stop stacking default config files:
+```bash
+./keep_unchanged
+```
+4. Install all Python dependences
 ```bash
 pip install -r src/requirements.txt
 ```
-4. To serve static files install Nginx. You must have in /etc/nginx/nginx.conf inside `server{}` (replace `{your_path}` with path to project):
+5. To serve static files install Nginx. You must have in /etc/nginx/nginx.conf inside `server{}` (replace `{your_path}` with path to project):
 ```nginx configuration file
 # Check the port - it should be similar to mentioned in gunicorn
 # Check you\`ve commented previous `location /`
@@ -79,7 +84,7 @@ http {
     }
 }
 ```
-5. Don`t forget to run Nginx and Postgres. You may also want to enable them (run on starup), also before its first start Postgres requires [installation](https://wiki.archlinux.org/index.php/PostgreSQL#Installing_PostgreSQL):
+6. Don`t forget to run Nginx and Postgres. You may also want to enable them (run on starup), also before its first start Postgres requires [installation](https://wiki.archlinux.org/index.php/PostgreSQL#Installing_PostgreSQL):
 ```bash
 sudo systemctl start nginx
 sudo systemctl start postgresql
@@ -87,13 +92,13 @@ sudo systemctl start postgresql
 sudo systemctl enable nginx
 sudo systemctl enable postgresql
 ```
-6. Set up PostgreSQL (note: Django expects UTF-8)
+7. Set up PostgreSQL (note: Django expects UTF-8)
 ```sql
 CREATE DATABASE drec_stud_site;
 CREATE USER drec_stud_site_admin;
 GRANT ALL PRIVILEGES ON DATABASE drec_stud_site TO drec_stud_site_admin;
 ```
-7. Migrate all your models (don`t forget moving to src/):
+8. Migrate all your models (don`t forget moving to src/):
 ```bash
 cd src/
 ./manage.py makemigrations
@@ -110,12 +115,12 @@ cd src/
 >
 > If you got errors during 'migrate', try detecting Django apps separately:  
 > `manage.py makemigrations user`
-8. (Optional) If you have a *.zip* of backup and wish to insert some data for demonstration, run:
+9. (Optional) If you have a *.zip* of backup and wish to insert some data for demonstration, run:
 ```bash
 ./postgresql_helper.py -r
 ```
 > run with --help argument to show all arguments
-9. Create a Django superuser:
+10. Create a Django superuser:
 ``` bash
 ./manage.py shell
 from user.managers import UserManager
@@ -126,14 +131,15 @@ m.create_superuser('Lastname', 'Firstname', 'Patronymicname', *drec group number
 ```
 > We don\`t use any passwords, so simple way doesn\`t work:
 > "manage.py createsuperuser"
-10. Don`t forget to collect static files from all applications:
+11. Don`t forget to collect static files from all applications:
 ```bash
 ./manage.py collectstatic
 ```
-11. Start gunicorn to run Gunicorn server:
+12. Start gunicorn to run Gunicorn server:
 ```bash
-gunicorn --reload -b localhost:8080 --pythonpath src drec_stud_site.wsgi:application
+gunicorn --reload -b localhost:8080 -w 4 --pythonpath src drec_stud_site.wsgi:application
 ```
+In addition, a simple `gunicorn-background.service` provided to run the server via systemd.
 Now, you can view [the site](localhost) at localhost and play with models in [admin panel](localhost/admin) at localhost/admin. Moreover, you are able to access static files in `collected static` and `media` using links `localhost/static/FILENAME` and `localhost/media/FILENAME`. Good luck!
 
 ### Notes
