@@ -28,6 +28,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'filebrowser',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -225,6 +226,20 @@ SOCIAL_AUTH_SANITIZE_REDIRECTS = False
 USE_X_FORWARDED_HOST = True
 
 FILE_UPLOAD_PERMISSIONS = 0o644
+
+FILEBROWSER_DIRECTORY = 'admin_documents/'
+FILEBROWSER_EXTENTIONS = {
+    'Image':    ['.jpg', '.JPG', '.jpeg', ',JPEG', '.gif', '.GIF', '.png', '.PNG', '.svg', '.SVG'],
+    'Document': ['.pdf', '.docx', '.doc', '.txt', '.xls', '.xlsx', '.djvu'],
+    'Video':    ['.mp4', '.mkv', '.avi', '.mpg', ],
+    'Audio':    ['.mp3', '.wav', '.m4p', ],
+}
+FILEBROWSER_DEFAULT_SORTING_BY = ('extension', 'filename_lower')
+FILEBROWSER_DEFAULT_SORTING_ORDER = 'asc'
+# Keep only 'admin_thumbnail' (which prevents large images transfer)
+FILEBROWSER_ADMIN_VERSIONS = []
+# Otherwize, the '_versions' directory will be generated
+#FILEBROWSER_FORCE_PLACEHOLDER = True
 
 LOGGING = {
     # The only possible value, I know it`s strange

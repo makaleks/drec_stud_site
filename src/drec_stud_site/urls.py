@@ -18,6 +18,7 @@ from django.conf.urls import handler400, handler403, handler404, handler500
 from django.contrib import admin
 from django.contrib.auth.views import LogoutView
 from django.views.generic import TemplateView
+from filebrowser.sites import site as filebrowser_site
 #from user.views import render_login_success
 from user.views import EmergencyLoginView
 
@@ -29,6 +30,7 @@ handler500 = 'utils.views.error_view_500'
 # Namespaces not needed, because all apps have default app_name namespace
 
 urlpatterns = [
+    path('admin/filebrowser/', filebrowser_site.urls),
     path('admin/',    admin.site.urls),
     path('user/',     include('user.urls')),
     # URL name: 'logout' (see docs)
