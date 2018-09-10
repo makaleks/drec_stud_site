@@ -42,7 +42,8 @@ cd drec_stud_site
 virtualenv env
 source env/bin/activate
 ```
-> If you get error at `source` command, try other shell (worked on *bash*, *zsh*)
+> For `fish` shell use `source env/bin/activate.fish`
+> If you get other error at `source` command, try other shell (worked on *bash*, *zsh*)
 3. Stop stacking default config files:
 ```bash
 ./keep_untracked.py
@@ -108,8 +109,10 @@ cd src/
 > 1. If you got 'virtualenv is not compatible with this system', try recreating `env/` (delete the previous one), providing the most full name of your python, like:  
 > `virtualenv -p python3.6 env`
 > 2. If you got some Postgres-related error, like 'peer authentitation failed', try to replace the authentication method for IPv4 local connection METHOD to 'trust' at *pg\_hba.conf* (see where *ph\_hba.conf* is placed in your distribution, may require `sudo ls` to find):  
+> `# "local" is for Unix domain socket connections only`
+> `host		all		all						trust`  
 > `# IPv4 local connections`  
-> `hostall		all		127.0.0.1/32		trust`  
+> `host		all		all		127.0.0.1/32		trust`  
 > Then restart Postgres:  
 > `sudo systemctl restart postgresql`
 >
