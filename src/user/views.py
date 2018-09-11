@@ -63,7 +63,7 @@ class UserUidSetView(TemplateView):
                 user.card_uid = data['uid']
                 user.save()
                 status = 'success'
-                return HttpResponseRedirect('/user/long-logout?next=/user/uid&n12n-enable=1&n12n-type=success&timeout=5&n12n-text={0}'.format(urllib.parse.quote('Карта успешно привязана к аккаунту.')))
+                return HttpResponseRedirect('/user/long-logout?next=/user/uid%3Fvk_exiter%3Dstop&n12n-enable=1&n12n-type=success&timeout=5&n12n-text={0}'.format(urllib.parse.quote('Карта успешно привязана к аккаунту.')))
             else:
                 status = 'info'
         return HttpResponseRedirect('?status={0}'.format(status))

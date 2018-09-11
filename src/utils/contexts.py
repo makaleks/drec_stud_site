@@ -43,4 +43,5 @@ def custom_context(request):
             'yandex': settings.WEBMASTER_TAG_YANDEX,
             'google': settings.WEBMASTER_TAG_GOOGLE,
         },
+        'next_return': request.path,
     }
