@@ -171,6 +171,7 @@ Additional blocks:
     <script>
         PRICE_PREVIEW.registerCheckboxes('timetables', 'preresult', 'finaltext');
         // for case of page reload: texts are cleared, but checkboxes are saved
+        util_add_handler(document.getElementById('finalcancel'), 'click', PRICE_PREVIEW.resetAll);
         PRICE_PREVIEW.updateTexts();
 
 function show_orders(json_orders) {
