@@ -19,11 +19,13 @@ payment_logger = logging.getLogger('payment_logs')
 # Create your views here.
 
 # Check unlock
+# test with:
+# bash$ curl 'http://localhost/services/washing/unlock/?uid=200'
 def unlock(request, slug):
     card_uid = request.GET.get('uid')
     today = timezone.now()
     is_staff = User.objects.all().filter(card_uid = card_uid, is_staff = True).exists()
-    if is_staff:
+    if card_uid and is_staff:
         return HttpResponse('yes')
     orders = Order.objects.all().filter(Q(user__card_uid = card_uid, item__service__slug = slug, date_start = today.date(), time_start__lte = today.time()) & (Q(time_end__gt = today.time()) | Q(time_end = datetime.time(0,0,0))))
     #return HttpResponse(str([vars(o) for o in orders]))
