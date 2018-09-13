@@ -22,7 +22,7 @@ payment_logger = logging.getLogger('payment_logs')
 def unlock(request, slug):
     card_uid = request.GET.get('uid')
     today = timezone.now()
-    is_staff = User.objects.all().filter(card_uid = card_uid).exists()
+    is_staff = User.objects.all().filter(card_uid = card_uid, is_staff = True).exists()
     if is_staff:
         return HttpResponse('yes')
     orders = Order.objects.all().filter(Q(user__card_uid = card_uid, item__service__slug = slug, date_start = today.date(), time_start__lte = today.time()) & (Q(time_end__gt = today.time()) | Q(time_end = datetime.time(0,0,0))))
