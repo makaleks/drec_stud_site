@@ -126,14 +126,14 @@ cd src/
 ./postgresql_helper.py -r
 ```
 > run with --help argument to show all arguments  
-10. Create a Django superuser:
+10. Create a Django superuser (password is required only for superusers):
 ``` bash
 ./manage.py shell
 from user.managers import UserManager
 from user.models import User
 m = UserManager()
 m.model = User
-m.create_superuser('Lastname', 'Firstname', 'Patronymicname', *drec group number*, '*phone number*', '*vk-id number*', '*email (optional)*')
+m.create_superuser('Lastname', 'Firstname', 'Patronymicname', *drec group number*, '*phone number*', '*vk-id number*', '*password*', '*email (optional)*')
 ```
 > We don\`t use any passwords, so simple way doesn\`t work:  
 > "manage.py createsuperuser"  
