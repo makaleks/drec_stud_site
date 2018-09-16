@@ -37,9 +37,17 @@ def unlock(request, slug):
     orders = Order.objects.all().filter(Q(user__card_uid = card_uid, item__service__slug = slug, date_start = now.date(), time_start__lte = (now + time_margin_start).time()) & (Q(time_end__gte = (now - time_margin_end).time()) | Q(time_end = datetime.time(0,0,0))))
     #return HttpResponse(str([vars(o) for o in orders]))
     if orders:
-        return HttpResponse('yes')
-    else:
-        return HttpResponse('no')
+        order_lst = list(orders)
+        unlock = False
+        for o in order_lst:
+            if o.used or o.time_end >= now or o.time_end == datetime.time(0,0,0):
+                unlock = True
+        if unlock:
+            for o in order_lst:
+                o.used = True
+                o.save()
+            return HttpResponse('yes')
+    return HttpResponse('no')
 
 def to_H_M(t):
     return re.sub(r'(?P<part>^|:)0', '\g<part>', t.strftime('%H:%M'))

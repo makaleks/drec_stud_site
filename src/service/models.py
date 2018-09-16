@@ -617,6 +617,7 @@ class Order(models.Model):
     title       = models.TextField(blank = True, null = True, verbose_name = 'Назначение заказа')
     is_approved = models.BooleanField(default = True, blank = False, null = False, verbose_name = 'Одобрено')
     payed       = models.PositiveSmallIntegerField(blank = False, null = False, verbose_name = 'Оплачено')
+    used        = models.BooleanField(default = False, blank = False, null = False, verbose_name = 'Потрачено')
     # time_start > time_end is normal, we say it means 'finish next day'
     def contains_midnight(self):
         return self.time_start > self.time_end and self.time_end != datetime.time(0,0,0)
