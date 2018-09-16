@@ -23,11 +23,18 @@ payment_logger = logging.getLogger('payment_logs')
 # bash$ curl 'http://localhost/services/washing/unlock/?uid=200'
 def unlock(request, slug):
     card_uid = request.GET.get('uid')
-    today = timezone.now()
     is_staff = User.objects.all().filter(card_uid = card_uid, is_staff = True).exists()
     if card_uid and is_staff:
         return HttpResponse('yes')
-    orders = Order.objects.all().filter(Q(user__card_uid = card_uid, item__service__slug = slug, date_start = today.date(), time_start__lte = today.time()) & (Q(time_end__gt = today.time()) | Q(time_end = datetime.time(0,0,0))))
+    service_query = Service.objects.all().filter(slug = slug)
+    if not service_query.exists():
+        return HttpResponse('no')
+    service = service_query.first()
+    now = datetime.datetime.now()
+    time_margin_start = datetime.datetime.combine(datetime.date.min, service.time_margin_start) - datetime.datetime.min
+    time_margin_end = datetime.datetime.combine(datetime.date.min, service.time_margin_end) - datetime.datetime.min
+
+    orders = Order.objects.all().filter(Q(user__card_uid = card_uid, item__service__slug = slug, date_start = now.date(), time_start__lte = (now + time_margin_start).time()) & (Q(time_end__gte = (now - time_margin_end).time()) | Q(time_end = datetime.time(0,0,0))))
     #return HttpResponse(str([vars(o) for o in orders]))
     if orders:
         return HttpResponse('yes')

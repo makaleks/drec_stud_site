@@ -3,18 +3,29 @@
 {% load utils_extra_filters %}
 
 {% block additional_info %}
+    <p>
+        <b>Что&nbsp;значат&nbsp;цвета?</b>
+    </p>
+    <p class='card-maintext'>
+        <span class='preview'></span> - Этот интервал можно выбирать<br />
+        <span class='preview ended'></span> - Этот интервал уже нельзя выбирать<br />
+        <span class='preview selected'></span> - Этот интервал был кем-то выбран<br />
+        <span class='preview choisen'></span> - Этот интервал был выбран Вами<br />
+        <span class='preview started'></span> - Ваш интервал уже идёт, но его пока ещё можно отменить (лимит - {{ service.time_after_now|util_get_min_time_str }})
+    </p>
+    <p><b>Нажмите на интервал для выбора</b></p>
+    <p>Максимальное число заказов подряд (один за другим) для каждой машинки - {{ service.max_continuous_orders }}</p>
+    {% with t_start=service.get_time_margin_start t_end=service.get_time_margin_end %}
         <p>
-            <b>Что&nbsp;значат&nbsp;цвета?</b>
+            {% if t_start %}
+                {{ t_start }} - время до заказа, чтобы прийти заранее
+                {% if t_end %}<br />{% endif %}
+            {% endif %}
+            {% if t_end %}
+                {{ t_end }} - время после заказа, чтобы забрать вещи
+            {% endif %}
         </p>
-        <p class='card-maintext'>
-            <span class='preview'></span> - Этот интервал можно выбирать<br />
-            <span class='preview ended'></span> - Этот интервал уже нельзя выбирать<br />
-            <span class='preview selected'></span> - Этот интервал был кем-то выбран<br />
-            <span class='preview choisen'></span> - Этот интервал был выбран Вами<br />
-            <span class='preview started'></span> - Ваш интервал уже идёт, но его пока ещё можно отменить (лимит - {{ service.time_after_now|util_get_min_time_str }})
-        </p>
-        <p><b>Нажмите на интервал для выбора</b></p>
-        <p>Максимальное число заказов подряд (один за другим) для каждой машинки - {{ service.max_continuous_orders }}</p>
+    {% endwith %}
 {% endblock %}
 
 {% block form_attributes %}

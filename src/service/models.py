@@ -146,6 +146,8 @@ class Service(models.Model):
     default_works_to    = models.TimeField(blank = False, null = False, default = datetime.time(00,00,00), verbose_name = 'Конец рабочего времени по-умолчанию')
     days_to_show        = models.PositiveSmallIntegerField(default = 3, validators = [MinValueValidator(1)], blank = False, null = False, verbose_name = 'Дней на заказ')
     time_after_now      = models.TimeField(blank = False, null = False, default = datetime.time(0,20,0), verbose_name = 'Времени на запись после начала')
+    time_margin_start   = models.TimeField(blank = False, null = False, default = datetime.time(0,0,0), verbose_name = 'Время на вход до заказа')
+    time_margin_end     = models.TimeField(blank = False, null = False, default = datetime.time(0,0,0), verbose_name = 'Время на вход после заказа')
     late_cancel_multiplicator = models.FloatField(blank = False, null = False, validators = [MinValueValidator(0)], default = 1.0, verbose_name = 'На сколько умножить при поздней отмене')
     working_times       = GenericRelation(WorkingTime, content_type_field = 'content_type', object_id_field = 'object_id')
     working_time_exceptions = GenericRelation(WorkingTimeException, content_type_field = 'content_type', object_id_field = 'object_id')
@@ -155,6 +157,24 @@ class Service(models.Model):
     is_single_item      = models.BooleanField(default = False, blank = False, null = False, verbose_name = 'Один предмет сервиса')
     is_finished_hidden  = models.BooleanField(default = True, blank = False, null = False, verbose_name = 'Скрывать прошедшие интервалы')
     order   = models.PositiveSmallIntegerField(default = 0, blank = False, null = False, verbose_name = 'Порядок показа')
+    def get_time_margin_start(self):
+        t = self.time_margin_start
+        if t == datetime.time.min:
+            return None
+        if t.hour:
+            return t.strftime('%H:%M:%S')
+        else:
+            return t.strftime('%M:%S')
+    def get_time_margin_end(self):
+        t = self.time_margin_end
+        if t == datetime.time.min:
+            return None
+        if t.hour:
+            return t.strftime('%H:%M:%S')
+        else:
+            return t.strftime('%M:%S')
+    def is_time_margin_end(self):
+        return self.time_margin_end != datetime.time.min
     def get_absolute_url(self):
         return reverse('service:service', args=[self.slug])
     def __str__(self):
