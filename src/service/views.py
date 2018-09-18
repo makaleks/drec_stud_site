@@ -24,21 +24,62 @@ payment_logger = logging.getLogger('payment_logs')
 def unlock(request, slug):
     # The order of checks is important!
     card_uid = request.GET.get('uid')
+    scenario = {
+        'success': {
+            'status': 'yes',
+            'cause' : 'success',
+            # Remember to set the name!
+            'name'  : '',
+        },
+        'no_orders': {
+            'status': 'no',
+            'cause' : 'no_orders',
+            # Remember to set the name!
+            'name'  : '',
+        },
+        'staff': {
+            'status': 'yes',
+            'cause' : 'staff',
+            # Remember to set the name!
+            'name'  : '',
+        },
+        'unknown_service': {
+            'status': 'no',
+            'cause' : 'unknown_service',
+            'name'  : '',
+        },
+        'unknown_user': {
+            'status': 'no',
+            'cause' : 'unknown_user',
+            'name'  : '',
+        },
+        'lock_disabled': {
+            'status': 'yes',
+            'cause' : 'lock_disabled',
+            'name'  : '',
+        },
+    }
     # disable unknown services
     service_query = Service.objects.all().filter(slug = slug)
     if not service_query.exists():
-        return HttpResponse('unknown_service')
+        response = scenario['unknown_service']
+        return HttpResponse(json.dumps(response))
     service = service_query.first()
     # emergency mode
     if service.disable_lock:
-        return HttpResponse('yes')
+        response = scenario['lock_disabled']
+        return HttpResponse(json.dumps(response))
     # disable unknown users
     if not User.objects.all().filter(card_uid = card_uid).exists():
-        return HttpResponse('unknown_user')
+        response = scenario['unknown_user']
+        return HttpResponse(json.dumps(response))
     # pass all staff
-    is_staff = User.objects.all().filter(card_uid = card_uid, is_staff = True).exists()
-    if card_uid and is_staff:
-        return HttpResponse('yes')
+    user = User.objects.all().filter(card_uid = card_uid).first()
+    if card_uid and user.is_staff:
+        response = scenario['staff']
+        response['name'] = user.get_full_name()
+        return HttpResponse(json.dumps(response))
+    # process orders check
     now = datetime.datetime.now()
     time_margin_start = datetime.datetime.combine(datetime.date.min, service.time_margin_start) - datetime.datetime.min
     time_margin_end = datetime.datetime.combine(datetime.date.min, service.time_margin_end) - datetime.datetime.min
@@ -57,8 +98,12 @@ def unlock(request, slug):
                 o.used = True
                 o.save()
         if unlock:
-            return HttpResponse('yes')
-    return HttpResponse('no')
+            response = scenario['success']
+            response['name'] = user.get_full_name()
+            return HttpResponse(json.dumps(response))
+    response = scenario['no_orders']
+    response['name'] = user.get_full_name()
+    return HttpResponse(json.dumps(response))
 
 def to_H_M(t):
     return re.sub(r'(?P<part>^|:)0', '\g<part>', t.strftime('%H:%M'))
