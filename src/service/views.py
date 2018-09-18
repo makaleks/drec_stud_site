@@ -40,12 +40,11 @@ def unlock(request, slug):
         order_lst = list(orders)
         unlock = False
         for o in order_lst:
-            if o.used or o.time_end >= now or o.time_end == datetime.time(0,0,0):
+            if o.used or o.time_end >= now.time() or o.time_end == datetime.time(0,0,0):
                 unlock = True
-        if unlock:
-            for o in order_lst:
                 o.used = True
                 o.save()
+        if unlock:
             return HttpResponse('yes')
     return HttpResponse('no')
 
