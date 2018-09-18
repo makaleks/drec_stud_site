@@ -74,6 +74,15 @@
     <script src='{{ STATIC_URL }}js/utils.js'></script>
     <script src='{{ STATIC_URL }}js/textarea_to_ckeditor.js'></script>
     <script type='text/javascript'>
+        function color_lock() {
+            is_lock_disabled = document.getElementById('id_disable_lock');
+            if (is_lock_disabled.checked)
+                document.body.style['background-color'] = 'red';
+            else
+                document.body.style['background-color'] = null;
+        };
+        util_add_handler(document.getElementById('id_disable_lock'), 'change', color_lock);
+        util_add_handler(window, 'load', color_lock);
         // Remove inlines
         /*util_add_handler(window, 'load', function() {
             var checkbox_elem = document.getElementById('id_is_single_item');

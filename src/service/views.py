@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.http import HttpResponse, HttpResponseRedirect
-from django.db.models import Q
+from django.db.models import Q, F
 from django.utils import timezone
 from django.conf import settings
 from decimal import Decimal
@@ -22,19 +22,31 @@ payment_logger = logging.getLogger('payment_logs')
 # test with:
 # bash$ curl 'http://localhost/services/washing/unlock/?uid=200'
 def unlock(request, slug):
+    # The order of checks is important!
     card_uid = request.GET.get('uid')
+    # disable unknown services
+    service_query = Service.objects.all().filter(slug = slug)
+    if not service_query.exists():
+        return HttpResponse('unknown_service')
+    service = service_query.first()
+    # emergency mode
+    if service.disable_lock:
+        return HttpResponse('yes')
+    # disable unknown users
+    if not User.objects.all().filter(card_uid = card_uid).exists():
+        return HttpResponse('unknown_user')
+    # pass all staff
     is_staff = User.objects.all().filter(card_uid = card_uid, is_staff = True).exists()
     if card_uid and is_staff:
         return HttpResponse('yes')
-    service_query = Service.objects.all().filter(slug = slug)
-    if not service_query.exists():
-        return HttpResponse('no')
-    service = service_query.first()
     now = datetime.datetime.now()
     time_margin_start = datetime.datetime.combine(datetime.date.min, service.time_margin_start) - datetime.datetime.min
     time_margin_end = datetime.datetime.combine(datetime.date.min, service.time_margin_end) - datetime.datetime.min
 
-    orders = Order.objects.all().filter(Q(user__card_uid = card_uid, item__service__slug = slug, date_start = now.date(), time_start__lte = (now + time_margin_start).time()) & (Q(time_end__gte = (now - time_margin_end).time()) | Q(time_end = datetime.time(0,0,0))))
+    orders = Order.objects.all().filter(Q(user__card_uid = card_uid, item__service__slug = slug) 
+            & (Q(time_start__lte = now.time()) | Q(time_start__lte = (now + time_margin_start).time())) 
+            & (Q(time_end__gte = now.time()) | Q(time_end__gte = (now - time_margin_end).time()) | Q(time_start = datetime.time(0,0,0), time_end__lte = (now - time_margin_end).time()) | Q(time_end = datetime.time(0,0,0))) 
+            & (Q(date_start = now.date()) | Q(time_start__gte = F('time_end'), date_start = (now - datetime.timedelta(days = 1)).date())))
     #return HttpResponse(str([vars(o) for o in orders]))
     if orders:
         order_lst = list(orders)

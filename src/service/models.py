@@ -157,6 +157,7 @@ class Service(models.Model):
     is_single_item      = models.BooleanField(default = False, blank = False, null = False, verbose_name = 'Один предмет сервиса')
     is_finished_hidden  = models.BooleanField(default = True, blank = False, null = False, verbose_name = 'Скрывать прошедшие интервалы')
     order   = models.PositiveSmallIntegerField(default = 0, blank = False, null = False, verbose_name = 'Порядок показа')
+    disable_lock= models.BooleanField(default = False, blank = False, null = False, verbose_name = 'ОТКЛЮЧИТЬ ЗАМКИ')
     def get_time_margin_start(self):
         t = self.time_margin_start
         if t == datetime.time.min:
@@ -700,7 +701,7 @@ class Order(models.Model):
     class Meta:
         verbose_name = 'Заказ'
         verbose_name_plural = 'Заказы'
-        ordering = ['is_approved', '-date_start', 'time_start']
+        ordering = ['is_approved', '-date_start', '-time_start']
 
 class Participation(models.Model):
     order   = models.ForeignKey(Order, on_delete = models.CASCADE, related_name = 'participations', blank = False, null = False, verbose_name = 'Событие')
