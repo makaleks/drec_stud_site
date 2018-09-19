@@ -2,9 +2,14 @@
 
 This is the repository for [frtk.mipt.ru](https://frtk.mipt.ru/). All users of this department of [MIPT](https://mipt.ru/en/) are able to log in using VK social network. The adaptive design is used. Use the [issues](https://github.com/makaleks/drec_stud_site/issues/) tab to send any bug-reports, or find and contact developers directly before the development is finished :)
 
-All comments, application and command names are made in English, so the materials of this project can be used anywhere else. 
+All comments, application and command names are made in English, so the materials of this project can be used anywhere else.
 
 We use authorization via [VK](https://vk.com/) social network, so many scripts may use VK API. The `python-social-auth` package is used so other social networks (Fb, etc.) may be adopted in a similar way.
+
+## Requirements
+
+- Python3
+- The 'washing' room (where washing machines are rented), as this is one of the main menu entries
 
 ## Branch review
 
