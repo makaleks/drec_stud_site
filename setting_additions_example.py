@@ -1,4 +1,7 @@
 # coding: utf-8
+# Copy this file and rename to 'setting_additions.py' at
+# the same directory, apply own values - this is required to run site
+
 # The following settings must be changed for each project individually
 # This file is add to .gitignore, so you will have no problems on update
 
