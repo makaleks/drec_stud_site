@@ -63,6 +63,7 @@ class WorkingTime(models.Model):
     content_type    = models.ForeignKey(
             ContentType, 
             on_delete = models.CASCADE, 
+            related_name = 'wt_set',
             limit_choices_to = 
                 models.Q(app_label = 'service', model = 'service') 
                 | models.Q(app_label = 'service', model = 'item'), 
@@ -90,6 +91,7 @@ class WorkingTimeException(models.Model):
     content_type    = models.ForeignKey(
             ContentType, 
             on_delete = models.CASCADE, 
+            related_name = 'wte_set',
             limit_choices_to = 
                 models.Q(app_label = 'service', model = 'service') 
                 | models.Q(app_label = 'service', model = 'item'), 

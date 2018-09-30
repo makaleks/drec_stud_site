@@ -1,5 +1,5 @@
 # Framework
-Django==2.0
+Django==2.1.1
 
 # Python server
 gunicorn==19.7.1
@@ -20,10 +20,10 @@ django-cleanup==1.0.1
 django-markdown-deux==1.0.5
 
 # Models can be made sortable in Admin Panel
-django-admin-sortable2==0.6.19
+django-admin-sortable2==0.6.21
 
 # Model version are stored separately, so they can be restored
-django-reversion==2.0.12
+django-reversion==3.0.0
 
 # BBCode
 django-precise-bbcode==1.2.8

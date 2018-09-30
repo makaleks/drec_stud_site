@@ -1,33 +1,37 @@
-{% extends 'service_base1.html' %}
+{% extends 'service_item_timetable.html' %}
 
 {% load utils_extra_filters %}
 
-{% block additional_info %}
-    <p>
-        <b>Что&nbsp;значат&nbsp;цвета?</b>
-    </p>
-    <p class='card-maintext'>
-        <span class='preview'></span> - Этот интервал можно выбирать<br />
-        <span class='preview ended'></span> - Этот интервал уже нельзя выбирать<br />
-        <span class='preview selected'></span> - Этот интервал был кем-то выбран<br />
-        <span class='preview choisen'></span> - Этот интервал был выбран Вами<br />
-        <span class='preview started'></span> - Ваш интервал уже идёт, но его пока ещё можно отменить (лимит - {{ service.time_after_now|util_get_min_time_str }})
-    </p>
-    <p><b>Нажмите на интервал для выбора</b></p>
-    <p>Максимальное число заказов подряд (один за другим) для каждой машинки - {{ service.max_continuous_orders }}</p>
-    {% with t_start=service.get_time_margin_start t_end=service.get_time_margin_end %}
+{% block service_item_additional_info %}
+    <section class='card'>
         <p>
-            {% if t_start %}
-                {{ t_start }} - время до заказа, чтобы прийти заранее
-                {% if t_end %}<br />{% endif %}
-            {% endif %}
-            {% if t_end %}
-                {{ t_end }} - время после заказа, чтобы забрать вещи
-            {% endif %}
+            <b>Что&nbsp;значат&nbsp;цвета?</b>
         </p>
-    {% endwith %}
+        <p class='card-maintext'>
+            <span class='preview'></span> - Этот интервал можно выбирать<br />
+            <span class='preview ended'></span> - Этот интервал уже нельзя выбирать<br />
+            <span class='preview selected'></span> - Этот интервал был кем-то выбран<br />
+            <span class='preview choisen'></span> - Этот интервал был выбран Вами<br />
+            <span class='preview started'></span> - Ваш интервал уже идёт, но его пока ещё можно отменить (лимит - {{ service.time_after_now|util_get_min_time_str }})
+        </p>
+        <p><b>Нажмите на интервал для выбора</b></p>
+        <p>Максимальное число заказов подряд (один за другим) для каждой машинки - {{ service.max_continuous_orders }}</p>
+        {% with t_start=service.get_time_margin_start t_end=service.get_time_margin_end %}
+            <p>
+                {# TODO - look again #}
+                {% if t_start %}
+                    {{ t_start }} - время до заказа, чтобы прийти заранее
+                    {% if t_end %}<br />{% endif %}
+                {% endif %}
+                {% if t_end %}
+                    {{ t_end }} - время после заказа, чтобы забрать вещи
+                {% endif %}
+            </p>
+        {% endwith %}
+    </section>
 {% endblock %}
 
+{# TODO REMOVE [id='washing'] HARDCODE! #}
 {% block form_attributes %}
     id='washing'
 {% endblock %}
@@ -36,7 +40,7 @@
     class='full-width'
 {% endblock %}
 
-{% block single_day %}
+{% block service_item_single_day %}
     <table class='table_aside'>
         <tr>
             <th>Время</th>
@@ -52,7 +56,7 @@
             {% endif %}
         {% endfor %}
     </table>
-    <!-- print machines -->
+    {# Print machines #}
     <table class='table_main'>
         <tr>
             <td colspan={{ day.items.items|length }}>
@@ -66,14 +70,15 @@
             </td>
         </tr>
         <tr>
-            <!-- second 'items' on Python dict. is 'get pair of key and value'-->
+            {# For Python dictionary that means 'get pair of key and value' #}
             {% for i_name,i_value in day.items.items %}
                 <td>
                     <table>
-                        <!-- print cells -->
+                        {# Print cells #}
                         {% for cell in i_value.time %}
-<!-- break trailing spaces for nicer appeal -->
+{# Here I break trailing spaces for nicer appeal #}
 <tr>
+    {# Closed rows or 'is_open', while time to order is finished #}
     {% if not cell.is_open or cell.is_open and cell.is_now and cell.start|util_is_finished:service %}
         <td style='padding:0;min-width:100px;max-width:100px;' class='ended' {% if cell.is_open %}rowspan='{{ i_value.rowspan }}'{% endif %}>
             {% if user.is_authenticated and cell.orders %}
@@ -81,28 +86,33 @@
             {% endif %}
         </td>
     {% else %}
+    {# If current user already ordered #}
+    {# If 'now', but still cancelable, mark with other color #}
     <td style='padding:0;min-width:100px;max-width:100px;' rowspan='{{ i_value.rowspan }}' class={% if cell.orders and  cell.orders|util_is_current_user_order:user %}{% if cell.is_now %}'started'{% else %}'choisen'{% endif %}{% elif cell.orders %}'selected'{% endif %}>
-            {% if cell.orders and user.is_authenticated and cell.orders|util_is_other_user_order:user %}
+            {# Cancelable #}
+            {% if user.is_authenticated and cell.orders and cell.orders|util_is_current_user_order:user %}
+                <label>
+                    {% with order=cell.orders|first %}
+                        {#???{% if not cell.is_now %}???#}
+                        <input type='checkbox' name='cancel={{ order.id }}' data-price={% if cell.is_now %}'-{{ i_value.price|util_get_late_price:service }}'{% else %}'-{{ i_value.price }}'{% endif %} data-timestart='{{ cell.start.time }}' data-timeend='{{ cell.end.time }}' data-item='{{ i_name }}' data-groupsize='{{ cell.group_size }}' class='hidden'/>
+                        {#{% endif %}#}
+                        <span><div>-</div></span>
+                    {% endwith %}
+                </label>
+            {# Someone else ordered #}
+            {% elif cell.orders and user.is_authenticated and cell.orders|util_is_other_user_order:user %}
                 <label class='userinfo' for='modal_userinfo_check' onclick='show_orders({{ cell.orders|util_orders_to_json }});' title='Посмотреть инфо о заказавшем(-ей)'></label>
-            <!-- means 'not current user' -->
-            {% elif not cell.orders %}
+            {# Orderable #}
+            {% elif user.is_authenticated and not cell.orders %}
                 <label>
                     <input type='checkbox' name='order={{ i_name }}&&{{ cell.start.time }}&&{{ cell.end.time }}&&{{ cell.start.date|date:'Y-m-d' }}' data-price='{{ i_value.price }}' data-timestart='{{ cell.start.time }}' data-timeend='{{ cell.end.time }}' data-item='{{ i_name }}' data-groupsize='{{ cell.group_size }}' class='hidden'/>
                     <span><div>+</div></span>
-                </label>
-            {% elif cell.orders and cell.orders|util_is_current_user_order:user %}
-                <label>
-                    {% with order=cell.orders|first %}
-                        {% if not cell.is_now %}
-                        <input type='checkbox' name='cancel={{ order.id }}' data-price={% if cell.is_now %}'-{{ i_value.price|util_get_late_price:service }}'{% else %}'-{{ i_value.price }}'{% endif %} data-timestart='{{ cell.start.time }}' data-timeend='{{ cell.end.time }}' data-item='{{ i_name }}' data-groupsize='{{ cell.group_size }}' class='hidden'/>
-                        {% endif %}
-                        <span><div>-</div></span>
-                    {% endwith %}
                 </label>
             {% endif %}
         </td>
     {% endif %}
 </tr>
+    {# Cells with [rowspan != 1] require additional rows #}
     {% if cell.is_open %}
         {% with current_range=i_value.rowspan|util_range %}
         {% for i in current_range %}
@@ -112,7 +122,7 @@
         {% endfor %}
         {% endwith %}
     {% endif %}
-<!-- break end -->
+{# Break end #}
                         {% endfor %}
                     </table>
                 </td>
@@ -121,11 +131,61 @@
     </table>
 {% endblock %}
 
-{% block body_extras_2 %}
+{% block service_item_body_extras %}
 
 <script src='/static/js/utils.js'></script>
 <script>
 
+{# Show orders for specified time interval #}
+
+function show_orders(json_orders) {
+    if (!(json_orders instanceof Array)) {
+        return;
+    }
+    var html = '';
+    var elem = document.getElementById('modal_userinfo_content');
+    for (var i = 0; i < json_orders.length; i++) {
+        var s = '';
+        var order = json_orders[i];
+        var time_start = '', time_end = '', uname = '', 
+            vkid = '', unumber = '', uemail = '';
+        if (order.hasOwnProperty('user')) {
+            uname = order.user['name'];
+            unumber = order.user['phone_number'];
+            vkid = order.user['account_id'];
+            uemail = order.user['email'];
+            // <h3> will be a bit later
+            s += uname;
+        }
+        if (order.hasOwnProperty('time_start') 
+            && order.hasOwnProperty('time_end')) {
+            time_start = order['time_start'], time_end = order['time_end'];
+            // <h3> will be a bit later
+            if (s)
+                s += ' ';
+            s += '(' + time_start + '-' + time_end + ')';
+        }
+        s = '<h3>' + s + '</h3>';
+
+        if (unumber !== null && unumber !== '') {
+            s += '<a href="tel:' + unumber + '">Позвонить: ' 
+                + unumber + '</a><br/>';
+        }
+        if (vkid !== null && vkid !== '') {
+            // target="_blank" means 'open in new tab/window'
+            s += '<a target="_blank" href="https://vk.me/id' + vkid 
+                + '">Написать в ВК: vk.com/id' + vkid + '</a><br/>';
+        }
+        if (uemail !== null && uemail !== '') {
+            s += '<a href="mailto:' + uemail + '">Написать на почту: ' 
+                + uemail + '</a><br />';
+        }
+        html += s;
+    }
+    elem.innerHTML = html;
+}
+
+{# Check if max_continuous_orders and, if can be broken, mark as 'closed' #}
 var onchange_reaction = function(ev) {
     var get_input = function(row) {
         input = row.getElementsByTagName('input')[0];
@@ -224,6 +284,7 @@ var onchange_reaction = function(ev) {
     }
 };
 
+{# Collect all checkboxes for max_continuous_orders checks #}
 // The default input 2D-array [day][item][input]
 var inputs_array = [];
 // Set all callbacks onload

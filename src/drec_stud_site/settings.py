@@ -50,6 +50,17 @@ INSTALLED_APPS = [
     'comment',
     'service',
     'survey',
+    'service_base',
+    'service_item',
+    'service_price',
+    'washing',
+    'service_document',
+    'meeting_room',
+]
+
+SERVICE_CHILDREN = [
+    'washing',
+    'meeting_room',
 ]
 
 MIDDLEWARE = [

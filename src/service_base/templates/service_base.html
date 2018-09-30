@@ -1,0 +1,65 @@
+{% extends 'core/base.html' %}
+
+{% comment %}
+
+This is the base class for 'service' templates.
+You must to inherit it for each service type, because all your additional blocks are undefined.
+
+This template adds blocks:
+> 'service_tab_main' - defines a block, that can be used as a main tab in some services (example: service_document)
+> 'service_additional_info' - define additional information, that will be seen at the top of the content page.
+> 'service_content' - the content of the service (after title, responsible_user and instructions)
+
+{% endcomment %}
+
+
+{% block content %}
+
+    {% if not user.is_authenticated %}
+        <div class='card'>
+            <h1>Для заказа необходимо войти на сайт</h1>
+        </div>
+    {% endif %}
+    <section class='card'>
+        <h2 class='lightgrey'>{{ service.name }}</h2>
+        {% if service.responsible_user %}
+            {% if user.is_authenticated %}
+                <p>
+                    Ответственный: <label style='text-decoration:underline;color:blue;' for='modal_userinfo_check' onclick='showuserinfo("{{ service.responsible_user.get_full_name }}", "{{ service.responsible_user.account_id }}", "{{ service.responsible_user.phone_number }}", "{{ service.responsible_user.email }}");'>{{ service.responsible_user.get_full_name }} ({% if service.responsible_room %}комната {{ service.responsible_room }}, {% endif %}группа {{ service.responsible_user.group_number }})</label>
+                </p>
+            {% else %}
+                <p>
+                    Ответственный: <label>{{ service.responsible_user.first_name }}</label>
+                </p>
+            {% endif %}
+        {% endif %}
+        {% if service.location %}
+            <p>
+                Расположение: {{ service.location }}
+            </p>
+        {% endif %}
+    </section>
+
+    {% block service_tab_main %}
+
+    {% block service_additional_info %}
+    {% endblock %}
+
+    {% if service.instruction.rendered %}
+        <section class='card'>
+            <input id='show_rules' type='checkbox' hidden class='shownews' />
+            <div class='cutted'><h2 class='lightgray'>Правила пользования</h2><label class='link-underline' for='show_rules'><a class='lightred'>&nbsp;Ознакомиться&nbsp;</a></label></div>
+            <div class='full'><div class='card-maintext'>
+                {{ service.instruction.rendered }}
+                </div>
+            <label class='link-underline' for='show_rules'><a class='lightred'>&nbsp;Скрыть&nbsp;</a></label></div>
+        </section>
+    {% endif %}
+
+    {% block service_content %}
+    {% endblock %}
+
+    {% endblock %}
+
+{% endblock %}
+

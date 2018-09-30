@@ -129,7 +129,7 @@ def _is_int(s):
 
 class ServiceListView(ListView):
     model = Service
-    template_name = 'service_list.html'
+    template_name = 'service_list1.html'
     # yandex payment logic
     def post(self, request, *args, **kwargs):
         log_error = False

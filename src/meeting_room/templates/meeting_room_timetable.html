@@ -1,12 +1,13 @@
-{% extends 'service_base1.html' %}
+{% extends 'service_document_timetable.html' %}
 
 {% load utils_extra_filters %}
 
+{# TODO REMOVE [id='washing'] HARDCODE! #}
 {% block form_attributes %}
     id='service'
 {% endblock %}
 
-{% block single_day %}
+{% block service_item_single_day %}
     <table>
         {% with i_value=day.items.values|util_to_list|first %}
         {% for cell in i_value.time %}
@@ -19,6 +20,7 @@
                         <!-- TODO: <h2/> for title, <span class='celltext'/> for description-->
                         <span class='celltext'>{% if order.extra_data.title %}{{ order.extra_data.title }}{% else %}{{ cell.orders|util_get_single_item_orders_str }}{% endif %}</span>
                     </td>
+                    {% comment %}
                     <td>
                         <label>
                             {% if participation.user != user %}
@@ -30,6 +32,7 @@
                             {% endif %}
                         </label>
                     </td>
+                    {% endcomment %}
                     {% endwith %}
                     {% endwith %}
                 {% else %}
@@ -50,6 +53,7 @@
     </table>
 {% endblock %}
 
-{% block final_inputs %}
+{% block service_item_extra_inputs %}
     <textarea rows=5 style='width:100%;max-width:100%;min-height:3ex;' name='title' placeholder='Пояснить причину заказа (если оставить пустым, будет показано ФИО)'></textarea><br />
 {% endblock %}
+
