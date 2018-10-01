@@ -17,7 +17,7 @@ This template extends blocks:
   'service_item_body_extras'
 }
 This template adds blocks:
-> 'service_item_additional_info' - define additional information after announsments, that will be seen at the top of the content.
+> 'service_item_additional_info_(before/after)' - define additional information after announsments, that will be seen at the top of the content.
 > 'form_attributes' - used in css formatting (TODO: replace with css-classes)
 > 'day_attributes' - used to set full_width for washing (TODO: replace with css-classes)
 > 'service_item_single_day' - set the service layout. You should understand the API (see models.py) to fill this.
@@ -27,6 +27,8 @@ This template adds blocks:
 
 
 {% block service_additional_info %}
+    {% block service_item_additional_info_before %}
+    {% endblock %}
     <section class='card'>
         <h2 class='lightgray'>Объявления</h2>
         <div>
@@ -39,7 +41,7 @@ This template adds blocks:
             </div>
         </div>
     </section>
-    {% block service_item_additional_info %}
+    {% block service_item_additional_info_after %}
     {% endblock %}
 {% endblock %}
 
