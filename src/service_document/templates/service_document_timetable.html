@@ -34,10 +34,10 @@ This template create 2 tabs using 'service_tab_main'
 
 {% endblock %}
 
-{% block service_item_additional_info %}
+{% block service_item_additional_info_before %}
     {% if service.request_document %}
         <section class='card'>
-            <p><a href={{ service.request_document.url }}>Образец служебки (скачать)</p>
+            <p><a href={{ service.request_document.url }}>Образец служебки (скачать)</a></p>
         </section>
     {% endif %}
     {% block service_document_additional_info %}
