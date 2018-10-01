@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django_cleanup',
     'adminsortable2',
     'utils',
+    'menu_entry',
     'user',
     'news',
     'note',

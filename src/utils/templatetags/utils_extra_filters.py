@@ -9,6 +9,7 @@ import json
 
 from service.models import Participation
 from comment.models import Comment
+from menu_entry.models import MenuEntry
 
 
 register = template.Library()
@@ -148,3 +149,19 @@ def util_get_form_field_verbose_name(form, field):
         return util_get_field_verbose_name(form._meta.model, field)
     else:
         return None
+
+@register.filter
+def util_is_active_menu_entry(path, entry):
+    entries = MenuEntry.objects.all()
+    possible = []
+    for e in entries:
+        if path.startswith(e.url):
+            possible.append(e.url)
+    [shortest, min_size] = [possible[0], len(possible[0])]
+    for p in possible:
+        n_size = len(p)
+        if n_size > min_size:
+            shortest = p
+            min_size = n_size
+    return shortest == entry
+

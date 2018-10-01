@@ -1,5 +1,7 @@
 # coding: utf-8
 from django.conf import settings
+
+from menu_entry.models import MenuEntry
 from .utils import util_get_new_question_num
 
 def custom_context(request):
@@ -15,6 +17,7 @@ def custom_context(request):
     if not n12n_text:
         n12n_text = 'Разработчик забыл установить текст :)'
     return {
+        'menu_entries': MenuEntry.objects.all(),
         'notification': {
             'enabled': n12n_enable,
             'text': n12n_text,

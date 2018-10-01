@@ -231,12 +231,13 @@
         <div id='bottom_menu'>
             <div>
                 <ul>
-                    <li class='link-underline red'><a href='/' {% if request.path|util_contains_string:'^/$' %}class='active'{% endif %}><span>Новости</span></a></li>
-                    <li class='link-underline red'><a href='/surveys/' {% if request.path|util_contains_string:'^/surveys/' %}class='active'{% endif %}><span>Опросы</span></a></li>
-                    <li class='link-underline red'><a href='/notes/student_council/' {% if request.path|util_contains_string:'^/notes/student_council' %}class='active'{% endif %}><span>Студсовет</span></a></li>
-                    <li class='link-underline red'><a href='/services1/washing/' {% if request.path|util_contains_string:'^/services1/washing/' %}class='active'{% endif %}><span>Стиралка</span></a></li>
-                    <li class='link-underline red'><a href='/services/' {% if request.path|util_contains_string:'^/services/$' %}class='active'{% endif %}><span>Другие сервисы</span></a></li>
-                    <li class='link-underline red'><a href='/notes/' {% if request.path|util_contains_string:'^/notes/(?!student_council)' %}class='active'{% endif %}><span>FAQs</span></a></li>
+                    {% for entry in menu_entries %}
+                        <li class='link-underline red'>
+                            <a href='{{ entry.url }}' {% if request.path|util_is_active_menu_entry:entry.url %}class='active'{% endif %}>
+                                <span>{{ entry.name }}</span>
+                            </a>
+                        </li>
+                    {% endfor %}
                 </ul>
             </div>
         </div>
@@ -272,12 +273,9 @@
                 </article>
                 <nav id='nav' class='link-underline red'>
                     <ul>
-                        <li><a href='/' {% if request.path|util_contains_string:'^/$' %}class='active'{% endif %}><span>Новости</span></a></li>
-                        <li><a href='/surveys/' {% if request.path|util_contains_string:'^/surveys/' %}class='active'{% endif %}><span>Опросы</span></a></li>
-                        <li><a href='/notes/student_council/' {% if request.path|util_contains_string:'^/notes/student_council' %}class='active'{% endif %}><span>Студсовет</span></a></li>
-                        <li><a href='/services1/washing/' {% if request.path|util_contains_string:'^/services1/washing/' %}class='active'{% endif %}><span>Стиралка</span></a></li>
-                        <li><a href='/services/' {% if request.path|util_contains_string:'^/services/$' %}class='active'{% endif %}><span>Другие сервисы</span></a></li>
-                        <li><a href='/notes/' {% if request.path|util_contains_string:'^/notes/(?!student_council)' %}class='active'{% endif %}><span>FAQs</span></a></li>
+                        {% for entry in menu_entries %}
+                            <li><a href='{{ entry.url }}' {% if request.path|util_is_active_menu_entry:entry.url %}class='active'{% endif %}><span>{{ entry.name }}</span></a></li>
+                        {% endfor %}
                     </ul>
                 </nav>
             </div>
