@@ -53,7 +53,6 @@ class ServiceItemAbstract(ServiceBase):
             result += '{}м.'.format(str(t.minute))
         if t.second:
             result += '{}с.'.format(str(t.second))
-        result = ''
         return result
     # Returns { 'works_from', 'works_to', 'is_weekend', 'is_exception' }
     # 'is_exception' means that Item can apply only its own exceptions
