@@ -44,8 +44,8 @@ This template create 2 tabs using 'service_tab_main'
     {% endblock %}
 {% endblock %}
 
-{% if service.responsible_user == user %}
-    {% block service_tab_main %}
+{% block service_tab_main %}
+    {% if service.responsible_user == user %}
         {# Order #}
         <input type='radio' class='hidden' name='tabs' id='tab-main' checked>
         <input type='radio' class='hidden' name='tabs' id='tab-nav-answer'>
@@ -82,6 +82,8 @@ This template create 2 tabs using 'service_tab_main'
                 <input id='finalsubmit-approve' type='submit' value='Утвердить' />
             </form>
         </div>
-    {% endblock %}
-{% endif %}
+    {% else %}
+        {{ block.super }}
+    {% endif %}
+{% endblock %}
 
