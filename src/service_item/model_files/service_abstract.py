@@ -18,7 +18,7 @@ from ..utils import to_dt
 class ServiceItemAbstract(ServiceBase):
     announcements = BBCodeTextField(blank = True, null = True, verbose_name = 'Объявления')
     # Ordering
-    max_continuous_orders = models.PositiveSmallIntegerField(blank = False, null = False, default = 1, verbose_name = 'Максимум непрерывных заказов одного предмета')
+    max_continuous_orders = models.PositiveSmallIntegerField(blank = False, null = False, default = 2, verbose_name = 'Максимум непрерывных заказов одного предмета')
     days_to_show          = models.PositiveSmallIntegerField(default = 3, validators = [MinValueValidator(1)], blank = False, null = False, verbose_name = 'Дней на заказ')
     # Timetable
     timestep                = models.TimeField(blank = False, null = False, verbose_name = 'Минимальное время использования (шаг времени)')
