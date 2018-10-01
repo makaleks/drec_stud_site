@@ -9,8 +9,8 @@ from service_item.models import WorkingTime, WorkingTimeException
 
 # Register your models here.
 
-#class WashingMachineInline(SortableInlineAdminMixin, admin.TabularInline):
-class WashingMachineInline(admin.TabularInline, SortableInlineAdminMixin):
+class WashingMachineInline(SortableInlineAdminMixin, admin.TabularInline):
+#class WashingMachineInline(admin.TabularInline, SortableInlineAdminMixin):
     model = WashingMachine
     extra = 0
     verbose_name = 'Машинка'
