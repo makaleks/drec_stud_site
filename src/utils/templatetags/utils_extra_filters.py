@@ -1,5 +1,4 @@
 from django import template
-from django.utils import timezone
 from django.contrib.contenttypes.models import ContentType
 from user.models import User
 from django.forms import ModelForm
@@ -49,7 +48,7 @@ def util_add_user_info(lst, user):
 @register.filter
 def util_is_finished(dt_start, service):
     service_td = datetime.datetime.combine(datetime.date.min, service.time_after_now) - datetime.datetime.min
-    now = timezone.now()
+    now = datetime.datetime.now()
     return now - service_td > dt_start
 
 @register.filter

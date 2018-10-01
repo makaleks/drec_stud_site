@@ -1,8 +1,6 @@
 from django.db import models
 from django.core.validators import MinValueValidator
 from django.contrib.contenttypes.fields import GenericRelation
-from django.utils import timezone
-
 from precise_bbcode.fields import BBCodeTextField
 
 import datetime
@@ -156,8 +154,8 @@ class ServiceItemAbstract(ServiceBase):
         final_timetables = timetables.get_timetables()
         #for t in final_timetables.values():
         #    print('Stored start({0}) and end({1})'.format(t.start, t.end))
-        now = timezone.now()
-        if self.is_finished_hidden and date == timezone.now().date():
+        now = datetime.datetime.now()
+        if self.is_finished_hidden and date == now.date():
             timetables.crop_start(now, leave_head_cell = True, floor_crop = True)
         final_timetables = timetables.get_timetables()
         result = {'date': s, 'is_weekend': False, 'items': {}}
@@ -185,7 +183,7 @@ class ServiceItemAbstract(ServiceBase):
         if not self.is_active:
             return None
         result = []
-        now = timezone.now().date()
+        now = datetime.datetime.now().date()
         for i in range(self.days_to_show):
             result.append(self.get_timetable(now + datetime.timedelta(days = i), user))
         return result

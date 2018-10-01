@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from django.views.generic.detail import DetailView
 from django.db.models import Q
-from django.utils import timezone
 
 import datetime
 import urllib
@@ -45,7 +44,7 @@ class ItemOrderingAbstractView(DetailView):
             status_to_ret = status_success
             # TODO: check required 'Rules accepted' checkbox
             obj = self.get_object()
-            now = timezone.now()
+            now = datetime.datetime.now()
             data = request.POST.dict()
             service_td = datetime.datetime.combine(datetime.date.min, obj.time_after_now) - datetime.datetime.min
             # Change the 2 following lines to enable #cancel_late_order

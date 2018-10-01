@@ -3,7 +3,7 @@ from django.views.generic.base import TemplateView
 from django.views.generic.detail import DetailView
 from django.db.models import Q
 from django.db import transaction
-from django.utils import timezone
+import datetime
 from .models import Survey, Answer, AnswerData
 
 # Create your views here.
@@ -13,7 +13,7 @@ class SurveyListView(TemplateView):
     # get for last month
     def get_context_data(self, **kwargs):
         context = super(SurveyListView, self).get_context_data(**kwargs)
-        now = timezone.now()
+        now = datetime.datetime.now()
         #years = self.request.GET.get('years')
         #if years:
         #    queryset = queryset.filter(Q(started__year__in = years.split('-')) | Q(started__year__in = years.split('-'))).order_by('-started')
@@ -67,9 +67,10 @@ class SurveyDetailView(DetailView):
             a = Answer(survey = Survey.objects.all().filter(pk = data['survey_pk']).first(), user = request.user)
             a_data = AnswerData(value = data['survey_result'])
             a_data.survey = survey
-        if a.survey.finished < timezone.now():
+        now = datetime.datetime.now()
+        if a.survey.finished < now:
             finished = True
-        elif a.survey.started > timezone.now():
+        elif a.survey.started > now:
             started = False
         else:
             with transaction.atomic():

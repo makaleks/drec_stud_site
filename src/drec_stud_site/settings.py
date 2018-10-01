@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
-import os
+import os, sys
 from importlib import util
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'background_task',
     # disable to save media on delete/update
     'django_cleanup',
+    # same from cli, usage: ./manage.py cleanup_unused_media -e 'admin_documents/*'
+    'django_unused_media',
     'adminsortable2',
     'utils',
     'menu_entry',
@@ -109,6 +111,10 @@ DATABASES = {
         'PORT': '',
     }
 }
+# 'ENGINE' is not supported in DATABASES['default']['TEST']
+if 'test' in sys.argv:
+    DATABASES['default'] = {'ENGINE': 'django.db.backends.sqlite3'}
+    PASSWORD_HASHERS = ('django.contrib.auth.hashers.MD5PasswordHasher',)
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
