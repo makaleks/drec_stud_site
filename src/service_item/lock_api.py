@@ -1,13 +1,18 @@
-from .models import ServiceBase
-from .utils import to_dt
-from service_base.utils import order_to_pk
+from django.http import HttpResponse
+from django.urls import path 
 
-# TODO FIX ALL
+import json
+import datetime
+import re
+
+from service_base.utils import order_to_pk
+from user.models import User
+from .utils import to_dt
 
 # Check unlock
 # test with:
 # bash$ curl 'http://localhost/services/washing/unlock/?uid=200'
-def unlock(request, service_model, service_order = 1, order_model):
+def unlock(request, service_model, order_model, service_order = 1):
     # The order of checks is important!
     card_uid = request.GET.get('uid')
     scenario = {
@@ -50,7 +55,7 @@ def unlock(request, service_model, service_order = 1, order_model):
     if pk is None:
         response = scenario['unknown_service']
         return HttpResponse(json.dumps(response))
-    service = service_model.objects.get(pk)
+    service = service_model.objects.get(pk = pk)
     # emergency mode
     if service.disable_lock:
         response = scenario['lock_disabled']
@@ -72,13 +77,13 @@ def unlock(request, service_model, service_order = 1, order_model):
 
     # Interval = 1sec. as an alternative to 1 moment
     interval = datetime.timedelta(seconds = 0.5)
-    orders = order_model.get_queryset(now - interval, now + interval, time_margin_start, time_margin_end).filter(user__card_uid = card_uid)
+    orders = order_model.get_queryset(now - interval, now + interval, time_margin_start, time_margin_end).filter(item__service = service, user__card_uid = card_uid)
     if orders:
         # Check endings - 'used' required
         order_lst = list(orders)
         unlock = False
         for o in order_lst:
-            [start, end] = to_dt(o.date_start, o.time_start, o.time_end)
+            [start, end] = to_dt(o.date_start, o.time_start, o.time_end).values()
             if end >= now:
                 unlock = True
                 o.used = True
@@ -94,11 +99,28 @@ def unlock(request, service_model, service_order = 1, order_model):
     return HttpResponse(json.dumps(response))
 
 def to_H_M(t):
-    return re.sub(r'(?P<part>^|:)0', '\g<part>', t.strftime('%H:%M'))
+    #???
+    #return re.sub(r'(?P<part>^|:)0', '\g<part>', t.strftime('%H:%M'))
+    return t.strftime('%H:%M')
 
-# get orders
-def list_update(request, slug):
-    today = timezone.now()
-    orders = Order.objects.all().filter(Q(date_start = today.date(), item__service__slug = slug) & (Q(time_end__gt = today.time()) | Q(time_end = datetime.time(0,0,0))) | Q(date_start__gt = today.date())).order_by('date_start', 'time_end')
+# Get many orders to work offline
+def list_update(request, service_model, order_model, service_order = 1):
+    dt_from = datetime.datetime.now()
+    dt_to = dt_from + datetime.timedelta(days = 2)
+    pk = order_to_pk(service_model, service_order)
+    if pk is None:
+        return HttpResponse('Error: unknown {0}-{1}'.format(str(service_model), str(service_order)))
+    service = service_model.objects.get(pk = pk)
+    orders = order_model.get_queryset(dt_from, dt_to).filter(item__service = service)
+
     return HttpResponse(json.dumps([{'uid': o.user.card_uid, 'name': o.user.get_full_name(), 'date_start': str(o.date_start), 'time_start': to_H_M(o.time_start), 'time_end': to_H_M(o.time_end)} for o in orders]))
+
+# Returns path() for unlock() and list_update()
+def gen_api_path(service_model, order_model):
+    return [
+        path('<int:service_order>/unlock/', unlock, {'service_model': service_model, 'order_model': order_model}),
+        path('unlock/', unlock, {'service_model': service_model, 'order_model': order_model}),
+        path('<int:service_order>/list-update/', list_update, {'service_model': service_model, 'order_model': order_model}),
+        path('list-update/', list_update, {'service_model': service_model, 'order_model': order_model}),
+        ]
 
