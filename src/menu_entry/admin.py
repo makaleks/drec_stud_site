@@ -8,7 +8,7 @@ from .models import MenuEntry
 # Register your models here.
 
 @admin.register(MenuEntry)
-class MenuEntryAdmin(SortableAdminMixin, VersionAdmin):
+class MenuEntryAdmin(VersionAdmin):
     history_latest_first = True
     list_display = ('id', 'name', 'url')
 
