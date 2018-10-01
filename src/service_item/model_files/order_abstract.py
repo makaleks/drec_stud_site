@@ -118,6 +118,8 @@ class OrderItemAbstract(models.Model):
         dt = to_dt(self.date_start, self.time_start, self.time_end);
         date = self.date_start
         wt = self.item.get_working_time(date)
+        if not wt:
+            raise ValidationError('Item {0} not working now! (order {1})'.format(self.item, self))
         if datetime.datetime.combine(date, self.time_start) < wt['works_from']:
            date -= datetime.timedelta(days = 1)
         max_orders = self.item.service.max_continuous_orders

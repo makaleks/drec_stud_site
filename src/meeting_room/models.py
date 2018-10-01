@@ -12,13 +12,6 @@ class MeetingRoom(ServiceDocumentAbstract):
     order      = models.PositiveSmallIntegerField(default = 0, blank = False, null = False, verbose_name = 'Порядок показа')
     def get_absolute_url(self):
         return pk_to_url(MeetingRoom, self.pk, 'meeting_room:room_base', 'meeting_room:room_detail')
-    # Note: this logic is not executed on bulk creations (using QuerySet)
-    def save(self, *args, **kwargs):
-        # Meeting room has only 1 item - the room
-        if not self.items.exists():
-            item = MeetingRoomItem(name = 'Комната_{}'.format(self.name), service = self)
-            item.save()
-        return super(MeetingRoom, self).save(*args, **kwargs)
     def __str__(self):
         return 'Комната-{0}'.format(self.id)
     class Meta:

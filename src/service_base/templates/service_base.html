@@ -56,8 +56,14 @@ This template adds blocks:
         </section>
     {% endif %}
 
-    {% block service_content %}
-    {% endblock %}
+    {% if service.is_active %}
+        {% block service_content %}
+        {% endblock %}
+    {% else %}
+        <div class='card' style='text-align:center;'>
+            <h1>Закрыто</h1>
+        </div>
+    {% endif %}
 
     {% endblock %}
 

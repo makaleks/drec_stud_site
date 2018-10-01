@@ -22,7 +22,7 @@ def get_children_for_service_item():
 
 class ItemAbstract(models.Model):
     # 'id' field will be added automatically 
-    name        = models.CharField(max_length = 64, unique = True, blank = False, null = False, verbose_name = 'Название/номер')
+    name        = models.CharField(max_length = 64, blank = False, null = False, verbose_name = 'Название/номер')
     t_steps_per_order   = models.PositiveSmallIntegerField(default = 1, 
             validators = [MinValueValidator(1)],
             blank = False, null = False, verbose_name = 'Число шагов времени на заказ')

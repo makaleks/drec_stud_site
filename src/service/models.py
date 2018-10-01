@@ -74,8 +74,8 @@ class WorkingTime(models.Model):
     # the destination object to this field:
     service_or_item = GenericForeignKey('content_type', 'object_id')
     class Meta:
-        verbose_name        = 'Время работы'
-        verbose_name_plural = 'Расписания'
+        verbose_name        = '(устарело) Время работы'
+        verbose_name_plural = '(устарело) Расписания'
         ordering            = ['object_id', 'weekday', 'works_from', 'works_to']
 
 
@@ -102,8 +102,8 @@ class WorkingTimeException(models.Model):
     # the destination object to this field:
     service_or_item = GenericForeignKey('content_type', 'object_id')
     class Meta:
-        verbose_name        = 'Дата исключения'
-        verbose_name_plural = 'Даты исключений'
+        verbose_name        = '(устарело) Дата исключения'
+        verbose_name_plural = '(устарело) Даты исключений'
         ordering = ['object_id', 'is_annual', 'date_start', 'date_end', 'works_from']
 
 
@@ -493,8 +493,8 @@ class Service(models.Model):
     def __str__(self):
         return self.name
     class Meta:
-        verbose_name = 'Сервис'
-        verbose_name_plural = 'Сервисы'
+        verbose_name        = '(устарело) Сервис'
+        verbose_name_plural = '(устарело) Сервисы'
         ordering            = ['order']
 
 
@@ -606,8 +606,8 @@ class Item(models.Model):
         self.full_clean()
         return super(Item, self).save(*args, **kwargs)
     class Meta:
-        verbose_name = 'предмет сервиса'
-        verbose_name_plural = 'предметы сервиса'
+        verbose_name        = '(устарело) Предмет сервиса'
+        verbose_name_plural = '(устарело) Предметы сервиса'
         ordering = ['order', 'location', 'price']
 
 
@@ -701,8 +701,8 @@ class Order(models.Model):
     def __repr__(self):
         return self.__str__()
     class Meta:
-        verbose_name = 'Заказ'
-        verbose_name_plural = 'Заказы'
+        verbose_name        = '(устарело) Заказ'
+        verbose_name_plural = '(устарело) Заказы'
         ordering = ['is_approved', '-date_start', '-time_start']
 
 class Participation(models.Model):
@@ -715,6 +715,6 @@ class Participation(models.Model):
         self.clean()
         return super(Participation, self).save(*args, **kwargs)
     class Meta:
-        verbose_name = 'Участие'
-        verbose_name_plural = 'Участия'
+        verbose_name        = '(устарело) Участие'
+        verbose_name_plural = '(устарело) Участия'
         ordering = ['-order', 'user']
