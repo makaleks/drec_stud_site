@@ -46,6 +46,7 @@ class ServiceItemAbstract(ServiceBase):
         t = self.time_margin_end
         if t == datetime.time.min:
             return None
+        result = ''
         if t.hour:
             result += '{}ч.'.format(str(t.hour))
         if t.minute:
