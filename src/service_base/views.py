@@ -5,6 +5,8 @@ from django.conf import settings
 from django.apps import apps
 
 from decimal import Decimal
+import hashlib
+
 
 from user.models import User
 from .models import ServiceBase
