@@ -6,6 +6,7 @@ from django.apps import apps
 
 from decimal import Decimal
 
+from user.models import User
 from .models import ServiceBase
 
 import logging
