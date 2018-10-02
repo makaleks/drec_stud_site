@@ -45,6 +45,7 @@ class ServiceListView(TemplateView):
         return context
     # Yandex payment logic - BE ACCURATE
     def post(self, request, *args, **kwargs):
+        data = request.POST.dict()
         log_error = False
         log_str = '\n'
         try:
@@ -55,7 +56,6 @@ class ServiceListView(TemplateView):
                     if not field in data:
                         to_ret += '\'{0}\'\n'.format(field)
                 return to_ret
-            data = request.POST.dict()
             user_id = data.get('label', '')
             # 'payed' != 'recieved', set by 'payed'
             amount = data.get('withdraw_amount', '')
@@ -95,11 +95,12 @@ class ServiceListView(TemplateView):
                 log_error = True
                 log_str += '- FORMAT_ERROR - some error with user_id(\'label\')={0} and amount(\'withdraw_amount\')={1}\n'.format(user_id, amount)
         except Exception as e:
-            log_str += str(e)
+            log_str += str(e) + '\n'
         log_str += '####################'
         if log_error:
             log_str = '\n- Got {0}'.format(str(data)) + log_str
             payment_logger.error(log_str)
+            return HttpResponse(status=500)
         else:
             payment_logger.info(log_str)
         # Return OK to yandex
