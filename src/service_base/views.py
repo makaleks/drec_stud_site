@@ -11,6 +11,20 @@ payment_logger = logging.getLogger('payment_logs')
 
 # Create your views here.
 
+def _is_decimal(s):
+    try:
+        Decimal(s)
+        return True
+    except ValueError:
+        return False
+def _is_int(s):
+    try:
+        int(s)
+        return True
+    except ValueError:
+        return False
+
+
 class ServiceListView(TemplateView):
     model = ServiceBase
     template_name = 'service_list.html'
