@@ -4,6 +4,8 @@ from django.http import HttpResponseRedirect
 from django.conf import settings
 from django.apps import apps
 
+from decimal import Decimal
+
 from .models import ServiceBase
 
 import logging
