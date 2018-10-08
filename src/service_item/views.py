@@ -81,7 +81,7 @@ class ItemOrderingAbstractView(DetailView):
                 items_dict[i.name] = i
             total_price = 0
             for l in order_lst:
-                total_price += items_dict[l['name']].get_price()
+                total_price += int(items_dict[l['name']].get_price()*obj.get_discount(request.user))
             for l in undo_order_lst:
                 if now > datetime.datetime.combine(l.date_start, l.time_start):
                     total_price -= int(l.payed * obj.late_cancel_multiplicator)
@@ -101,7 +101,7 @@ class ItemOrderingAbstractView(DetailView):
                             'user': request.user,
                         }
                     if hasattr(order_model, 'payed'):
-                        kwargs['payed'] = items_dict[l['name']].get_price()
+                        kwargs['payed'] = int(items_dict[l['name']].get_price()*obj.get_discount(request.user))
                     final_orders.append(order_model(**kwargs))
                 for o in final_orders:
                     o.clean()

@@ -5,11 +5,14 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db.models import Q
 from django.core.exceptions import ValidationError
 from django.conf import settings
+
 from service.models import Service
 from survey.models import Survey, Answer
 from utils.validators import *
 from utils.utils import check_unique, get_id_by_url_vk
+
 import datetime
+
 from .managers import UserManager
 
 # Create your models here.
@@ -122,3 +125,33 @@ class User(AbstractBaseUser, PermissionsMixin):
         ordering            = ['is_superuser', 'is_staff', 'group_number', 'last_name']
         verbose_name        = 'Пользователя'
         verbose_name_plural = 'Пользователи'
+
+# Be careful!
+class Faculty(models.Model):
+    name  = models.CharField(max_length = 8, blank = False, null = False, verbose_name = 'Имя (кратко)')
+    groups = models.CharField(max_length = 128, blank = False, null = False, verbose_name = 'Группы:\',\'-разделитель,\'_\'-любое число')
+    def is_group_in_faculty(self, s):
+        if s is None or s is '':
+            return False
+        to_regex = re.escape(self.groups).replace('_', '[0-9]')
+        patterns = to_regex.split(',')
+        for i in range(len(patterns)):
+            patterns[i] = '^' + patterns[i] + '$'
+        for p in patterns:
+            if re.match(p, s):
+                return True
+    def __str__(self):
+        return self.name
+    def clean(self):
+        if is_valid_faculty(self.groups) is False:
+            raise ValidationError({'groups': 'Неверный формат фамилии'})
+    def save(self, *args, **kwargs):
+        # Remove whitespaces
+        self.groups.replace(' ', '')
+        # Validate
+        self.full_clean()
+        return super(Faculty, self).save(*args, **kwargs)
+    class Meta:
+        verbose_name        = 'Факультет'
+        verbose_name_plural = 'Факультеты'
+

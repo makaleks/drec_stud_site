@@ -4,7 +4,7 @@ from django.contrib.contenttypes.admin import GenericStackedInline
 from reversion.admin import VersionAdmin
 from adminsortable2.admin import SortableAdminMixin, SortableInlineAdminMixin
 
-from .models import Washing, WashingMachine, Order
+from .models import Washing, WashingMachine, Order, Discount
 from service_item.models import WorkingTime, WorkingTimeException
 
 # Register your models here.
@@ -28,10 +28,15 @@ class WorkingTimeExceptionInline(GenericStackedInline):
     verbose_name = 'Элемент'
     ordering = ['is_annual', 'date_start', 'date_end', 'works_from', 'works_to']
 
+class DiscountInline(admin.TabularInline):
+    model = Discount
+    extra = 0
+    verbose_name = 'Скидки'
+
 @admin.register(Washing)
 class WashingAdmin(SortableAdminMixin, VersionAdmin):
     history_latest_first = True
-    inlines = [WashingMachineInline, WorkingTimeInline, WorkingTimeExceptionInline]
+    inlines = [WashingMachineInline, WorkingTimeInline, WorkingTimeExceptionInline, DiscountInline]
     list_filter = ['order', 'name']
     list_display = ('name', 'default_price', 'timestep', 'is_active','edited')
 
@@ -57,4 +62,5 @@ class OrderAdmin(VersionAdmin):
         return '{0}, {1}'.format(obj.user.group_number, obj.user.get_full_name())
     def item_id(self, obj):
         return obj.item.id
+
 

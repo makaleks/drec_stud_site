@@ -41,3 +41,9 @@ def is_valid_group(n):
 def is_valid_id_url(s):
     _id_valid_url = re.compile(r"^((https?://)?(m.)?vk.com/)?((((i|I)d)?[0-9]+)|([0-9a-zA-Z_\.]+))$")
     return _check_valid(_id_valid_url, s = s)
+
+# С01-419
+def is_valid_faculty(s):
+    _faculty_valid = re.compile(r"^([0-9A-Za-zА-Яа-яЁё\-_])+(,([0-9A-Za-zА-Яа-яЁё\-_])+)+,?$")
+    return _check_valid(_faculty_valid, s = s)
+

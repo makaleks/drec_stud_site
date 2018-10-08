@@ -50,7 +50,9 @@
                 <table>
                     <tr>
                         {% for i_name,i_value in day.items.items %}
-                        <th style='word-break:normal;vertical-align:top;'>{{ i_name }}<br /><small>({{ i_value.price }} руб.)</small></th>
+                            {% with i_value.price|util_mul:discount as user_price %}
+                            <th style='word-break:normal;vertical-align:top;'>{{ i_name }}<br /><small>({{ user_price }} руб.)</small></th>
+                            {% endwith %}
                         {% endfor %}
                     </tr>
                 </table>
@@ -81,7 +83,9 @@
                 <label>
                     {% with order=cell.orders|first %}
                         {#???{% if not cell.is_now %}???#}
-                        <input type='checkbox' name='cancel={{ order.id }}' data-price={% if cell.is_now %}'-{{ i_value.price|util_get_late_price:service }}'{% else %}'-{{ i_value.price }}'{% endif %} data-timestart='{{ cell.start.time }}' data-timeend='{{ cell.end.time }}' data-item='{{ i_name }}' data-groupsize='{{ cell.group_size }}' class='hidden'/>
+                        {% with i_value.price|util_mul:discount as user_price %}
+                        <input type='checkbox' name='cancel={{ order.id }}' data-price={% if cell.is_now %}'-{{ user_price|util_get_late_price:service }}'{% else %}'-{{ i_value.price }}'{% endif %} data-timestart='{{ cell.start.time }}' data-timeend='{{ cell.end.time }}' data-item='{{ i_name }}' data-groupsize='{{ cell.group_size }}' class='hidden'/>
+                        {% endwith %}
                         {#{% endif %}#}
                         <span><div>-</div></span>
                     {% endwith %}
@@ -92,7 +96,9 @@
             {# Orderable #}
             {% elif user.is_authenticated and not cell.orders %}
                 <label>
-                    <input type='checkbox' name='order={{ i_name }}&&{{ cell.start.time }}&&{{ cell.end.time }}&&{{ cell.start.date|date:'Y-m-d' }}' data-price='{{ i_value.price }}' data-timestart='{{ cell.start.time }}' data-timeend='{{ cell.end.time }}' data-item='{{ i_name }}' data-groupsize='{{ cell.group_size }}' class='hidden'/>
+                    {% with i_value.price|util_mul:discount as user_price %}
+                    <input type='checkbox' name='order={{ i_name }}&&{{ cell.start.time }}&&{{ cell.end.time }}&&{{ cell.start.date|date:'Y-m-d' }}' data-price='{{ user_price }}' data-timestart='{{ cell.start.time }}' data-timeend='{{ cell.end.time }}' data-item='{{ i_name }}' data-groupsize='{{ cell.group_size }}' class='hidden'/>
+                    {% endwith %}
                     <span><div>+</div></span>
                 </label>
             {% endif %}

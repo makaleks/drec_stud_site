@@ -187,6 +187,8 @@ class ServiceItemAbstract(ServiceBase):
         for i in range(self.days_to_show):
             result.append(self.get_timetable(now + datetime.timedelta(days = i), user))
         return result
+    def get_discount(self, user):
+        return 1.0
     class Meta:
         abstract = True
 

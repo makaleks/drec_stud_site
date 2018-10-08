@@ -4,4 +4,5 @@
 from .model_files.service_abstract import ServicePriceAbstract
 from .model_files.item_abstract import ItemPriceAbstract
 from .model_files.order_abstract import OrderPriceAbstract
+from .model_files.discount_abstract import DiscountAbstract
 

@@ -1,12 +1,12 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 
-from service_item.views import ItemOrderingAbstractView
+from service_price.views import ServiceDiscountAbstractView
 from .models import Washing, Order
 
 # Create your views here.
 
-class WashingDetailView(ItemOrderingAbstractView):
+class WashingDetailView(ServiceDiscountAbstractView):
     model = Washing
     template_name = 'washing_timetable.html'
     context_object_name = 'service'

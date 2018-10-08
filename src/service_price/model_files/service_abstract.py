@@ -18,6 +18,16 @@ class ServicePriceAbstract(ServiceItemAbstract):
     #   'timetable': [TimetableInterval]
     # }
     # or None if not working
+    def get_discount(self, user):
+        if not user.is_authenticated or not hasattr(self, 'discounts'):
+            return 1.0
+        min_fraction = 1.0
+        # If 2+ discounts, find the best
+        discounts = list(self.discounts.all())
+        for d in discounts:
+            if d.faculty.is_group_in_faculty(user.group_number) and d.discount < min_fraction:
+                min_fraction = d.discount
+        return min_fraction
     class Meta:
         abstract = True
 

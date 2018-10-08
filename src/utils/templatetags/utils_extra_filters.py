@@ -164,3 +164,7 @@ def util_is_active_menu_entry(path, entry):
             min_size = n_size
     return shortest == entry
 
+@register.filter
+def util_mul(left, right):
+    return int(left*right)
+

@@ -10,7 +10,7 @@ from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
 from utils.validators import *
 from utils.utils import check_unique, get_id_by_url_vk
-from .models import User
+from .models import User, Faculty
 
 import logging
 logger = logging.getLogger('site_events')
@@ -116,3 +116,8 @@ class UserAdmin(BaseUserAdmin, VersionAdmin):
 admin.site.register(User, UserAdmin)
 # No permissions for now
 #admin.site.unregister(Group)
+
+@admin.register(Faculty)
+class FacultyAdmin(VersionAdmin):
+    history_latest_first = True
+

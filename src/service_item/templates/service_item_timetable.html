@@ -30,7 +30,7 @@ This template adds blocks:
     {% block service_item_additional_info_before %}
     {% endblock %}
     <section class='card'>
-        <p>Максимальное число заказов подряд (один за другим) для каждой машинки - {{ service.max_continuous_orders }}</p>
+        <p>Максимальное число заказов подряд (один за другим) - {{ service.max_continuous_orders }}</p>
         {% with t_start=service.get_time_margin_start t_end=service.get_time_margin_end %}
             <p>
                 {# TODO - look again #}
