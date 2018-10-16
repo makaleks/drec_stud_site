@@ -9,6 +9,18 @@ from service_base.utils import order_to_pk
 from user.models import User
 from .utils import to_dt
 
+import logging
+lock_logger = logging.getLogger('lock_api_logs')
+
+def log_and_response(scenario, card_uid, service_model, service_order):
+    s = 'Scenario:\n{0}\n####################'.format(json.dumps(scenario, indent = 2, ensure_ascii = False))
+    if scenario['status'] == 'no':
+        s = 'Got service  = {0}({1})\nGot card_uid = {2}\n'.format(service_model, service_order, card_uid) + s
+        lock_logger.error(s)
+    else:
+        lock_logger.info(s)
+    return HttpResponse(json.dumps(scenario))
+
 # Check unlock
 # test with:
 # bash$ curl 'http://localhost/services/washing/unlock/?uid=200'
@@ -54,22 +66,22 @@ def unlock(request, service_model, order_model, service_order = 1):
     pk = order_to_pk(service_model, service_order)
     if pk is None:
         response = scenario['unknown_service']
-        return HttpResponse(json.dumps(response))
+        return log_and_response(response, card_uid, service_model, service_order)
     service = service_model.objects.get(pk = pk)
     # emergency mode
     if service.disable_lock:
         response = scenario['lock_disabled']
-        return HttpResponse(json.dumps(response))
+        return log_and_response(response, card_uid, service_model, service_order)
     # disable unknown users
     if not User.objects.all().filter(card_uid = card_uid).exists():
         response = scenario['unknown_user']
-        return HttpResponse(json.dumps(response))
+        return log_and_response(response, card_uid, service_model, service_order)
     # pass all staff
     user = User.objects.all().filter(card_uid = card_uid).first()
     if card_uid and user.is_staff:
         response = scenario['staff']
         response['name'] = user.get_full_name()
-        return HttpResponse(json.dumps(response))
+        return log_and_response(response, card_uid, service_model, service_order)
     # process orders check
     now = datetime.datetime.now()
     time_margin_start = datetime.datetime.combine(datetime.date.min, service.time_margin_start) - datetime.datetime.min
@@ -93,10 +105,10 @@ def unlock(request, service_model, order_model, service_order = 1):
         if unlock:
             response = scenario['success']
             response['name'] = user.get_full_name()
-            return HttpResponse(json.dumps(response))
+            return log_and_response(response, card_uid, service_model, service_order)
     response = scenario['no_orders']
     response['name'] = user.get_full_name()
-    return HttpResponse(json.dumps(response))
+    return log_and_response(response, card_uid, service_model, service_order)
 
 def to_H_M(t):
     #???

@@ -291,6 +291,13 @@ LOGGING = {
             'filename': os.path.join(PROJECT_ROOT, 'logs/payment_events.log'),
             'formatter': 'simple',
         },
+        'file_lock_api': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            #'formatter': 'user_formatter',
+            'filename': os.path.join(PROJECT_ROOT, 'logs/lock_api_events.log'),
+            'formatter': 'simple',
+        },
         'console': {
             'level': 'INFO',
             'filters': ['require_debug_true'],
@@ -328,6 +335,11 @@ LOGGING = {
         },
         'payment_logs': {
             'handlers': ['file_payment'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'lock_api_logs': {
+            'handlers': ['file_lock_api'],
             'level': 'INFO',
             'propagate': True,
         },
