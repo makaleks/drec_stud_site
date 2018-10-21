@@ -279,7 +279,7 @@ class Survey(models.Model):
                 pos = _get_pos(col, row)
                 key = layout[i]['name']
                 str_value = answ_value[key] if key in answ_value else '-'
-                ws[pos].value = str_value
+                ws[pos].value = str(str_value)
                 ws[pos].alignment = openpyxl.styles.Alignment(wrapText = True)
                 col += 1
             row += 1
