@@ -168,7 +168,6 @@ class ServiceItemAbstract(ServiceBase):
                 lst = t.gen_head(now, lambda o: o.extra_data['is_used'])
             else:
                 lst = t.gen_head(now)
-            print(lst)
             lst.extend(t.gen_list_limited(self.max_continuous_orders, 'user', user, now))
             lst.extend(t.gen_tail(now))
             result['items'][it.name] = {'is_open': t.is_open, 'rowspan': t.timesteps_num, 'time': lst}
