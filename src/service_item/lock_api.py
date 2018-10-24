@@ -91,16 +91,16 @@ def unlock(request, service_model, order_model, service_order = 1):
     interval = datetime.timedelta(seconds = 0.5)
     orders = order_model.get_queryset(now - interval, now + interval, time_margin_start, time_margin_end).filter(item__service = service, user__card_uid = card_uid)
     if orders:
-        # Check endings - 'used' required
+        # Check endings - 'is_used' required
         order_lst = list(orders)
         unlock = False
         for o in order_lst:
             [start, end] = to_dt(o.date_start, o.time_start, o.time_end).values()
             if end >= now:
                 unlock = True
-                o.used = True
+                o.is_used = True
                 o.save()
-            elif o.used:
+            elif o.is_used:
                 unlock = True
         if unlock:
             response = scenario['success']

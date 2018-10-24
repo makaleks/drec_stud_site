@@ -111,6 +111,14 @@ class ItemAbstract(models.Model):
             last = working_time['works_to'],
             timesteps_num = self.t_steps_per_order)
         raw_orders = list(self.orders.model.get_queryset(working_time['works_from'], working_time['works_to']).filter(item = self))
+        # datetime.datetime.min cannot be used, let it be year=2000
+        min_dt = datetime.datetime(year = 2000, month = 1, day = 1)
+        # extend raw_orders with order used & before today
+        # ( used in crop_start(leave_head_cell = True) )
+        orders_before = self.orders.model.get_queryset(min_dt, working_time['works_from']).filter(item = self, is_used = True)
+        if orders_before.exists():
+            # use the 'latest-Order-is-first' ordering rule
+            raw_orders.append(orders_before.first())
         timetable.add_order(raw_orders, 
                 lambda o: TimetableOrder(
                     start = datetime.datetime.combine(o.date_start,
@@ -118,7 +126,7 @@ class ItemAbstract(models.Model):
                     end = datetime.datetime.combine(o.date_start,
                         o.time_end) + datetime.timedelta(days = 1 if o.time_start >= o.time_end else 0),
                     nid = o.pk,
-                    extra_data = {'user': o.user}
+                    extra_data = {'user': o.user, 'is_used': o.is_used}
                 )
             )
         #print('# Item end')

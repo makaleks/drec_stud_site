@@ -44,7 +44,7 @@ class Timetable:
     :type show_head_orders: bool
     '''
 #
-# Add/get orders
+# Add/get/filter/clear orders
 #
     def add_order(self, value, to_ordered_interval = lambda v: v):
         if isinstance(value, list) and all(isinstance(to_ordered_interval(o), TimetableOrder) for o in value):
@@ -55,15 +55,25 @@ class Timetable:
             sorted_insert(self._orders, TimetableOrder, 'start', 'end', to_ordered_interval(value))
         else:
             raise TypeError('value({0}) must be TimetableOrder after to_ordered_interval transformation or list of them'.format(value.__class__.__name__))
-    def get_orders(self, interval = None):
+    def get_orders(self, interval = None, f_filter = None):
+        if f_filter is not None and not callable(f_filter):
+            raise TypeError('f_filter({0}) must be callable or None'.format(f_filter.__class__.__name__))
+        lst = []
         if not interval:
             # When orders are added, they are no longer belong to user
-            return deepcopy(self._orders)
+            lst = deepcopy(self._orders)
         elif isinstance(interval, TimetableInterval):
             # When orders are added, they are no longer belong to user
-            return deepcopy(long_sorted_search(self._orders, TimetableInterval, 'start', 'end', interval, lst_obj_class = TimetableOrder))
+            lst = deepcopy(long_sorted_search(self._orders, TimetableInterval, 'start', 'end', interval, lst_obj_class = TimetableOrder))
         else:
             raise TypeError('interval({0}) must be TimetableInterval or None'.format(interval.__class__.__name__))
+        if f_filter:
+            filter(f_filter, lst)
+        return lst
+    def filter_orders(self, f_filter):
+        if not callable(f_filter):
+            return
+        self._orders = filter(f_filter, self._orders)
     def clear_orders(self):
         self._orders.clear()
 #
@@ -88,7 +98,7 @@ class Timetable:
 #
 # Search for interval
 #
-    def find_interval(self, dt, now = None, add_orders = True):
+    def find_interval(self, dt, now = None, add_orders = True, f_filter = None):
         if not isinstance(dt, datetime.datetime):
             raise TypeError('dt({0}) must be datetime'.format(dt.__class__.__name__))
         elif now is not None and not isinstance(now, datetime.datetime):
@@ -104,35 +114,35 @@ class Timetable:
                 if it.end > dt:
                     it.is_open = False
                     if add_orders:
-                        it.orders = self.get_orders(it)
+                        it.orders = self.get_orders(it, f_filter)
                     return it
         elif dt >= self.get_first_start():
             for it in TimetableIntervalCursor(self.get_first_start(), self.timestep, self.get_last_start(), self.timesteps_num, now = now):
                 if it.end > dt:
                     it.is_open = self.is_open
                     if add_orders:
-                        it.orders = self.get_orders(it)
+                        it.orders = self.get_orders(it, f_filter)
                     return it
         else:
             for it in TimetableIntervalCursor(self.start, self.timestep, self.get_first_start(), now = now):
                 if it.end > dt:
                     it.is_open = False
                     if add_orders:
-                        it.orders = self.get_orders(it)
+                        it.orders = self.get_orders(it, f_filter)
                     return it
 #
 # Gen all!
 #
-    def gen_head(self, now = None):
+    def gen_head(self, now = None, f_filter = None):
         result = []
         # Required, because true 'first' >= self.first
         last_in_head = self.get_first_start()
         for it in TimetableIntervalCursor(self.start, self.timestep, last_in_head, now = now):
             it.is_open = False
-            it.orders = self.get_orders(it)
+            it.orders = self.get_orders(it, f_filter)
             result.append(it)
         # If flag not set, all is done
-        if not self.show_head_orders:
+        if not self.show_head_orders or not self._orders:
             return result
         # If order exists, an extra-attachment not needed
         for r in result:
@@ -142,23 +152,27 @@ class Timetable:
         # (but first, check it is possible)
         if self._orders[0].start >= self.start:
             return result
-        order_to_add = self._orders[0]
-        for o in self._orders[1:]:
+        order_to_add = None
+        for o in self._orders:
             if o.end > self.start:
                 break
+            elif f_filter:
+                if f_filter(o):
+                    order_to_add = o
             else:
                 order_to_add = o
-        result[0].orders = deepcopy(order_to_add)
+        if order_to_add:
+            result[0].orders = [deepcopy(order_to_add)]
         return result
-    def gen_list(self, now = None):
+    def gen_list(self, now = None, f_filter = None):
         result = []
         first_in_opened = self.get_first_start()
         for it in TimetableIntervalCursor(first_in_opened, self.timestep, self.last, self.timesteps_num, now = now):
             it.is_open = self.is_open
-            it.orders = self.get_orders(it)
+            it.orders = self.get_orders(it, f_filter)
             result.append(it)
         return result
-    def gen_list_limited(self, limit, usr_field, usr_obj, now = None):
+    def gen_list_limited(self, limit, usr_field, usr_obj, now = None, f_filter = None):
         def is_ordered(elem, usr_field, usr_obj):
             if not elem.is_open or not elem.orders:
                 return False
@@ -172,7 +186,7 @@ class Timetable:
             raise TypeError('limit({0}) must be int > 0'.format(limit))
         elif not usr_field or not isinstance(usr_field, str):
             raise TypeError('usr_field({0}) must be the field of the \'extra\' Order field'.format(usr_field.__class__.__name__))
-        result = self.gen_list(now)
+        result = self.gen_list(now, f_filter)
         for i in range(len(result)):
             result[i].group_size = 1 if is_ordered(result[i], usr_field, usr_obj) else 0
         i = 0
@@ -195,12 +209,12 @@ class Timetable:
                     result[i].is_open = False
             i += 1
         return result
-    def gen_tail(self, now = None):
+    def gen_tail(self, now = None, f_filter = None):
         result = []
         first_in_tail = self.get_last_start()
         for it in TimetableIntervalCursor(first_in_tail, self.timestep, self.end, now = now):
             it.is_open = False
-            it.orders = self.get_orders(it)
+            it.orders = self.get_orders(it, f_filter)
             result.append(it)
         return result
 #

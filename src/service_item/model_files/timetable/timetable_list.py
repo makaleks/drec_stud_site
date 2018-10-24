@@ -21,6 +21,8 @@ class TimetableList:
     :type global_start: datetime
     :type global_end: datetime
     '''
+    # leave_head_cell - leave 1 'head' cell
+    # floor_crop - include 'new_start' cell as 'open'
     def crop_start(self, new_start, leave_head_cell = False, floor_crop = False):
         if not isinstance(new_start, datetime.datetime):
             raise TypeError('new_start({0}) must be datetime'.format(new_start.__class__.__name__))
@@ -59,7 +61,7 @@ class TimetableList:
             for t in self._timetables.values():
                 t.set_start_end(min_start, self.global_end)
             new_start = min_start
-        if leave_head_cell and new_start_was < new_start:
+        if leave_head_cell:
             new_start -= self.timestep
             for t in self._timetables.values():
                 t.set_start_end(new_start, self.global_end)

@@ -27,7 +27,7 @@ class OrderItemAbstract(models.Model):
     # example:
     # user        = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.CASCADE, related_name = 'orders', blank = False, null = False, verbose_name = 'Пользователь')
     user        = None
-    used        = models.BooleanField(default = False, blank = False, null = False, verbose_name = 'Потрачено')
+    is_used     = models.BooleanField(default = False, blank = False, null = False, verbose_name = 'Потрачено')
     @staticmethod
     def filter_queryset(queryset):
         return queryset

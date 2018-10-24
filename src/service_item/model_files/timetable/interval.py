@@ -1,4 +1,5 @@
 import datetime
+from .order import TimetableOrder
 from .util import adjust_start_end
 
 class TimetableInterval:
@@ -77,8 +78,8 @@ class TimetableInterval:
     def get_orders(self):
         return self._orders
     def set_orders(self, orders):
-        if not isinstance(orders, list) and not all(isinstance(o, OrderedInterval) for o in orders):
-            raise TypeError('orders({0}) must be type a list of OrderedInterval'.format(orders.__class__.name__))
+        if not isinstance(orders, list) or not all(isinstance(o, TimetableOrder) for o in orders):
+            raise TypeError('orders({0}) must be a list of TimetableOrder'.format(orders.__class__.__name__))
         self._orders = orders
         return self._orders
     orders = property(get_orders, set_orders)

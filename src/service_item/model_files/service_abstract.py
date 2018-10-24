@@ -162,7 +162,13 @@ class ServiceItemAbstract(ServiceBase):
         # Database needs to order properly
         for it in list(self.items.all()):
             t = final_timetables[it.name]
-            lst = t.gen_head(now)
+            lst = None
+            if date == now.date():
+                t.show_head_orders = True
+                lst = t.gen_head(now, lambda o: o.extra_data['is_used'])
+            else:
+                lst = t.gen_head(now)
+            print(lst)
             lst.extend(t.gen_list_limited(self.max_continuous_orders, 'user', user, now))
             lst.extend(t.gen_tail(now))
             result['items'][it.name] = {'is_open': t.is_open, 'rowspan': t.timesteps_num, 'time': lst}

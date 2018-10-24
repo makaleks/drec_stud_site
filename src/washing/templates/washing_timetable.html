@@ -32,16 +32,25 @@
         <tr>
             <th>Время</th>
         </tr>
-        {% for t in day.timetable %}
-            <tr style='vertical-align:bottom;'>
-                <td>{{ t.start|date:'H:i' }}</td>
-            </tr>
-            {% if forloop.last %}
+        {% if forloop.counter == 1 %}
+            <tr><th></th></tr>
+            {% for t in day.timetable %}
                 <tr style='vertical-align:bottom;'>
                     <td>{{ t.end|date:'H:i' }}</td>
                 </tr>
-            {% endif %}
-        {% endfor %}
+            {% endfor %}
+        {% else %}
+            {% for t in day.timetable %}
+                <tr style='vertical-align:bottom;'>
+                    <td>{{ t.start|date:'H:i' }}</td>
+                </tr>
+                {% if forloop.last %}
+                    <tr style='vertical-align:bottom;'>
+                        <td>{{ t.end|date:'H:i' }}</td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
     </table>
     {# Print machines #}
     <table class='table_main'>

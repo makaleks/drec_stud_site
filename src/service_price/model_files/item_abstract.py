@@ -19,7 +19,9 @@ class ItemPriceAbstract(ItemAbstract):
     service = None
 
     def get_timetable_extra_data(self):
-        return {'price': self.get_price()}
+        data = super(ItemPriceAbstract, self).get_timetable_extra_data()
+        data.update({'price': self.get_price()})
+        return data
     def get_price(self):
         return self.price if self.price != None else self.service.default_price
     class Meta:

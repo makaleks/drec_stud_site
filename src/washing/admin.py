@@ -55,9 +55,11 @@ class OrderAdmin(VersionAdmin):
     ordering = ('-date_start', 'item', 'time_start', 'user')
     def get_readonly_fields(self, request, obj=None):
         if obj:
-            return ('payed', 'used')
+            return ('payed', 'is_used')
         else:
-            return ('payed',)
+            return ()
+        #else:
+        #    return ('payed',)
     def user_info(self, obj):
         return '{0}, {1}'.format(obj.user.group_number, obj.user.get_full_name())
     def item_id(self, obj):
