@@ -1,0 +1,40 @@
+.qa-avatar
+    width: 40px
+    display: inline
+
+.qa-with-border
+    border: 1px red solid
+
+.qa-comment-text
+    display: inline
+    position: static
+
+#comment
+    bottom: 0
+    position: fixed
+    display: block
+    @media(min-width: 860px)
+        min-width: 700px
+        width: 700px
+        max-width: -webkit-calc(100% - 330px)
+        max-width: -moz-calc(100% - 330px)
+        max-width: calc(100% - 330px)
+    @media(max-width: 860px)
+        min-width: calc(100% - 30px)
+        width: -webkit-calc(100% - 30px)
+        width: -moz-calc(100% - 30px)
+        width: calc(100% - 30px)
+        max-width: -webkit-calc(100% - 30px)
+        max-width: -moz-calc(100% - 30px)
+        max-width: calc(100% - 30px)
+    @media(max-width: 480px)
+        min-width: 100%
+        width: 100%
+        max-width: 100%
+
+
+#qa-answerval
+    display: none
+
+#qa-isanswer:checked~#qa-answerval
+    display: inline

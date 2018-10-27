@@ -1,3 +1,4 @@
-preview/
+preview
 static/content.css
-venv/
+venv
+temp

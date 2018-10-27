@@ -1,0 +1,22 @@
+- extends 'core/base.html'
+
+- block content
+    .card
+        - if user.is_authenticated
+            %p Вы уже вошли
+        - else
+            %h1 Резервная страница входа на сайт.
+
+            - if form.errors
+                %p.errorfont Неверный логин или пароль.
+            %form{'method':"post", "action":"{% url 'emergency-login' %}"}
+                - csrf_token
+                %table
+                    %tr
+                        %td #{ form.username.label_tag }
+                        %td #{ form.username }
+                    %tr
+                        %td #{ form.password.label_tag }
+                        %td #{ form.password }
+                %input{'type':"submit", 'value':"Войти"}
+                %input{'type':"hidden", 'name':"next", 'value':"={ next }"}

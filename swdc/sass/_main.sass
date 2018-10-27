@@ -1,0 +1,143 @@
+img
+    vertical-align: middle
+
+blockquote
+    margin-top: 1em
+    margin-bottom: 1em
+    margin-left: 40px
+    padding-left: 15px
+    border-left: 3px solid #ccc
+
+textarea
+    max-width: 100%
+    min-width: 100%
+
+.inline
+    display: inline
+
+.block
+    display: block
+
+.hidden
+    display: none !important
+
+.sticky
+    position: fixed !important
+    top: 0
+    bottom: auto !important
+
+.container
+    padding-right: 15px
+    padding-left: 15px
+    margin: 0 auto
+    position: relative
+    display: block
+    @media(min-width: 860px)
+        margin-left: auto
+        margin-right: auto
+        min-width: 700px
+        width: 700px
+        max-width: -webkit-calc(100% - 330px)
+        max-width: -moz-calc(100% - 330px)
+        max-width: calc(100% - 330px)
+    @media(max-width: 860px)
+        margin-right: auto
+        margin-left: auto
+        left: 0
+        min-width: calc(100% - 30px)
+        width: -webkit-calc(100% - 30px)
+        width: -moz-calc(100% - 30px)
+        width: calc(100% - 30px)
+        max-width: -webkit-calc(100% - 30px)
+        max-width: -moz-calc(100% - 30px)
+        max-width: calc(100% - 30px)
+    @media(max-width: 480px)
+        padding-right: 0
+        padding-left: 0
+        margin-right: 0
+        margin-left: 0
+        left: 0
+        min-width: 100%
+        width: 100%
+        max-width: 100%
+
+
+.hidelink
+    text-decoration: none
+
+.link-underline
+    a
+        text-decoration: none
+        overflow-wrap: break-word
+        word-wrap: break-word
+        word-break: break-word
+        border-bottom: 3px solid $_primary
+        box-shadow: inset 0 -4px 0 #800000
+        -webkit-box-shadow: inset 0 -4px 0 #800000
+        -moz-box-shadow: inset 0 -4px 0 #800000
+        color: #000
+    a:hover, a:focus, a:active
+        color: #_primary_font
+        background: #_primary
+    a.active
+        color: $_primary_active_font
+        background: $_primary_active
+    a.disable
+        color: $_primary_disable_font
+        background: $_primary_disable
+        cursor: default
+    a.disable:hover, a.disable:focus, a.disable:active
+            color: #fff
+            background: #333333
+            cursor: default
+    a.lightred
+        @extend .lightred
+    a.lightred.active
+        color: #fff
+        background: #802017
+    a.lightred:hover,
+    a.lightred:focus,
+    a.lightred:active
+        background: #802017
+        color: #fff
+
+.lightred
+    border-bottom: 1px solid #802017
+    -webkit-box-shadow: inset 0 -4px 0 #802017
+    -moz-box-shadow: inset 0 -4px 0 #802017
+    box-shadow: inset 0 -4px 0 #802017
+    color: #000
+
+.lightgray, // because the same
+.lightgrey
+    border-bottom: 1px solid #BDBDBD
+    -webkit-box-shadow: inset 0 -3px 0 #BDBDBD
+    -moz-box-shadow: inset 0 -3px 0 #BDBDBD
+    box-shadow: inset 0 -3px 0 #BDBDBD
+    color: #000
+
+.btn
+    text-decoration: none
+    display: inline-block
+    font-weight: 400
+    line-height: 1.25
+    text-align: center
+    white-space: nowrap
+    vertical-align: middle
+    -webkit-user-select: none
+    -moz-user-select: none
+    -ms-user-select: none
+    user-select: none
+    padding: .5em 1em
+    -moz-border-radius: .25em
+    border-radius: .25em
+
+.btn-vk
+    color: #fff
+    background-color: #4c6fa2
+    border-color: #4c6fa2
+
+.btn-admin
+    color: #fff
+    border-color: #4c6fa2
+    background-color: #f00

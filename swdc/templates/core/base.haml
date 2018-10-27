@@ -1,0 +1,269 @@
+!!! 5
+%html
+    - load staticfiles
+    - load utils_extra_filters
+
+    %head
+        / if not 'safe', will be rendered as part of the <body>
+        = webmaster_tags.yandex|safe
+        = webmaster_tags.google|safe
+
+        %title Сайт студсовета
+        %meta{'charset':'UTF-8'}/
+        %meta{'name':'viewport', 'content':'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no'}/
+
+        %link{'type':'text/css', 'rel':'stylesheet', 'href':'#{STATIC_URL}web_copy/normalize/normalize.css'}/
+        %link{'type':'text/css', 'rel':'stylesheet', 'href':'#{STATIC_URL}content.css'}/
+        %script{'src':'{{ STATIC_URL }}base.js'}
+        /[if lt IE 9]
+            :javascript
+                document.createElement('header');
+                document.createElement('nav');
+                document.createElement('main');
+                document.createElement('section');
+                document.createElement('article');
+                document.createElement('aside');
+                document.createElement('footer');
+        - block head_extras
+
+    %body
+        %input.hidden#showside{'type':'checkbox'}
+        :javascript
+            var $buoop = {
+                vs: {
+                    i: 11,
+                    f: 51,
+                    o: 35,
+                    s: 8,
+                    c: 48
+                },
+                unsecure: true,
+                api: 4
+            };
+            function $buo_f() {
+                var e = document.createElement('script');
+                e.src = 'https://browser-update.org/update.min.js';
+                document.body.appendChild(e);
+            };
+            try {
+                document.addEventListener('DOMContentLoaded', $buo_f, false)
+            } catch (e) {
+                window.attachEvent('onload', $buo_f)
+            }
+
+        %noscript
+            .buorg
+                %div
+                    %b В вашем веб-браузере не включен javascript.
+                    :plain
+                        Включите его или обновите свой браузер, чтобы сделать пребывание на этом сайте более безопасным, комфортным и продуктивным.
+                    %a#buorgul{'href':'http://browser-update.org/update-browser.html', 'target':'_blank', 'rel':'noopener'} Обновить браузер
+                :css
+                    .buorg {
+                        background: #FDF2AB;
+                        position: relative;
+                        z-index: 111111;
+                        width: 100%;
+                        top: 0px;
+                        left: 0px;
+                        border-bottom: 1px solid #A29330;
+                        text-align: left;
+                        cursor: pointer;
+                        background-color: #fff8ea;
+                        font: 17px Calibri, Helvetica, Arial, sans-serif;
+                        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+                    }
+
+                    .buorg div {
+                        padding: 11px 12px 11px 30px;
+                        line-height: 1.7em;
+                    }
+
+                    .buorg div a,
+                    .buorg div a:visited {
+                        text-indent: 0;
+                        color: #fff;
+                        text-decoration: none;
+                        box-shadow: 0 0 2px rgba(0, 0, 0, 0.4);
+                        padding: 1px 10px;
+                        border-radius: 4px;
+                        font-weight: normal;
+                        background: #5ab400;
+                        white-space: nowrap;
+                        margin: 0 2px;
+                        display: inline-block;
+                    }
+
+                    @media only screen and (max-width: 700px) {
+                        .buorg div {
+                            padding: 5px 12px 5px 9px;
+                            text-indent: 22px;
+                            line-height: 1.3em;
+                        }
+                    }
+        #back
+        %input#modal_check.hidden{'type':'checkbox'}/
+        #modal.card{'class':('#{ notification.type }', '{% if not notification.enabled %}hidden{% endif %}')}
+            .container
+                %h3
+                    = notification.text
+                %label.m_close{'for':'modal_check'}
+                    %svg.close{'viewBox':'0 0 10 10'}
+                        %path{'d':'M2 8l6-6M2 2l6 6'}
+
+        %input.hidden#modal_userinfo_check{'type':'checkbox'}
+        %label#modal_userinfo_back{'for':'modal_userinfo_check'}
+        .container#modal_userinfo
+            .card.modal_userinfo
+                #modal_userinfo_content Ожидается текст
+                %label.m_close{'for':'modal_userinfo_check'}
+                    %svg.close{'viewBox':'0 0 10 10'}
+                        %path{'d':'M2 8l6-6M2 2l6 6'}
+
+        %input.hidden#medal_refill_check{'type':'checkbox'}/
+        %label#modal_refill_back{'for':'modal_refill_check'}
+        %div.container#modal_refill
+            .card.modal_refill
+                %iframe{'src':"https://money.yandex.ru/quickpay/shop-widget?writer=seller&targets=#{ pay_yandex.payment_text|urlencode }&targets-hint=&default-sum=2&button-text=11&{% if pay_yandex.enable_card %}payment-type-choice=on&{% endif %}{% if pay_yandex.enable_phone %}mobile-payment-type-choice=on&{% endif %}fio=on&hint=&successURL=#{ pay_yandex.success_redirect_url|urlencode }&quickpay=shop&account=#{ pay_yandex.account|urlencode }&label=#{ user.id|urlencode }", 'width':"450", 'height':"223", 'frameborder':"0", 'allowtransparency':"true", 'scrolling':"no"}
+                %label.m_close{'for':'modal_refill_check'}
+                    %svg.close{'viewBox':'0 0 10 10'}
+                        %path 'd':'M2 8l6-6M2 2l6 6'}
+
+        %article#top
+            #quick_tool
+                .container
+                    .inline.right#vk_quick
+                        - if user.is_authenticated
+                            %label{'for':'modal_refill_check'}
+                                %a.m-btn.m-dark
+                                    %span На счету: #{user.account|urlencode} руб.
+                            - if user.avatar_url
+                                %img{'src':'#{ user.avatar_url }'}/
+                            - else
+                                %img{'src':'#{ STATIC_URL }img/vk.svg'}/
+                            %a.btn.btn-vk{'href':"{% url 'logout' %}?next=#{ next_return }"}
+                                %span Привет, #{ user.get_short_name }
+                        - else
+                            %img{'src':'#{ STATIC_URL }img/vk.svg'}/
+                            - if not is_emergency_login_mode
+                                %a.btn.btn-vk{'href':"{% url 'social:begin' 'vk-oauth2' %}?next=#{ next_return }"}
+                                    %span Войти через ВК
+                            - else
+                                %a.btn.btn-vk{'href':"{% url 'emergency-login' %}?next=#{ next_return }"}
+                                    %span Войти
+                    .inline
+                        - with surveys_todo=user.get_surveys_to_pass
+                            - if user.is_staff
+                                - if is_agressive_question_notification and util_get_new_question_num
+                                    %a.btn.btn-admin{'href':'/admin/note/question/'}
+                                        %span Вопросов: #{ util_get_new_question_num }
+                                - elif request.path|util_contains_string:'^/$' and perms.news
+                                    %a.btn.btn-vk{'href':'/admin/news/news/add/'}
+                                        %span Добавить новость
+                                - elif request.path|util_contains_string:'^/surveys/' and perms.surveys
+                                    %a.btn.btn-vk{'href':'/admin/survey/survey/add/'}
+                                        %span Добавить опрос
+                                - else
+                                    %a.btn.btn-vk{'href':'/admin'}
+                                        %span В админку
+                            - elif surveys_todo
+                                /
+                                    goto surveys
+                                    TODO: survey targets
+                                    %a.btn.btn-vk{'href':'/surveys'}
+                                        %span Опросов: #{ surveys_todo }
+
+            #welcome
+                %img{'src':'#{ STATIC_URL }img/header.svg'}
+            #bottom_menu
+                %div
+                    %ul.link-underline
+                        - for entry in menu_entries
+                            %li
+                                %a{'href':'#{ entry.url }', 'class':"{% if request.path|util_is_active_menu_entry:entry.url %}active{% endif %}"}
+                                    %span #{ entry.name }
+            %aside#header
+                .box.link-underline
+                    %article#vk_header
+                        - if user.is_authenticated
+                            - if user.avatar_url
+                                %img{'src':'#{ user.avatar_url }'}
+                            - else
+                                %img{'src':'#{ STATIC_URL }img/vk.svg'}
+                            %section
+                                %p Привет, #{ user.get_short_name }
+                                %a.btn.btn-vk{'href':"{% url 'logout' %}?next=#{ next_return }"} Выйти
+                                %label{'for':'modal_refill_check'}
+                                    %a.m-btn.m-dark
+                                        %span На счету: #{ user.account|urlencode }руб.
+                        - else
+                            %img{'src':'#{ STATIC_URL }img/vk.svg'}
+                            %section
+                                %p Привет, гость
+                                - if not is_emergency_login_mode
+                                    %a.btn.btn-vk{'href':"{% url 'social:begin' 'vk-oauth2' %}?next=#{ next_return }"} Войти через ВК
+                                - else
+                                    %a.btn.btn-vk{'href':"{% url 'emergency-login' %}?next=#{ next_return }"} Войти
+                    %nav.link-underline#nav
+                        %ul
+                            - for entry in menu_entries
+                                %li
+                                    %a{'href':'#{ entry.url }', 'class':"{% if request.path|util_is_active_menu_entry:entry.url %}active{% endif %}"}
+                                        %span #{ entry.name }
+            %label#filterToggler{'for':'showside'}
+
+        #wrapper
+            %main.container#content
+                - block content
+        %label#headerToggle{'for':'showside'}
+            %svg.toggle.hamburger{'viewBox':'0 0 10 10'}
+                %path.p1{'d':'M8,3 L2,3'}/
+                %path.p2{'d':'M2,5 L8,5'}/
+                %path.p3{'d':'M8,7 L2,7'}/
+        :javascript
+            (function() {
+                var bottom = document.querySelector('#bottom_menu'),
+                    top = document.querySelector('#top');
+                document.querySelector("#showside").addEventListener('change',
+                    function(){
+                        if(this.checked) document.body.style.overflow = "hidden";
+                        else document.body.style.overflow = "auto";
+                    }, false);
+                if (getComputedStyle(bottom).display !== 'none') {
+                    window.addEventListener('scroll', scrollPage, false);
+                    document.body.addEventListener('scroll', scrollPage, false);
+                    var height = bottom.getBoundingClientRect().height;
+                }
+
+                function scrollPage() {
+                    if (top.getBoundingClientRect().bottom <= height) {
+                        bottom.classList.add('sticky');
+                        top.style.paddingBottom = height + 'px';
+                    } else {
+                        bottom.classList.remove('sticky');
+                        top.style.paddingBottom = 0 + 'px';
+                    }
+                }
+            })();
+            function showuserinfo(name, vkid, number, email) {
+                var elem = document.getElementById('modal_userinfo_content');
+                var s = '';
+                if (name !== null && name !== "") {
+                    s += '<h3>' + name + '</h3>';
+                }
+                if (number !== null && number !== "") {
+                    s += '<a href="tel:' + number + '">Позвонить: '
+                        + number + '</a><br/>';
+                }
+                if (vkid !== null && vkid !== "") {
+                    // target="_blank" means 'open in new tab/window'
+                    s += '<a target="_blank" href="https://vk.me/id' + vkid
+                        + '">Написать в ВК: vk.com/id' + vkid + '</a><br/>';
+                }
+                if (email !== null && email !== "") {
+                    s += '<a href="mailto:' + email + '">Написать на почту: '
+                        + email + '</a><br />';
+                }
+                elem.innerHTML = s;
+            };
+        - block body_extras

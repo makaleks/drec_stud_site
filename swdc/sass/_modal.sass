@@ -1,0 +1,114 @@
+$modaldark: (primary #007bff), (secondary #868e96), (success #28a745), (info #17a2b8), (warning #ffc107), (danger #dc3545), (dark #343a40)
+$modallight: (light #f8f9fa), (white #fff)
+
+#modal
+    z-index: 1000
+    margin: 0
+    position: fixed
+    padding-bottom: 2.5rem
+    left: 0
+    right: 0
+    bottom: 0
+    border-top: 3px solid #de2921
+    stroke: currentcolor // Color for svg written
+    transition: bottom .4s cubic-bezier(1, 0, 0, 1)
+    \:not(:checked)~#modal
+        bottom: -100%
+    >.container
+        margin-left: auto
+        margin-right: auto
+        max-width: 700px
+        position: relative
+    h3
+        display: inline
+
+.m_close
+    float: right
+    margin: 0
+    position: absolute
+    top: 0
+    right: 1em
+    >svg
+        width: 1.5rem
+        height: 1.5rem
+        stroke-width: 2px
+
+%modaldark_type
+    color: #fff
+    text-shadow: 1px 1px 100px #000
+
+%modallight_type
+    color: #000
+    text-shadow: 1px 1px 100px #fff
+
+@each $type, $color in $modaldark
+    #modal.#{$type}
+        @extend %modaldark_type
+@each $type, $color in $modallight
+    #modal.#{$type}
+        @extend %modallight_type
+
+%modal_type_container__before
+    font-size: 1.3rem
+    content: '\1F6C8\00A0'
+
+@each $type, $color in join($modaldark, $modallight)
+    #modal.#{$type} .container::before
+        @extend %modal_type_container__before
+
+@each $type, $color in join($modaldark, $modallight)
+    #modal.#{$type}
+        background-color: $color
+
+#modal.info .container::before
+    content: '\1F6C8\00A0Инфо:'
+
+#modal.warning .container::before
+    content: '\1F6C8\00A0Внимание:'
+
+#modal.danger .container::before
+    content: '\1F6C8\00A0Внимание:'
+
+#modal_refill
+    display: none
+    z-index: 1100
+    margin: 3em -webkit-calc(50% - 350px)
+    margin: 3em    -moz-calc(50% - 350px)
+    margin: 3em         calc(50% - 350px)
+    padding: 0
+    padding-bottom: 2.5rem
+    bottom: 0
+    width: 700px
+    color: #000
+    stroke: currentcolor
+    position: fixed
+    .m_close
+        top: 2em
+
+@media(max-width: 860px)
+    #modal_refill
+        margin: 3em 0
+        width: 100%
+
+#modal_refill_back
+    display: none
+    top: 0
+    bottom: 0
+    left: 0
+    right: 0
+    width: 0
+    height: 100%
+    min-width: 100%
+    min-height: 100%
+    background-color: rgba(0, 0, 0, 0.7)
+    position: fixed
+    z-index: 1050
+
+#modal_refill_check a
+        padding-left: 28px
+        padding-right: 28px
+        display: inline-block
+
+#modal_refill_check:checked~#modal_refill_back,
+#modal_refill_check:checked~#modal_refill
+    display: block

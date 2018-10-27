@@ -1,0 +1,12 @@
+=font-face($font-family, $local, $url)
+    @font-face 
+        font-family: $font-family
+        font-style: normal
+        font-weight: 400
+        @each $local_file in $local
+            src: local($local_file)
+        @each $url_file in $url
+            src: url($url_file)
+
++font-face('Open Sans', ('Open Sans Regular', 'OpenSans-Regular'), 'web_copy/Open_Sans/OpenSans-Regular.ttf')
++font-face('Comfortaa', ('Comfortaa Regular', 'Comfortaa-Regular'), 'web_copy/Comfortaa/Comfortaa-Regular.ttf')
