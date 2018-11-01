@@ -30,37 +30,38 @@ class TimetableList:
             raise TypeError('leave_head_cell({0}) must be bool'.format(leave_head_cell.__class__.__name__))
         elif not isinstance(floor_crop, bool):
             raise TypeError('floor_crop({0}) must be bool'.format(floor_crop.__class__.__name__))
-        if new_start <= self.global_start:
-            return
-        elif new_start >= self.global_end:
+        if new_start >= self.global_end:
             for k in self._timetables:
                 self._timetables[k].set_start_end(self.global_end, self.global_end)
             return
-        new_start_was = new_start
-        if not floor_crop:
-            # --|--found--|+++++++++|++++
-            min_end = None
-            for t in self._timetables.values():
-                interval = t.find_interval(new_start, add_orders = False)
-                t.set_first_last(interval.end, 
-                        t.get_last_start() + t.timestep * t.timesteps_num)
-                if not min_end or interval.end < min_end:
-                    min_end = interval.end
-            for t in self._timetables.values():
-                t.set_start_end(min_end, self.global_end)
-            new_start = min_end
+        elif new_start > self.global_start:
+            new_start_was = new_start
+            if not floor_crop:
+                # --|--found--|+++++++++|++++
+                min_end = None
+                for t in self._timetables.values():
+                    interval = t.find_interval(new_start, add_orders = False)
+                    t.set_first_last(interval.end, 
+                            t.get_last_start() + t.timestep * t.timesteps_num)
+                    if not min_end or interval.end < min_end:
+                        min_end = interval.end
+                for t in self._timetables.values():
+                    t.set_start_end(min_end, self.global_end)
+                new_start = min_end
+            else:
+                # --|++found++|+++++++++|++++
+                min_start = None
+                for t in self._timetables.values():
+                    interval = t.find_interval(new_start, add_orders = False)
+                    t.set_first_last(interval.start, 
+                            t.get_last_start() + t.timestep * t.timesteps_num)
+                    if not min_start or interval.start < min_start:
+                        min_start = interval.start
+                for t in self._timetables.values():
+                    t.set_start_end(min_start, self.global_end)
+                new_start = min_start
         else:
-            # --|++found++|+++++++++|++++
-            min_start = None
-            for t in self._timetables.values():
-                interval = t.find_interval(new_start, add_orders = False)
-                t.set_first_last(interval.start, 
-                        t.get_last_start() + t.timestep * t.timesteps_num)
-                if not min_start or interval.start < min_start:
-                    min_start = interval.start
-            for t in self._timetables.values():
-                t.set_start_end(min_start, self.global_end)
-            new_start = min_start
+            new_start = self.global_start
         if leave_head_cell:
             new_start -= self.timestep
             for t in self._timetables.values():
