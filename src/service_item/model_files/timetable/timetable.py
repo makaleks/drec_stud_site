@@ -161,7 +161,7 @@ class Timetable:
                     order_to_add = o
             else:
                 order_to_add = o
-        if order_to_add:
+        if order_to_add and result:
             result[0].orders = [deepcopy(order_to_add)]
         return result
     def gen_list(self, now = None, f_filter = None):
