@@ -1,0 +1,48 @@
+- extends 'service_document_timetable.html'
+
+- load utils_extra_filters
+
+-# TODO REMOVE [id='washing'] HARDCODE!
+- block form_attributes
+    :plain
+        id='service'
+
+- block service_item_single_day
+    %table
+        - with i_value=day.items.values|util_to_list|first
+            - for cell in i_value.time
+                %tr
+                    %th.time{'style':'vertical-align:middle;text-align:center;'}
+                        #{ cell.start|date:'G:i' }<br>-<br>#{ cell.end|date:'G:i' }
+                    - if cell.orders
+                        - with order=cell.orders|first
+                            - with participation=order.extra_data.participations|util_to_list|first
+                                %td
+                                    / TODO: <h2/> for title, <span class='celltext'/> for description
+                                    %span.celltext
+                                        - if order.extra_data.title %}
+                                            #{ order.extra_data.title }
+                                        - else
+                                            #{ cell.orders|util_get_single_item_orders_str }
+                                - comment
+                                    %td
+                                        %label
+                                            - if participation.user != user
+                                                %input.servselector.hidden{'type':'checkbox', 'name':'participation=#{ order.id }'}
+                                                %a.m-btn.m-mobiletiny.servoff Участвовать
+                                                %a.m-btn.m-mobiletiny.m-selected.servon Выбрано
+                                            - else
+                                                Вы участвуете
+                    - else
+                        %td
+                            %span.celltext Время свободно
+                        %td
+                            %label
+                                %input.servselector.hidden{'type':'checkbox', 'name':'order=#{ day.items.keys|util_to_list|first }&&#{ cell.start.time }&&#{ cell.end.time }&&#{ cell.start.date|date:"Y-m-d" }', data-price:'#{ i_value.price }', data-timestart:'#{ cell.start.time }', data-timeend:'#{ cell.end.time }', data-item:'#{ service.name }'}
+                                %a.m-btn.m-mobiletiny.servoff Зарезервировать
+                                %a.m-btn.m-mobiletiny.m-selected.servon Выбрано
+
+
+- block service_item_extra_inputs
+    %textarea{"rows":'5', "style":'width:100%;max-width:100%;min-height:3ex;', "name":'title', "placeholder":'Пояснить причину заказа (если оставить пустым, будет показано ФИО)'}
+    %br

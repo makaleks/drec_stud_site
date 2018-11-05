@@ -1,6 +1,7 @@
 .qa-avatar
     width: 40px
     display: inline
+    border-radius: .25em
 
 .qa-with-border
     border: 1px red solid
@@ -9,10 +10,34 @@
     display: inline
     position: static
 
+#qa-answerval
+    display: none
+
+#qa-isanswer:checked~#qa-answerval
+    display: inline
+
+#label-open
+    text-align:center
+
+label#my
+    background: rgba(128, 136, 144, 0.8)
+    cursor: pointer
+    display: block
+
 #comment
+    width: calc(700px - 2em)
+    min-width: calc(700px - 2em)
     bottom: 0
     position: fixed
     display: block
+    >input + div>label:before
+        content: 'закрыть '
+    >input ~ .spoiler
+        display: block
+    >input:checked + div>label:before
+        content: 'открыть '
+    >input:checked ~ .spoiler
+        display: none
     @media(min-width: 860px)
         min-width: 700px
         width: 700px
@@ -20,21 +45,36 @@
         max-width: -moz-calc(100% - 330px)
         max-width: calc(100% - 330px)
     @media(max-width: 860px)
-        min-width: calc(100% - 30px)
-        width: -webkit-calc(100% - 30px)
-        width: -moz-calc(100% - 30px)
-        width: calc(100% - 30px)
-        max-width: -webkit-calc(100% - 30px)
-        max-width: -moz-calc(100% - 30px)
-        max-width: calc(100% - 30px)
+        min-width: calc(100% - 45px)
+        width: -webkit-calc(100% - 45px)
+        width: -moz-calc(100% - 45px)
+        width: calc(100% - 45px)
+        max-width: -webkit-calc(100% - 45px)
+        max-width: -moz-calc(100% - 45px)
+        max-width: calc(100% - 45px)
+        max-height: calc(100vh - 1rem)
+        overflow: auto
+        >input + div>label:before
+            content: 'открыть '
+        >input ~ .spoiler
+            display: none
+        >input:checked + div>label:before
+            content: 'закрыть '
+        >input:checked ~ .spoiler
+            display: block
     @media(max-width: 480px)
-        min-width: 100%
-        width: 100%
-        max-width: 100%
-
-
-#qa-answerval
-    display: none
-
-#qa-isanswer:checked~#qa-answerval
-    display: inline
+        min-width: calc(100% - 1em)
+        width: -webkit-calc(100% - 1em)
+        width: -moz-calc(100% - 1em)
+        width: calc(100% - 1em)
+        max-width: -webkit-calc(100% - 1em)
+        max-width: -moz-calc(100% - 1em)
+        max-width: calc(100% - 1em)
+        >input + div>label:before
+            content: 'открыть '
+        >input ~ .spoiler
+            display: none
+        >input:checked + div>label:before
+            content: 'закрыть '
+        >input:checked ~ .spoiler
+            display: block

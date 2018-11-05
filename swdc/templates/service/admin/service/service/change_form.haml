@@ -1,0 +1,134 @@
+- extends "admin/base_site.html"
+- load i18n admin_urls static admin_modify
+
+- block extrahead
+    = block.super
+    %script{'src':"{% url 'admin:jsi18n' %}"}
+    = media
+
+- block extrastyle
+    = block.super
+    %link{'rel':"stylesheet", 'type':"text/css", 'href':"{% static \"admin/css/forms.css\" %}"}
+
+- block coltype
+    colM
+
+- block bodyclass
+    #{ block.super } app-#{ opts.app_label } model-#{ opts.model_name } change-form
+
+- if not is_popup
+    - block breadcrumbs
+        .breadcrumbs
+            %a{'href':"{% url 'admin:index' %}"}
+                - trans 'Home'
+            &rsaquo;
+            %a{'href':"{% url 'admin:app_list' app_label=opts.app_label %}"}
+                = opts.app_config.verbose_name
+            &rsaquo;
+            - if has_change_permission
+            %a{'href':"{% url opts|admin_urlname:'changelist' %}"}
+                = opts.verbose_name_plural|capfirst }}
+            - else
+                = opts.verbose_name_plural|capfirst
+            &rsaquo;
+            - if add
+                - blocktrans with name=opts.verbose_name
+                    Add #{ name }
+            - else
+                = original|truncatewords:"18"
+
+- block content
+    #content-main
+        - block object-tools
+            - if change
+                - if not is_popup
+                    %ul.object-tools
+                        - block object-tools-items
+                            %li
+                                - url opts|admin_urlname:'history' original.pk|admin_urlquote as history_url
+                                %a.historylink{'href':"{% add_preserved_filters history_url %}"}
+                                    - trans "History"
+                            - if has_absolute_url
+                                %li
+                                %a.viewsitelink{'href':"#{ absolute_url }"}
+                                    - trans "View on site" %}
+        %form{'enctype':"{% if has_file_field %}multipart/form-data{% endif %}", 'action':"#{ form_url }", 'method':"post",  'id':"#{ opts.model_name }_form", "novalidate": True}
+            - csrf_token
+            - block form_top
+            %div
+                - if is_popup
+                    %input{'type':"hidden", 'name':"#{ is_popup_var }", 'value':"1"}
+                - if to_field
+                    %input{'type':"hidden", 'name':"#{ to_field_var }}", 'value':"#{ to_field }"}
+                - if save_on_top
+                    - block submit_buttons_top
+                        - submit_row
+                - if errors
+                    %p.errornote
+                        - if errors|length == 1
+                            - trans "Please correct the error below."
+                        - else
+                            - trans "Please correct the errors below."
+                    = adminform.form.non_field_errors
+                - block field_sets
+                    - for fieldset in adminform
+                        - include "admin/includes/fieldset.html"
+                        #surveyEditorContainer
+                - block after_field_sets
+                - block inline_field_sets
+                    - for inline_admin_formset in inline_admin_formsets
+                        - include inline_admin_formset.opts.template
+                - block after_related_objects
+                - block submit_buttons_bottom
+                    - submit_row
+                - block admin_change_form_document_ready %}
+
+                    / START CUSTOM
+                    %script{'src':'#{ STATIC_URL }web_copy/ckeditor-4.7.x/ckeditor.js'}
+                    %script{'src':'#{ STATIC_URL }settings/ckeditor_settings.js'}
+                    %script{'src':'#{ STATIC_URL }js/utils.js'}
+                    %script{'src':'#{ STATIC_URL }js/textarea_to_ckeditor.js'}
+                    :javascript
+                        function color_lock() {
+                            is_lock_disabled = document.getElementById('id_disable_lock');
+                            if (is_lock_disabled.checked)
+                                document.body.style['background-color'] = 'red';
+                            else
+                                document.body.style['background-color'] = null;
+                        };
+                        util_add_handler(document.getElementById('id_disable_lock'), 'change', color_lock);
+                        util_add_handler(window, 'load', color_lock);
+                        // Remove inlines
+                        /*util_add_handler(window, 'load', function() {
+                            var checkbox_elem = document.getElementById('id_is_single_item');
+                            var before = document.getElementsByClassName('submit-row')[0];
+                            var inlines = new Array(3);
+                            inlines[0] = document.getElementById('items-group');
+                            inlines[1] = document.getElementById('service-workingtime-content_type-object_id-group');
+                            inlines[2] = document.getElementById('service-workingtimeexception-content_type-object_id-group');
+                            var checkbox_swap = function() {
+                                if (checkbox_elem.checked) {
+                                    for (var i = 0; i < inlines.length; i++)
+                                        before.parentNode.removeChild(inlines[i]);
+                                }
+                                else {
+                                    for (var i = 0; i < inlines.length; i++)
+                                        before.parentNode.insertBefore(inlines[i], before);
+                                }
+                                form = document.getElementById('service_form');
+                                alert(JSON.stringify(form));
+                            };
+                            if (checkbox_elem.addEventListener) {
+                                checkbox_elem.addEventListener('click', checkbox_swap, false);
+                            }
+                            else if (checkbox_elem.attachEvent) {
+                                checkbox_elem.attachEvent('onclick', checkbox_swap);
+                            }
+                            else {
+                                checkbox_elem['onclick'] = checkbox_swap;
+                            }
+                        });*/
+                    / END CUSTOM
+                    %script#django-admin-form-add-constants{'type':"text/javascript", 'src':"{% static 'admin/js/change_form.js' %}", data-model-name:"{% if adminform and add %} #{ opts.model_name } {% endif %}"}
+                -# JavaScript for prepopulated fields
+                - prepopulated_fields_js

@@ -1,0 +1,159 @@
+- extends 'core/base.html'
+- load utils_extra_filters
+
+/
+    Reserve space to scroll enough on small screens
+    Otherwise, the 'comment' form may overflow the content
+
+- block content_style
+    margin-bottom: 25em
+
+- block content
+    %section.card style='margin-bottom:10px;'>
+        %h2 #{ question.title }
+        %h3 #{ question.text.rendered }
+        - if question.attachment
+            %a{href:'#{ question.attachment.url }'}Приложение (#{ question.get_attachment_extention })
+        %p Вопрос задан #{ question.created }
+        %hr
+        - if question.is_public
+            - if question.author.avatar_url
+                %img.qa-avatar{src:'#{ question.author.avatar_url }'}
+            - else
+                %img.qa-avatar{src:'#{ STATIC_URL }img/vk.svg'}
+                %p.inline #{ question.author.get_full_name }
+                    %a{href:'#{ question.get_absolute_url }'} Ссылка
+        - else
+            %img.qa-avatar{src:'#{ STATIC_URL }img/vk.svg'}
+            %p.inline
+                Аноним
+                %a{href:'#{ question.get_absolute_url }'} Ссылка
+
+    - for answer in question.get_answers
+        %section.card
+            .comment{class:'{% if answer.author.is_staff %}qa-with-border{% endif %}', id:'CT{{ answer.id }}'}
+                %a{name:'#{ answer.id }'}
+                - if answer.author.avatar_url
+                    %img.qa-avatar{src:'#{ answer.author.avatar_url }'}
+                - else
+                    %img.qa-avatar{src:'#{ STATIC_URL }img/vk.svg'}
+                .qa-comment-text
+                    %span #{ answer.author.get_full_name }
+                    / for 'qa-answerval' display
+                    - if answer|util_is_comment_to_comment
+                        %p
+                            %a{href:'#{{ answer.commented_object.id }}', style:'{% if answer.commented_object.author == request.user %}background:#FF0000;color:#FFFFFF;{% endif %}'} #{ answer.commented_object.author.get_full_name }
+                            ,
+                    %p #{ answer.text.rendered }
+                    - if answer.attachment
+                        %p
+                            %a{href:'#{ answer.attachment.url }'}
+                                Приложение (#{ answer.get_attachment_extention })
+                    %a.inline-block.block{data-comment-id:'#{ answer.id }', data-name:'#{ answer.author.get_short_name }', data-name-id:'#{ answer.author.id }', href:'##{ answer.id }', name:'answer'}
+                        - if answer.author == request.user
+                            Изменить
+                        - else
+                            Ответить
+                    %a.inline-block{href:'{{ question.get_absolute_url }}##{ answer.id }'} Ссылка
+                    %br
+                    %small Изменён #{ answer.edited }
+                    - if answer.author == request.user
+                        %a{href:'delete?id=#{ answer.id }'} Удалить
+                    %hr
+
+    - if user.is_authenticated
+            / copy of Hamburger svg style
+        .card#comment
+            / Start spoiler logic
+            %input.none#showeditor-switch{type:'checkbox'}
+            #label-open
+                %label.btn.btn-vk#my{for:'showeditor-switch'} форму ответа
+            / End spoiler logic
+            .spoiler
+                %form{method:'post', enctype:'multipart/form-data'}
+                    - csrf_token
+                    /
+                        #{ form.errors }
+                        #{ form.non_field_errors }
+                    %input.hidden#qa-isanswer{type:'checkbox', autocomplete:'off'}
+                    #{ form.answerto }
+                    #qa-answerval{style:'width:100%;'}
+                        %label{for:'qa-isanswer', onclick:'document.getElementById("answerto").value="";', style:'display:block;cursor:pointer;background-color:red;'}
+                            %span#qa-answer-name
+
+                    #{ form.text.errors }
+                    #{ form.text }
+                    #{ form.check_to_send.errors }
+
+                    #{ form.attachment.errors }
+                    %table
+                        %tr
+                            %td
+                                %label{for:'#{ form.attachment.id_for_label }'}#{ form|util_get_form_field_verbose_name:'attachment' }
+                        %tr
+                            %td #{ form.attachment }
+                    %p
+                        #{ form.check_to_send }
+                        %label{for:'#{ form.check_to_send.id_for_label }'} Я проверил текст на ошибки
+                        %input{type:'submit', style:'float:right;', value:'Отправить'}
+    - else
+        %p Войдите, чтобы написать ответ!
+- block body_extras
+    / START textareaToEditor
+    %script{src:'#{ STATIC_URL }web_copy/ckeditor-4.7.x/ckeditor.js'}
+    %script{src:'#{ STATIC_URL }settings/ckeditor_settings.js'}
+    :javascript
+        // Set textarea height smaller
+        options['height'] = '5em';
+    </script>
+    %script{src:'#{ STATIC_URL }js/utils.js'}
+    %script{src:'#{ STATIC_URL }js/textarea_to_ckeditor.js'}
+    / END textareaToEditor
+    :javascript
+        util_add_handler(window, 'load', function() {
+            var answers = document.getElementsByName('answer');
+
+            for (var item of answers) {
+                //alert(item);
+                item.addEventListener('click', function(ev) {
+                    ev = ev || window.event;// IE8-
+                    elem = ev.currentTarget;
+                    id = elem.getAttribute('data-comment-id')
+                    name = elem.getAttribute('data-name');
+                    name_id = elem.getAttribute('data-name-id');
+                    if ({{ request.user.id }} == name_id)
+                        document.getElementById('qa-answer-name').innerText
+                            = 'изменить свой ответ (id=' + id + ')';
+                    else
+                        document.getElementById('qa-answer-name').innerText
+                            = 'ответ получит ' + name;
+                    document.getElementById('answerto').value = id;
+                    document.getElementById('qa-isanswer').checked = true;
+                });
+            }
+        });
+        function showuserinfo(name, vkid, number, email) {
+            var username = document.querySelector('#userinfo_name'),
+                uservkid = document.querySelector('#userinfo_vkid'),
+                usernumber = document.querySelector('#userinfo_number'),
+                useremail = document.querySelector('#userinfo_email');
+            usernumber.classList.add('hidden');
+            uservkid.classList.add('hidden');
+            useremail.classList.add('hidden');
+            username.innerText = name;
+            if (number !== null) {
+                usernumber.innerText = 'Позвонить: ' + number;
+                usernumber.href = 'tel:' + number;
+                usernumber.classList.remove('hidden');
+            }
+            if (vkid !== null) {
+                uservkid.innerText = 'Написать в ВК vk.com/id' + vkid;
+                uservkid.href = 'https://vk.me/id' + vkid;
+                uservkid.classList.remove('hidden');
+            }
+            if (email !== null) {
+                useremail.innerText = 'Написать: ' + email;
+                useremail.href = 'mailto:' + email;
+                useremail.classList.remove('hidden');
+            }
+        };

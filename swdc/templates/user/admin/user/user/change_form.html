@@ -1,0 +1,327 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+{% block extrahead %}{{ block.super }}
+<script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>
+{{ media }}
+{% endblock %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}" />{% endblock %}
+
+{% block coltype %}colM{% endblock %}
+
+{% block bodyclass %}{{ block.super }} app-{{ opts.app_label }} model-{{ opts.model_name }} change-form{% endblock %}
+
+{% if not is_popup %}
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+&rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+&rsaquo; {% if has_change_permission %}<a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>{% else %}{{ opts.verbose_name_plural|capfirst }}{% endif %}
+&rsaquo; {% if add %}{% blocktrans with name=opts.verbose_name %}Add {{ name }}{% endblocktrans %}{% else %}{{ original|truncatewords:"18" }}{% endif %}
+</div>
+{% endblock %}
+{% endif %}
+
+{% block content %}<div id="content-main">
+{% block object-tools %}
+{% if change %}{% if not is_popup %}
+  <ul class="object-tools">
+    {% block object-tools-items %}
+    <li>
+        {% url opts|admin_urlname:'history' original.pk|admin_urlquote as history_url %}
+        <a href="{% add_preserved_filters history_url %}" class="historylink">{% trans "History" %}</a>
+    </li>
+    {% if has_absolute_url %}<li><a href="{{ absolute_url }}" class="viewsitelink">{% trans "View on site" %}</a></li>{% endif %}
+    {% endblock %}
+  </ul>
+{% endif %}{% endif %}
+{% endblock %}
+<form {% if has_file_field %}enctype="multipart/form-data" {% endif %}action="{{ form_url }}" method="post" id="{{ opts.model_name }}_form" novalidate>{% csrf_token %}{% block form_top %}{% endblock %}
+<div>
+{% if is_popup %}<input type="hidden" name="{{ is_popup_var }}" value="1" />{% endif %}
+{% if to_field %}<input type="hidden" name="{{ to_field_var }}" value="{{ to_field }}" />{% endif %}
+{% if save_on_top %}{% block submit_buttons_top %}{% submit_row %}{% endblock %}{% endif %}
+{% if errors %}
+    <p class="errornote">
+    {% if errors|length == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}{% endif %}
+    </p>
+    {{ adminform.form.non_field_errors }}
+{% endif %}
+
+{% block field_sets %}
+{% for fieldset in adminform %}
+  {% include "admin/includes/fieldset.html" %}
+{% endfor %}
+{% endblock %}
+
+{% block after_field_sets %}{% endblock %}
+
+{% block inline_field_sets %}
+{% for inline_admin_formset in inline_admin_formsets %}
+    {% include inline_admin_formset.opts.template %}
+{% endfor %}
+{% endblock %}
+
+{% block after_related_objects %}{% endblock %}
+
+{% block submit_buttons_bottom %}{% submit_row %}{% endblock %}
+
+{% block admin_change_form_document_ready %}
+<!-- START CUSTOM -->
+    <script src="{{ STATIC_URL }}web_copy/vk_openapi/openapi-573.js" type="text/javascript"></script>
+    <script type='text/javascript'>
+            var request = null;
+        window.onload = function() {
+            // VK init
+            VK.version = 573;
+            VK.init({
+                apiId: {{ social.vk.key }},
+                apiVersion: 573
+            });
+            // Start independent utility
+            function add_checkbox_callback(checkbox, callback) {
+                if (checkbox.addEventListener) {
+                    checkbox.addEventListener('click', callback, false);
+                }
+                else if (checkbox.attachEvent) {
+                    checkbox.attachEvent('onclick', callback);
+                }
+                else {
+                    checkbox['onclick'] = callback;
+                }
+            };
+            function is_empty_field(v){
+                if (v.value == null || v.value == '') return true;
+                else return false;
+            };
+            function insert_after(after, elem) {
+                after.parentNode.insertBefore(
+                    elem, after.nextSibling);
+            };
+            // Start independent utility
+            // Message
+            var msg_div = document.createElement('div');
+            msg_div.innerHTML = 'Соединяемся с VK API...';
+            var msg_container = document.getElementById('user_form');
+            msg_container.insertBefore(msg_div, msg_container.firstChild);
+
+            // Field shortcuts
+            var account_id = document.getElementById('id_account_id');
+            var form = account_id.form;
+            var first_name = form.elements['id_first_name'];
+            var last_name = form.elements['id_last_name'];
+            var account_id = form.elements['id_account_id'];
+            var avatar_url = form.elements['id_avatar_url'];
+            var account_was_empty = is_empty_field(account_id) ? true : false;
+            // Field list to autofill
+            var fields_to_fill = []
+            // Validation message
+            var vk_validation_text = document.createElement('span');
+            vk_validation_text.style.marginLeft = '1em';
+            var re_id = new RegExp("^\\d+$");
+            //var uid_backup = null;
+            // Call VK
+            function call_vk() {
+                if (!is_empty_field(account_id)) {
+                    // Start remove dust
+                    var account_name = account_id.value;
+                    if (account_name.substr(account_name.length - 1, account_name.length) == '/')
+                        account_name = account_name.substr(0, account_name.length - 1);
+                    if (account_name.substr(0, 7) == 'http://')
+                        account_name = account_name.substr(7);
+                    else if(account_name.substr(0, 8) == 'https://')
+                        account_name = account_name.substr(8);
+                    if (account_name.substr(0, 7) == 'vk.com/')
+                        account_name = account_name.substr(7);
+                    else if (account_name.substr(0, 9) == 'm.vk.com/')
+                        account_name = account_name.substr(9);
+                    //alert(account_name.substr(2));
+                    //alert(account_name.substr(2).match("^\\d+$"));
+                    if (re_id.test(account_name.substr(2))) {
+                        if (account_name.substr(0, 2) == 'id')
+                            account_name = account_name.substr(2);
+                        else if (account_name.substr(0, 2) == 'Id')
+                            account_name = account_name.substr(2);
+                    }
+                    // End remove dust
+                    VK.Api.call('users.get', {user_ids: account_name, fields: "photo_100", v: "573"}, function(r) {
+                        if(r.response) {
+                            var resp = r.response[0];
+                            //uid_backup = resp.uid;
+                            vk_validation_text.innerHTML = 'ОК';
+                            vk_validation_text.style.color = 'green';
+                            if (!checkbox.checked) {
+                                for (var i = 0; i < fields_to_fill.length; i++) {
+                                    var v = fields_to_fill[i];
+                                    switch (v) {
+                                        case first_name:
+                                            v.value = resp.first_name;
+                                            break;
+                                        case last_name:
+                                            v.value = resp.last_name;
+                                            break;
+                                        case avatar_url:
+                                            v.value = resp.photo_100;
+                                            break;
+                                        default:
+                                            throw 'Undefined type!';
+                                    }
+                                }
+                            }
+                        }
+                        else if (is_empty_field(account_id))
+                            vk.vk_validation_text.innerHTML = '';
+                        else {
+                            vk_validation_text.innerHTML = 'Нет такого аккаунта';
+                            vk_validation_text.style.color = 'red';
+                            for (var i = 0; i < fields_to_fill.length; i++)
+                                fields_to_fill[i].value = '';
+                        }
+                    });
+                }
+            };
+            // Checkbox for first_name
+            var field_checkbox_f = document.createElement('input');
+            field_checkbox_f.type = 'checkbox';
+            field_checkbox_f.style.marginLeft = '1em';
+
+            // Checkbox for last_name
+            var field_checkbox_l = document.createElement('input');
+            field_checkbox_l.type = 'checkbox';
+            field_checkbox_l.style.marginLeft = '1em';
+
+            // Checkbox for avatar_url
+            field_checkbox_a = document.createElement('input');
+            field_checkbox_a.type = 'checkbox';
+            field_checkbox_a.style.marginLeft = '1em';
+
+            // Checkbox for account_id
+            var checkbox = null;
+            checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.style.marginLeft = '1em';
+            function checkbox_callback() {
+                if (checkbox.checked) {
+                    // first_name
+                    if (!is_empty_field(first_name)
+                        && !field_checkbox_f.checked)
+                        field_checkbox_f.checked = 'true';
+                    field_checkbox_f = field_checkbox_f.parentNode.removeChild(field_checkbox_f);
+                    // last_name
+                    if (!is_empty_field(last_name)
+                        && !field_checkbox_l.checked)
+                        field_checkbox_l.checked = 'true';
+                    field_checkbox_l = field_checkbox_l.parentNode.removeChild(field_checkbox_l);
+                    // avatar_url
+                    if (!is_empty_field(avatar_url)
+                        && !field_checkbox_a.checked)
+                        field_checkbox_a.checked = 'true';
+                    field_checkbox_a = field_checkbox_a.parentNode.removeChild(field_checkbox_a);
+                }
+                else {
+                    insert_after(first_name, field_checkbox_f);
+                    insert_after(last_name, field_checkbox_l);
+                    insert_after(avatar_url, field_checkbox_a);
+                    call_vk();
+                }
+            };
+            if (!is_empty_field(account_id)) {
+                insert_after(account_id, checkbox);
+                checkbox.checked = 'true';
+            }
+            add_checkbox_callback(checkbox, checkbox_callback);
+            // Add VK status
+            if (checkbox.parentNode)
+                insert_after(checkbox, vk_validation_text);
+            else
+                insert_after(account_id, vk_validation_text);
+
+            // Set initial for fields
+            if (!checkbox.checked && is_empty_field(first_name)) fields_to_fill.push(first_name);
+            else field_checkbox_f.checked = 'true';
+            if (!checkbox.checked && is_empty_field(last_name)) fields_to_fill.push(last_name);
+            else field_checkbox_l.checked = 'true';
+            if (!checkbox.checked && is_empty_field(avatar_url)) fields_to_fill.push(avatar_url);
+            else field_checkbox_a.checked = 'true';
+            // Start callbacks for other checkboxes 
+            // (use 'else {...}' from 'checkbox' callback)
+            add_checkbox_callback(field_checkbox_f, function() {
+                if (field_checkbox_f.checked)
+                    fields_to_fill.splice(fields_to_fill.indexOf(first_name), 1);
+                else {
+                    fields_to_fill.push(first_name);
+                    checkbox_callback();
+                }
+            });
+            add_checkbox_callback(field_checkbox_l, function() {
+                if (field_checkbox_l.checked)
+                    fields_to_fill.splice(fields_to_fill.indexOf(last_name), 1);
+                else {
+                    fields_to_fill.push(last_name);
+                    checkbox_callback();
+                }
+            });
+            add_checkbox_callback(field_checkbox_a, function() {
+                if (field_checkbox_a.checked)
+                    fields_to_fill.splice(fields_to_fill.indexOf(avatar_url), 1);
+                else {
+                    fields_to_fill.push(avatar_url);
+                    checkbox_callback();
+                }
+            });
+            // End callbacks for other checkboxes 
+
+            // Start account 'oninput' process
+            try {
+                id_changed_callback = function() {
+                    if (is_empty_field(account_id)) {
+                        // Now empty
+                        vk_validation_text = vk_validation_text.parentNode.removeChild(vk_validation_text);
+                        checkbox = checkbox.parentNode.removeChild(checkbox);
+                        if (!checkbox.checked) {
+                            field_checkbox_f = field_checkbox_f.parentNode.removeChild(field_checkbox_f);
+                            field_checkbox_l = field_checkbox_l.parentNode.removeChild(field_checkbox_l);
+                            field_checkbox_a = field_checkbox_a.parentNode.removeChild(field_checkbox_a);
+                            for (var i = 0; i < fields_to_fill.length; i++)
+                                fields_to_fill[i].value = '';
+                        }
+                    }
+                    else if (!checkbox.parentNode) {
+                        // Since now not empty
+                        insert_after(account_id, checkbox);
+                        // (remove checkboxed - less copy-paste)
+                        if (!checkbox.checked)
+                            checkbox_callback();
+                        insert_after(checkbox, vk_validation_text);
+                    }
+                    // Call VK!
+                    call_vk();
+                }
+                call_vk();
+                msg_div.innerHTML = 'Вставьте аккаунт от ВК, чтобы попробовать автоматически получить Фамилию, Имя и Аватарку (заполнены будут только пустые поля)<br><small>Hint: поля типа checkbox, как правило, можно выделить кнопкой Space</small>';
+                msg_div.style.color = 'green';
+            } catch (e) {
+                msg_div.innerHTML = 'Не получится связаться с ВК. Возможно, браузер слишком старый или нет интернета...';
+                msg_div.style.color = 'gray';
+            }
+            // End account 'oninput' process
+            account_id.oninput = id_changed_callback;
+        }
+    </script>
+<!-- END CUSTOM -->
+    <script type="text/javascript"
+            id="django-admin-form-add-constants"
+            src="{% static 'admin/js/change_form.js' %}"
+            {% if adminform and add %}
+                data-model-name="{{ opts.model_name }}"
+            {% endif %}>
+    </script>
+{% endblock %}
+
+{# JavaScript for prepopulated fields #}
+{% prepopulated_fields_js %}
+
+</div>
+</form></div>
+{% endblock %}

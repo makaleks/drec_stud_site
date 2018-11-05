@@ -1,0 +1,9 @@
+- extends 'core/base.html'
+- block content
+    %section.card
+        %h2 %{ note.name }
+        %div.note_details #{ note.text.rendered }
+        %small.text-muted
+            Обновлено #{ note.edited }
+            %a{href:'#{ note.get_absolute_url }'}
+                Ссылка

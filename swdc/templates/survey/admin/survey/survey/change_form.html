@@ -1,0 +1,386 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+{% block extrahead %}{{ block.super }}
+<script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>
+{{ media }}
+{% endblock %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}" />{% endblock %}
+
+{% block coltype %}colM{% endblock %}
+
+{% block bodyclass %}{{ block.super }} app-{{ opts.app_label }} model-{{ opts.model_name }} change-form{% endblock %}
+
+{% if not is_popup %}
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+&rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+&rsaquo; {% if has_change_permission %}<a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>{% else %}{{ opts.verbose_name_plural|capfirst }}{% endif %}
+&rsaquo; {% if add %}{% blocktrans with name=opts.verbose_name %}Add {{ name }}{% endblocktrans %}{% else %}{{ original|truncatewords:"18" }}{% endif %}
+</div>
+{% endblock %}
+{% endif %}
+
+{% block content %}<div id="content-main">
+{% block object-tools %}
+{% if change %}{% if not is_popup %}
+  <ul class="object-tools">
+    {% block object-tools-items %}
+    <li>
+        {% url opts|admin_urlname:'history' original.pk|admin_urlquote as history_url %}
+        <a href="{% add_preserved_filters history_url %}" class="historylink">{% trans "History" %}</a>
+    </li>
+    {% if has_absolute_url %}<li><a href="{{ absolute_url }}" class="viewsitelink">{% trans "View on site" %}</a></li>{% endif %}
+    {% endblock %}
+  </ul>
+{% endif %}{% endif %}
+{% endblock %}
+<form {% if has_file_field %}enctype="multipart/form-data" {% endif %}action="{{ form_url }}" method="post" id="{{ opts.model_name }}_form" novalidate>{% csrf_token %}{% block form_top %}{% endblock %}
+<div>
+{% if is_popup %}<input type="hidden" name="{{ is_popup_var }}" value="1" />{% endif %}
+{% if to_field %}<input type="hidden" name="{{ to_field_var }}" value="{{ to_field }}" />{% endif %}
+{% if save_on_top %}{% block submit_buttons_top %}{% submit_row %}{% endblock %}{% endif %}
+{% if errors %}
+    <p class="errornote">
+    {% if errors|length == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}{% endif %}
+    </p>
+    {{ adminform.form.non_field_errors }}
+{% endif %}
+
+{% block field_sets %}
+{% for fieldset in adminform %}
+  {% include "admin/includes/fieldset.html" %}
+  <div id='surveyEditorContainer'></div>
+{% endfor %}
+{% endblock %}
+
+{% block after_field_sets %}{% endblock %}
+
+{% block inline_field_sets %}
+{% for inline_admin_formset in inline_admin_formsets %}
+    {% include inline_admin_formset.opts.template %}
+{% endfor %}
+{% endblock %}
+
+{% block after_related_objects %}{% endblock %}
+
+{% block submit_buttons_bottom %}{% submit_row %}{% endblock %}
+
+{% block admin_change_form_document_ready %}
+<!-- START CUSTOM -->
+    <script type="text/javascript" src="{{ STATIC_URL }}web_copy/jquery/jquery-2.1.4.min.js"></script>
+<script src="{{ STATIC_URL }}web_copy/surveyjs/bootstrap-3.3.6/bootstrap.min.js"></script>
+<script src="{{ STATIC_URL }}web_copy/surveyjs/knockout-3.3.0/knockout-min.js"></script>
+<link href="{{ STATIC_URL }}web_copy/surveyjs/bootstrap-3.3.6/bootstrap.min.css" type="text/css" rel="stylesheet" />
+
+<link href="{{ STATIC_URL }}web_copy/surveyjs/surveyeditor-0.12.21/surveyeditor.css" type="text/css" rel="stylesheet" />
+<script src="{{ STATIC_URL }}web_copy/surveyjs/surveyeditor-0.12.21/survey.ko.min.js"></script>
+<script src="{{ STATIC_URL }}web_copy/surveyjs/surveyeditor-0.12.21/surveyeditor.js"></script>
+    <script type="text/javascript">
+        window.onload = function() {
+            var russianStrings = {
+                //Строки редактора
+                ed: {
+                    addNewPage: 'Добавить страницу',
+                    correctJSON: 'Пожалуйста, исправьте json',
+                    delSelObject: 'Удалить выбранный объект',
+                    designer: 'Дизайнер анкеты',
+                    embedSurvey: 'Интеграция вопросника',
+                    generateReadableJSON: 'Создать читаемый JSON',
+                    generateValidJSON: 'Создать действительный JSON',
+                    jsonEditor: 'Редактировать JSON',
+                    newPageName: 'страница',
+                    newQuestionName: 'вопрос',
+                    options: 'Параметры',
+                    redo: 'Восстановить',
+                    saveSurvey: 'Сохранить вопросник',
+                    surveyResults: 'Результат опроса:',
+                    testSurvey: 'Проверить вопросник',
+                    testSurveyAgain: 'Повторите проверку вопросника',
+                    testSurveyWidth: 'Ширина анкеты:',
+                    toolbox: 'Инструменты',
+                    undo: 'Отменить',
+                  },
+                  // Вставить окно
+                  ew: {
+                    angular: 'Использовать версию Angular',
+                    bootstrap: 'Использовать Bootstrap',
+                    jquery: 'Использовать версию jQuery',
+                    knockout: 'Использовать версию Knockout',
+                    loadFromServer: 'Загрузите JSON вопросника с сервера',
+                    реагировать: 'Использовать версию React',
+                    showInWindow: 'Показать вопросник в окне',
+                    showOnPage: 'Просмотр вопросника на странице',
+                    standard: 'Без Bootstrap',
+                    titleHtml: 'HTML',
+                    titleJavaScript: 'JavaScript',
+                    titleScript: 'Сценарии и стили',
+                    vue: 'Использовать версию Vue',
+                  },
+                  // Операторы
+                  op: {
+                    contains: 'содержит',
+                    empty: 'пусто',
+                    equal: 'равно',
+                    greater: 'больше',
+                    greaterorequal: 'больше или равно',
+                    less: 'меньше',
+                    lessorequal: 'меньше или равно',
+                    notcontains: 'не содержит',
+                    notempty: 'не пусто',
+                    notequal: 'не равно',
+                  },
+                  // Свойства
+                  p: {
+                    addRowText: 'Добавить строку',
+                    cellType: 'Тип ячейки',
+                    choices: 'Выбор',
+                    optionsByUrl: 'Выбор по URL',
+                    choiceOrder: 'Порядок выбора',
+                    clearInvisibleValues: 'Скрыть невидимые значения',
+                    colCount: 'Количество столбцов',
+                    cols: 'Количество столбцов',
+                    columnColCount: 'Количество столбцов',
+                    columnMinWidth: 'Минимальная ширина столбца',
+                    columns: 'Столбцы',
+                    commentText: 'Краткий текст описания',
+                    completeText: 'Полный текст вопросника',
+                    completedHtml: 'Итоговый HTML',
+                    cookieName: 'Имя файла cookie',
+                    edit: 'Изменить',
+                    focusFirstQuestionAutomatic: 'Автоматический фокус на первом вопросе',
+                    goNextPageAutomatic: 'Автоматический переход на следующую страницу',
+                    hasComment: 'Имеет комментарий?',
+                    hasOther: 'Имеет выбор?',
+                    horizontalScroll: 'Горизонтальная прокрутка',
+                    imageHeight: 'Высота изображения',
+                    imageWidth: 'Ширина изображения',
+                    indent: 'Отступы',
+                    inputType: 'Тип поля',
+                    isAllRowRequired: 'Все строки обязательны?',
+                    isRequired: 'Обязательно?',
+                    itemSize: 'Максимальное количество символов',
+                    items: 'Элементы',
+                    locale: 'Язык',
+                    maxRateDescription: 'Максимальный размер ??чего-то там??',
+                    maxSize: 'Максимальный размер',
+                    minRateDescription: 'Описание минимальной ноты',
+                    minRowCount: 'Минимальный номер строки',
+                    mode: 'Режим отображения',
+                    name: 'Имя',
+                    optionsCaption: 'Текст по умолчанию',
+                    otherErrorText: 'Другие текстовые поля ошибок',
+                    otherText: {name: 'Другой текст', title: 'Поле комментариев или другой выбор'},
+                    pageNextText: 'Следующая страница',
+                    pagePrevText: 'Кнопка предыдущей страницы',
+                    page_title: {name: 'Заголовок', title: 'Название страницы'},
+                    placeHolder: 'Заполнитель (индекс в поле)',
+                    questionStartIndex: 'Индекс нумерации вопросов',
+                    questionTitleLocation: 'Вопрос о титровании места',
+                    questionTitleTemplate: {name: 'Шаблон вопроса', title: 'Пример: {no}} {title} {require}:'},
+                    rateValues: 'Расписание',
+                    removeRowText: 'Удалить строку кнопку',
+                    requiredText: 'Текст для обязательных полей',
+                    rowCount: 'Количество строк',
+                    rows: 'Количество строк',
+                    sendResultOnPageNext: 'Отправить результаты на следующую страницу',
+                    showCompletedPage: 'Просмотр заполненной страницы формы?',
+                    showNavigationButtons: 'Кнопки навигации',
+                    showPageNumbers: 'Нумерация страниц',
+                    showPageTitles: 'Название страниц',
+                    showPreview: 'Просмотр предпросмотра',
+                    showProgressBar: 'Индикатор выполнения',
+                    showQuestionNumbers: 'Нумерация вопросов',
+                    showTitle: 'Показывать заголовок',
+                    size: 'Максимальное количество символов',
+                    startWithNewLine: 'Начните с новой строки',
+                    storeDataAsText: 'Сохранить данные как текст',
+                    storeOthersAsComment: 'Сохранить другой выбор в качестве комментария',
+                    surveyId: 'Идентификатор вопросника',
+                    surveyPostId: 'Идентификатор POST',
+                    survey_title: {name: 'Заголовок', title: 'Он будет отображаться на каждой странице.' },
+                    title: {name: 'Заголовок', title: 'Оставьте пустым, если тот же текст, что и "Name"'},
+                    triggers: 'Триггеры',
+                    validators: 'Валидаторы',
+                    visibleIf: 'Видимый, если',
+                    width: 'Ширина',
+                  },
+                  // Редакторы свойств
+                  ре: {
+                    addNew: 'Добавить новое',
+                    addRowText: 'Текстовая кнопка добавить строку',
+                    apply: 'Применить',
+                    cancel: 'Отмена',
+                    cellType: 'Тип ячейки',
+                    choiceOrder: 'Выберите порядок выбора',
+                    закрыть: 'Закрыть',
+                    colCount: 'Количество столбцов',
+                    columnEdit: 'Редактировать столбец: {0}',
+                    createtrigger: 'Создайте триггер',
+                    delete: 'Удалить',
+                    edit: 'Изменить',
+                    editProperty: 'Изменить свойство {0}',
+                    empty: 'Очистить',
+                    enterNewValue: 'Введите значение.',
+                    expressionHelp: 'Введите логическое выражение. Он должен вернуть True, чтобы сохранить вопрос / страницу видимым. Например: {question1} = "value1" или ({question2} = 3 и {question3} <5)',
+                    fastEntry: 'Быстрое добавление',
+                    formEntry: 'Добавить через форму',
+                    hasOther: 'Имеет другой элемент',
+                    imageHeight: 'Высота изображения',
+                    imageWidth: 'Ширина изображения',
+                    inputType: 'Тип поля',
+                    isRequired: 'Требуется?',
+                    items: '[Элементы: {0}]',
+                    maxRateDescription: 'Описание максимальной ноты',
+                    maxSize: 'Максимальный размер файла в байтах',
+                    minRateDescription: 'Описание минимальной ноты',
+                    name: 'Имя',
+                    noquestions: 'В анкете нет вопросов',
+                    ok: 'ОК',
+                    optionsCaption: 'Текст по умолчанию',
+                    placeHolder: 'Заполнитель (индекс в поле)',
+                    propertyIsEmpty: 'Введите значение для свойства',
+                    qEditorTitle: 'Измените вопрос: {0}',
+                    removeAll: 'Удалить все',
+                    removeRowText: 'Текст удалить кнопку строки',
+                    required: 'Обязательно?',
+                    reset: 'Сброс',
+                    rowCount: 'Количество строк',
+                    rows: 'Число строк',
+                    showPreview: 'Отображается ли предварительный просмотр изображения?',
+                    startWithNewLine: 'Начните с новой строки?',
+                    storeDataAsText: 'Хранить содержимое файла в результате JSON в виде текста',
+                    tabs: {
+                      choices: 'Выбор',
+                      choiceByUrl: 'Выбор по URL',
+                      columns: 'Столбцы',
+                      fileOptions: 'Параметры',
+                      general: 'Общее',
+                      html: 'Редактор HTML',
+                      matrixChoices: 'Выбор по умолчанию',
+                      multipleTextItems: 'Текстовые входы',
+                      rateValues: 'Расписание',
+                      rows: 'Строки',
+                      visibleIf: 'Видно если',
+                    },
+                    testService: 'Служба тестирования',
+                    text: 'Текст',
+                    title: 'Заголовок',
+                    triggerCompleteText: 'Завершите опрос, если это произойдет',
+                    triggerIsVariable: 'Не помещать переменную в результат опроса',
+                    triggerMakePagesVisible: 'Сделать страницы видимыми',
+                    triggerMakeQuestionsVisible: 'Сделать вопросы видимыми:',
+                    triggerNotSet: 'Триггер не установлен',
+                    triggerOn: 'Вкл',
+                    triggerRunIf: 'Выполнить если',
+                    triggerSetToName: 'Изменить значение:',
+                    triggerSetValue: 'Установить значение: ',
+                    value: 'Значение',
+                    verbChangePage: 'Изменить страницу',
+                    verbChangeType: 'Изменить тип',
+                    visible: 'Видно?',
+                  },
+                  // questionTypes
+                  qt: {
+                    checkbox: 'Выбор нескольких',
+                    comment: 'Комментарий',
+                    dropdown: 'Раскрывающийся список',
+                    file: 'Файл',
+                    html: 'HTML',
+                    matrix: 'Матрица (единственный выбор)',
+                    matrixdropdown: 'Матрица (множественный выбор)',
+                    matrixdynamic: 'Матрица (динамические линии)',
+                    multipletext: 'Многострочное поле',
+                    radiogroup: 'Выбор одного',
+                    rating: 'Оценка',
+                    text: 'Текстовое поле',
+                    panel: 'Панель',
+                  },
+                  survey: {
+                    addToToolbox: 'Добавить в панель инструментов',
+                    copy: 'Копировать',
+                    deleteQuestion: 'Удалить вопрос',
+                    dropQuestion: 'Отправьте свой вопрос здесь',
+                },
+            };
+
+            var field = document.getElementsByClassName('field-structure')[0];
+            field.style = 'display: none;';
+            var editorOptions = {
+                //showEmbededSurveyTab: true,
+                // Important! Never remove!
+                generateValidJSON: true,
+                questionTypes: ['radiogroup', 'checkbox', 'text', 'dropdown', 'panel', 'rating'],
+            };
+            // See example at https://github.com/surveyjs/editor/blob/master/src/localization/french.ts
+            SurveyEditor.editorLocalization.locales['ru'] = russianStrings;
+            SurveyEditor.editorLocalization.currentLocale = 'ru';
+            var editor = new SurveyEditor.SurveyEditor("surveyEditorContainer", editorOptions);
+            editor.onQuestionAdded.add(function(sender, options){
+                var q = options.question;
+                q.isRequired = true;
+            });
+            var form = document.getElementById('survey_form');
+            if (form['structure'].value) {
+                editor.text = form['structure'].value;
+            }
+            form.onsubmit = function() {
+                form['structure'].value = editor.text;
+            };
+            var rewrite_allowed = form['allow_rewrite'].checked;
+            var f_anonymous = function() {
+                if (form['is_anonymous'].checked == true) {
+                    form['allow_rewrite'].checked = false;
+                    form['allow_rewrite'].disabled = true;
+                }
+                else {
+                    form['allow_rewrite'].checked = rewrite_allowed;
+                    form['allow_rewrite'].removeAttribute('disabled');
+                }
+            }
+            var f_rewrite = function() {
+                rewrite_allowed = form['allow_rewrite'].checked;
+            }
+
+            if (form['allow_rewrite'].addEventListener) {
+                form['allow_rewrite'].addEventListener('click', f_rewrite, false);
+            }
+            else if (form['allow_rewrite'].attachEvent) {
+                form['allow_rewrite'].attachEvent('onclick', f_rewrite);
+            }
+            else {
+                form['allow_rewrite']['onclick'] = f_rewrite;
+            }
+            if (form.is_anonymous != undefined){
+            if (form['is_anonymous'].addEventListener) {
+                form['is_anonymous'].addEventListener('click', f_anonymous, false);
+            }
+            else if (form['is_anonymous'].attachEvent) {
+                form['is_anonymous'].attachEvent('onclick', f_anonymous);
+            }
+            else {
+                form['is_anonymous']['onclick'] = f_anonymous;
+            }}
+            // Style bug fix
+            //delete_link = document.getElementsByClassName('deletelink')[0];
+            //delete_link.style.height = null;
+        }
+    </script>
+<!-- END CUSTOM -->
+    <script type="text/javascript"
+            id="django-admin-form-add-constants"
+            src="{% static 'admin/js/change_form.js' %}"
+            {% if adminform and add %}
+                data-model-name="{{ opts.model_name }}"
+            {% endif %}>
+    </script>
+{% endblock %}
+
+{# JavaScript for prepopulated fields #}
+{% prepopulated_fields_js %}
+
+</div>
+</form></div>
+{% endblock %}
