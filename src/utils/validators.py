@@ -1,6 +1,8 @@
 import os
 import re
 
+from user.models import Faculty
+
 def _check_valid(v, s):
     if (s is None) or (v.match(s) is None):
         return False
@@ -34,6 +36,11 @@ def is_valid_email(s):
 
 # DREC-only groups
 def is_valid_group(n):
+    all_faculties = Faculty.objects.all()
+    for f in all_faculties:
+        if f.is_group_in_faculty(n):
+            return True
+    # depricated, for DREC-only MIPT groups
     _group_valid = re.compile(r"^[1-9]1[1-9][а-я]?$")
     return _check_valid(_group_valid, s = str(n))
 

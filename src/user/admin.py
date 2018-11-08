@@ -78,7 +78,7 @@ class UserAdmin(BaseUserAdmin, VersionAdmin):
     fieldsets = (
         # Uncomment to enable #passwordAuth
         #(None, {'fields': ('phone_number', 'password')}),
-        ('Личная информация', {'fields': ('last_name', 'first_name', 'patronymic_name', 'group_number', 'account', 'avatar_url')}),
+        ('Личная информация', {'fields': ('last_name', 'first_name', 'patronymic_name', 'group_number', 'room_number', 'account', 'avatar_url')}),
         # Replace next string with this one to enable #passwordAuth
         #('Contacts', {'fields': ('account_id', 'email')}),
         ('Контакты', {'fields': ('account_id', 'card_uid', 'phone_number', 'email')}),
@@ -91,6 +91,7 @@ class UserAdmin(BaseUserAdmin, VersionAdmin):
             'classes': ('wide',),
             'fields': ('last_name','first_name','patronymic_name',
                 'group_number',
+                'room_number',
                 # Uncomment to enable #passwordAuth
                 #'account_id','password1','password2','card_uid',
                 'account_id','card_uid',

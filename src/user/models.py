@@ -8,10 +8,10 @@ from django.conf import settings
 
 from service.models import Service
 from survey.models import Survey, Answer
-from utils.validators import *
 from utils.utils import check_unique, get_id_by_url_vk
 
 import datetime
+import re
 
 from .managers import UserManager
 
@@ -30,7 +30,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     phone_number    = models.CharField(max_length = 20, default = '', blank = True, null = True, unique = False, verbose_name = 'Контактный номер')
     account_id      = models.CharField(max_length = 64, blank = False, null = False, unique = True, verbose_name = 'Аккаунт')
     group_number    = models.CharField(max_length = 7, blank = False, null = False, verbose_name = 'Номер группы')
-    room_number     = models.CharField(max_length = 4, blank = True, null = True, verbose_name = 'Номер комнаты')
+    room_number     = models.CharField(max_length = 7, blank = True, null = True, verbose_name = 'Номер комнаты')
     account         = models.DecimalField(default = 0, max_digits = 7, decimal_places = 2, blank = False, null = False, verbose_name = 'Счёт')
     avatar_url      = models.URLField(null = True, blank = True, verbose_name = 'URL аватарки')
     # Two 'blank' (unrequired) values can`t be unique
@@ -81,6 +81,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         return actual.exclude(id__in = passed).count()
         #return Survey.objects.filter(
     def clean(self):
+        # In other case, Faculty import will fail
+        from utils.validators import is_valid_name, is_valid_email, is_valid_group, is_valid_group, is_valid_phone
+
         # Format of phone_number (optional)
         if self.phone_number and is_valid_phone(self.phone_number) is False:
             raise ValidationError({'phone_number': 'Неверный формат телефонного номера'})
@@ -144,8 +147,9 @@ class Faculty(models.Model):
     def __str__(self):
         return self.name
     def clean(self):
+        from utils.validators import is_valid_faculty
         if is_valid_faculty(self.groups) is False:
-            raise ValidationError({'groups': 'Неверный формат фамилии'})
+            raise ValidationError({'groups': 'Неверный формат групп факультета'})
     def save(self, *args, **kwargs):
         # Remove whitespaces
         self.groups.replace(' ', '')
