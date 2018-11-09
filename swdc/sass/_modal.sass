@@ -12,8 +12,6 @@ $modallight: (light #f8f9fa), (white #fff)
     border-top: 3px solid #de2921
     stroke: currentcolor // Color for svg written
     transition: bottom .4s cubic-bezier(1, 0, 0, 1)
-    \:not(:checked)~#modal
-        bottom: -100%
     >.container
         margin-left: auto
         margin-right: auto
@@ -21,6 +19,9 @@ $modallight: (light #f8f9fa), (white #fff)
         position: relative
     h3
         display: inline
+
+#modal_check:checked~#modal
+    bottom: -100%
 
 .m_close
     float: right

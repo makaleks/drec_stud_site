@@ -16,7 +16,7 @@
         %div
             %input.hidden.tabcheck{type:'radio', name:'tabs', id:'tab-nav-#{ forloop.counter }'}
             -#, {% if forloop.first %}checked:True{% endif %}
-            %div.card.tab
+            .card.tab
                 %h2 #{ n.name }
                 .note_details #{ n.text.rendered }
                 %small.text-muted

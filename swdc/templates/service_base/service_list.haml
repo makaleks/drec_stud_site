@@ -1,0 +1,10 @@
+- extends 'core/base.html'
+
+- block content
+    %section.card
+        %h2.lightgray Доступные сервисы:
+        - for service in service_base_list
+            %a{href:'#{ service.get_absolute_url }'}
+                .card.service_card
+                    %img.card-img{src:'#{ service.image.url }'}
+                    %p #{ service.name }

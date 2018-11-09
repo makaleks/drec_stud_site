@@ -13,7 +13,7 @@
         %meta{'name':'viewport', 'content':'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no'}/
 
         %link{'type':'text/css', 'rel':'stylesheet', 'href':'#{STATIC_URL}web_copy/normalize/normalize.css'}/
-        %link{'type':'text/css', 'rel':'stylesheet', 'href':'#{STATIC_URL}content.css'}/
+        %link{'type':'text/css', 'rel':'stylesheet', 'href':'#{STATIC_URL}css/style.css'}/
         %script{'src':'{{ STATIC_URL }}base.js'}
         /[if lt IE 9]
             :javascript
@@ -115,7 +115,7 @@
         %label#modal_userinfo_back{'for':'modal_userinfo_check'}
         .container#modal_userinfo
             .card.modal_userinfo
-                #modal_userinfo_content Ожидается текст
+                #modal_userinfo_content Здесь должен быть текст
                 %label.m_close{'for':'modal_userinfo_check'}
                     %svg.close{'viewBox':'0 0 10 10'}
                         %path{'d':'M2 8l6-6M2 2l6 6'}
@@ -217,9 +217,9 @@
                 - block content
         %label#headerToggle{'for':'showside'}
             %svg.toggle.hamburger{'viewBox':'0 0 10 10'}
-                %path.p1{'d':'M8,3 L2,3'}/
-                %path.p2{'d':'M2,5 L8,5'}/
-                %path.p3{'d':'M8,7 L2,7'}/
+                %path.p1{'d':'M8,3 L2,3'}
+                %path.p2{'d':'M2,5 L8,5'}
+                %path.p3{'d':'M8,7 L2,7'}
         :javascript
             (function() {
                 var bottom = document.querySelector('#bottom_menu'),

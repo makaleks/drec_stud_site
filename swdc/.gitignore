@@ -2,3 +2,5 @@ preview
 static/content.css
 venv
 temp
+sass/config/_theme.sass
+config

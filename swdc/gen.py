@@ -1,86 +1,114 @@
 from hamlpy.hamlpy_watcher import compile_file as ghtml
 import os
 import sass
+import shutil, errno
+from distutils.dir_util import copy_tree
+gento = "../gen/"
+haml = {
+    "core":[
+        "base",
+        "error",
+        "login"
+    ],
+    "meeting_room":[
+        "meeting_room_timetable"
+    ],
+    "news":[
+        "archive_select",
+        "news_list"
+    ],
+    "note":[
+        "note_detail",
+        "note_list",
+        "qanda",
+        "student_council"
+    ],
+    "reversion":[
+        "revision_form"
+    ],
+    "service":[
+        "service_base1",
+        "service_list1",
+        "service_timetable",
+        "service_timetable_single"
+    ],
+    "service_base":[
+        "service_base",
+        "service_list"
+    ],
+    "service_document":[
+        "service_document_timetable"
+    ],
+    "service_item":[
+        "service_item_timetable"
+    ],
+    "survey":[
+        "chart",
+        "survey_detail",
+        "survey_list",
+        "survey_thanks"
+    ],
+    "user":[
+        "long_logout",
+        "uid_set"
+    ],
+    "washing":[
+        "washing_timetable"
+    ]
+}
+
+
 
 place = os.path.dirname(os.path.realpath(__file__))
+compiled_folder = os.path.realpath(place + "/" + gento) + "/"
+place = place + "/"
 
-gento = "../gen/"
+for folder in haml:
+    if not os.path.exists(compiled_folder + folder + "/templates"):
+        os.makedirs(compiled_folder + folder + "/templates")
 
-haml = ["core/base",
-        "core/error",
-        "core/login",
-        "comment/admin/comment/comment/change_form",
-        "meeting_room/admin/meeting_room/meetingroom/change_form",
-        "meeting_room/meeting_room_timetable",
-#        "news/admin/news/news/change_form",
-#        "news/archive_select",
-#        "news/news_list",
-        "note/admin/note/question/change_form",
-        "note/admin/note/note/change_form",
-        "note/note_detail",
-        "note/note_list",
-        "note/qanda",
-#        "note/student_council",
-        "reversion/revision_form",
-        "service/admin/service/service/change_form"#,
-#        "service_base/service_base",
-#        "service_base/service_list",
-#        "service_document/service_document_timetable",
-#        "service_item/service_item_timetable",
-#        "service/service_base1",
-#        "service/service_list1",
-#        "service/service_timetable",
-#        "service/service_timetable_single",
-#        "survey/admin/survey/survey/change_form",
-#        "survey/chart",
-#        "survey/survey_detail",
-#        "survey/survey_list",
-#        "survey/survey_thanks",
-#        "user/admin/user/user/change_form",
-#        "user/long_logout",
-#        "user/uid_set",
-#        "washing/admin/washing/washing/change_form",
-#        "washing/washing_timetable"
-        ]
+if not os.path.exists(compiled_folder + "static"):
+    os.makedirs(compiled_folder + "static")
+if not os.path.exists(compiled_folder + "static/css"):
+    os.makedirs(compiled_folder + "static/css")
+if not os.path.exists(compiled_folder + "static/js"):
+    os.makedirs(compiled_folder + "static/js")
 
-def pregen():
-    compiled_folder = os.path.realpath(place + "/" + gento + "templates")
-    if not os.path.exists(compiled_folder):
-        os.makedirs(compiled_folder)
-    if not os.path.exists(compiled_folder + "/core"):
-        os.makedirs(compiled_folder + "/core")
-    if not os.path.exists(compiled_folder + "/comment/admin/comment/comment"):
-        os.makedirs(compiled_folder + "/comment/admin/comment/comment")
-    if not os.path.exists(compiled_folder + "/meeting_room/admin/meeting_room/meetingroom"):
-        os.makedirs(compiled_folder + "/meeting_room/admin/meeting_room/meetingroom")
-    if not os.path.exists(compiled_folder + "/note/admin/note/question"):
-        os.makedirs(compiled_folder + "/note/admin/note/question")
-    if not os.path.exists(compiled_folder + "/note/admin/note/note"):
-        os.makedirs(compiled_folder + "/note/admin/note/note")
-    if not os.path.exists(compiled_folder + "/service/admin/service/service"):
-        os.makedirs(compiled_folder + "/service/admin/service/service")
-    if not os.path.exists(compiled_folder + "/reversion"):
-        os.makedirs(compiled_folder + "/reversion")
+def copy(src, dest):
+    try:
+        shutil.copytree(src, dest)
+    except OSError as e:
+        # If the error was caused because the source wasn't a directory
+        if e.errno == errno.ENOTDIR:
+            shutil.copy(src, dest)
+        else:
+            print('Directory not copied. Error: %s' % e)
 
 def genhaml():
-    hamlpath = [os.path.realpath(place + "/" + "templates") + "/", "", ".haml"]
-    htmlpath = [os.path.realpath(place + "/" + gento + "templates/") + "/", "", ".html"]
+    hamlpath = [place + "templates/", "", ".haml"]
+    htmlpath = [compiled_folder, "", ".html"]
 
     gargs = {'django_inline_style': True}
 
     for address in haml:
-        hamlpath[1] = address
-        htmlpath[1] = address
+        for filename in haml[address]:
+            hamlpath[1] = address + "/" + filename
+            htmlpath[1] = address + "/templates/" + filename
 
-        ginput = ''.join(hamlpath)
-        goutput = ''.join(htmlpath)
+            ginput = ''.join(hamlpath)
+            goutput = ''.join(htmlpath)
 
-        ghtml(ginput, goutput, gargs)
+            ghtml(ginput, goutput, gargs)
 
 def main():
-    pregen()
+    copy_tree(place + "static/img", compiled_folder + "static/img")
+    copy_tree(place + "static/web_copy", compiled_folder + "static/web_copy")
+    if os.path.exists(place + "config/img"):
+        copy_tree(place + "config/img", compiled_folder + "static/img")
+    if os.path.exists(place + "config/sass"):
+        copy_tree(place + "config/sass", place + "sass/config")
     genhaml()
-    sass.compile(dirname=(os.path.realpath(place + "/" + "sass"), os.path.realpath(place + "/" + gento + "css")), output_style='compressed')
+    sass.compile(dirname=(place + "sass", compiled_folder + "static/css"), output_style='compressed')
 
 if __name__ == '__main__':
     main()

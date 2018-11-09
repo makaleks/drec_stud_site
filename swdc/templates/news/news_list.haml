@@ -13,11 +13,11 @@
                     - if post.text.rendered
                         - if not show_hidden
                             .card-maintext.cutted #{ post.text_preview.rendered }
-                                %label.link-underline' for='show_{{ post.id }}'>
+                                %label.link-underline'{for:'show_#{ post.id }'}
                                     %a &nbsp;Читать&nbsp;далее&nbsp;
                             .card-maintext.full
                                 #{ post.text.rendered }
-                                %label.link-underline{for='show_{{ post.id }}'}
+                                %label.link-underline{for:'show_#{ post.id }'}
                                     %a &nbsp;Скрыть&nbsp;
                         - else
                             .card-maintext #{ post.text.rendered }
@@ -27,7 +27,7 @@
     - if render_archive
         %section.card
             %h2
-                %a{href:'{% url 'news:news-archive' %}'} Архив
+                %a{href:'{% url "news:news-archive" %}'} Архив
             %div
                 %p
                     Быстрый переход:
