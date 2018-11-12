@@ -9,11 +9,12 @@ We use authorization via [VK](https://vk.com/) social network, so many scripts m
 ## Requirements
 
 - Python3
-- The 'washing' room (where washing machines are rented), as this is one of the main menu entries
+- PostgreSQL
+- Nginx
+- https-connection (highly recommended)
 
 ## Branch review
 
-- [heroku-hosting](https://github.com/makaleks/drec_stud_site/tree/heroku-hosting/) - very outdated, but contains some essential fixes to run on Heroku hosting
 - [pda11111](https://github.com/makaleks/drec_stud_site/tree/pda11111/)- design
 - [auth](https://github.com/makaleks/drec_stud_site/tree/auth/) - authorization
 - [news](https://github.com/makaleks/drec_stud_site/tree/news/) - news
@@ -21,6 +22,7 @@ We use authorization via [VK](https://vk.com/) social network, so many scripts m
 - [service](https://github.com/makaleks/drec_stud_site/tree/service/) - services (used by washing room, room for meetings, etc.)
 - [helpers](https://github.com/makaleks/drec_stud_site/tree/helpers/) - utils, design updates, admin panel updates, general fixes
 - [master](https://github.com/makaleks/drec_stud_site/tree/master/) - united result
+- [heroku-hosting](https://github.com/makaleks/drec_stud_site/tree/heroku-hosting/) - very outdated, but contains some essential fixes to run on Heroku hosting
 
 ## Development
 
@@ -29,6 +31,11 @@ This repository contains copies of some open libraries to be independent from CD
 * jquery-3.2.1.min.js (javascript)
 * Comfortaa           (font)
 * Open Sans           (font)
+* ckeditor-4.7        (text editor)
+* surveyjs-0.12.23    (survey editor & renderer)
+* vk_openapi-573      (VK-social network functions)
+* xlsxjs-0.14.0       (Excel table loader)
+* vuejs-2.5.17        (my favorite frontend framework!)
 
 All license files are available, this libraries are just linked, we are not their authors. 
 
@@ -49,15 +56,11 @@ source env/bin/activate
 ```
 > For `fish` shell use `source env/bin/activate.fish`  
 > If you get other error at `source` command, try other shell (worked on *bash*, *zsh*)  
-3. Stop stacking default config files:
-```bash
-./keep_untracked.py
-```
-4. Install all Python dependences
+3. Install all Python dependences
 ```bash
 pip install -r src/requirements.txt
 ```
-5. To serve static files install Nginx. You must have in /etc/nginx/nginx.conf inside `server{}` (replace `{your_path}` with path to project):
+4. To serve static files install Nginx. You must have in /etc/nginx/nginx.conf inside `server{}` (replace `{your_path}` with path to project):
 ```nginx configuration file
 # Check the port - it should be similar to mentioned in gunicorn
 # Check you\`ve commented previous `location /`
@@ -93,7 +96,8 @@ http {
 > If you are running Ubuntu and need to restore default /etc/nginx, run  
 > `sudo apt-get purge nginx nginx-common nginx-full`  
 > `sudo apt-get install nginx`  
-6. Don`t forget to run Nginx and Postgres. You may also want to enable them (run on starup), also before its first start Postgres requires [installation](https://wiki.archlinux.org/index.php/PostgreSQL#Installing_PostgreSQL):
+> We strongly recommend to use HTTPS-connections!
+5. Don`t forget to run Nginx and PostgreSQL (PostgreSQL is recommended to be newer). You may also want to enable them (run on starup), also before its first start Postgres requires [installation](https://wiki.archlinux.org/index.php/PostgreSQL#Installing_PostgreSQL):
 ```bash
 sudo systemctl start nginx
 sudo systemctl start postgresql
@@ -101,13 +105,21 @@ sudo systemctl start postgresql
 sudo systemctl enable nginx
 sudo systemctl enable postgresql
 ```
-7. Set up PostgreSQL (note: Django expects UTF-8)
+If your init system is SystemV (not systemd), the following commands will be used (check commands for your distributive):
+```bash
+sudo /etc/init.d/nginx start
+sudo service postgresql restart
+
+sudo chkconfig nginx on
+sudo chkconfig postgresql on
+```
+6. Enter pgsql shell and set up PostgreSQL database for site (note: Django expects UTF-8)
 ```sql
 CREATE DATABASE drec_stud_site;
 CREATE USER drec_stud_site_admin;
 GRANT ALL PRIVILEGES ON DATABASE drec_stud_site TO drec_stud_site_admin;
 ```
-8. Migrate all your models (don`t forget moving to src/):
+7. Migrate all your models (don`t forget moving to src/):
 ```bash
 cd src/
 ./manage.py makemigrations
@@ -126,9 +138,13 @@ cd src/
 >
 > If you got errors during 'migrate', try detecting Django apps separately:  
 > `manage.py makemigrations user`  
-9. (Optional) If you have a *.zip* of backup and wish to insert some data for demonstration, run:
+8. (Optional) If you have a *.zip* of backup and wish to insert some data for demonstration, run:
 ```bash
 ./postgresql_helper.py -r
+```
+9. Don`t forget to collect static files from all applications:
+```bash
+./manage.py collectstatic
 ```
 > run with --help argument to show all arguments  
 10. Create a Django superuser (password is required only for superusers):
@@ -142,16 +158,12 @@ m.create_superuser('Lastname', 'Firstname', 'Patronymicname', *drec group number
 ```
 > We don\`t use any passwords, so simple way doesn\`t work:  
 > "manage.py createsuperuser"  
-11. Don`t forget to collect static files from all applications:
-```bash
-./manage.py collectstatic
-```
-12. Start gunicorn to run Gunicorn server:
+11. Start gunicorn to run Gunicorn server:
 ```bash
 gunicorn --reload -b localhost:8080 -w 4 --pythonpath src drec_stud_site.wsgi:application
 ```
-In addition, a simple `gunicorn-background.service` provided to run the server via systemd.
-Now, you can view [the site](localhost) at localhost and play with models in [admin panel](localhost/admin) at localhost/admin. Moreover, you are able to access static files in `collected static` and `media` using links `localhost/static/FILENAME` and `localhost/media/FILENAME`. Good luck!
+In addition, a simple `gunicorn-background.service` provided to run the server via systemd. If you have SystemV init system, see `gunicorn-background`. These files need to be placed in appropriate directories of /etc/ and edited for your paths.  
+Now, you can view [the site](localhost) at localhost and play with models in [admin panel](localhost/admin) at localhost/admin after login. Moreover, you are able to access static files in `collected static` and `media` using links `localhost/static/FILENAME` and `localhost/media/FILENAME`. Good luck!
 
 ### Notes
 * Don\`t forget to run command for initial ordering - it is required, when you add ordering to already-existing objects.
