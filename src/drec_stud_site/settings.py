@@ -163,6 +163,9 @@ SURVEY_SHEET_ROOT = os.path.join(MEDIA_ROOT, 'surveys')
 
 AUTH_USER_MODEL = 'user.User'
 
+# 300*(name*3 + group + account + room + email + phone + some_dust*2)
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 3000
+
 # Datetime formats
 FORMAT_MODULE_PATH = [
     'drec_stud_site.formats',

@@ -1,0 +1,465 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+{% comment %}
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static "admin/css/changelists.css" %}">
+  {% if cl.formset %}
+    <link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}">
+  {% endif %}
+  {% if cl.formset or action_form %}
+    <script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>
+  {% endif %}
+  {{ media.css }}
+  {% if not actions_on_top and not actions_on_bottom %}
+    <style>
+      #changelist table thead th:first-child {width: inherit}
+    </style>
+  {% endif %}
+{% endblock %}
+{% endcomment %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+&rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+&rsaquo; {% if has_view_permission %}<a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>{% else %}{{ opts.verbose_name_plural|capfirst }}{% endif %}
+&rsaquo; Добавить много пользователей
+</div>
+{% endblock %}
+
+{% block content %}
+<div id='add_formset'>
+    <p>Здесь можно обрезать лишние столбцы и строки, определить смысловые значения столбцов. Отправить на проверку. Пользователи будут добавлены только когда все проверки формата будут пройдены (все строки - зелёные).<br/>Помните, что некоторые данные похожи (н-р имя и фамилия), поэтому пройденная проверка не гарантирует отсутствия лажи.<br /><span style='font-weight:bold;'>Убедитесь, что проверили все столбцы и строки! Ничего не перепутайте! Замучаетесь потом испорченное удалять!</span></p>
+    <form method='post' @submit='is_in_process=true'>
+    {% csrf_token %}
+{# Stop rendering remplates - let Vue do the rest #}
+    {% verbatim %}
+    <p v-if='status.type' :class='status.type'>{{ status.text }}</p>
+    <template v-if='errors.length != 0'>
+        <p style='font-weight: bold;'>Исправьте следующие ошибки</p>
+        <table>
+            <tr v-for='line in errors'>
+                <td>{{ line.line }}</td>
+                <td style='color:red;'>
+                    <ul>
+                        <li v-for='e in line.errors' style='list-style-type:none'>{{ e }}</li>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+    </template>
+    <h2>Большие таблицы могут долго проверяться</h2>
+    <div v-if='is_in_process' style='text-align:center;'>
+        <h1>В процессе... (ждать ~30сек.)</h1>
+    </div>
+    <template v-else>
+    <div v-if='is_empty' style='border:0.2rem dashed black;' @drop.prevent.stop='load_file($event.dataTransfer.files)' @dragover.prevent.stop='is_file_drop_ready=true' @dragenter.prevent.stop='is_file_drop_ready=true' @dragstart.prevent.stop='is_file_drop_ready=true' @drag.prevent.stop='is_file_drop_ready=false' @dragleave.prevent.stop='is_file_drop_ready=false' @ id='file_div'>
+        <label style='width:100%;text-align:center;display:inline-block;' :class='{"dark-back": is_file_drop_ready}'>
+            <br />
+            <input type='file' @change.stop.prevent='load_file($event.target.files)'/>
+            Вставьте Excel-таблицу, или используйте Drag&Drop
+            <br />
+            <br />
+        </label>
+    </div>
+    <template v-else>
+    <table class='table-class'>
+        <tr>
+            <td></td>
+            <td></td>
+            <td v-for='i in row_length' :class='{"dark-back": is_column_disabled(i-1)}'>
+                <button type='button' :style='{"width":"100%","pointer-events": (is_column_disabled(i-1)?"none":"auto")}' @click='swap_column_hidden(i-1)' :disabled='is_column_disabled(i - 1)'>{{ column_names[i - 1] != DISABLED_FIELD_VALUE ? 'Скрыть' : 'Вернуть' }} столбец</button>
+            </td>
+        </tr>
+        <tr class='dark-back'>
+            <td>№</td>
+            <td></td>
+            <td v-for='i in row_length'>
+                <select :name='!is_column_hidden(i-1) ? "column-" + (i-1) : ""' :style='{"width":"100%","background-color":(is_column_hidden(i-1) ? "#bbbbbb":"white")}' :value='column_names[i - 1]' @change='col_name_handler($event, i - 1)' :disabled='is_column_hidden(i-1)'>
+                    <option disabled>- обязательно -</option>
+                    <option v-for='name in required_fields'>
+                        {{ name }}
+                    </option>
+                    <template v-if='can_hide_columns || is_column_hidden(i-1)'>
+                        <option disabled>- дополнительно -</option>
+                        <option v-for='name in optional_fields'>
+                            {{ name }}
+                        </option>
+                    </template>
+                </select>
+            </td>
+        </tr>
+        <tr v-for='(row,i) in user_data'>
+            <td>
+                {{ i + 1}}
+                <input type='hidden' :name='"checked_and_locked-"+i' :value='user_data[i].checked_and_locked ? 1 : null' />
+            </td>
+            <td><button type='button' @click='delete_or_unlock_row(i)'>{{ row.checked_and_locked ? 'Изменить' : 'Удалить' }}</button></td>
+            <td v-for='j in row.values.length' :class='{"success-back": row.checked_and_locked, "dark-back": is_column_hidden(j-1)}'>
+                <input type='text' :name='"value-" + i + "-" + (j-1)' v-model='user_data[i].values[j - 1]' :disabled='is_column_hidden(j-1) || row.checked_and_locked'/>
+                <input v-if='row.checked_and_locked && !is_column_hidden(j-1)' hidden :name='"value-" + i + "-" + (j-1)' v-model='user_data[i].values[j - 1]'/>
+            </td>
+        </tr>
+        <tr>
+            <td :colspan='row_length + 2'>
+                <button type='button' @click='add_empty_row' style='width:100%;'>Создать новую строку</button>
+            </td>
+        </tr>
+        <template v-if='deleted_rows.length'>
+            <tr>
+                <td :colspan='row_length + 2'>
+                    Удалённые строки:<br />
+                    <span style='color:gray'>(окончательно будут удалены при следующей отправке)</span>
+            </tr>
+            <tr v-for='(row,i) in deleted_rows'>
+                <td></td>
+                <td>
+                    <button type='button' @click='return_row(i)' >
+                        Вернуть
+                    </button>
+                </td>
+                <td colspan='row_length'>
+                    {{ row.values[column_names.indexOf('Фамилия')] }} {{ row.values[column_names.indexOf('Имя')] }}
+                </td>
+            </tr>
+        </template>
+    </table>
+    <div style='display:flex;justify-content:space-between;'>
+        <button type='submit' :class='{"button-class": 1, "success-back": is_totally_locked}'>Отправить на {{ is_totally_locked ? 'сохранение!' :'проверку' }}</button>
+        <div></div>
+        <button type='button' :class='["button-class", "dark-back"]' @click='reset()'>Начать заново</button>
+    </div>
+    </template>
+    </template>
+    {% endverbatim %}
+    </form>
+</div>
+{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+#content {
+    padding: 20px 0 20px 40px;
+    overflow-x: auto;
+    height: 100%;
+}
+td {
+    vertical-align: middle;
+}
+.dark-back {
+    background-color: #bbbbbb !important;
+    border-top-color: #bbbbbb !important;
+}
+.success-back {
+    background-color: #28a745 !important;
+}
+.table-class {
+}
+.table-class td {
+    border: 0;
+}
+.button-class {
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    background: #79aec8;
+    padding: 10px 15px;
+    height: 35px;
+    line-height: 15px;
+    cursor: pointer;
+}
+.button-class:hover {
+    background-color: #609ab6;
+}
+
+/* green */
+.success {
+    color: #28a745;
+}
+.success-back {
+    background-color: #28a745;
+}
+/* light blue */
+.info {
+    color: #17a2b8;
+}
+/* blue */
+.primary {
+    color: #007bff;
+}
+/* red */
+.danger {
+    color: #dc3545;
+}
+</style>
+<script type='text/javascript' src='{% static "web_copy/vuejs/vue.js" %}'></script>
+<script type='text/javascript' src='{% static "web_copy/xlsxjs/xlsx.full.min.js" %}'></script>
+<script type='text/javascript'>
+window.onload = function() {
+    window.app = new Vue({
+        // Vue attributes
+        el: '#add_formset',
+        // ALL DATA VALUES ARE READ-ONLY! NEVER CHANGE THEM ON YOUR OWN
+        data: function() {
+            return {
+                'column_names': [],
+                'user_data': [],
+                'deleted_rows': [],
+                // internal needs
+                // for Drag&Drop
+                'is_file_drop_ready': false,
+                // for label 'Loading...'
+                'is_in_process': false,
+                // to store response from server
+                'status': '',
+                'errors': [],
+            }
+        },
+        computed: {
+            // My constants, accessed via this.$options.some_const
+            DISABLED_FIELD_VALUE: function() {
+                return '-';
+            },
+            required_fields: function() {
+                return {{ required_fields|safe }};
+            },
+            optional_fields: function() {
+                return {{ optional_fields|safe }};
+            },
+            // True computed
+            row_length: function() {
+                return this.user_data.length && this.user_data[0].values ? this.user_data[0].values.length : 0;
+            },
+            used_columns_num: function() {
+                var num = 0;
+                for (var i = 0; i < this.column_names.length; i++)
+                    if (this.column_names[i] != this.DISABLED_FIELD_VALUE)
+                        num++;
+                return num;
+            },
+            max_usable_columns: function() {
+                return this.required_fields.length 
+                        + this.optional_fields.length;
+            },
+            can_add_columns: function() {
+                return this.used_columns_num 
+                        < this.required_fields.length 
+                            + this.optional_fields.length;
+            },
+            can_hide_columns: function() {
+                return this.used_columns_num > this.required_fields.length;
+            },
+            is_empty: function() {
+                return this.user_data.length == 0;
+            },
+            is_totally_locked: function() {
+                return this.user_data.every(
+                    (row) => { return row.checked_and_locked;}
+                );
+            },
+        },
+        watch: {
+            // Init-like watcher
+            row_length: function() {
+                if (this.row_length != 0 && this.row_length < this.required_fields.length) {
+                    var err = 'В таблице недостаточно столбцов! Введено: ' + this.row_length + ', нужно минимум ' + this.required_fields.length + '!';
+                    this.errors.append({'line': '', 'errors': err});
+                    this.reset();
+                    return;
+                }
+            },
+        },
+        methods: {
+            reset: function() {
+                this.user_data = [];
+                this.errors = [];
+                this.status = {};
+                this.set_default_column_names();
+            },
+            set_default_column_names: function() {
+                var column_names = this.required_fields.concat(this.optional_fields.slice(0, this.row_length - this.required_fields.length));
+                if (column_names.length < this.row_length)
+                    column_names = column_names.concat(Array(this.row_length - this.column_names.length).fill(this.DISABLED_FIELD_VALUE));
+
+                this.column_names = column_names;
+                return;
+            },
+            get_template_row: function(values=[]) {
+                return {
+                    'checked_and_locked': false,
+                    'values': values,
+                };
+            },
+            col_name_handler: function(e, i) {
+                // swap-like function
+                var new_arr = Array.from(this.column_names);
+                var new_val = e.target.value;
+                var old_val = new_arr[i];
+                var replacable_pos = new_arr.indexOf(new_val);
+                if (replacable_pos != -1) {
+                    new_arr[replacable_pos] = old_val;
+                }
+                if (-1 == this.column_names.indexOf(new_val)
+                        && -1 != this.required_fields.indexOf(old_val)) {
+                    for (var j = 0; j < this.column_names.length; j++) {
+                        if (-1 != this.optional_fields.indexOf(this.column_names[j])) {
+                            new_arr[j] = old_val;
+                            break;
+                        }
+                    }
+                }
+                new_arr[i] = new_val;
+                this.column_names = new_arr;
+                // Now checked_and_locked is wrong
+                this.user_data.forEach(function(row) {
+                    row.checked_and_locked = false;
+                });
+            },
+            delete_or_unlock_row: function(i) {
+                if (this.user_data[i].checked_and_locked) {
+                    this.user_data[i].checked_and_locked = false;
+                }
+                else {
+                    var deleted = this.user_data.splice(i, 1);
+                    if (deleted.length == 0)
+                        return;
+                    this.deleted_rows.push(deleted[0]);
+                }
+            },
+            return_row: function(i) {
+                var returned = this.deleted_rows.splice(i, 1);
+                if (returned.length == 0)
+                    return;
+                this.user_data.push(returned[0]);
+            },
+            add_empty_row: function() {
+                this.user_data.push(
+                    this.get_template_row(Array(this.row_length).fill(''))
+                );
+            },
+            is_column_required: function(i) {
+                return this.required_fields.indexOf(this.column_names[i]) != -1;
+            },
+            is_column_optional: function(i) {
+                return this.optional_fields.indexOf(this.column_names[i]) != -1;
+            },
+            is_column_hidden: function(i) {
+                return this.column_names[i] == this.DISABLED_FIELD_VALUE;
+            },
+            is_column_disabled: function(i) {
+                return this.is_column_hidden(i) && !this.can_add_columns 
+                        || !this.is_column_hidden(i) && !this.can_hide_columns;
+            },
+            swap_column_hidden: function(i) {
+                if (this.are_columns_not_swappable)
+                    return;
+                var j = 0;
+                // Show column:
+                if (this.can_add_columns && 
+                        this.column_names[i] == this.DISABLED_FIELD_VALUE) {
+                    for (j = 0; j < this.optional_fields.length; j++) {
+                        if (this.column_names.indexOf(this.optional_fields[j]) == -1) {
+                            this.column_names.splice(i, 1, this.optional_fields[j]);
+                            break;
+                        }
+                    }
+                    return;
+                }
+                // Hide column:
+                // If Required Field is hidden...
+                if (this.can_hide_columns && this.is_column_required(i)) {
+                    console.log('HELLO');
+                    // ...search for optional field to replace
+                    for (j = 0; j < this.row_length; j++) {
+                        if (this.column_names[j] == this.DISABLED_FIELD_VALUE)
+                            continue;
+                        if (this.is_column_optional(j)) {
+                            this.column_names.splice(j, 1, this.column_names[i]);
+                            break;
+                        }
+                    }
+                }
+                this.column_names.splice(i, 1, this.DISABLED_FIELD_VALUE);
+            },
+            load_file(files) {
+                // true: readAsBinaryString ; false: readAsArrayBuffer
+                var rABS = true;
+                var f = files[0];
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    this.is_in_process = true;
+                    var data = e.target.result;
+                    if(!rABS) data = new Uint8Array(data);
+                    var workbook = XLSX.read(data, {type: rABS ? 'binary' : 'array'});
+
+                    /* DO SOMETHING WITH workbook HERE */
+                    var ws = workbook.Sheets[workbook.SheetNames[0]];
+                    //console.log(ws);
+                    var data = XLSX.utils.sheet_to_json(ws, {
+                        'header': 1,
+                        'raw': false,
+                        'blankrows': false,
+                    });
+                    var i = 0;
+                    var max_len = 0;
+                    data.forEach(function(d) {
+                        max_len = Math.max(max_len, d.length);
+                    });
+                    // fill holes
+                    data.forEach(function(d) {
+                        for(i = 0; i < max_len; i++)
+                            if (d[i] == undefined)
+                                d[i] = '';
+                    });
+                    //console.log(data);
+                    for (i = 0; i < data.length; i++) {
+                        data[i] = {
+                            'checked_and_locked': false,
+                            'values': data[i],
+                        }
+                    }
+                    this.is_in_process = false;
+                    app.user_data = data;
+                    app.set_default_column_names();
+                };
+                if(rABS) 
+                    reader.readAsBinaryString(f);
+                else 
+                    reader.readAsArrayBuffer(f);
+            },
+        },
+    });
+    //*
+    {% if user_data %}
+        app.user_data = {{ user_data|safe }};
+        app.column_names = {{ column_names|safe }};
+        {% if validation_errors %}
+            app.errors = {{ validation_errors|safe }};
+        {% endif %}
+        {% if status %}
+            app.status = {{ status|safe }};
+        {% endif %}
+    {% endif %}//*/
+    //app.user_data = [['Вася']]
+    /*
+    app.user_data = [
+        {
+            checked_and_locked: false,
+            values: ['Вася', 'Игоревич', 'vk.com/id222', '419', 'blabla1'],
+        },
+        {
+            checked_and_locked: false,
+            values: ['Виктор', 'Михайлович', 'vk.com/igor', '418', 'blabla2'],
+        },
+        {
+            checked_and_locked: false,
+            values: ['Иван', 'Сусанин', 'id888', '417', 'blabla3'],
+        },
+    ];//*/
+};
+</script>
+{% endblock %}
+

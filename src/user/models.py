@@ -80,47 +80,68 @@ class User(AbstractBaseUser, PermissionsMixin):
         actual = Survey.objects.filter(Q(started__lte = now) & Q(finished__gt = now))
         return actual.exclude(id__in = passed).count()
         #return Survey.objects.filter(
-    def clean(self):
+    def get_all_errors(self):
+        self.first_name = self.first_name.strip()
+        self.last_name = self.last_name.strip()
+        if self.patronymic_name:
+            self.patronymic_name = self.patronymic_name.strip()
+        if self.phone_number:
+            self.phone_number = self.phone_number.strip()
+        if self.email:
+            self.email = self.email.strip()
+        self.account_id = self.account_id.strip()
+        self.group_number = self.group_number.strip()
+        if self.room_number:
+            self.room_number = self.room_number.strip()
+        if self.card_uid:
+            self.card_uid = self.card_uid.strip()
         # In other case, Faculty import will fail
         from utils.validators import is_valid_name, is_valid_email, is_valid_group, is_valid_group, is_valid_phone
 
+        errors = {}
+
         # Format of phone_number (optional)
         if self.phone_number and is_valid_phone(self.phone_number) is False:
-            raise ValidationError({'phone_number': 'Неверный формат телефонного номера'})
+            errors.update({'phone_number': 'Неверный формат телефонного номера'})
         # Format of name
         if is_valid_name(self.last_name) is False:
-            raise ValidationError({'last_name': 'Неверный формат фамилии'})
+            errors.update({'last_name': 'Неверный формат фамилии'})
         if is_valid_name(self.first_name) is False:
-            raise ValidationError({'first_name': 'Неверный формат имени'})
+            errors.update({'first_name': 'Неверный формат имени'})
         if self.patronymic_name and is_valid_name(self.patronymic_name) is False:
-            raise ValidationError({'patronymic_name': 'Неверный формат отчества'})
+            errors.update({'patronymic_name': 'Неверный формат отчества'})
         # Format of group
         if is_valid_group(self.group_number) is False:
-            raise ValidationError({'group_number': 'Неверный формат группы'})
+            errors.update({'group_number': 'Неверный формат группы'})
         # Format of email (optional)
         if self.email and (is_valid_email(self.email) is False):
-            raise ValidationError({'email': 'Неверный формат почты'})
+            errors.update({'email': 'Неверный формат почты'})
 
         # Unique phone
         if self.phone_number:
             user = check_unique(User, 'phone_number', self.phone_number)
             if user and user.pk != self.pk:
-                raise ValidationError({'phone_number': 'Этот номер телефона уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number)})
+                errors.update({'phone_number': 'Этот номер телефона уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number)})
         # Unique and valid account_id
         id_num = get_id_by_url_vk(self.account_id)
         if not settings.IS_ID_RECOGNITION_BROKEN_VK:
             if not id_num:
-                raise ValidationError({'account_id': 'Не удалось получить id из социальной сети. Это точно существующий пользователь?'})
+                errors.update({'account_id': 'Не удалось получить id из социальной сети. Это точно существующий пользователь?'})
             else:
                 self.account_id = id_num
         user = check_unique(User, 'account_id', self.account_id)
         if user and user.pk != self.pk:
-            raise ValidationError({'account_id': 'Эту ссылку на аккаунт уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number)})
+            errors.update({'account_id': 'Эту ссылку на аккаунт уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number)})
         # Unique email (optional)
         if len(self.email) != 0:
             user = check_unique(User, 'email', self.email)
             if user and user.pk != self.pk:
-                raise ValidationError({'email': 'Эту почту уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number)})
+                errors.update({'email': 'Эту почту уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number)})
+        return errors
+    def clean(self):
+        errors = self.get_all_errors()
+        if errors:
+            raise ValidationError(errors)
     def save(self, no_clean = False, *args, **kwargs):
         if not no_clean:
             self.full_clean()
