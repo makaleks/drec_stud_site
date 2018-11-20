@@ -3,7 +3,7 @@ import os
 import sass
 import shutil, errno
 from distutils.dir_util import copy_tree
-gento = "../gen/"
+gento = "../templates-gen/"
 haml = {
     "core":[
         "base",
@@ -57,15 +57,17 @@ haml = {
     ]
 }
 
-
-
 place = os.path.dirname(os.path.realpath(__file__))
 compiled_folder = os.path.realpath(place + "/" + gento) + "/"
 place = place + "/"
 
 for folder in haml:
-    if not os.path.exists(compiled_folder + folder + "/templates"):
-        os.makedirs(compiled_folder + folder + "/templates")
+    if folder == "core":
+        if not os.path.exists(compiled_folder + folder):
+            os.makedirs(compiled_folder + folder)
+    else:
+        if not os.path.exists(compiled_folder + folder + "/templates"):
+            os.makedirs(compiled_folder + folder + "/templates")
 
 if not os.path.exists(compiled_folder + "static"):
     os.makedirs(compiled_folder + "static")
@@ -93,15 +95,17 @@ def genhaml():
     for address in haml:
         for filename in haml[address]:
             hamlpath[1] = address + "/" + filename
-            htmlpath[1] = address + "/templates/" + filename
-
+            if address == "core":
+                htmlpath[1] = address + "/" + filename
+            else:
+                htmlpath[1] = address + "/templates/" + filename
             ginput = ''.join(hamlpath)
             goutput = ''.join(htmlpath)
-
             ghtml(ginput, goutput, gargs)
 
 def main():
     copy_tree(place + "static/img", compiled_folder + "static/img")
+    copy_tree(place + "static/js", compiled_folder + "static/js")
     copy_tree(place + "static/web_copy", compiled_folder + "static/web_copy")
     if os.path.exists(place + "config/img"):
         copy_tree(place + "config/img", compiled_folder + "static/img")

@@ -11,4 +11,4 @@ env
 collected_static
 setting_additions.py
 logs
-gen
+templates-gen

@@ -14,7 +14,6 @@
 
         %link{'type':'text/css', 'rel':'stylesheet', 'href':'#{STATIC_URL}web_copy/normalize/normalize.css'}/
         %link{'type':'text/css', 'rel':'stylesheet', 'href':'#{STATIC_URL}css/style.css'}/
-        %script{'src':'{{ STATIC_URL }}base.js'}
         /[if lt IE 9]
             :javascript
                 document.createElement('header');
@@ -102,7 +101,8 @@
                         }
                     }
         #back
-        %input#modal_check.hidden{'type':'checkbox'}/
+        %input#modal_check.hidden{'type':'checkbox'}
+        %input#modal_refill_check.hidden{'type':'checkbox'}
         #modal.card{'class':('#{ notification.type }', '{% if not notification.enabled %}hidden{% endif %}')}
             .container
                 %h3
@@ -135,7 +135,7 @@
                     .inline.right#vk_quick
                         - if user.is_authenticated
                             %label{'for':'modal_refill_check'}
-                                %a.m-btn.m-dark
+                                %a.btn.m-dark
                                     %span На счету: #{user.account|urlencode} руб.
                             - if user.avatar_url
                                 %img{'src':'#{ user.avatar_url }'}/
@@ -220,50 +220,5 @@
                 %path.p1{'d':'M8,3 L2,3'}
                 %path.p2{'d':'M2,5 L8,5'}
                 %path.p3{'d':'M8,7 L2,7'}
-        :javascript
-            (function() {
-                var bottom = document.querySelector('#bottom_menu'),
-                    top = document.querySelector('#top');
-                document.querySelector("#showside").addEventListener('change',
-                    function(){
-                        if(this.checked) document.body.style.overflow = "hidden";
-                        else document.body.style.overflow = "auto";
-                    }, false);
-                if (getComputedStyle(bottom).display !== 'none') {
-                    window.addEventListener('scroll', scrollPage, false);
-                    document.body.addEventListener('scroll', scrollPage, false);
-                    var height = bottom.getBoundingClientRect().height;
-                }
-
-                function scrollPage() {
-                    if (top.getBoundingClientRect().bottom <= height) {
-                        bottom.classList.add('sticky');
-                        top.style.paddingBottom = height + 'px';
-                    } else {
-                        bottom.classList.remove('sticky');
-                        top.style.paddingBottom = 0 + 'px';
-                    }
-                }
-            })();
-            function showuserinfo(name, vkid, number, email) {
-                var elem = document.getElementById('modal_userinfo_content');
-                var s = '';
-                if (name !== null && name !== "") {
-                    s += '<h3>' + name + '</h3>';
-                }
-                if (number !== null && number !== "") {
-                    s += '<a href="tel:' + number + '">Позвонить: '
-                        + number + '</a><br/>';
-                }
-                if (vkid !== null && vkid !== "") {
-                    // target="_blank" means 'open in new tab/window'
-                    s += '<a target="_blank" href="https://vk.me/id' + vkid
-                        + '">Написать в ВК: vk.com/id' + vkid + '</a><br/>';
-                }
-                if (email !== null && email !== "") {
-                    s += '<a href="mailto:' + email + '">Написать на почту: '
-                        + email + '</a><br />';
-                }
-                elem.innerHTML = s;
-            };
+        %script{'src':'{{ STATIC_URL }}js/base.js'}
         - block body_extras

@@ -2,19 +2,21 @@
 - block head_extras
     - load markdown_deux_tags
 
-/ -
-{% block content %}
+- block content
     %section.card
         %h2 FAQs(Frequently Asked Questions) или ЧаВо(Частые вопросы)
 
     %span.card
-        {% for n in note_list %}
+        - for n in note_list
             %label.card.tablabel{for:'tab-nav-#{ forloop.counter }'}
                 %h3 #{ n.name }
 
-    {% for n in note_list %}
+    - for n in note_list
         %div
-            %input.hidden.tabcheck{type:'radio', name:'tabs', id:'tab-nav-#{ forloop.counter }'}
+            :plain
+                <input class='hidden tabcheck' type='radio' name='tabs' id='tab-nav-{{ forloop.counter }}'
+                {% if forloop.first %}checked{% endif %}>
+            -# %input.hidden.tabcheck{type:'radio', name:'tabs', id:'tab-nav-#{ forloop.counter }'}
             -#, {% if forloop.first %}checked:True{% endif %}
             .card.tab
                 %h2 #{ n.name }
