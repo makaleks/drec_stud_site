@@ -102,7 +102,6 @@
                     }
         #back
         %input#modal_check.hidden{'type':'checkbox'}
-        %input#modal_refill_check.hidden{'type':'checkbox'}
         #modal.card{'class':('#{ notification.type }', '{% if not notification.enabled %}hidden{% endif %}')}
             .container
                 %h3
@@ -120,14 +119,14 @@
                     %svg.close{'viewBox':'0 0 10 10'}
                         %path{'d':'M2 8l6-6M2 2l6 6'}
 
-        %input.hidden#medal_refill_check{'type':'checkbox'}/
+        %input.hidden#modal_refill_check{'type':'checkbox'}
         %label#modal_refill_back{'for':'modal_refill_check'}
         %div.container#modal_refill
             .card.modal_refill
                 %iframe{'src':"https://money.yandex.ru/quickpay/shop-widget?writer=seller&targets=#{ pay_yandex.payment_text|urlencode }&targets-hint=&default-sum=2&button-text=11&{% if pay_yandex.enable_card %}payment-type-choice=on&{% endif %}{% if pay_yandex.enable_phone %}mobile-payment-type-choice=on&{% endif %}fio=on&hint=&successURL=#{ pay_yandex.success_redirect_url|urlencode }&quickpay=shop&account=#{ pay_yandex.account|urlencode }&label=#{ user.id|urlencode }", 'width':"450", 'height':"223", 'frameborder':"0", 'allowtransparency':"true", 'scrolling':"no"}
                 %label.m_close{'for':'modal_refill_check'}
                     %svg.close{'viewBox':'0 0 10 10'}
-                        %path 'd':'M2 8l6-6M2 2l6 6'}
+                        %path{'d':'M2 8l6-6M2 2l6 6'}
 
         %article#top
             #quick_tool
@@ -213,7 +212,7 @@
             %label#filterToggler{'for':'showside'}
 
         #wrapper
-            %main.container#content
+            %main.container#content{style:"{% block content_style %}{% endblock %}"}
                 - block content
         %label#headerToggle{'for':'showside'}
             %svg.toggle.hamburger{'viewBox':'0 0 10 10'}
