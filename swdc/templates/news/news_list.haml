@@ -1,7 +1,7 @@
 - extends 'core/base.html'
 
 - block content
-    - for post in news_list %}
+    - for post in news_list
         %section.card
             - if post.image
                 %img.card-img{src:'#{ post.image.url }'}
@@ -13,7 +13,7 @@
                     - if post.text.rendered
                         - if not show_hidden
                             .card-maintext.cutted #{ post.text_preview.rendered }
-                                %label.link-underline'{for:'show_#{ post.id }'}
+                                %label.link-underline{'{for:'show_#{ post.id }'}
                                     %a &nbsp;Читать&nbsp;далее&nbsp;
                             .card-maintext.full
                                 #{ post.text.rendered }

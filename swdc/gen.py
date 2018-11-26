@@ -109,12 +109,11 @@ def main():
     copy_tree(place + "static/web_copy", compiled_folder + "static/web_copy")
     if os.path.exists(place + "config/img"):
         copy_tree(place + "config/img", compiled_folder + "static/img")
-    if os.path.exists(place + "config/sass"):
-        copy_tree(place + "config/sass", place + "sass/config")
-    else:
-        if not os.path.exists(place + "sass/config/_theme.sass"):
-            os.makedirs(place + "sass/config/_theme.sass")
-        open(place + "sass/config/_theme.sass", 'w').close()
+    if not os.path.exists(place + "sass/config"):
+        os.makedirs(place + "sass/config")
+    open(place + "sass/config/_theme.sass", 'w').close()
+    if os.path.isfile(place + "config/_theme.sass"):
+        shutil.copyfile(place + "config/_theme.sass", place + "sass/config/_theme.sass")
     genhaml()
     sass.compile(dirname=(place + "sass", compiled_folder + "static/css"), output_style='compressed')
 
