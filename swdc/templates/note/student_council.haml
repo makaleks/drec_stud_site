@@ -14,7 +14,7 @@
             %h3 Вопрос студсовету
     %div
         :plain
-            <input type='radio' class='hidden' name='tabs' id='tab-main'
+            <input type='radio' class='hidden tabcheck' name='tabs' id='tab-main'
             {% if not tab.new_question and not tab.question_list %}
             checked{% endif %}>
         .card.tab
@@ -25,7 +25,7 @@
                 %a{href:'#{ note.get_absolute_url }'} Ссылка
     %div
         :plain
-            <input type='radio' class='hidden' name='tabs' id='tab-question-list'
+            <input type='radio' class='hidden tabcheck' name='tabs' id='tab-question-list'
             {% if tab.question_list %}
             checked{% endif %}>
         .card.tab.question_list
@@ -42,7 +42,7 @@
                                             (#{ question.author.get_full_name })
     %div
         :plain
-            <input type='radio' class='hidden' name='tabs' id='tab-new-question'
+            <input type='radio' class='hidden tabcheck' name='tabs' id='tab-new-question'
             {% if tab.new_question %}
             checked{% endif %}>
         .card.tab.new_question
@@ -60,7 +60,7 @@
                     %p
                         %label{for:'#{ form.title.id_for_label }'} Заголовок
                         #{ form.title }
-                    #{ form.text.errors }#
+                    #{ form.text.errors }
 
                     %p #{ form.text }
 
@@ -79,7 +79,7 @@
                     #{ form.check_to_send.errors }
                     %p
                         #{ form.check_to_send }
-                        %label{ }for:'#{ form.check_to_send.id_for_label }'} Мой вопрос ещё не был занят никем до меня и относится к ФРТК
+                        %label{for:'#{ form.check_to_send.id_for_label }'} Мой вопрос ещё не был занят никем до меня и относится к ФРТК
                     %input#submit{type:'submit', value:'Отправить'}
 
             - else

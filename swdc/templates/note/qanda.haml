@@ -9,7 +9,7 @@
     margin-bottom: 25em
 
 - block content
-    %section.card style='margin-bottom:10px;'>
+    %section.card{style:'margin-bottom:10px;'}
         %h2 #{ question.title }
         %h3 #{ question.text.rendered }
         - if question.attachment
@@ -42,7 +42,7 @@
                     / for 'qa-answerval' display
                     - if answer|util_is_comment_to_comment
                         %p
-                            %a{href:'#{{ answer.commented_object.id }}', style:'{% if answer.commented_object.author == request.user %}background:#FF0000;color:#FFFFFF;{% endif %}'} #{ answer.commented_object.author.get_full_name }
+                            %a{href:'#{ answer.commented_object.id }', style:'{% if answer.commented_object.author == request.user %}background:#FF0000;color:#FFFFFF;{% endif %}'} #{ answer.commented_object.author.get_full_name }
                             ,
                     %p #{ answer.text.rendered }
                     - if answer.attachment
