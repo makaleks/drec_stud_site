@@ -171,6 +171,8 @@ FORMAT_MODULE_PATH = [
     'drec_stud_site.formats',
 ]
 
+### START SETTING_ADDITIONS
+
 spec = util.spec_from_file_location('setting_additions', os.path.join(PROJECT_ROOT, 'setting_additions.py'))
 module = util.module_from_spec(spec)
 spec.loader.exec_module(module)
@@ -206,6 +208,14 @@ try:
     WEBMASTER_TAG_GOOGLE = module.WEBMASTER_TAG_GOOGLE
 except AttributeError:
     WEBMASTER_TAG_GOOGLE = ''
+
+# Optional strings from settings_additions
+
+SITE_TAB_NAME = 'Сайт студсовета'
+if hasattr(module, 'SITE_TAB_NAME'):
+    SITE_TAB_NAME = module.SITE_TAB_NAME
+
+### END SETTING_ADDITIONS
 
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.vk.VKOAuth2',

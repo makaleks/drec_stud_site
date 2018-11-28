@@ -47,4 +47,5 @@ def custom_context(request):
             'google': settings.WEBMASTER_TAG_GOOGLE,
         },
         'next_return': request.path,
+        'site_tab_name': settings.SITE_TAB_NAME,
     }

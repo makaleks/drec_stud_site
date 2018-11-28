@@ -244,6 +244,10 @@ PAYMENT_ACCOUNT_YANDEX = 'YandexAccount'
 
 WEBMASTER_TAG_YANDEX = '<meta...'
 WEBMASTER_TAG_GOOGLE = '<meta...'
+
+# OPTIONAL
+
+SITE_TAB_NAME = 'Student council'
 ```
 
 ### Scripts-tools
