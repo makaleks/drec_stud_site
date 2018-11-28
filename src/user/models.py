@@ -124,7 +124,7 @@ class User(AbstractBaseUser, PermissionsMixin):
                 errors.update({'phone_number': 'Этот номер телефона уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number)})
         # Unique and valid account_id
         id_num = get_id_by_url_vk(self.account_id)
-        if not settings.IS_ID_RECOGNITION_BROKEN_VK:
+        if not settings.IS_ID_RECOGNITION_BROKEN_VK and not settings.IS_EMERGENCY_LOGIN_MODE:
             if not id_num:
                 errors.update({'account_id': 'Не удалось получить id из социальной сети. Это точно существующий пользователь?'})
             else:
