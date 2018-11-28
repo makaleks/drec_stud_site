@@ -1,233 +1,194 @@
 {% extends 'core/base.html' %}
 {% load utils_extra_filters %}
 
-{% block head_extras %}
-<style>
-#comment>input:checked + div>label:before {
-    content: 'открыть ';
-}
-#comment>input:checked ~ .spoiler {
-    display: none;
-}
-#comment>input + div>label:before {
-    content: 'закрыть ';
-}
-#comment>input ~ .spoiler {
-    display: block;
-}
-#comment {
-    width: calc(700px - 2em);
-    min-width: calc(700px - 2em);
-}
-.qa-avatar {
-    border-radius: .25em;
-}
-@media (max-width: 860px) {
-    #comment {
-        min-width: calc(100% - 45px);
-        width: -webkit-calc(100% - 45px);
-        width: -moz-calc(100% - 45px);
-        width: calc(100% - 45px);
-        max-width: -webkit-calc(100% - 45px);
-        max-width: -moz-calc(100% - 45px);
-        max-width: calc(100% - 45px);
+<!-- 
+    Reserve space to scroll enough on small screens
+    Otherwise, the 'comment' form may overflow the content
 
-        max-height: calc(100vh - 1rem);
-        overflow: auto;
-    }
-    #comment>input + div>label:before {
-        content: 'открыть ';
-    }
-    #comment>input ~ .spoiler {
-        display: none;
-    }
-    #comment>input:checked + div>label:before {
-        content: 'закрыть ';
-    }
-    #comment>input:checked ~ .spoiler {
-        display: block;
-    }
-}
-@media (max-width: 480px) {
-    #comment {
-        min-width: calc(100% - 1em);
-        width: -webkit-calc(100% - 1em);
-        width: -moz-calc(100% - 1em);
-        width: calc(100% - 1em);
-        max-width: -webkit-calc(100% - 1em);
-        max-width: -moz-calc(100% - 1em);
-        max-width: calc(100% - 1em);
-    }
-    #comment>input + div>label:before {
-        content: 'открыть ';
-    }
-    #comment>input ~ .spoiler {
-        display: none;
-    }
-    #comment>input:checked + div>label:before {
-        content: 'закрыть ';
-    }
-    #comment>input:checked ~ .spoiler {
-        display: block;
-    }
-}
-</style>
-{% endblock %}
-
-<!-- Reserve space to scroll enough on small screens -->
-<!-- Otherwise, the 'comment' form may overflow the content -->
+-->
 {% block content_style %}
-margin-bottom: 25em;
+    margin-bottom: 25em
+
 {% endblock %}
-
 {% block content %}
-<section class='card' style='margin-bottom:10px;'>
-    <h2>{{ question.title }}</h2>
-    <h3>{{ question.text.rendered }}</h3>
-    {% if question.attachment %}<a href='{{ question.attachment.url }}'>Приложение ({{ question.get_attachment_extention }})</a>{% endif %}
-    <p>Вопрос задан {{ question.created }}</p>
-    <hr />
-    {% if question.is_public %}
-        {% if question.author.avatar_url %}
-            <img src='{{ question.author.avatar_url }}' class='qa-avatar' />
-        {% else %}
-            <img src='{{ STATIC_URL }}img/vk.svg' class='qa-avatar' />
+    <section style='margin-bottom:10px;' class='card'>
+        <h2>{{ question.title }}</h2>
+        <h3>{{ question.text.rendered }}</h3>
+        {% if question.attachment %}
+            <a href='{{ question.attachment.url }}'>Приложение ({{ question.get_attachment_extention }})</a>
         {% endif %}
-        <p class='inline'>{{ question.author.get_full_name }}
-        <!---->
-        <a href='{{ question.get_absolute_url }}'>Ссылка</a>
-        <!---->
-        </p>
-    {% else %}
-        <img src='{{ STATIC_URL }}img/vk.svg' class='qa-avatar' />
-        <p class='inline'>Аноним
-        <!---->
-        <a href='{{ question.get_absolute_url }}'>Ссылка</a>
-        <!---->
-        </p>
-    {% endif %}
-</section>
+        <p>Вопрос задан {{ question.created }}</p>
+        <hr>
+        {% if question.is_public %}
+            {% if question.author.avatar_url %}
+                <img src='{{ question.author.avatar_url }}' class='qa-avatar'>
+            {% else %}
+                <img src='{{ STATIC_URL }}img/vk.svg' class='qa-avatar'>
+                <p class='inline'>{{ question.author.get_full_name }}                    <a href='{{ question.get_absolute_url }}'>Ссылка</a>
+</p>
+            {% endif %}
+        {% else %}
+            <img src='{{ STATIC_URL }}img/vk.svg' class='qa-avatar'>
+            <p class='inline'>
+                Аноним
+                <a href='{{ question.get_absolute_url }}'>Ссылка</a>
 
+            </p>
+        {% endif %}
+    </section>
     {% for answer in question.get_answers %}
         <section class='card'>
-        <div class='comment {% if answer.author.is_staff %}qa-with-border{% endif %}' id='CT{{ answer.id }}'>
-            <a name='{{ answer.id }}'/>
-            {% if answer.author.avatar_url %}
-                <img src='{{ answer.author.avatar_url }}' class='qa-avatar' />
-            {% else %}
-                <img src='{{ STATIC_URL }}img/vk.svg' class='qa-avatar' />
-            {% endif %}
-            <div class='qa-comment-text'>
-                <span>{{ answer.author.get_full_name }}</span>
-                <!-- for 'qa-answerval' display -->
-                {% if answer|util_is_comment_to_comment %}
-                <p><a href='#{{ answer.commented_object.id }}'{% if answer.commented_object.author == request.user %} style='background:#FF0000;color:#FFFFFF;'{% endif %}>{{ answer.commented_object.author.get_full_name }}</a>, </p>
+            <div class='{% if answer.author.is_staff %}qa-with-border{% endif %} comment' id='CT{{ answer.id }}'>
+                <a name='{{ answer.id }}'></a>
+                {% if answer.author.avatar_url %}
+                    <img src='{{ answer.author.avatar_url }}' class='qa-avatar'>
+                {% else %}
+                    <img src='{{ STATIC_URL }}img/vk.svg' class='qa-avatar'>
                 {% endif %}
-                <p>{{ answer.text.rendered }}</p>
-                {% if answer.attachment %}<p><a href='{{ answer.attachment.url }}'>Приложение ({{ answer.get_attachment_extention }})</a></p>{% endif %}
-                <a style='display: inline-block;' data-comment-id='{{ answer.id }}' data-name='{{ answer.author.get_short_name }}' data-name-id='{{ answer.author.id }}' href='#{{ answer.id }}' name='answer' class='block'>{% if answer.author == request.user %}Изменить{% else %}Ответить{% endif %}</a>
-                <!---->
-                <a style='display: inline-block;' href='{{ question.get_absolute_url }}#{{ answer.id }}'>Ссылка</a>
-                <!---->
-                <br/>
-                <small>Изменён {{ answer.edited }}</small>
-                {% if answer.author == request.user %}
-                    <a href='delete?id={{ answer.id }}'>Удалить</a>
-                {% endif %}
-                <hr>
+                <div class='qa-comment-text'>
+                    <span>{{ answer.author.get_full_name }}</span>
+<!-- for 'qa-answerval' display -->
+                    {% if answer|util_is_comment_to_comment %}
+                        <p>
+                            <a href='{{ answer.commented_object.id }}' style='{% if answer.commented_object.author == request.user %}background:#FF0000;color:#FFFFFF;{% endif %}'>{{ answer.commented_object.author.get_full_name }}</a>
+                            ,
+                        </p>
+                    {% endif %}
+                    <p>{{ answer.text.rendered }}</p>
+                    {% if answer.attachment %}
+                        <p>
+                            <a href='{{ answer.attachment.url }}'>
+                                Приложение ({{ answer.get_attachment_extention }})
+                            </a>
+                        </p>
+                    {% endif %}
+                    <a data-comment-id='{{ answer.id }}' data-name='{{ answer.author.get_short_name }}' data-name-id='{{ answer.author.id }}' href='#{{ answer.id }}' name='answer' class='inline-block block'>
+                        {% if answer.author == request.user %}
+                            Изменить
+                        {% else %}
+                            Ответить
+                        {% endif %}
+                    </a>
+                    <a href='{{ question.get_absolute_url }}#{{ answer.id }}' class='inline-block'>Ссылка</a>
+                    <br>
+                    <small>Изменён {{ answer.edited }}</small>
+                    {% if answer.author == request.user %}
+                        <a href='delete?id={{ answer.id }}'>Удалить</a>
+                    {% endif %}
+                    <hr>
+
+                </div>
+            </div>
+        </section>
+    {% endfor %}
+    {% if user.is_authenticated %}
+<!-- copy of Hamburger svg style -->
+        <div class='card' id='comment'>
+<!-- Start spoiler logic -->
+            <input type='checkbox' class='none' id='showeditor-switch'>
+            <div id='label-open'>
+                <label for='showeditor-switch' class='btn btn-vk' id='my'>форму ответа</label>
+            </div>
+<!-- End spoiler logic -->
+            <div class='spoiler'>
+                <form method='post' enctype='multipart/form-data'>
+                    {% csrf_token %}
+<!-- 
+                        {{ form.errors }}
+                        {{ form.non_field_errors }}
+-->
+                    <input type='checkbox' autocomplete='off' class='hidden' id='qa-isanswer'>
+                    {{ form.answerto }}
+                    <div style='width:100%;' id='qa-answerval'>
+                        <label for='qa-isanswer' onclick='document.getElementById("answerto").value="";' style='display:block;cursor:pointer;background-color:red;'>
+                            <span id='qa-answer-name'></span>
+                        </label>
+                    </div>
+                    {{ form.text.errors }}
+                    {{ form.text }}
+                    {{ form.check_to_send.errors }}
+
+                    {{ form.attachment.errors }}
+                    <table>
+                        <tr>
+                            <td>
+                                <label for='{{ form.attachment.id_for_label }}'>{{ form|util_get_form_field_verbose_name:'attachment' }}</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>{{ form.attachment }}</td>
+                        </tr>
+                    </table>
+                    <p>
+                        {{ form.check_to_send }}
+                        <label for='{{ form.check_to_send.id_for_label }}'>Я проверил текст на ошибки</label>
+                        <input type='submit' style='float:right;' value='Отправить'>
+                    </p>
+                </form>
             </div>
         </div>
-    </section>
-    {% endfor %}
-{% if user.is_authenticated %}
-    <!-- copy of Hamburger svg style -->
-    <div class='card' id='comment'>
-        <!-- Start spoiler logic -->
-        <input type='checkbox' id='showeditor-switch' style='display:none;'>
-        <div style='text-align:center;' id='label-open'><label  id='my' for='showeditor-switch' style='background: rgba(128, 136, 144, 0.8);cursor:pointer;display:block;' class='btn btn-vk'>форму ответа</label></div>
-        <!-- End spoiler logic -->
-        <div class='spoiler'>
-        <form method='post' enctype='multipart/form-data'>
-            {% csrf_token %}
-            <!--{{ form.errors }}
-                {{ form.non_field_errors }}-->
-            <input type='checkbox' class='hidden' id='qa-isanswer' autocomplete='off'>
-            {{ form.answerto }}
-            <div id='qa-answerval' style='width:100%;'><label for='qa-isanswer' onclick='document.getElementById("answerto").value="";' class='btn btn-vk' style='display:block;cursor:pointer;background-color:red;'><span id='qa-answer-name'></span></label></div>
-
-            {{ form.text.errors }}
-            {{ form.text }}
-            {{ form.check_to_send.errors }}
-
-            {{ form.attachment.errors }}
-            <table><tr><td><label for='{{ form.attachment.id_for_label }}'>{{ form|util_get_form_field_verbose_name:'attachment' }}</label></td></tr><tr><td>{{ form.attachment }}</td></tr></table>
-
-            <p>{{ form.check_to_send }} <label for='{{ form.check_to_send.id_for_label }}'> Я проверил текст на ошибки</label><input type='submit' style='float:right;' value='Отправить' /></p>
-        </form>
-        </div>
-    </div>
-{% else %}
-    <p>Войдите, чтобы написать ответ!</p>
-{% endif %}
+    {% else %}
+        <p>Войдите, чтобы написать ответ!</p>
+    {% endif %}
 {% endblock %}
 {% block body_extras %}
 <!-- START textareaToEditor -->
-<script src='{{ STATIC_URL }}web_copy/ckeditor-4.7.x/ckeditor.js'></script>
-<script src='{{ STATIC_URL }}settings/ckeditor_settings.js'></script>
-<script>
-    // Set textarea height smaller
-    options['height'] = '5em';
-</script>
-<script src='{{ STATIC_URL }}js/utils.js'></script>
-<script src='{{ STATIC_URL }}js/textarea_to_ckeditor.js'></script>
+    <script src='{{ STATIC_URL }}web_copy/ckeditor-4.7.x/ckeditor.js'></script>
+    <script src='{{ STATIC_URL }}settings/ckeditor_settings.js'></script>
+    <script type='text/javascript'>
+      // Set textarea height smaller
+      options['height'] = '5em';
+    </script>
+    <script src='{{ STATIC_URL }}js/utils.js'></script>
+    <script src='{{ STATIC_URL }}js/textarea_to_ckeditor.js'></script>
 <!-- END textareaToEditor -->
-<script>
-util_add_handler(window, 'load', function() {
-        var answers = document.getElementsByName('answer');
-
-        for (var item of answers) {
-            //alert(item);
-            item.addEventListener('click', function(ev) {
-                ev = ev || window.event;// IE8-
-                elem = ev.currentTarget;
-                id = elem.getAttribute('data-comment-id')
-                name = elem.getAttribute('data-name');
-                name_id = elem.getAttribute('data-name-id');
-                if ({{ request.user.id }} == name_id)
-                    document.getElementById('qa-answer-name').innerText 
-                        = 'изменить свой ответ (id=' + id + ')';
-                else
-                    document.getElementById('qa-answer-name').innerText 
-                        = 'ответ получит ' + name;
-                document.getElementById('answerto').value = id;
-                document.getElementById('qa-isanswer').checked = true;
-            });
-        }
-    });
-    function showuserinfo(name, vkid, number, email) {
-        var username = document.querySelector('#userinfo_name'),
-            uservkid = document.querySelector('#userinfo_vkid'),
-            usernumber = document.querySelector('#userinfo_number'),
-            useremail = document.querySelector('#userinfo_email');
-        usernumber.classList.add('hidden');
-        uservkid.classList.add('hidden');
-        useremail.classList.add('hidden');
-        username.innerText = name;
-        if (number !== null) {
-            usernumber.innerText = 'Позвонить: ' + number;
-            usernumber.href = 'tel:' + number;
-            usernumber.classList.remove('hidden');
-        }
-        if (vkid !== null) {
-            uservkid.innerText = 'Написать в ВК vk.com/id' + vkid;
-            uservkid.href = 'https://vk.me/id' + vkid;
-            uservkid.classList.remove('hidden');
-        }
-        if (email !== null) {
-            useremail.innerText = 'Написать: ' + email;
-            useremail.href = 'mailto:' + email;
-            useremail.classList.remove('hidden');
-        }
-    };
-</script>
+    <script type='text/javascript'>
+      util_add_handler(window, 'load', function() {
+          var answers = document.getElementsByName('answer');
+      
+          for (var item of answers) {
+              //alert(item);
+              item.addEventListener('click', function(ev) {
+                  ev = ev || window.event;// IE8-
+                  elem = ev.currentTarget;
+                  id = elem.getAttribute('data-comment-id')
+                  name = elem.getAttribute('data-name');
+                  name_id = elem.getAttribute('data-name-id');
+                  if ({{ request.user.id }} == name_id)
+                      document.getElementById('qa-answer-name').innerText
+                          = 'изменить свой ответ (id=' + id + ')';
+                  else
+                      document.getElementById('qa-answer-name').innerText
+                          = 'ответ получит ' + name;
+                  document.getElementById('answerto').value = id;
+                  document.getElementById('qa-isanswer').checked = true;
+              });
+          }
+      });
+      function showuserinfo(name, vkid, number, email) {
+          var username = document.querySelector('#userinfo_name'),
+              uservkid = document.querySelector('#userinfo_vkid'),
+              usernumber = document.querySelector('#userinfo_number'),
+              useremail = document.querySelector('#userinfo_email');
+          usernumber.classList.add('hidden');
+          uservkid.classList.add('hidden');
+          useremail.classList.add('hidden');
+          username.innerText = name;
+          if (number !== null) {
+              usernumber.innerText = 'Позвонить: ' + number;
+              usernumber.href = 'tel:' + number;
+              usernumber.classList.remove('hidden');
+          }
+          if (vkid !== null) {
+              uservkid.innerText = 'Написать в ВК vk.com/id' + vkid;
+              uservkid.href = 'https://vk.me/id' + vkid;
+              uservkid.classList.remove('hidden');
+          }
+          if (email !== null) {
+              useremail.innerText = 'Написать: ' + email;
+              useremail.href = 'mailto:' + email;
+              useremail.classList.remove('hidden');
+          }
+      };
+    </script>
 {% endblock %}
