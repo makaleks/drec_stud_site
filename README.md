@@ -42,6 +42,8 @@ All license files are available, this libraries are just linked, we are not thei
 The project uses **Python3**. 
 If `pip` gets crazy and downloads python2 packages, use `pip3`
 
+If you have to start project on CentOS-6, see centos6\_notes.txt to find commands to install newer PostgreSQL and Python3.
+
 0. Don\`t forget to create `setting_additions.py` with any values, see **Project structure** below for details.
 
 1. Clone the repository:
