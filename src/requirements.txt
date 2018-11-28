@@ -56,3 +56,5 @@ freezegun==0.3.10
 # usage: ./manage.py cleanup_unused_media -e 'admin_documents/*'
 django-unused-media==0.1.12
 
+# HAML engine for Django
+django-hamlpy==1.1.1
