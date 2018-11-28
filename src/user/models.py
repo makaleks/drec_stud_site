@@ -160,8 +160,10 @@ class Faculty(models.Model):
             return False
         to_regex = re.escape(self.groups).replace('_', '[0-9]')
         patterns = to_regex.split(',')
+        
         for i in range(len(patterns)):
-            patterns[i] = '^' + patterns[i] + '$'
+            # Add possible subgroup char, like '419a' of '419b'
+            patterns[i] = '^' + patterns[i] + '\w?$'
         for p in patterns:
             if re.match(p, s):
                 return True
