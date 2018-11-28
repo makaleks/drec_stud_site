@@ -58,3 +58,7 @@ django-unused-media==0.1.12
 
 # HAML engine for Django
 django-hamlpy==1.1.1
+
+# SASS compiler
+libsass==0.15.1
+
