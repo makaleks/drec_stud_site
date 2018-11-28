@@ -155,6 +155,7 @@ class UserAdmin(BaseUserAdmin, VersionAdmin):
         all_fields = {**requied_fields_dicts, **optional_fields_dicts}
         context = {
             'opts': User._meta,
+            'site_url': '/',
             'required_fields': json.dumps(required_fields),
             'optional_fields': json.dumps(optional_fields),
         }
