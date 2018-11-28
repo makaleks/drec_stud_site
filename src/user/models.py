@@ -158,9 +158,8 @@ class Faculty(models.Model):
     def is_group_in_faculty(self, s):
         if s is None or s is '':
             return False
-        to_regex = re.escape(self.groups).replace('_', '[0-9]')
-        patterns = to_regex.split(',')
-        
+        patterns = [re.escape(s).replace('_', '[0-9]') for s in self.groups.split(',')]
+
         for i in range(len(patterns)):
             # Add possible subgroup char, like '419a' of '419b'
             patterns[i] = '^' + patterns[i] + '\w?$'
