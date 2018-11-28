@@ -167,6 +167,7 @@ class Faculty(models.Model):
         for p in patterns:
             if re.match(p, s):
                 return True
+        return False
     def __str__(self):
         return self.name
     def clean(self):
