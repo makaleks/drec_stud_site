@@ -1,0 +1,93 @@
+- extends 'core/base.html'
+- load utils_extra_filters
+
+- block content
+    %section.card
+        %h2 Студсовет
+    / Try to set last page as default. Missed key are interpreted as 'False'
+    %span.card
+        %label.card.tablabel{for:'tab-main'}
+            %h3 Основные положения
+        %label.card.tablabel{for:'tab-question-list'}
+            %h3 Заданные вопросы
+        %label.card.tablabel{for:'tab-new-question'}
+            %h3 Вопрос студсовету
+    %div
+        :plain
+            <input type='radio' class='hidden tabcheck' name='tabs' id='tab-main'
+            {% if not tab.new_question and not tab.question_list %}
+            checked{% endif %}>
+        .card.tab
+            %h2.lightgrey Основные положения
+            .note_details #{ note.text.rendered }
+            %small.text-muted
+                Обновлено #{ note.edited }
+                %a{href:'#{ note.get_absolute_url }'} Ссылка
+    %div
+        :plain
+            <input type='radio' class='hidden tabcheck' name='tabs' id='tab-question-list'
+            {% if tab.question_list %}
+            checked{% endif %}>
+        .card.tab.question_list
+            %h2 Заданные вопросы
+            %div
+                .card-maintext
+                    %ul
+                        - for question in question_list
+                            - if question.is_approved
+                                %li
+                                    %a{href:'#{ question.pk }'}
+                                        #{ question.title }
+                                        - if question.is_public
+                                            (#{ question.author.get_full_name })
+    %div
+        :plain
+            <input type='radio' class='hidden tabcheck' name='tabs' id='tab-new-question'
+            {% if tab.new_question %}
+            checked{% endif %}>
+        .card.tab.new_question
+            %h2 Вопрос студсовету
+            - if user.is_authenticated
+                %h3 Задайте свой вопрос
+                / enctype must be set for file upload
+                %form{method:'post', enctype:'multipart/form-data'}
+                    - csrf_token
+                    /
+                        #{ form.errors }
+                        #{ form.non_field_errors }
+
+                    #{ form.title.errors }
+                    %p
+                        %label{for:'#{ form.title.id_for_label }'} Заголовок
+                        #{ form.title }
+                    #{ form.text.errors }
+
+                    %p #{ form.text }
+
+                    #{ form.attachment.errors }
+                    %table
+                        %tr
+                            %td
+                                %label{for:'#{ form.attachment.id_for_label }'} #{ form|util_get_form_field_verbose_name:'attachment' }
+                        %tr
+                            %td #{ form.attachment }
+
+                    #{ form.is_public.errors }
+                    %p
+                        #{ form.is_public }
+                        %label{for:'#{ form.is_public.id_for_label }'} Не скрывать автора
+                    #{ form.check_to_send.errors }
+                    %p
+                        #{ form.check_to_send }
+                        %label{for:'#{ form.check_to_send.id_for_label }'} Мой вопрос ещё не был занят никем до меня и относится к ФРТК
+                    %input#submit{type:'submit', value:'Отправить'}
+
+            - else
+                %p Войдите, чтобы задать свой вопрос!
+
+- block body_extras
+    / START textareaToEditor
+    %script{src:'#{ STATIC_URL }web_copy/ckeditor-4.7.x/ckeditor.js'}
+    %script{src:'#{ STATIC_URL }settings/ckeditor_settings.js'}
+    %script{src:'#{ STATIC_URL }js/utils.js'}
+    %script{src:'#{ STATIC_URL }js/textarea_to_ckeditor.js'}

@@ -1,0 +1,89 @@
+{% extends 'service_item_timetable.html' %}
+
+{% comment %}
+
+This is the base class for 'service' templates with items.
+You must to inherit it for each service type, because all your additional blocks are undefined.
+
+This template extends blocks:
+{
+  'head_extras'
+    => to bottom =>
+  'service_document_head_extras'
+}
+{
+  'service_item_additional_info'
+    => to bottom =>
+  'service_document_additional_info'
+}
+
+This template create 2 tabs using 'service_tab_main'
+
+{% endcomment %}
+
+{# TODO: REFACTOR STYLES #}
+{% block head_extras %}
+<style>
+    #tab-main:checked~div.tab:nth-of-type(1),
+    #tab-nav-answer:checked~div.tab.answer{
+        display: block;
+    }
+</style>
+{% block service_document_head_extras %}
+{% endblock %}
+
+{% endblock %}
+
+{% block service_item_additional_info_before %}
+    {% if service.request_document %}
+        <section class='card'>
+            <p><a href={{ service.request_document.url }}>Образец служебки (скачать)</a></p>
+        </section>
+    {% endif %}
+    {% block service_document_additional_info %}
+    {% endblock %}
+{% endblock %}
+
+{% block service_tab_main %}
+    {% if service.responsible_user == user %}
+        {# Order #}
+        <input type='radio' class='hidden' name='tabs' id='tab-main' checked>
+        <input type='radio' class='hidden' name='tabs' id='tab-nav-answer'>
+        <span class='card'>
+            <label for='tab-main' class='card tablabel'>
+                <h3>Оставить заявку</h3>
+            </label>
+            <label for='tab-nav-answer' class='card tablabel'>
+                <h3>Одобрить заявку</h3>
+            </label>
+        </span>
+        <div class='tab' style='padding:0;'>
+            {{ block.super }}
+        </div>
+        <div class='tab card answer'>
+            <form action='' method='post' id='service-approve'>
+                {% csrf_token %}
+                {% for order in to_approve %}
+                    <div class='card'>
+                        <input type='checkbox' name='id={{ order.id }}' id='{{ order.id }}' />
+                        <label for='{{ order.id }}'>
+                        {{ order.date_start|date:'Y.m.d' }}: {{ order.time_start|date:'H:i' }}-{{ order.time_end|date:'H:i' }}, {{ order.user.get_full_name }}
+                        {% if order.title %}
+                        <br /><span style='font-weight:bold;'>{{ order.title }}</span>
+                        {% endif %}
+                        </label>
+                    </div>
+                {% endfor %}
+                <p>
+                    <input id='got_documents' type='checkbox' class='shownews' required />
+                    <label for='got_documents'>Я гарантирую, что данные служебки были мною получены</label>
+                </p>
+                <input type='hidden' name='type' value='approve' />
+                <input id='finalsubmit-approve' type='submit' value='Утвердить' />
+            </form>
+        </div>
+    {% else %}
+        {{ block.super }}
+    {% endif %}
+{% endblock %}
+
