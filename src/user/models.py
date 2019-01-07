@@ -80,7 +80,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         actual = Survey.objects.filter(Q(started__lte = now) & Q(finished__gt = now))
         return actual.exclude(id__in = passed).count()
         #return Survey.objects.filter(
-    def get_all_errors(self):
+    def get_all_errors(self, skip_account_check = False):
         self.first_name = self.first_name.strip()
         self.last_name = self.last_name.strip()
         if self.patronymic_name:
@@ -99,44 +99,51 @@ class User(AbstractBaseUser, PermissionsMixin):
         from utils.validators import is_valid_name, is_valid_email, is_valid_group, is_valid_group, is_valid_phone
 
         errors = {}
+        def append_error(key, s):
+            if key in errors:
+                errors[key] = errors[key] + '\n' + s
+            else:
+                errors.update({key: s})
 
         # Format of phone_number (optional)
         if self.phone_number and is_valid_phone(self.phone_number) is False:
-            errors.update({'phone_number': 'Неверный формат телефонного номера'})
+            append_error('phone_number', 'Неверный формат телефонного номера')
         # Format of name
         if is_valid_name(self.last_name) is False:
-            errors.update({'last_name': 'Неверный формат фамилии'})
+            append_error('last_name', 'Неверный формат фамилии')
         if is_valid_name(self.first_name) is False:
-            errors.update({'first_name': 'Неверный формат имени'})
+            append_error('first_name', 'Неверный формат имени')
         if self.patronymic_name and is_valid_name(self.patronymic_name) is False:
-            errors.update({'patronymic_name': 'Неверный формат отчества'})
+            append_error('patronymic_name', 'Неверный формат отчества')
         # Format of group
         if is_valid_group(self.group_number) is False:
-            errors.update({'group_number': 'Неверный формат группы'})
+            append_error('group_number', 'Неверный формат группы')
         # Format of email (optional)
         if self.email and (is_valid_email(self.email) is False):
-            errors.update({'email': 'Неверный формат почты'})
+            append_error('email', 'Неверный формат почты')
 
         # Unique phone
         if self.phone_number:
             user = check_unique(User, 'phone_number', self.phone_number)
             if user and user.pk != self.pk:
-                errors.update({'phone_number': 'Этот номер телефона уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number)})
+                append_error('phone_number', 'Этот номер телефона уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number))
         # Unique and valid account_id
-        id_num = get_id_by_url_vk(self.account_id)
-        if not settings.IS_ID_RECOGNITION_BROKEN_VK and not settings.IS_EMERGENCY_LOGIN_MODE:
+        if not skip_account_check and not settings.IS_ID_RECOGNITION_BROKEN_VK and not settings.IS_EMERGENCY_LOGIN_MODE:
+            id_num = get_id_by_url_vk(self.account_id)
             if not id_num:
-                errors.update({'account_id': 'Не удалось получить id из социальной сети. Это точно существующий пользователь?'})
+                append_error('account_id', 'Не удалось получить id из социальной сети. Это точно существующий пользователь?')
             else:
                 self.account_id = id_num
+        elif not self.account_id.isdigit():
+            append_error('account_id', 'Аккаунт должен иметь численное представление!')
         user = check_unique(User, 'account_id', self.account_id)
         if user and user.pk != self.pk:
-            errors.update({'account_id': 'Эту ссылку на аккаунт уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number)})
+            append_error('account_id', 'Эту ссылку на аккаунт уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number))
         # Unique email (optional)
         if len(self.email) != 0:
             user = check_unique(User, 'email', self.email)
             if user and user.pk != self.pk:
-                errors.update({'email': 'Эту почту уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number)})
+                append_error('email', 'Эту почту уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number))
         return errors
     def clean(self):
         errors = self.get_all_errors()

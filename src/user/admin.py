@@ -127,6 +127,9 @@ class UserAdmin(BaseUserAdmin, VersionAdmin):
         ]
         return to_add + urls
     def add_many(self, request):
+        #import datetime
+        #time_start = datetime.datetime.now()
+        #print('\n\n###\n1. add_many START at {}'.format(time_start))
         perms = {
             'has_add_permission':    self.has_add_permission(request),
             #'has_delete_permission': self.has_delete_permission(request),
@@ -137,13 +140,13 @@ class UserAdmin(BaseUserAdmin, VersionAdmin):
         }
         if not all(perms.values()) or not request.user.is_staff:
             raise Http404()
-        requied_fields_dicts = {
+        required_fields_dicts = {
                 'Имя': 'first_name',
                 'Фамилия': 'last_name',
                 'Номер группы': 'group_number',
                 'Аккаунт ВК': 'account_id',
         }
-        required_fields = list(requied_fields_dicts.keys())
+        required_fields = list(required_fields_dicts.keys())
         # Here I excluded 'card_uid', to test if no one needs it :)
         optional_fields_dicts = {
                 'Отчество': 'patronymic_name',
@@ -152,11 +155,12 @@ class UserAdmin(BaseUserAdmin, VersionAdmin):
                 'Email': 'email',
         }
         optional_fields = list(optional_fields_dicts.keys())
-        all_fields = {**requied_fields_dicts, **optional_fields_dicts}
+        all_fields = {**required_fields_dicts, **optional_fields_dicts}
         context = {
             'opts': User._meta,
             'site_url': '/',
             'required_fields': json.dumps(required_fields),
+            'account_id_field': json.dumps(required_fields[list(required_fields_dicts.values()).index('account_id')]),
             'optional_fields': json.dumps(optional_fields),
         }
         context.update(perms)
@@ -216,9 +220,23 @@ class UserAdmin(BaseUserAdmin, VersionAdmin):
                 }
             # STOP prepare data
             # now validate
+            #time_validate = datetime.datetime.now()
+            #print('2. validation start at {}'.format(time_validate))
+            #print('    timedelta = {}'.format(time_validate - time_start))
             validation_errors = []
-            for (v,i) in zip(values,range(len(values))):
-                e = User(**v).get_all_errors()
+            users = [User(**v) for v in values]
+            for i in range(len(values)):
+                u = users[i]
+                # Hope all users are checked on client-side
+                # (Takes too much time to request all Vk accounts)
+                e = u.get_all_errors(skip_account_check = True)
+                for j in range(len(users)):
+                    if j != i and users[j].account_id == u.account_id:
+                        s = 'Этот аккаунт совпадает с аккаунтом в строке {0} ({1})'.format(j + 1, users[j].get_full_name())
+                        if 'account_id' in e:
+                            e['account_id'] = e['account_id'] + '\n' + s
+                        else:
+                            e.extend({'account_id': s})
                 if e:
                     context_values[i]['checked_and_locked'] = False
                     validation_errors.append({'line': i+1, 'errors': list(e.values())})
@@ -228,19 +246,23 @@ class UserAdmin(BaseUserAdmin, VersionAdmin):
                 'user_data': context_values,
                 'column_names': keys,
             }
+            #time_save = datetime.datetime.now()
+            #print('3. validation start at {}'.format(time_save))
+            #print('    timedelta = {}'.format(time_save - time_validate))
+            #print('    start td  = {}'.format(time_save - time_start))
             if not validation_errors and already_checked_and_locked:
                 try:
                     with transaction.atomic():
                         #print('I AM SAVING !')
                         for v in values:
-                            User(**v).save()
+                            User(**v).save(no_clean = True)
                     # Well done!
                     status = status_texts['success']
                     extra_context['user_data'] = []
                     extra_context['column_names'] = []
                 except Exception as e:
                     print(e)
-                    extra_context['validation_errors'].append('Что-то пошло не так, пользователи не добавлены')
+                    extra_context['validation_errors'].append('Что-то пошло не так, пользователи не добавлены\n{0}'.format(str(e)))
                     status = status_texts['error']
             elif not validation_errors:
                 status = status_texts['ready']
@@ -249,6 +271,11 @@ class UserAdmin(BaseUserAdmin, VersionAdmin):
             extra_context['user_data'] = json.dumps(extra_context['user_data'])
             extra_context['column_names'] = json.dumps(extra_context['column_names'])
             context.update(extra_context)
+
+            #time_done = datetime.datetime.now()
+            #print('4. finish at {}\n###\n\n'.format(time_done))
+            #print('    timedelta = {}'.format(time_done - time_save))
+            #print('    start td  = {}'.format(time_done - time_start))
         return render(request, 'admin/user/user/add_many.html', context)
 
 # Register the new UserAdmin
