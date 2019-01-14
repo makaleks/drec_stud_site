@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.http import HttpResponse, HttpResponseRedirect
-from django.db.models import Q
+from django.db.models import Q, F
 from django.utils import timezone
 from django.conf import settings
 from decimal import Decimal
@@ -19,15 +19,91 @@ payment_logger = logging.getLogger('payment_logs')
 # Create your views here.
 
 # Check unlock
+# test with:
+# bash$ curl 'http://localhost/services/washing/unlock/?uid=200'
 def unlock(request, slug):
+    # The order of checks is important!
     card_uid = request.GET.get('uid')
-    today = timezone.now()
-    orders = Order.objects.all().filter(Q(user__card_uid = card_uid, item__service__slug = slug, date_start = today.date(), time_start__lte = today.time()) & (Q(time_end__gt = today.time()) | Q(time_end = datetime.time(0,0,0))))
+    scenario = {
+        'success': {
+            'status': 'yes',
+            'cause' : 'success',
+            # Remember to set the name!
+            'name'  : '',
+        },
+        'no_orders': {
+            'status': 'no',
+            'cause' : 'no_orders',
+            # Remember to set the name!
+            'name'  : '',
+        },
+        'staff': {
+            'status': 'yes',
+            'cause' : 'staff',
+            # Remember to set the name!
+            'name'  : '',
+        },
+        'unknown_service': {
+            'status': 'no',
+            'cause' : 'unknown_service',
+            'name'  : '',
+        },
+        'unknown_user': {
+            'status': 'no',
+            'cause' : 'unknown_user',
+            'name'  : '',
+        },
+        'lock_disabled': {
+            'status': 'yes',
+            'cause' : 'lock_disabled',
+            'name'  : '',
+        },
+    }
+    # disable unknown services
+    service_query = Service.objects.all().filter(slug = slug)
+    if not service_query.exists():
+        response = scenario['unknown_service']
+        return HttpResponse(json.dumps(response))
+    service = service_query.first()
+    # emergency mode
+    if service.disable_lock:
+        response = scenario['lock_disabled']
+        return HttpResponse(json.dumps(response))
+    # disable unknown users
+    if not User.objects.all().filter(card_uid = card_uid).exists():
+        response = scenario['unknown_user']
+        return HttpResponse(json.dumps(response))
+    # pass all staff
+    user = User.objects.all().filter(card_uid = card_uid).first()
+    if card_uid and user.is_staff:
+        response = scenario['staff']
+        response['name'] = user.get_full_name()
+        return HttpResponse(json.dumps(response))
+    # process orders check
+    now = datetime.datetime.now()
+    time_margin_start = datetime.datetime.combine(datetime.date.min, service.time_margin_start) - datetime.datetime.min
+    time_margin_end = datetime.datetime.combine(datetime.date.min, service.time_margin_end) - datetime.datetime.min
+
+    orders = Order.objects.all().filter(Q(user__card_uid = card_uid, item__service__slug = slug) 
+            & (Q(time_start__lte = now.time()) | Q(time_start__lte = (now + time_margin_start).time())) 
+            & (Q(time_end__gte = now.time()) | Q(time_end__gte = (now - time_margin_end).time()) | Q(time_start = datetime.time(0,0,0), time_end__lte = (now - time_margin_end).time()) | Q(time_end = datetime.time(0,0,0))) 
+            & (Q(date_start = now.date()) | Q(time_start__gte = F('time_end'), date_start = (now - datetime.timedelta(days = 1)).date())))
     #return HttpResponse(str([vars(o) for o in orders]))
     if orders:
-        return HttpResponse('yes')
-    else:
-        return HttpResponse('no')
+        order_lst = list(orders)
+        unlock = False
+        for o in order_lst:
+            if o.used or o.time_end >= now.time() or o.time_end == datetime.time(0,0,0):
+                unlock = True
+                o.used = True
+                o.save()
+        if unlock:
+            response = scenario['success']
+            response['name'] = user.get_full_name()
+            return HttpResponse(json.dumps(response))
+    response = scenario['no_orders']
+    response['name'] = user.get_full_name()
+    return HttpResponse(json.dumps(response))
 
 def to_H_M(t):
     return re.sub(r'(?P<part>^|:)0', '\g<part>', t.strftime('%H:%M'))
@@ -36,7 +112,7 @@ def to_H_M(t):
 def list_update(request, slug):
     today = timezone.now()
     orders = Order.objects.all().filter(Q(date_start = today.date(), item__service__slug = slug) & (Q(time_end__gt = today.time()) | Q(time_end = datetime.time(0,0,0))) | Q(date_start__gt = today.date())).order_by('date_start', 'time_end')
-    return HttpResponse(json.dumps([{'uid': o.user.card_uid, 'date_start': str(o.date_start), 'time_start': to_H_M(o.time_start), 'time_end': to_H_M(o.time_end)} for o in orders]))
+    return HttpResponse(json.dumps([{'uid': o.user.card_uid, 'name': o.user.get_full_name(), 'date_start': str(o.date_start), 'time_start': to_H_M(o.time_start), 'time_end': to_H_M(o.time_end)} for o in orders]))
 
 def _is_decimal(s):
     try:

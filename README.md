@@ -2,9 +2,14 @@
 
 This is the repository for [frtk.mipt.ru](https://frtk.mipt.ru/). All users of this department of [MIPT](https://mipt.ru/en/) are able to log in using VK social network. The adaptive design is used. Use the [issues](https://github.com/makaleks/drec_stud_site/issues/) tab to send any bug-reports, or find and contact developers directly before the development is finished :)
 
-All comments, application and command names are made in English, so the materials of this project can be used anywhere else. 
+All comments, application and command names are made in English, so the materials of this project can be used anywhere else.
 
 We use authorization via [VK](https://vk.com/) social network, so many scripts may use VK API. The `python-social-auth` package is used so other social networks (Fb, etc.) may be adopted in a similar way.
+
+## Requirements
+
+- Python3
+- The 'washing' room (where washing machines are rented), as this is one of the main menu entries
 
 ## Branch review
 
@@ -42,7 +47,8 @@ cd drec_stud_site
 virtualenv env
 source env/bin/activate
 ```
-> If you get error at `source` command, try other shell (worked on *bash*, *zsh*)
+> For `fish` shell use `source env/bin/activate.fish`  
+> If you get other error at `source` command, try other shell (worked on *bash*, *zsh*)  
 3. Stop stacking default config files:
 ```bash
 ./keep_untracked.py
@@ -84,6 +90,9 @@ http {
     }
 }
 ```
+> If you are running Ubuntu and need to restore default /etc/nginx, run  
+> `sudo apt-get purge nginx nginx-common nginx-full`  
+> `sudo apt-get install nginx`  
 6. Don`t forget to run Nginx and Postgres. You may also want to enable them (run on starup), also before its first start Postgres requires [installation](https://wiki.archlinux.org/index.php/PostgreSQL#Installing_PostgreSQL):
 ```bash
 sudo systemctl start nginx
@@ -104,33 +113,35 @@ cd src/
 ./manage.py makemigrations
 ./manage.py migrate
 ```
-> If you got errors during `makemigrations`:
+> If you got errors during `makemigrations`:  
 > 1. If you got 'virtualenv is not compatible with this system', try recreating `env/` (delete the previous one), providing the most full name of your python, like:  
-> `virtualenv -p python3.6 env`
+> `virtualenv -p python3.6 env`  
 > 2. If you got some Postgres-related error, like 'peer authentitation failed', try to replace the authentication method for IPv4 local connection METHOD to 'trust' at *pg\_hba.conf* (see where *ph\_hba.conf* is placed in your distribution, may require `sudo ls` to find):  
+> `# "local" is for Unix domain socket connections only`
+> `host		all		all						trust`  
 > `# IPv4 local connections`  
-> `hostall		all		127.0.0.1/32		trust`  
+> `host		all		all		127.0.0.1/32		trust`  
 > Then restart Postgres:  
-> `sudo systemctl restart postgresql`
+> `sudo systemctl restart postgresql`  
 >
 > If you got errors during 'migrate', try detecting Django apps separately:  
-> `manage.py makemigrations user`
+> `manage.py makemigrations user`  
 9. (Optional) If you have a *.zip* of backup and wish to insert some data for demonstration, run:
 ```bash
 ./postgresql_helper.py -r
 ```
-> run with --help argument to show all arguments
-10. Create a Django superuser:
+> run with --help argument to show all arguments  
+10. Create a Django superuser (password is required only for superusers):
 ``` bash
 ./manage.py shell
 from user.managers import UserManager
 from user.models import User
 m = UserManager()
 m.model = User
-m.create_superuser('Lastname', 'Firstname', 'Patronymicname', *drec group number*, '*phone number*', '*vk-id number*', '*email (optional)*')
+m.create_superuser('Lastname', 'Firstname', 'Patronymicname', *drec group number*, '*phone number*', '*vk-id number*', '*password*', '*email (optional)*')
 ```
-> We don\`t use any passwords, so simple way doesn\`t work:
-> "manage.py createsuperuser"
+> We don\`t use any passwords, so simple way doesn\`t work:  
+> "manage.py createsuperuser"  
 11. Don`t forget to collect static files from all applications:
 ```bash
 ./manage.py collectstatic

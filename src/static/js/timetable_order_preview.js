@@ -69,6 +69,18 @@ var PRICE_PREVIEW = (function() {
     function checkbox_callback() {
         updateTexts();
     }
+    function resetAll() {
+        for (var i = 0; i < registered_buttons.length; i++) {
+            e = registered_buttons[i];
+            if (e.getAttribute('data-timestart') 
+                    && e.getAttribute('data-timeend')
+                    && bool_checkbox(e)) {
+                e.checked = false;
+                util_dispatch_event(e, 'change');
+            }
+        }
+        updateTexts();
+    }
     return {
         registerCheckboxes: function(inputRootId, previewId, resultId) {
             root = document.getElementById(inputRootId);
@@ -81,6 +93,7 @@ var PRICE_PREVIEW = (function() {
             result_node = document.getElementById(resultId);
             bool_func = bool_checkbox;
         },
-        updateTexts: updateTexts
+        updateTexts: updateTexts,
+        resetAll: resetAll
     }
 })();
