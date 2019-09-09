@@ -34,13 +34,18 @@ This template adds blocks:
         {% with t_start=service.get_time_margin_start t_end=service.get_time_margin_end %}
             <p>
                 {# TODO - look again #}
+                <table>
                 {% if t_start %}
-                    {{ t_start }} - время до заказа, чтобы прийти заранее
-                    {% if t_end %}<br />{% endif %}
+                    <tr>
+                        <td>{{ t_start }}</td><td> - время до заказа, чтобы прийти заранее</td>
+                    </tr>
                 {% endif %}
                 {% if t_end %}
-                    {{ t_end }} - время после заказа, чтобы забрать вещи
+                    <tr>
+                        <td>{{ t_end }}</td><td> - время после заказа, чтобы забрать вещи</td>
+                    </tr>
                 {% endif %}
+                </table>
             </p>
         {% endwith %}
     </section>
