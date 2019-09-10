@@ -1,10 +1,13 @@
 /* WASHING */
-#washing .full-width 
-    width: 100vw
-    margin-left: calc(-50vw + 50%)
+#washing .full-width
+    width: 100%
+
+@media(min-width: 860px)
+  #washing .full-width
+      width: calc(100vw - 2rem)
+      margin-left: calc(-50vw + 1rem + 50%)
 
 #washing .full-width>.card
-    min-width: 700px
     max-width: 100%
     text-align: center
 

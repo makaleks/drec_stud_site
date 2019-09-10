@@ -28,18 +28,20 @@
 {% endblock %}
 
 {% block service_item_single_day %}
-    <div style='display:inline-block;position:relative;top:-3.5rem;' class='day_timetable'>
+    <div style='display:inline-block;position:relative;top:-3.5rem;max-width:100%;' class='day_timetable'>
     {# Print machines #}
-    <table class='table_main' style='margin-left:0;display:block;max-width:unset;height:4rem;z-index:3;background-color:white;margin-top:3.5rem;top:3.5rem;position:sticky;position:-webkit-sticky;position:-ms-sticky;'>
-        <tr style='vertical-align:top;'>
-            <th style='white-space:nowrap;min-width:unset;max-width:unset;width:4rem;'>Время</th>
-            {% for i_name,i_value in day.items.items %}
-                {% with i_value.price|util_mul:discount as user_price %}
-                <th style='word-break:normal;vertical-align:top;'>{{ i_name }}<br /><small>({{ user_price }} руб.)</small></th>
-                {% endwith %}
-            {% endfor %}
-        </tr>
-    </table>
+    <div style='height:4rem;z-index:3;background-color:white;margin-top:3.5rem;top:3.5rem;position:sticky;position:-webkit-sticky;position:-ms-sticky;'>
+        <table class='table_main' style='display:block;max-width:unset;margin-left:0;overflow:hidden;'>
+            <tr style='vertical-align:top;'>
+                <th style='white-space:nowrap;min-width:unset;max-width:unset;width:4rem;'>Время</th>
+                {% for i_name,i_value in day.items.items %}
+                    {% with i_value.price|util_mul:discount as user_price %}
+                    <th style='word-break:normal;vertical-align:top;'>{{ i_name }}<br /><small>({{ user_price }} руб.)</small></th>
+                    {% endwith %}
+                {% endfor %}
+            </tr>
+        </table>
+    </div>
     <div style='position:relative;'>
     {# 23px = half of height #}
     <div style='display:inline-block;z-index:2;left:0;position:sticky;position:-webkit-sticky;position:-ms-sticky;float:left;'>
@@ -347,10 +349,11 @@ function process_sticky(el, side, offset) {
 (function add_scrolling_now() {
     var IS_STICKY_SUPPORTED =
         function() {
-        var el = document.createElement('a'), mStyle=el.style;
-        mStyle.cssText = "position:sticky;position:-webkit-sticky;position:-ms-sticky;";
-                                                                                       return mStyle.position.indexOf('sticky')!==-1;
-                                                                                    }();
+            var el = document.createElement('a'), mStyle=el.style;
+            mStyle.cssText = "position:sticky;position:-webkit-sticky;position:-ms-sticky;";
+            return mStyle.position.indexOf('sticky')!==-1;
+         }();
+    // position:sticky placeholder
     function my_on_scroll() {
         // get elements
         var i = 0;
@@ -374,6 +377,7 @@ function process_sticky(el, side, offset) {
             process_sticky(tables_of_day[1].children[0], 'left', 0);
         }
     };
+    // changes margin:top for different media screens
     function my_on_resize() {
         var i = 0;
         var elements = document.getElementsByClassName('day_timetable');
@@ -391,7 +395,7 @@ function process_sticky(el, side, offset) {
             }
             for (i = 0; i < elements.length; i++) {
                 elements[i].style['top'] = '-3.5rem';
-                var top_table = elements[i].getElementsByTagName('table')[0];
+                var top_table = elements[i].children[0];
                 top_table.style['margin-top'] = '3.5rem';
                 if (true == IS_STICKY_SUPPORTED) {
                     top_table.style['top'] = '3.5rem';
@@ -409,7 +413,7 @@ function process_sticky(el, side, offset) {
             }
             for (i = 0; i < elements.length; i++) {
                 elements[i].style['top'] = '0';
-                var top_table = elements[i].getElementsByTagName('table')[0];
+                var top_table = elements[i].children[0];
                 top_table.style['margin-top'] = '0';
                 if (true == IS_STICKY_SUPPORTED) {
                     top_table.style['top'] = '0';
@@ -419,6 +423,20 @@ function process_sticky(el, side, offset) {
         if (false == IS_STICKY_SUPPORTED) {
             my_on_scroll();
         }
+    };
+    var cell_tables = document.getElementsByClassName('table_main');
+    // sync cells and machines scroll
+    function sync_scroll(ev) {
+        var target = ev.target;
+        target.parentNode.parentNode.children[0].children[0].scrollLeft = target.scrollLeft;
+        for (var i = 0; i < cell_tables.length; i++) {
+            if (cell_tables[i] != target) {
+                cell_tables[i].scrollLeft = target.scrollLeft;
+            }
+        }
+    };
+    for (var i = 0; i < cell_tables.length; i++) {
+        cell_tables[i].addEventListener('scroll', sync_scroll, false);
     }
     if (false == IS_STICKY_SUPPORTED) {
         window.addEventListener('scroll', my_on_scroll, false);
