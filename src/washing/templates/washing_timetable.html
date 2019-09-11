@@ -30,7 +30,7 @@
 {% block service_item_single_day %}
     <div style='display:inline-block;position:relative;top:-3.5rem;max-width:100%;' class='day_timetable'>
     {# Print machines #}
-    <div style='height:4rem;z-index:3;background-color:white;margin-top:3.5rem;top:3.5rem;position:sticky;position:-webkit-sticky;position:-ms-sticky;'>
+    <div style='z-index:3;background-color:white;margin-top:3.5rem;top:3.5rem;position:sticky;position:-webkit-sticky;position:-ms-sticky;'>
         <table class='table_main' style='display:block;max-width:unset;margin-left:0;overflow:hidden;'>
             <tr style='vertical-align:top;'>
                 <th style='white-space:nowrap;min-width:unset;max-width:unset;width:4rem;'>Время</th>
@@ -48,7 +48,7 @@
         <table class='table_aside' style='background-color:white;top:-23px;width:4rem;position:relative'>
             {# hidden, but same label with same font, to ajust width #}
             <tr style='line-height:0 !important;visibility:hidden;height:0px;'>
-                <th>Время</th>
+                <th style='width:4rem;'>Время</th>
             </td>
             <tr style='vertical-align:center;'>
                 <td>{% if forloop.counter != 1 %}{{ day.timetable.0.start|date:'H:i' }}{% endif %}</td>
