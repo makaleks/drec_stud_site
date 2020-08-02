@@ -5,7 +5,7 @@ Django==2.2.5
 gunicorn==19.7.1
 
 # PostgreSQL library
-psycopg2==2.8.5
+psycopg2==2.7.3
 
 # Social network authorization
 social-auth-app-django==2.1.0
