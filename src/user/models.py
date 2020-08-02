@@ -32,7 +32,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     group_number    = models.CharField(max_length = 7, blank = False, null = False, verbose_name = 'Номер группы')
     room_number     = models.CharField(max_length = 7, blank = True, null = True, verbose_name = 'Номер комнаты')
     account         = models.DecimalField(default = 0, max_digits = 7, decimal_places = 2, blank = False, null = False, verbose_name = 'Счёт')
-    avatar_url      = models.URLField(null = True, blank = True, verbose_name = 'URL аватарки')
+    avatar_url      = models.URLField(max_length = 300, null = True, blank = True, verbose_name = 'URL аватарки')
     # Two 'blank' (unrequired) values can`t be unique
     email           = models.CharField(default = '', max_length = 64, blank = True, null = False, unique = False, verbose_name = 'Почта')
     USERNAME_FIELD  = 'account_id'
@@ -163,7 +163,7 @@ class Faculty(models.Model):
     name  = models.CharField(max_length = 8, blank = False, null = False, verbose_name = 'Имя (кратко)')
     groups = models.CharField(max_length = 128, blank = False, null = False, verbose_name = 'Группы:\',\'-разделитель,\'_\'-любое число')
     def is_group_in_faculty(self, s):
-        if s is None or s is '':
+        if s is None or s == '':
             return False
         patterns = [re.escape(s).replace('_', '[0-9]') for s in self.groups.split(',')]
 

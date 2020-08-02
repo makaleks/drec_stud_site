@@ -18,7 +18,17 @@ def load_user (uid, backend, response = {}, **kwargs):
     if isinstance(backend, VKOAuth2):
         url = response['photo_100']
         if not user.avatar_url or user.avatar_url != url:
-            user.avatar_url = url
+            if len(url) > User._meta.get_field('avatar_url').max_length:
+                logger.warning(
+                    'avatar url is too long (max={}, got={})'.format(
+                        User._meta.get_field('avatar_url').max_length,
+                        len(url)
+                    ),
+                    extra={'user': user.get_full_name()}
+                )
+                user.avatar_url = ''
+            else:
+                user.avatar_url = url
             user.save(update_fields=['avatar_url'])
     logger.info('logged in from VK', extra={'user': user.get_full_name()})
     return {'user': user}
