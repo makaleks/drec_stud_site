@@ -25,7 +25,7 @@ This template adds blocks:
         {% if service.responsible_user %}
             {% if user.is_authenticated %}
                 <p>
-                    Ответственный: <label style='text-decoration:underline;color:blue;' for='modal_userinfo_check' onclick='showuserinfo("{{ service.responsible_user.get_full_name }}", "{{ service.responsible_user.account_id }}", "{{ service.responsible_user.phone_number }}", "{{ service.responsible_user.email }}");'>{{ service.responsible_user.get_full_name }} ({% if service.responsible_room %}комната {{ service.responsible_room }}, {% endif %}группа {{ service.responsible_user.group_number }})</label>
+                    Ответственный: <label style='text-decoration:underline;color:blue;' for='modal_userinfo_check' onclick='showuserinfo("{{ service.responsible_user.get_full_name }}", "{{ service.responsible_user.account_id|default_if_none:"" }}", "{{ service.responsible_user.phone_number|default_if_none:"" }}", "{{ service.responsible_user.email|default_if_none:"" }}");'>{{ service.responsible_user.get_full_name }} ({% if service.responsible_room %}комната {{ service.responsible_room }}, {% endif %}группа {{ service.responsible_user.group_number }})</label>
                 </p>
             {% else %}
                 <p>
