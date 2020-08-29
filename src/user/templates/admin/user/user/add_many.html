@@ -237,10 +237,10 @@ td {
 <script type='text/javascript' src='{% static "web_copy/vk_openapi/openapi-573.js" %}'></script>
 <script type='text/javascript'>
 window.onload = function() {
-    VK.version = 573;
+    VK.version = {{ VK_API_VERSION }};
     VK.init({
         apiId: {{ social.vk.key }},
-        apiVersion: 573
+        apiVersion: {{ VK_API_VERSION }}
     });
     function check_and_convert_account(account_list_raw, on_success) {
         var VK_ERROR_REQUESTS_OVERFLOW = 6;
@@ -292,7 +292,7 @@ window.onload = function() {
                 var me = this.myExtra.me;
                 me = me.bind({myExtra: {list: account_list, raw: account_list_raw, me: me}});
                 // 1 second
-                setTimeout(VK.Api.call, 1000, 'users.get', {user_ids: account_list, v: "573"}, me); 
+                setTimeout(VK.Api.call, 1000, 'users.get', {user_ids: account_list, v: "{{ VK_API_VERSION }}"}, me); 
             }
             else {
                 var block_size = 10;
@@ -313,7 +313,7 @@ window.onload = function() {
                             var me = this.myExtra.me;
                             me = me.bind({myExtra: {list: account_block, raw: account_block_raw, me: me}});
                             // 1 second
-                            setTimeout(VK.Api.call, 1000, 'users.get', {user_ids: account_block, v: "573"}, me); 
+                            setTimeout(VK.Api.call, 1000, 'users.get', {user_ids: account_block, v: "{{ VK_API_VERSION }}"}, me); 
                         }
                         else {
                             //console.log('Vk error:');
@@ -330,7 +330,7 @@ window.onload = function() {
                                         var me = this.myExtra.me;
                                         me = me.bind({myExtra: {list: account_single, raw: account_single_raw, me: me}});
                                         // 1 second
-                                        setTimeout(VK.Api.call, 1000, 'users.get', {user_ids: account_single, v: "573"}, me); 
+                                        setTimeout(VK.Api.call, 1000, 'users.get', {user_ids: account_single, v: "{{ VK_API_VERSION }}"}, me); 
                                     }
                                     else {
                                         to_ret[account_single_raw] = null;
@@ -340,12 +340,12 @@ window.onload = function() {
                                     on_success(to_ret);
                                 }
                                 callback_single = callback_single.bind({myExtra: {list: account_block[j], raw: account_block_raw[j], me: callback_single}});
-                                VK.Api.call('users.get', {user_ids: account_block[j], v: "573"}, callback_single);
+                                VK.Api.call('users.get', {user_ids: account_block[j], v: "{{ VK_API_VERSION }}"}, callback_single);
                             }
                         }
                     }
                     callback_block = callback_block.bind({myExtra: {list: account_block, raw: account_block_raw, me: callback_block}});
-                    VK.Api.call('users.get', {user_ids: account_block, v: "573"}, callback_block);
+                    VK.Api.call('users.get', {user_ids: account_block, v: "{{ VK_API_VERSION }}"}, callback_block);
                 }
             }
         }
@@ -353,7 +353,7 @@ window.onload = function() {
         //console.log('VK global start');
         //console.log('before:');
         //console.log(callback_full.myExtra);
-        VK.Api.call('users.get', {user_ids: account_list, v: "573"}, callback_full);
+        VK.Api.call('users.get', {user_ids: account_list, v: "{{ VK_API_VERSION }}"}, callback_full);
         return 0;
     }
 

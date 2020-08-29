@@ -6,10 +6,10 @@
             var request = null;
         window.onload = function() {
             // VK init
-            VK.version = 573;
+            VK.version = {{ VK_API_VERSION }};
             VK.init({
                 apiId: {{ social.vk.key }},
-                apiVersion: 573
+                apiVersion: {{ VK_API_VERSION }}
             });
             // Start independent utility
             function add_checkbox_callback(checkbox, callback) {
@@ -77,7 +77,7 @@
                             account_name = account_name.substr(2);
                     }
                     // End remove dust
-                    VK.Api.call('users.get', {user_ids: account_name, fields: "photo_100", v: "5.73"}, function(r) {
+                    VK.Api.call('users.get', {user_ids: account_name, fields: "photo_100", v: "{{ VK_API_VERSION }}"}, function(r) {
                         if(r.response) {
                             var resp = r.response[0];
                             //uid_backup = resp.uid;

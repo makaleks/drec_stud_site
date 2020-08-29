@@ -255,6 +255,14 @@ SOCIAL_AUTH_SANITIZE_REDIRECTS = False
 # So social-auth will not set redirect-url with post
 # needs in nginx server settings: 'proxy_set_header Host $host;'
 USE_X_FORWARDED_HOST = True
+# Vk requires to mention API used: https://vk.com/dev/version_update
+# Vk api version becomes upsupported every 2 years:
+# https://vk.com/dev/constant_version_updates
+# We use api very weakly, it seems that no other change will be required
+# See version history to update the following setting:
+# https://vk.com/dev/versions
+# Also be ready to update static/web_copy/vk_openapi/openapi-X.js
+VK_API_VERSION = '5.122'
 
 FILE_UPLOAD_PERMISSIONS = 0o644
 
