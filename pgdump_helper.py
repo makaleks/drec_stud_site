@@ -30,16 +30,15 @@ def main(argv):
                 sys.exit('File "{0}" does not exist!'.format(args.file))
             else:
                 args.file = l[0]
-        pswd = getpass.getpass(prompt = 'Enter \'postgres\' password: ')
-        if pswd:
-            pswd = '-p {0}'.format(pswd)
+        # pswd = getpass.getpass(prompt = 'Enter \'postgres\' password: ')
+        pswd = 'postgres'
         try:
-            os.system('dropdb -U postgres {0} drec_stud_site'.format(pswd))
+            os.system('PGPASSWORD={0} dropdb --host postgres -U postgres drec_stud_site'.format(pswd))
         except:
             pass
-        command_str = 'createdb -U postgres {0} -T template0 drec_stud_site\n'.format(pswd)
-        command_str += 'psql -U postgres {0} -d drec_stud_site < {1}\n'.format(pswd, args.file)
-        command_str += 'psql -U postgres {0} -d drec_stud_site -c "GRANT ALL PRIVILEGES ON DATABASE drec_stud_site TO drec_stud_site_admin"'.format(pswd)
+        command_str = 'PGPASSWORD={0} createdb --host postgres -U postgres -T template0 drec_stud_site\n'.format(pswd)
+        command_str += 'PGPASSWORD={0} psql --host postgres -U postgres -d drec_stud_site < {1}\n'.format(pswd, args.file)
+        command_str += 'PGPASSWORD={0} psql --host postgres -U postgres -d drec_stud_site -c "GRANT ALL PRIVILEGES ON DATABASE drec_stud_site TO drec_stud_site_admin"'.format(pswd)
     else:
         command_str = 'pg_dump -U drec_stud_site_admin drec_stud_site > {0}'.format(args.file)
         

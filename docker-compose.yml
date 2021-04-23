@@ -1,0 +1,33 @@
+version: '3'
+services:
+  app:
+    build:
+      context: .
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: postgres
+    expose:
+      - 5432
+    ports:
+    - 54325:5432
+    volumes:
+    - ./sql:/docker-entrypoint-initdb.d:ro
+    - pg_data:/var/lib/postgresql
+
+  nginx:
+    image: nginx
+    volumes:
+    - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    - ./media:/app/media/:ro
+    - ./collected_static:/app/collected_static:ro
+    depends_on:
+      - app
+    ports:
+      - 80:80
+
+volumes:
+  pg_data:
