@@ -9,5 +9,5 @@ RUN pip install -r requirements.txt
 
 WORKDIR /app
 COPY . .
-RUN chmod +x ./docker_run.sh
-ENTRYPOINT ["./docker_run.sh"]
+RUN chmod +x ./entrypoint.sh
+ENTRYPOINT ["./scripts/wait-for-it.sh", "postgres:5432", "--", "./entrypoint.sh"]

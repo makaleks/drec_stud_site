@@ -32,5 +32,17 @@ services:
       - 80:80
     restart: always
 
+  database_backup_service:
+    image: postgres
+    depends_on:
+      - postgres
+    restart: always
+    volumes:
+    - ./db_backups:/backups
+    - ./scripts:/scripts/
+    environment:
+      BACKUP_DIR: /backups/
+    entrypoint: ["/scripts/wait-for-it.sh", "postgres:5432", "--", "/scripts/indocker_backup_db.sh"]
+
 volumes:
   pg_data:
