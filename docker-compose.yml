@@ -5,6 +5,7 @@ services:
       context: .
     depends_on:
       - postgres
+    restart: always
 
   postgres:
     image: postgres
@@ -17,6 +18,7 @@ services:
     volumes:
     - ./sql:/docker-entrypoint-initdb.d:ro
     - pg_data:/var/lib/postgresql
+    restart: always
 
   nginx:
     image: nginx
@@ -28,6 +30,7 @@ services:
       - app
     ports:
       - 80:80
+    restart: always
 
 volumes:
   pg_data:
