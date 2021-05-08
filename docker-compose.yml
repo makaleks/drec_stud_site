@@ -53,5 +53,32 @@ services:
       # - BACKUP_KEEP_MONTHS=6
       - HEALTHCHECK_PORT=8080
 
+  redis:
+    image: redis
+    volumes:
+    - redis_data:/data
+    ports:
+    - 6379:6379
+    expose:
+      - 6379
+    restart: always
+
+  vk_bot:
+    build:
+      context: vk_bot/
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+    - ./scripts:/scripts
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_DB=drec_stud_site
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    restart: always
+    entrypoint: ["/scripts/wait-for-it.sh", "redis:6379", "--", "/app/entrypoint.sh"]
+
 volumes:
   pg_data:
+  redis_data:
