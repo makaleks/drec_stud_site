@@ -1,0 +1,23 @@
+/* NEWS */
+.cutted
+    display: block
+
+.full
+    display: none
+    padding-bottom: 1em
+
+.full>label,
+.cutted>label
+    display: block
+
+.shownews:not(:checked)
+    ~.cutted
+        padding-bottom: 1em
+    ~.full
+        display: none !important
+
+.shownews:checked
+    ~.cutted>label
+        display: none !important
+    ~.full
+        display: block

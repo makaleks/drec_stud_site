@@ -1,0 +1,22 @@
+This commands were used to setup nearly fresh environment on CentOS 6 (where all standard packages and the init system are old)
+
+Many (or all of them) may not work, but they must be saved anyhow
+
+# Postgres
+sudo rpm -Uvh https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-6-x86_64/pgdg-centos10-10-1.noarch.rpm¬
+sudo yum install postgresql10 postgresql10-server¬
+sudo service postgresql-10 initdb
+sudo vim /var/lib/pgsql/10/data/pg_hba.conf
+sudo chkconfig postgresql-10 on
+sudo service postgresql-10 restart
+sudo passwd -d postgres¬
+su postgres
+psql -U postgres
+
+# Python
+sudo yum install -y https://centos6.iuscommunity.org/ius-release.rpm
+yum list python*
+sudo yum install python3.6u python3.6u-pip
+# required for some packages
+sudo yum install python36u-devel.x86_64
+

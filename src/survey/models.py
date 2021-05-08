@@ -2,7 +2,6 @@
 from django.db import models
 from django.conf import settings
 from django.urls import reverse
-from django.utils import timezone
 import json
 import datetime
 import openpyxl
@@ -26,10 +25,10 @@ class Survey(models.Model):
     def __str__(self):
         return self.title
     def is_started():
-        return started and started > timezone.now()
+        return started and started > datetime.datetime.now()
     def is_finished():
         return started and finished
-    def start(self, date_start = timezone.now(), date_end = None):
+    def start(self, date_start = datetime.datetime.now(), date_end = None):
         self.started = start
         self.finished = end
         self.save(update_fields=['started', 'finished'])
@@ -136,10 +135,11 @@ class Survey(models.Model):
         ws.append(['Анонимный', 'Да' if self.is_anonymous else 'Нет'])
         ws.append(['Начало опроса', self.started.date()])
         ws.append(['Окончание опроса', self.finished.date()])
-        if datetime.datetime.now() < self.finished:
-            ws.append(['Дней осталось', (self.finished - datetime.datetime.now()).days])
+        now = datetime.datetime.now()
+        if now < self.finished:
+            ws.append(['Дней осталось', (self.finished - now).days])
         ws.append(['Ответов собрано', self.answers.count()])
-        ws.append(['Последнее обновление', timezone.now()])
+        ws.append(['Последнее обновление', now])
 
         answers = {}
 
@@ -279,7 +279,7 @@ class Survey(models.Model):
                 pos = _get_pos(col, row)
                 key = layout[i]['name']
                 str_value = answ_value[key] if key in answ_value else '-'
-                ws[pos].value = str_value
+                ws[pos].value = str(str_value)
                 ws[pos].alignment = openpyxl.styles.Alignment(wrapText = True)
                 col += 1
             row += 1

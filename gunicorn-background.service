@@ -1,3 +1,9 @@
+# Put me at /etc/systemd/system/ (see for your distributive),
+# replace User and paths at ExecStart
+# and run:
+# $ sudo systemctl enable gunicorn-background.service
+# $ sudo systemctl start gunicorn-background.service
+
 [Unit]
 Description=drec-stud
 After=nginx postgresql

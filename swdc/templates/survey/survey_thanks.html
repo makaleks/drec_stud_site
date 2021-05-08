@@ -1,0 +1,42 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<section class='card'>
+    <div>
+        {% if finished %}
+            Опрос уже окончен! Новые ответы не принимаются...
+        {% elif started %}
+            {% if status == 'created' %}
+                Ответ записан!<br />Спасибо за участие, {{ user.get_short_name }}
+            {% elif status == 'edited' %}
+                Ответ перезаписан!
+            {% else %}
+                Нельзя отправить ещё один ответ!
+            {% endif %}
+        {% else %}
+            Этот опрос ещё не начался! И как только Вы сюда попали...
+        {% endif %}
+        <br />Переход к списку опросов...</div>
+    <div id='timer'></div>
+</section>
+{% endblock %}
+
+{% block body_extras %}
+<script>
+    function startTimeoutSec(seconds) {
+        timer = document.getElementById('timer');
+        timer.innerHTML = seconds;
+        var intervalId = setInterval(function() {
+            if (seconds > 1) {
+                seconds--;
+                timer.innerHTML = seconds;
+            }
+            else {
+                clearInterval(intervalId);
+                window.location.replace('/surveys/');
+            }
+        }, 1000);
+    }
+    startTimeoutSec(3);
+</script>
+{% endblock %}

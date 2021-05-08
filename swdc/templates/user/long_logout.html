@@ -1,0 +1,35 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<section class='card'>
+    {% if user.is_authenticated %}
+        {% if logout_text %}
+            <p>{{ logout_text }}</p>
+        {% endif %}
+        <p>Выход через...</p>
+        <div id='timer'></div>
+    {% endif %}
+</section>
+{% endblock %}
+
+{% block body_extras %}
+{% if user.is_authenticated %}
+<script>
+    function startTimeoutSec(seconds) {
+        timer = document.getElementById('timer');
+        timer.innerHTML = seconds;
+        var intervalId = setInterval(function() {
+            if (seconds > 1) {
+                seconds--;
+                timer.innerHTML = seconds;
+            }
+            else {
+                clearInterval(intervalId);
+                window.location.replace('/logout{% if next %}?next={{ next }}{% endif %}');
+            }
+        }, 1000);
+    }
+    startTimeoutSec({{ timeout }});
+</script>
+{% endif %}
+{% endblock %}

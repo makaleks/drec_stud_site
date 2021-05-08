@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
-import os
+import os, sys
 from importlib import util
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -42,14 +42,28 @@ INSTALLED_APPS = [
     'background_task',
     # disable to save media on delete/update
     'django_cleanup',
+    # same from cli, usage: ./manage.py cleanup_unused_media -e 'admin_documents/*'
+    'django_unused_media',
     'adminsortable2',
     'utils',
+    'menu_entry',
     'user',
     'news',
     'note',
     'comment',
     'service',
     'survey',
+    'service_base',
+    'service_item',
+    'service_price',
+    'washing',
+    'service_document',
+    'meeting_room',
+]
+
+SERVICE_CHILDREN = [
+    'washing',
+    'meeting_room',
 ]
 
 MIDDLEWARE = [
@@ -92,11 +106,16 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'drec_stud_site',
-        'USER': 'drec_stud_site_admin',
-        'HOST': 'localhost',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'postgres',
         'PORT': '',
     }
 }
+# 'ENGINE' is not supported in DATABASES['default']['TEST']
+if 'test' in sys.argv:
+    DATABASES['default'] = {'ENGINE': 'django.db.backends.sqlite3'}
+    PASSWORD_HASHERS = ('django.contrib.auth.hashers.MD5PasswordHasher',)
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
@@ -145,10 +164,15 @@ SURVEY_SHEET_ROOT = os.path.join(MEDIA_ROOT, 'surveys')
 
 AUTH_USER_MODEL = 'user.User'
 
+# 300*(name*3 + group + account + room + email + phone + some_dust*2)
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 3000
+
 # Datetime formats
 FORMAT_MODULE_PATH = [
     'drec_stud_site.formats',
 ]
+
+### START SETTING_ADDITIONS
 
 spec = util.spec_from_file_location('setting_additions', os.path.join(PROJECT_ROOT, 'setting_additions.py'))
 module = util.module_from_spec(spec)
@@ -185,6 +209,14 @@ try:
     WEBMASTER_TAG_GOOGLE = module.WEBMASTER_TAG_GOOGLE
 except AttributeError:
     WEBMASTER_TAG_GOOGLE = ''
+
+# Optional strings from settings_additions
+
+SITE_TAB_NAME = 'Сайт студсовета'
+if hasattr(module, 'SITE_TAB_NAME'):
+    SITE_TAB_NAME = module.SITE_TAB_NAME
+
+### END SETTING_ADDITIONS
 
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.vk.VKOAuth2',
@@ -224,6 +256,14 @@ SOCIAL_AUTH_SANITIZE_REDIRECTS = False
 # So social-auth will not set redirect-url with post
 # needs in nginx server settings: 'proxy_set_header Host $host;'
 USE_X_FORWARDED_HOST = True
+# Vk requires to mention API used: https://vk.com/dev/version_update
+# Vk api version becomes upsupported every 2 years:
+# https://vk.com/dev/constant_version_updates
+# We use api very weakly, it seems that no other change will be required
+# See version history to update the following setting:
+# https://vk.com/dev/versions
+# Also be ready to update static/web_copy/vk_openapi/openapi-X.js
+VK_API_VERSION = '5.122'
 
 FILE_UPLOAD_PERMISSIONS = 0o644
 
@@ -273,6 +313,13 @@ LOGGING = {
             'filename': os.path.join(PROJECT_ROOT, 'logs/payment_events.log'),
             'formatter': 'simple',
         },
+        'file_lock_api': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            #'formatter': 'user_formatter',
+            'filename': os.path.join(PROJECT_ROOT, 'logs/lock_api_events.log'),
+            'formatter': 'simple',
+        },
         'console': {
             'level': 'INFO',
             'filters': ['require_debug_true'],
@@ -310,6 +357,11 @@ LOGGING = {
         },
         'payment_logs': {
             'handlers': ['file_payment'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'lock_api_logs': {
+            'handlers': ['file_lock_api'],
             'level': 'INFO',
             'propagate': True,
         },

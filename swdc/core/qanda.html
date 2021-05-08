@@ -1,62 +1,77 @@
-{% extends 'сore/base.html' %}
+{% extends 'core/base.html' %}
 {% load utils_extra_filters %}
 {% block content %}
 <section class='card'>
+    <h2>{{ question.title }} Заголовок вопроса</h2>
     <h3>{{ question.text }} Текст вопроса</h3>
-    <p>Вопрос задан {{ question.date }} 01.01.1999 </p>
-    {% if question.author.avatar_url %}
-        <img src='{{ question.author.avatar_url }}' class='qa-avatar' />
+    <p>Вопрос задан {{ question.created }}</p>
+    {% if question.is_public %}
+        {% if question.author.avatar_url %}
+            <img src='{{ question.author.avatar_url }}' class='qa-avatar' />
+        {% else %}
+            <img src='{{ STATIC_URL }}img/vk.svg' class='qa-avatar' />
+        {% endif %}
+        <p class='inline'>{{ question.author.get_full_name }} <a href='{{ question.get_absolute_url }}'>Ссылка</a></p>
     {% else %}
         <img src='{{ STATIC_URL }}img/vk.svg' class='qa-avatar' />
+        <p class='inline'>Аноним <a href='{{ question.get_absolute_url }}'>Ссылка</a></p>
     {% endif %}
-    <p class='inline'>{{ question.author.get_full_name }} ФИО</p>
     <hr />
+</section>
 
-    {% for comment in comments %}
-        <div class='comment {% if comment.author.is_staff %}qa-with-border{% endif %}' id='CT{{ commemnt.number }}'>
-            {% if comment.author.avatar_url %}
-                <img src='{{ comment.author.avatar_url }}' class='qa-avatar' />
+{% for answer in question.get_answers %}
+    <section class='card'>
+        <div class='comment {% if answer.author.is_staff %}qa-with-border{% endif %}' id='CT{{ answer.id }}'>s
+            {% if answer.author.avatar_url %}
+                <img src='{{ answer.author.avatar_url }}' class='qa-avatar' />
             {% else %}
                 <img src='{{ STATIC_URL }}img/vk.svg' class='qa-avatar' />
             {% endif %}
             <div class='qa-comment-text'>
-                <span>{{ comment.author.get_full_name }} ФИО</span>
-                {% if comment.answer.number %}
+                <span>{{ answer.author.get_full_name }} ФИО</span>
+                {% if answer|util_is_comment_to_comment %}
                     <p>Ответ <a href='#CT{{ comment.answer.number }}'>{{ comment.answer.get_full_name }}</a></p>
                 {% endif %}
-                <p>{{ comment.text }}</p>
-                <a data-comment-num='{{ comment.number }} 123' href='#' name='answer' class='block'>Ответить</a>
-                <small>Написан {{ comment.date }}</small>
-                {% if comment.author.id == user.id %}
-                    <a href='/notes/student_council/delete?id={{ comment.id }}'>Удалить</a>
+                <p>{{ answer.text }}</p>
+                <a data-comment-num='{{ answer.id }} 123' href='#{{ answer.id }}' name='answer' class='block'>
+                    {% if answer.author == request.user %}
+                        Изменить
+                    {% else %}
+                        Ответить
+                    {% endif %}
+                </a>
+                <a href='{{ question.get_absolute_url }}#{{ answer.id }}'>Ссылка</a>
+                <br/>
+                <small>Изменён {{ answer.edited }}</small>
+                {% if answer.author == request.user %}
+                    <a href='delete?id={{ answer.id }}'>Удалить</a>
                 {% endif %}
-                <hr>
+                <hr />
             </div>
         </div>
-    {% endfor %}
-</section>
+    </section>
+{% endfor %}
 <form action='' method='post' id='comment'>
     {% csrf_token %}
     <div class='card'>
         <input type='checkbox' class='hidden' id='qa-isanswer'>
-        <input type='text' class='hissen' name='answerto' id='answerto'>
-        <p id='qa-answerval'><label for='qa-isanswer' onclick='document.getElementById("answerto").value="";'>X</label> Ответ <a id='qa-answer-name'></a></p>
-        <textarea rows=3 required></textarea>
-        <input required type='checkbox' value='Я проверил текст на ошибки'>
+        <input type='text' class='hidden' name='answerto' id='answerto'>
+        <p id='qa-answerval'><label for='qa-isanswer' onclick='document.getElementById("answerto").value="";'>[X]</label> => <a id='qa-answer-name'>{{ question.author.get_full_name }}</a></p>
+        <textarea rows=3 name='text' required></textarea>
+        <label><input required type='checkbox' >Я проверил текст на ошибки</label>
         <input type='submit' value='Отправить' />
     </div>
 </form>
 {% endblock %}
 {% block body_extras %}
 <script>
-
-window.addEventListener('load', function() {
+    window.addEventListener('load', function() {
         var answers = document.getElementsByName('answer');
-
         for (var item of answers) {
-            item.addEventListener('click', function() {
-                document.getElementById('qa-answer-name').innerText = item.parentNode.getElementsByTagName('span')[0].innerText;
-                document.getElementById('answerto').value = item.getAttribute('data-comment-num');
+            item.addEventListener('click', function(ev) {
+                var elem = ev.currentTarget;
+                document.getElementById('qa-answer-name').innerText = elem.parentNode.getElementsByTagName('span')[0].innerText;
+                document.getElementById('answerto').value = elem.getAttribute('data-comment-num');
                 document.getElementById('qa-isanswer').checked = true;
             });
         }

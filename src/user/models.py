@@ -2,14 +2,17 @@
 from django.db import models
 # Uncomment to enable #passwordAuth
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
-from django.utils import timezone
 from django.db.models import Q
 from django.core.exceptions import ValidationError
 from django.conf import settings
+
 from service.models import Service
 from survey.models import Survey, Answer
-from utils.validators import *
 from utils.utils import check_unique, get_id_by_url_vk
+
+import datetime
+import re
+
 from .managers import UserManager
 
 # Create your models here.
@@ -26,9 +29,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     # Two 'blank' (unrequired) values can`t be unique
     phone_number    = models.CharField(max_length = 20, default = '', blank = True, null = True, unique = False, verbose_name = 'Контактный номер')
     account_id      = models.CharField(max_length = 64, blank = False, null = False, unique = True, verbose_name = 'Аккаунт')
-    group_number    = models.CharField(max_length = 4, blank = False, null = False, verbose_name = 'Номер группы')
+    group_number    = models.CharField(max_length = 7, blank = False, null = False, verbose_name = 'Номер группы')
+    room_number     = models.CharField(max_length = 7, blank = True, null = True, verbose_name = 'Номер комнаты')
     account         = models.DecimalField(default = 0, max_digits = 7, decimal_places = 2, blank = False, null = False, verbose_name = 'Счёт')
-    avatar_url      = models.URLField(null = True, blank = True, verbose_name = 'URL аватарки')
+    avatar_url      = models.URLField(max_length = 300, null = True, blank = True, verbose_name = 'URL аватарки')
     # Two 'blank' (unrequired) values can`t be unique
     email           = models.CharField(default = '', max_length = 64, blank = True, null = False, unique = False, verbose_name = 'Почта')
     USERNAME_FIELD  = 'account_id'
@@ -71,49 +75,80 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return '{0} (id={1})'.format(self.get_full_name(), self.id)
     def get_surveys_to_pass(self):
-        now = timezone.now()
+        now = datetime.datetime.now()
         passed = self.answers.filter(Q(survey__started__lte = now) & Q(survey__finished__gt = now)).values_list('survey__id', flat = True)
         actual = Survey.objects.filter(Q(started__lte = now) & Q(finished__gt = now))
         return actual.exclude(id__in = passed).count()
         #return Survey.objects.filter(
-    def clean(self):
+    def get_all_errors(self, skip_account_check = False):
+        self.first_name = self.first_name.strip()
+        self.last_name = self.last_name.strip()
+        if self.patronymic_name:
+            self.patronymic_name = self.patronymic_name.strip()
+        if self.phone_number:
+            self.phone_number = self.phone_number.strip()
+        if self.email:
+            self.email = self.email.strip()
+        self.account_id = self.account_id.strip()
+        self.group_number = self.group_number.strip()
+        if self.room_number:
+            self.room_number = self.room_number.strip()
+        if self.card_uid:
+            self.card_uid = self.card_uid.strip()
+        # In other case, Faculty import will fail
+        from utils.validators import is_valid_name, is_valid_email, is_valid_group, is_valid_group, is_valid_phone
+
+        errors = {}
+        def append_error(key, s):
+            if key in errors:
+                errors[key] = errors[key] + '\n' + s
+            else:
+                errors.update({key: s})
+
         # Format of phone_number (optional)
         if self.phone_number and is_valid_phone(self.phone_number) is False:
-            raise ValidationError({'phone_number': 'Неверный формат телефонного номера'})
+            append_error('phone_number', 'Неверный формат телефонного номера')
         # Format of name
         if is_valid_name(self.last_name) is False:
-            raise ValidationError({'last_name': 'Неверный формат фамилии'})
+            append_error('last_name', 'Неверный формат фамилии')
         if is_valid_name(self.first_name) is False:
-            raise ValidationError({'first_name': 'Неверный формат имени'})
+            append_error('first_name', 'Неверный формат имени')
         if self.patronymic_name and is_valid_name(self.patronymic_name) is False:
-            raise ValidationError({'patronymic_name': 'Неверный формат отчества'})
+            append_error('patronymic_name', 'Неверный формат отчества')
         # Format of group
         if is_valid_group(self.group_number) is False:
-            raise ValidationError({'group_number': 'Неверный формат группы'})
+            append_error('group_number', 'Неверный формат группы')
         # Format of email (optional)
         if self.email and (is_valid_email(self.email) is False):
-            raise ValidationError({'email': 'Неверный формат почты'})
+            append_error('email', 'Неверный формат почты')
 
         # Unique phone
         if self.phone_number:
             user = check_unique(User, 'phone_number', self.phone_number)
             if user and user.pk != self.pk:
-                raise ValidationError({'phone_number': 'Этот номер телефона уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number)})
+                append_error('phone_number', 'Этот номер телефона уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number))
         # Unique and valid account_id
-        id_num = get_id_by_url_vk(self.account_id)
-        if not settings.IS_ID_RECOGNITION_BROKEN_VK:
+        if not skip_account_check and not settings.IS_ID_RECOGNITION_BROKEN_VK and not settings.IS_EMERGENCY_LOGIN_MODE:
+            id_num = get_id_by_url_vk(self.account_id)
             if not id_num:
-                raise ValidationError({'account_id': 'Не удалось получить id из социальной сети. Это точно существующий пользователь?'})
+                append_error('account_id', 'Не удалось получить id из социальной сети. Это точно существующий пользователь?')
             else:
                 self.account_id = id_num
+        elif not self.account_id.isdigit():
+            append_error('account_id', 'Аккаунт должен иметь численное представление!')
         user = check_unique(User, 'account_id', self.account_id)
         if user and user.pk != self.pk:
-            raise ValidationError({'account_id': 'Эту ссылку на аккаунт уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number)})
+            append_error('account_id', 'Эту ссылку на аккаунт уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number))
         # Unique email (optional)
         if len(self.email) != 0:
             user = check_unique(User, 'email', self.email)
             if user and user.pk != self.pk:
-                raise ValidationError({'email': 'Эту почту уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number)})
+                append_error('email', 'Эту почту уже зарегистрировал {0} из {1} группы'.format(user.get_full_name(), user.group_number))
+        return errors
+    def clean(self):
+        errors = self.get_all_errors()
+        if errors:
+            raise ValidationError(errors)
     def save(self, no_clean = False, *args, **kwargs):
         if not no_clean:
             self.full_clean()
@@ -122,3 +157,36 @@ class User(AbstractBaseUser, PermissionsMixin):
         ordering            = ['is_superuser', 'is_staff', 'group_number', 'last_name']
         verbose_name        = 'Пользователя'
         verbose_name_plural = 'Пользователи'
+
+# Be careful!
+class Faculty(models.Model):
+    name  = models.CharField(max_length = 8, blank = False, null = False, verbose_name = 'Имя (кратко)')
+    groups = models.CharField(max_length = 128, blank = False, null = False, verbose_name = 'Группы:\',\'-разделитель,\'_\'-любое число')
+    def is_group_in_faculty(self, s):
+        if s is None or s == '':
+            return False
+        patterns = [re.escape(s).replace('_', '[0-9]') for s in self.groups.split(',')]
+
+        for i in range(len(patterns)):
+            # Add possible subgroup char, like '419a' of '419b'
+            patterns[i] = '^' + patterns[i] + '\w?$'
+        for p in patterns:
+            if re.match(p, s):
+                return True
+        return False
+    def __str__(self):
+        return self.name
+    def clean(self):
+        from utils.validators import is_valid_faculty
+        if is_valid_faculty(self.groups) is False:
+            raise ValidationError({'groups': 'Неверный формат групп факультета'})
+    def save(self, *args, **kwargs):
+        # Remove whitespaces
+        self.groups.replace(' ', '')
+        # Validate
+        self.full_clean()
+        return super(Faculty, self).save(*args, **kwargs)
+    class Meta:
+        verbose_name        = 'Факультет'
+        verbose_name_plural = 'Факультеты'
+

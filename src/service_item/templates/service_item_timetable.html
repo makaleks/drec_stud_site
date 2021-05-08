@@ -1,0 +1,154 @@
+{% extends 'service_base.html' %}
+
+{% comment %}
+
+This is the base class for 'service' templates with items.
+You must to inherit it for each service type, because all your additional blocks are undefined.
+
+This template extends blocks:
+{
+  'service_additional_info'
+    => to bottom =>
+  'service_item_additional_info'
+}
+{
+  'body_extras'
+    => to bottom =>
+  'service_item_body_extras'
+}
+This template adds blocks:
+> 'service_item_additional_info_(before/after)' - define additional information after announsments, that will be seen at the top of the content.
+> 'form_attributes' - used in css formatting (TODO: replace with css-classes)
+> 'day_attributes' - used to set full_width for washing (TODO: replace with css-classes)
+> 'service_item_single_day' - set the service layout. You should understand the API (see models.py) to fill this.
+> 'service_item_extra_inputs' - adds possible additional inputs at the end of the form
+
+{% endcomment %}
+
+
+{% block service_additional_info %}
+    {% block service_item_additional_info_before %}
+    {% endblock %}
+    <section class='card'>
+        <p>Максимальное число заказов подряд (один за другим) - {{ service.max_continuous_orders }}</p>
+        {% with t_start=service.get_time_margin_start t_end=service.get_time_margin_end %}
+            <p>
+                {# TODO - look again #}
+                <table>
+                {% if t_start %}
+                    <tr>
+                        <td>{{ t_start }}</td><td> - время до заказа, чтобы прийти заранее</td>
+                    </tr>
+                {% endif %}
+                {% if t_end %}
+                    <tr>
+                        <td>{{ t_end }}</td><td> - время после заказа, чтобы забрать вещи</td>
+                    </tr>
+                {% endif %}
+                </table>
+            </p>
+        {% endwith %}
+    </section>
+    <section class='card'>
+        <h2 class='lightgray'>Объявления</h2>
+        <div>
+            <div class='card-maintext'>
+                {% if service.announcements.rendered %}
+                    {{ service.announcements.rendered }}
+                {% else %}
+                    Объявлений нет
+                {% endif %}
+            </div>
+        </div>
+    </section>
+    {% block service_item_additional_info_after %}
+    {% endblock %}
+{% endblock %}
+
+{% block service_content %}
+
+    {# Main ordering form #}
+    <form action='' method='post' {% block form_attributes %}{% endblock %}>
+        {% csrf_token %}
+        {# Timetables started #}
+        <div id='timetables'>
+            {# Main loop #}
+            {% for day in time_list %}
+                <div {% block day_attributes %}{% endblock %}>
+                    <div class='card'>
+                        {# Preview #}
+                        <input id='show_day_{{ forloop.revcounter0 }}' type='checkbox' hidden class='shownews' {% if forloop.first %}checked{% endif %}/>
+                        <div class='cutted'>
+                            <h2>{{ day.date }}</h2>
+                            {% if day.is_weekend %}
+                                <h3>Закрыто</h3>
+                            {% else %}
+                                <label class='link-underline' for='show_day_{{ forloop.revcounter0 }}'><a class='lightred'>&nbsp;Открыть&nbsp;</a></label>
+                            {% endif %}
+                        </div>
+                        {# Hidden content #}
+                        {% if not day.is_weekend %}
+                            <div class='full'>
+                                {% if day.items %}
+                                    {# To extend #}
+                                    {% block service_item_single_day %}
+                                    {% endblock %}
+                                {% else %}
+                                    <h3>Нечем пользоваться</h3>
+                                {% endif %}
+                                <br /><br />
+                                <label class='link-underline' for='show_day_{{ forloop.revcounter0 }}'><a class='lightred'>&nbsp;Скрыть&nbsp;</a></label>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        {# Timetables ended #}
+        {# Item ordering #}
+        {% if user.is_authenticated %}
+            {# Total price preview with 'position: fixed;' #}
+            <div class='card hidden' id='preresult'>
+            </div>
+            {# Orders final preview #}
+            <div class='card' id='finalresult'>
+                <p id='finaltext'>
+                    Вы ничего не выбрали
+                </p>
+                {% block service_item_extra_inputs %}
+                {% endblock %}
+                <p>
+                    <input id='show_agree' type='checkbox' class='shownews' required />
+                    <label for='show_agree'>Я прочитал(-а) и обязуюсь выполнять правила пользования</label>
+                </p>
+                <input type='hidden' name='type' value='order' />
+                <input id='finalcancel' type='button' value='Сбросить' />
+                <input id='finalsubmit' class='full' type='submit' value='Подтверждаю' />
+            </div>
+        {% else %}
+            <div class='card'>
+                <h1>Для заказа необходимо войти на сайт</h1>
+            </div>
+        {% endif %}
+    </form>
+
+{% endblock %}
+
+{% block body_extras %}
+    {% if user.is_authenticated %}
+    <script src='{{ STATIC_URL }}js/utils.js'></script>
+    <script src='{{ STATIC_URL }}js/timetable_order_preview.js'></script>
+    <script>
+        {# JS module to load preview of orders #}
+        PRICE_PREVIEW.registerCheckboxes('timetables', 'preresult', 'finaltext');
+        util_add_handler(document.getElementById('finalcancel'), 'click', PRICE_PREVIEW.resetAll);
+        {# For case of page reload: texts are cleared, but checkboxes are saved #}
+        PRICE_PREVIEW.updateTexts();
+    </script>
+    {% endif %}
+
+{% block service_item_body_extras %}
+{% endblock %}
+
+{% endblock %}
+

@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from django.views.generic.list import ListView
 from django.shortcuts import redirect
-from django.utils import timezone
 import datetime
 
 from .models import News
@@ -21,7 +20,7 @@ class NewsListView(ListView):
         news = self.request.GET.get('news')
         # Get last year=today-year
         if not years and not news:
-            now = timezone.now()
+            now = datetime.datetime.now()
             days = range(2)
             # For case 29 February
             for i in days:
@@ -64,7 +63,7 @@ class NewsListView(ListView):
         context = super(NewsListView, self).get_context_data(**kwargs)
         context['render_archive'] = self.render_archive
         context['show_hidden'] = self.show_hidden
-        context['last_year'] = timezone.now().date().year - 1
+        context['last_year'] = datetime.datetime.now().date().year - 1
         return context
 
 def archive_draw(request):

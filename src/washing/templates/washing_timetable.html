@@ -1,0 +1,451 @@
+{% extends 'service_item_timetable.html' %}
+
+{% load utils_extra_filters %}
+
+{% block service_item_additional_info_before %}
+    <section class='card'>
+        <p>
+            <b>Что&nbsp;значат&nbsp;цвета?</b>
+        </p>
+        <p class='card-maintext'>
+            <span class='preview'></span> - Этот интервал можно выбирать<br />
+            <span class='preview ended'></span> - Этот интервал уже нельзя выбирать<br />
+            <span class='preview selected'></span> - Этот интервал был кем-то выбран<br />
+            <span class='preview choisen'></span> - Этот интервал был выбран Вами<br />
+            <span class='preview started'></span> - Ваш интервал уже идёт, но его пока ещё можно отменить (лимит - {{ service.time_after_now|util_get_min_time_str }})
+        </p>
+        <p><b>Нажмите на интервал для выбора</b></p>
+    </section>
+{% endblock %}
+
+{# TODO REMOVE [id='washing'] HARDCODE! #}
+{% block form_attributes %}
+    id='washing'
+{% endblock %}
+
+{% block day_attributes %}
+    class='full-width'
+{% endblock %}
+
+{% block service_item_single_day %}
+    <div style='display:inline-block;position:relative;top:-3.5rem;max-width:100%;' class='day_timetable'>
+    {# Print machines #}
+    <div style='z-index:3;background-color:white;margin-top:3.5rem;top:3.5rem;position:sticky;position:-webkit-sticky;position:-ms-sticky;'>
+        <table class='table_main' style='display:block;max-width:unset;margin-left:0;overflow:hidden;'>
+            <tr style='vertical-align:top;'>
+                <th style='white-space:nowrap;min-width:unset;max-width:unset;width:4rem;'>Время</th>
+                {% for i_name,i_value in day.items.items %}
+                    {% with i_value.price|util_mul:discount as user_price %}
+                    <th style='word-break:normal;vertical-align:top;'>{{ i_name }}<br /><small>({{ user_price }} руб.)</small></th>
+                    {% endwith %}
+                {% endfor %}
+            </tr>
+        </table>
+    </div>
+    <div style='position:relative;'>
+    {# 23px = half of height #}
+    <div style='display:inline-block;z-index:2;left:0;position:sticky;position:-webkit-sticky;position:-ms-sticky;float:left;'>
+        <table class='table_aside' style='background-color:white;top:-23px;width:4rem;position:relative'>
+            {# hidden, but same label with same font, to ajust width #}
+            <tr style='line-height:0 !important;visibility:hidden;height:0px;'>
+                <th style='width:4rem;'>Время</th>
+            </td>
+            <tr style='vertical-align:center;'>
+                <td>{% if forloop.counter != 1 %}{{ day.timetable.0.start|date:'H:i' }}{% endif %}</td>
+            </tr>
+            {% for t in day.timetable %}
+                <tr style='vertical-align:center;'>
+                    <td>{{ t.end|date:'H:i' }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <table class='table_main' style='margin-left:4rem;display:block;max-width:unset;'>
+        <tr>
+            {# For Python dictionary that means 'get pair of key and value' #}
+            {% for i_name,i_value in day.items.items %}
+                <td>
+                    <table>
+                        {# Print cells #}
+                        {% for cell in i_value.time %}
+{# Here I break trailing spaces for nicer appeal #}
+<tr>
+    {# Closed rows or 'is_open', while time to order is finished #}
+    {% if not cell.is_open or cell.is_open and cell.is_now and cell.start|util_is_finished:service %}
+        <td style='padding:0;min-width:100px;max-width:100px;' class='ended' {% if cell.is_open %}rowspan='{{ i_value.rowspan }}'{% endif %}>
+            {% if user.is_authenticated and cell.orders %}
+                <label class='userinfo' for='modal_userinfo_check' onclick='show_orders({{ cell.orders|util_orders_to_json }});' title='Посмотреть инфо о заказавшем(-ей)'></label>
+            {% endif %}
+        </td>
+    {% else %}
+    {# If current user already ordered #}
+    {# If 'now', but still cancelable, mark with other color #}
+    <td style='padding:0;min-width:100px;max-width:100px;' rowspan='{{ i_value.rowspan }}' class={% if cell.orders and  cell.orders|util_is_current_user_order:user %}{% if cell.is_now %}'started'{% else %}'choisen'{% endif %}{% elif cell.orders %}'selected'{% endif %}>
+            {# Cancelable #}
+            {% if user.is_authenticated and cell.orders and cell.orders|util_is_current_user_order:user %}
+                <label>
+                    {% with order=cell.orders|first %}
+                        {#???{% if not cell.is_now %}???#}
+                        {% with i_value.price|util_mul:discount as user_price %}
+                        <input type='checkbox' name='cancel={{ order.id }}' data-price={% if cell.is_now %}'-{{ user_price|util_get_late_price:service }}'{% else %}'-{{ i_value.price }}'{% endif %} data-timestart='{{ cell.start.time }}' data-timeend='{{ cell.end.time }}' data-item='{{ i_name }}' data-groupsize='{{ cell.group_size }}' class='hidden'/>
+                        {% endwith %}
+                        {#{% endif %}#}
+                        <span><div>-</div></span>
+                    {% endwith %}
+                </label>
+            {# Someone else ordered #}
+            {% elif cell.orders and user.is_authenticated and cell.orders|util_is_other_user_order:user %}
+                <label class='userinfo' for='modal_userinfo_check' onclick='show_orders({{ cell.orders|util_orders_to_json }});' title='Посмотреть инфо о заказавшем(-ей)'></label>
+            {# Orderable #}
+            {% elif user.is_authenticated and not cell.orders %}
+                <label>
+                    {% with i_value.price|util_mul:discount as user_price %}
+                    <input type='checkbox' name='order={{ i_name }}&&{{ cell.start.time }}&&{{ cell.end.time }}&&{{ cell.start.date|date:'Y-m-d' }}' data-price='{{ user_price }}' data-timestart='{{ cell.start.time }}' data-timeend='{{ cell.end.time }}' data-item='{{ i_name }}' data-groupsize='{{ cell.group_size }}' class='hidden'/>
+                    {% endwith %}
+                    <span><div>+</div></span>
+                </label>
+            {% endif %}
+        </td>
+    {% endif %}
+</tr>
+    {# Cells with [rowspan != 1] require additional rows #}
+    {% if cell.is_open %}
+        {% with current_range=i_value.rowspan|util_range %}
+        {% for i in current_range %}
+            {% if not forloop.last %}
+                <tr></tr>
+            {% endif %}
+        {% endfor %}
+        {% endwith %}
+    {% endif %}
+{# Break end #}
+                        {% endfor %}
+                    </table>
+                </td>
+            {% endfor %}
+        </tr>
+    </table>
+    </div>
+    </div>
+{% endblock %}
+
+{% block service_item_body_extras %}
+
+<script src='/static/js/utils.js'></script>
+<script>
+
+{# Show orders for specified time interval #}
+
+function show_orders(json_orders) {
+    if (!(json_orders instanceof Array)) {
+        return;
+    }
+    var html = '';
+    var elem = document.getElementById('modal_userinfo_content');
+    for (var i = 0; i < json_orders.length; i++) {
+        var s = '';
+        var order = json_orders[i];
+        var time_start = '', time_end = '', uname = '', 
+            vkid = '', unumber = '', uemail = '';
+        if (order.hasOwnProperty('user')) {
+            uname = order.user['name'];
+            unumber = order.user['phone_number'];
+            vkid = order.user['account_id'];
+            uemail = order.user['email'];
+            // <h3> will be a bit later
+            s += uname;
+        }
+        if (order.hasOwnProperty('time_start') 
+            && order.hasOwnProperty('time_end')) {
+            time_start = order['time_start'], time_end = order['time_end'];
+            // <h3> will be a bit later
+            if (s)
+                s += ' ';
+            s += '(' + time_start + '-' + time_end + ')';
+        }
+        s = '<h3>' + s + '</h3>';
+
+        if (unumber !== null && unumber !== '') {
+            s += '<a href="tel:' + unumber + '">Позвонить: ' 
+                + unumber + '</a><br/>';
+        }
+        if (vkid !== null && vkid !== '') {
+            // target="_blank" means 'open in new tab/window'
+            s += '<a target="_blank" href="https://vk.me/id' + vkid 
+                + '">Написать в ВК: vk.com/id' + vkid + '</a><br/>';
+        }
+        if (uemail !== null && uemail !== '') {
+            s += '<a href="mailto:' + uemail + '">Написать на почту: ' 
+                + uemail + '</a><br />';
+        }
+        html += s;
+    }
+    elem.innerHTML = html;
+}
+
+{# Check if max_continuous_orders and, if can be broken, mark as 'closed' #}
+var onchange_reaction = function(ev) {
+    var get_input = function(row) {
+        input = row.getElementsByTagName('input')[0];
+        return input;
+    };
+    var get_td = function(row) {
+        td = row.getElementsByTagName('td')[0];
+        return td;
+    };
+    var fill_checked_total = function(arr, last_pos) {
+        var j = last_pos;
+        var num_checked = 0;
+        while (j >= 0 && arr[j]) {
+            num_checked++;
+            j--;
+        }
+        if (j != last_pos)
+            arr[j + 1] = num_checked; // first
+        arr[last_pos] = num_checked; // last
+    };
+    //console.log(ev);
+    max_num_checked = {{ service.max_continuous_orders }};
+    if (!max_num_checked)
+        return;
+    el = ev.target;
+    // checkbox -> label -> td -> tr -> tbody -> tr_list = rows
+    rows = el.parentNode.parentNode.parentNode.parentNode.children;
+    // get checked inputs
+    // set first and last array element to number of group
+    //      example: 0 1 1 1 1 0 => 0 4 1 1 4 0
+    checked_arr = [];
+    for (var i = 0; i < rows.length; i++) {
+        td = get_td(rows[i]);
+        input = get_input(rows[i]);
+        if (input) {
+            if ((input.checked && td.className == '') || td.className != '')
+                checked_arr.push(1);
+            else {
+                checked_arr.push(0);
+                if (checked_arr.length > 1 && checked_arr[checked_arr.length - 2]) 
+                    fill_checked_total(checked_arr, checked_arr.length - 2);
+            }
+        }
+        else if (rows[i].innerHTML != '') {
+            checked_arr.push(null);
+            if (checked_arr.length > 1 && checked_arr[checked_arr.length - 2]) 
+                fill_checked_total(checked_arr, checked_arr.length - 2);
+        }
+    }
+    fill_checked_total(checked_arr, checked_arr.length - 1);
+    // set 'closed' cells
+    for (var i = 0; i < checked_arr.length; i++) {
+        if (checked_arr[i] == 0) {
+            if (i != 0 
+                    && checked_arr[i - 1] >= max_num_checked)
+                checked_arr[i] = 'closed';
+            else if (i != checked_arr.length - 1
+                    && checked_arr[i + 1] >= max_num_checked)
+                checked_arr[i] = 'closed';
+            else if (i != 0 && i != checked_arr.length - 1
+                    && checked_arr[i - 1] && checked_arr[i + 1]
+                    && checked_arr[i - 1] + checked_arr[i + 1] + 1 
+                            >= max_num_checked)
+                checked_arr[i] = 'closed';
+        }
+    }
+    // finally, set 'closed' style
+    for (var i = 0, j = 0; i < rows.length && j < checked_arr.length; i++, j++) {
+        while (rows[i].innerHTML == '') // <tr></tr>
+            i++;
+        input = get_input(rows[i]);
+        if (input) {
+            if (!input.checked) {
+                td = get_td(rows[i]);
+                tr = td.parentNode;
+                if (checked_arr[j] == 'closed') {
+                    if (tr.children.length == 1) {
+                        // td -> tr
+                        new_td = document.createElement('td');
+                        new_td.className = 'ended';
+                        new_td.rowSpan = td.rowSpan;
+                        new_td.style['padding'] = td.style['padding'];
+                        new_td.style['min-width'] = td.style['min-width'];
+                        new_td.style['max-width'] = td.style['max-width'];
+                        td.style.display = 'none';
+                        tr.appendChild(new_td);
+                        //console.log('found');
+                    }
+                }
+                else if (tr.children.length == 2) {
+                    td.style.display = '';
+                    tr.removeChild(tr.children[tr.children.length - 1]);
+                }
+            }
+        }
+    }
+};
+
+{# Collect all checkboxes for max_continuous_orders checks #}
+// The default input 2D-array [day][item][input]
+var inputs_array = [];
+// Set all callbacks onload
+var timetable_inputs_list = document.getElementsByClassName('full-width');
+
+for (var i = 0; i < timetable_inputs_list.length; i++) {
+    var timetable_inputs = timetable_inputs_list[i].getElementsByTagName('input');
+    inputs_array.push([]);
+    for (var j = 0; j < timetable_inputs.length; j++) {
+        // 'c' means 'cancel'
+        if (!timetable_inputs[j].name || timetable_inputs[j].name[0] == 'c')
+            continue;
+        util_add_handler(timetable_inputs[j], 'change', onchange_reaction);
+    }
+}
+
+{# Make sticky washing timetables.. #}
+function process_sticky(el, side, offset) {
+    // this function operates with relative positions
+    var parent_rect = el.parentNode.getBoundingClientRect();
+    var el_position         = 0
+    var el_dimension        = 0;
+    var parent_dimension = 0;
+    var side_versus      = '';
+    if (side == 'top') {
+        side_versus      = 'bottom';
+        el_dimension     = el.offsetHeight;
+        el_position      = el.getBoundingClientRect().top;
+        parent_dimension = parent_rect.height || offset;
+    }
+    else if (side == 'left') {
+        side_versus      = 'right';
+        el_dimension     = el.offsetWidth;
+        el_position      = el.getBoundingClientRect().left;
+        parent_dimension = parent_rect.width;
+    }
+    else {
+        return;
+    }
+    // higher than allowed
+    if (el_position < offset) {
+        // bottom on screen && movement possible => move
+        if (parent_rect[side_versus] >= el_dimension + offset) {
+            el.style[side] = (-parent_rect[side]) + "px";
+        }
+        // too high
+        else {
+            el.style[side] = parent_dimension - el_dimension;
+        }
+    }
+    // lower than allowed
+    else {
+        // top on screen && movement possible => move
+        if (parent_rect[side] <= 0) {
+            el.style[side] = (-parent_rect[side]) + "px";
+        }
+        // too low
+        else {
+            el.style[side] = offset;
+        }
+    }
+}
+
+(function add_scrolling_now() {
+    var IS_STICKY_SUPPORTED =
+        function() {
+            var el = document.createElement('a'), mStyle=el.style;
+            mStyle.cssText = "position:sticky;position:-webkit-sticky;position:-ms-sticky;";
+            return mStyle.position.indexOf('sticky')!==-1;
+         }();
+    // position:sticky placeholder
+    function my_on_scroll() {
+        // get elements
+        var i = 0;
+        var elements = document.getElementsByClassName('day_timetable');
+
+        // I don't know, why top bar has id #bottom_menu
+        var TOP_BAR_HEIGHT = 0;
+        var media_width = window.innerWidth 
+                || document.documentElement.clientWidth 
+                || document.body.clientWidth;
+        if (media_width > 860) {
+            TOP_BAR_HEIGHT = document.querySelector('#bottom_menu').offsetHeight;
+        }
+
+        //console.log(elements);
+        for (i = 0; i < elements.length; i++) {
+            var tables_of_day = elements[i].children;
+            // do vertical
+            process_sticky(tables_of_day[0], 'top', TOP_BAR_HEIGHT);
+            // do horizontal
+            process_sticky(tables_of_day[1].children[0], 'left', 0);
+        }
+    };
+    // changes margin:top for different media screens
+    function my_on_resize() {
+        var i = 0;
+        var elements = document.getElementsByClassName('day_timetable');
+        var media_width = window.innerWidth 
+                || document.documentElement.clientWidth 
+                || document.body.clientWidth;
+        if (media_width > 860) {
+            // top bar visible => set margins
+            // check single if no touch required
+            if (elements[0].style['top'] == '-3.5rem') {
+                if (false == IS_STICKY_SUPPORTED) {
+                    my_on_scroll();
+                }
+                return;
+            }
+            for (i = 0; i < elements.length; i++) {
+                elements[i].style['top'] = '-3.5rem';
+                var top_table = elements[i].children[0];
+                top_table.style['margin-top'] = '3.5rem';
+                if (true == IS_STICKY_SUPPORTED) {
+                    top_table.style['top'] = '3.5rem';
+                }
+            }
+        }
+        else {
+            // top bar invisible => remove margins
+            // check single if no touch required
+            if (elements[0].style['top'] == '0px') {
+                if (false == IS_STICKY_SUPPORTED) {
+                    my_on_scroll();
+                }
+                return;
+            }
+            for (i = 0; i < elements.length; i++) {
+                elements[i].style['top'] = '0';
+                var top_table = elements[i].children[0];
+                top_table.style['margin-top'] = '0';
+                if (true == IS_STICKY_SUPPORTED) {
+                    top_table.style['top'] = '0';
+                }
+            }
+        }
+        if (false == IS_STICKY_SUPPORTED) {
+            my_on_scroll();
+        }
+    };
+    var cell_tables = document.getElementsByClassName('table_main');
+    // sync cells and machines scroll
+    function sync_scroll(ev) {
+        var target = ev.target;
+        target.parentNode.parentNode.children[0].children[0].scrollLeft = target.scrollLeft;
+        for (var i = 0; i < cell_tables.length; i++) {
+            if (cell_tables[i] != target) {
+                cell_tables[i].scrollLeft = target.scrollLeft;
+            }
+        }
+    };
+    for (var i = 0; i < cell_tables.length; i++) {
+        cell_tables[i].addEventListener('scroll', sync_scroll, false);
+    }
+    if (false == IS_STICKY_SUPPORTED) {
+        window.addEventListener('scroll', my_on_scroll, false);
+        document.body.addEventListener('scroll', my_on_scroll, false);
+    }
+    window.addEventListener('resize', my_on_resize, false);
+    my_on_resize();
+})();
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "reversion/change_list.html" %}
+{% comment %}
+If not using django-reversion, return to default change_list.html
+{% extends "admin/change_list.html" %}
+{% endcomment %}
+
+{% block object-tools-items %}
+    {% if not is_popup and has_add_permission and has_change_permission %}
+        <li><a href='add_many/'>ДОБАВИТЬ МНОГО ПОЛЬЗОВАТЕЛЕЙ</a></li>
+    {% endif %}
+{{ block.super }}
+{% endblock %}

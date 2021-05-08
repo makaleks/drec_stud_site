@@ -1,41 +1,53 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
-        <!-- DEMO CONTENT -->
-        <!-- END DEMO -->
     {% for post in news_list %}
         <section class='card'>
             {% if post.image %}
-                <img src='{{ post.image.url }}' class='card-img' />
+                <img src='{{ post.image.url }}' class='card-img'>
             {% endif %}
             <h2>{{ post.title }}</h2>
-            {% if post.text_preview.rendered %}
+            {% if post.text_preview.rendered or post.text.rendered %}
                 <div>
-                    <!--!!!! Важно: необходим уникальный id внутри блока для input и label -->
-                    <input id='show_{{ post.id }}' type='checkbox' class='hidden shownews' />
-                    <div class='card-maintext cutted'>{{ post.text_preview.rendered }}
-                    {% if post.text.rendered %}
-                        {% if not show_hidden %}
-                            <label class='link-underline' for='show_{{ post.id }}'>{% if post.text.rendered %}<a class='lightred'>&nbsp;Читать&nbsp;далее&nbsp;</a></label></div>
-                            <div class='card-maintext full'>{{ post.text.rendered }} <label class='link-underline' for='show_{{ post.id }}'><a class='lightred'>&nbsp;Скрыть&nbsp;</a></label></div>{% endif %}
-                        {% elif post.text.rendered %}
-                            <div class='card-maintext'>{{ post.text.rendered }}</div>
-                        {% endif %}
+<!-- !!!! Важно: необходим уникальный id внутри блока для input и label -->
+                    <input type='checkbox' class='hidden shownews' id='show_{{ post.id }}'>
+                    {% if not show_hidden or post.text_preview.rendered %}
+                        <div class='card-maintext cutted'>
+                            {{ post.text_preview.rendered }}
+                            {% if post.text.rendered and not show_hidden %}
+                                <label for='show_{{ post.id }}' class='link-underline'>
+                                    <a>&nbsp;Читать&nbsp;далее&nbsp;</a>
+                                </label>
+                            {% endif %}
+                        </div>
                     {% endif %}
+                    <div class='card-maintext {% if not show_hidden %}full{% endif %}'>
+                        {{ post.text.rendered }}
+                        {% if not show_hidden %}
+                            <label for='show_{{ post.id }}' class='link-underline'>
+                                <a>&nbsp;Скрыть&nbsp;</a>
+                            </label>
+                        {% endif %}
+                    </div>
                 </div>
             {% endif %}
-            <small class='text-muted'>Обновлено {{ post.edited }} <a href='{{ post.get_absolute_url }}'>Ссылка</a></small>
+            <small class='text-muted' style='{% if show_hidden %}margin-top:1rem;{% endif %}display:inline-block;'>
+                Обновлено {{ post.edited }}
+                <a href='{{ post.get_absolute_url }}'>Ссылка</a>
+            </small>
         </section>
     {% endfor %}
     {% if render_archive %}
         <section class='card'>
-            
-            <h2><a href='{% url 'news:news-archive' %}'>Архив</a></h2>
+            <h2>
+                <a href='{% url "news:news-archive" %}'>Архив</a>
+            </h2>
             <div>
-                <p>Быстрый переход: <a href='?years={{ last_year }}'>{{ last_year }} (предыдущий год)</a>
+                <p>
+                    Быстрый переход:
+                    <a href='?years={{ last_year }}'>{{ last_year }} (предыдущий год)</a>
+                </p>
             </div>
-            
         </section>
     {% endif %}
-
 {% endblock %}

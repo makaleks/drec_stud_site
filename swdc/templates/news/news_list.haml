@@ -1,0 +1,34 @@
+- extends 'core/base.html'
+
+- block content
+    - for post in news_list
+        %section.card
+            - if post.image
+                %img.card-img{src:'#{ post.image.url }'}
+            %h2 #{ post.title }
+            - if post.text_preview.rendered
+                %div
+                    / !!!! Важно: необходим уникальный id внутри блока для input и label
+                    %input.hidden.shownews{id:'show_#{ post.id }', type:'checkbox'}
+                    - if post.text.rendered
+                        - if not show_hidden
+                            .card-maintext.cutted #{ post.text_preview.rendered }
+                                %label.link-underline{for:'show_#{ post.id }'}
+                                    %a &nbsp;Читать&nbsp;далее&nbsp;
+                            .card-maintext.full
+                                #{ post.text.rendered }
+                                %label.link-underline{for:'show_#{ post.id }'}
+                                    %a &nbsp;Скрыть&nbsp;
+                        - else
+                            .card-maintext #{ post.text.rendered }
+            %small.text-muted
+                Обновлено #{ post.edited }
+                %a{href:'#{ post.get_absolute_url }'} Ссылка
+    - if render_archive
+        %section.card
+            %h2
+                %a{href:'{% url "news:news-archive" %}'} Архив
+            %div
+                %p
+                    Быстрый переход:
+                    %a{href:'?years=#{ last_year }'} #{ last_year } (предыдущий год)

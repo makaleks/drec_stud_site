@@ -1,5 +1,4 @@
 from django import template
-from django.utils import timezone
 from django.contrib.contenttypes.models import ContentType
 from user.models import User
 from django.forms import ModelForm
@@ -9,6 +8,7 @@ import json
 
 from service.models import Participation
 from comment.models import Comment
+from menu_entry.models import MenuEntry
 
 
 register = template.Library()
@@ -48,7 +48,7 @@ def util_add_user_info(lst, user):
 @register.filter
 def util_is_finished(dt_start, service):
     service_td = datetime.datetime.combine(datetime.date.min, service.time_after_now) - datetime.datetime.min
-    now = timezone.now()
+    now = datetime.datetime.now()
     return now - service_td > dt_start
 
 @register.filter
@@ -148,3 +148,23 @@ def util_get_form_field_verbose_name(form, field):
         return util_get_field_verbose_name(form._meta.model, field)
     else:
         return None
+
+@register.filter
+def util_is_active_menu_entry(path, entry):
+    entries = MenuEntry.objects.all()
+    possible = []
+    for e in entries:
+        if path.startswith(e.url):
+            possible.append(e.url)
+    [shortest, min_size] = [possible[0], len(possible[0])]
+    for p in possible:
+        n_size = len(p)
+        if n_size > min_size:
+            shortest = p
+            min_size = n_size
+    return shortest == entry
+
+@register.filter
+def util_mul(left, right):
+    return int(left*right)
+

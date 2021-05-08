@@ -1,0 +1,34 @@
+{% extends 'core/base.html' %}
+
+{% block head_extras %}
+<script type='text/javascript'>
+function checkbox_swap(source) {
+    checkboxes = document.getElementsByName('vals');
+    for (var i = 0, n = checkboxes.length; i < n; i++) {
+        checkboxes[i].checked = source.target.checked;
+    }
+}
+window.onload = function() {
+    var element = document.getElementById('id_vals_0');
+    if (element.addEventListener) {
+        element.addEventListener('click', checkbox_swap, false);
+    }
+    else if (element.attachEvent) {
+        element.attachEvent('onclick', checkbox_swap);
+    }
+    else {
+        element['onclick'] = checkbox_swap;
+    }
+}
+</script>
+{% endblock %}
+
+{% block content %}
+    <section class='card'>
+        <form action='/archive_get/' method='get'>
+            {% csrf_token %}
+            {{ form }}
+            <input type='submit' value='Показать' />
+        </form>
+    </section>
+{% endblock %}

@@ -1,17 +1,17 @@
 # Framework
-Django==2.0
+Django==2.2.13
 
 # Python server
 gunicorn==19.7.1
 
 # PostgreSQL library
-psycopg2==2.7.3.2
+psycopg2==2.7.3
 
 # Social network authorization
 social-auth-app-django==2.1.0
 
 # Image library
-Pillow==4.2.1
+Pillow==8.1.1
 
 # Deletes from /media when object deleted (not done by default)
 django-cleanup==1.0.1
@@ -20,10 +20,10 @@ django-cleanup==1.0.1
 django-markdown-deux==1.0.5
 
 # Models can be made sortable in Admin Panel
-django-admin-sortable2==0.6.19
+django-admin-sortable2==0.7.6
 
 # Model version are stored separately, so they can be restored
-django-reversion==2.0.12
+django-reversion==3.0.0
 
 # BBCode
 django-precise-bbcode==1.2.8
@@ -48,3 +48,17 @@ django-background-tasks==1.1.12
 
 # File cloud
 django-filebrowser-no-grappelli==3.7.4
+
+# Freeze time for Ordering tests
+freezegun==0.3.10
+
+# Clears media files, unused by models
+# usage: ./manage.py cleanup_unused_media -e 'admin_documents/*'
+django-unused-media==0.1.12
+
+# HAML engine for Django
+django-hamlpy==1.1.1
+
+# SASS compiler
+libsass==0.15.1
+

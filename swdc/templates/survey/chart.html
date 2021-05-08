@@ -1,0 +1,75 @@
+{% extends 'core/base.html' %}
+{% block head_extras %}
+<script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.bundle.min.js'></script>
+{% endblock %}
+
+{% block content %}
+<section class='card'>
+    <a class='m-btn chart-btn' onclick='pie(0);'>Pie type</a><a class='m-btn chart-btn' onclick='bar(0);'>Bar type</a>
+    <div class='chart-container'>
+        <canvas class='chart' id='chart_0'></canvas>
+    </div>
+</section>
+<script>
+    var config = [];
+    var chrt = [];
+    var borderPattern = [['#7E7F81', '#60409F', '#226593', '#2F7878', '#9F8036', '#9F6328', '#9F3E53'],
+                        ['#97989B', '#734DBF', '#297AB0', '#389090', '#BF9A41', '#BF7730', '#BF4A63'],
+                        ['#B0B2B5', '#8659DF', '#2F8ECE', '#42A8A8', '#DFB34B', '#DF8B38', '#DF5774'],
+                        ['#C9CBCF', '#9966FF', '#36A2EB', '#4BC0C0', '#FFCD56', '#FF9F40', '#FF6384'],
+                        ['#D0D2D5', '#A679FF', '#4FAEEE', '#62C8C8', '#FFD36B', '#FFAB58', '#FF7793'],
+                        ['#D7D8DB', '#B38CFF', '#68B9F0', '#78D0D0', '#FFDA80', '#FFB770', '#FF8AA3'],
+                        ['#DDDFE1', '#BF9FFF', '#81C5F3', '#8FD8D8', '#FFE095', '#FFC388', '#FF9EB2']];
+    var backPattern = [[],[],[],[],[],[],[]];
+    for(i = 0; i < 7; i++)
+        for(j = 0; j < 7; j++)
+            backPattern[i][j] = hex2rgba(borderPattern[i][j], 0.2);
+    config[0] = {
+        labels: ['132', '456'],
+        data: {
+            labels: ['январь', 'февраль', 'март', 'апрель'],
+            datasets: [
+                {
+                    borderWidth: 1,
+                    backgroundColor: backPattern[6],
+                    borderColor: borderPattern[6],
+                    label: '2017',
+                    data: [12, 14, 16, 18]
+                },
+                {
+                    borderWidth: 1,
+                    backgroundColor: backPattern[3],
+                    borderColor: borderPattern[3],
+                    label: '2018',
+                    data: [20, 22, 30, 40]
+                }
+            ]
+        },
+        options: {
+            responsive: true
+        }
+    };
+    function bar(id) {
+        if(chrt[id] !== undefined) chrt[id].destroy();
+        config[id].type = 'bar';
+        config[id].options.scales = {'yAxes':[{'ticks':{'beginAtZero':true}}]};
+        chrt[id] = new Chart(document.querySelector('#chart_' + id), config[id]);
+    };
+    function pie(id) {
+        if(chrt[id] !== undefined) chrt[id].destroy();
+        config[id].type = 'pie';
+        delete config[id].options.scales;
+        chrt[id] = new Chart(document.querySelector('#chart_' + id), config[id]);
+    };
+    function hex2rgba(hex, alpha) {
+        hex = hex.replace('#', '');
+        var r = parseInt((hex.length == 3) ? hex.slice(0, 1).repeat(2) : hex.slice(0, 2), 16);
+        var g = parseInt((hex.length == 3) ? hex.slice(1, 2).repeat(2) : hex.slice(2, 4), 16);
+        var b = parseInt((hex.length == 3) ? hex.slice(2, 3).repeat(2) : hex.slice(4, 6), 16);
+        if (alpha)
+            return ('rgba(' + r + ', ' + g + ', ' + b + ', ' + alpha + ')');
+        else
+            return ('rgb(' + r + ', ' + g + ', ' + b + ')');
+    };
+</script>
+{% endblock %}

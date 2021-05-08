@@ -30,3 +30,7 @@ PAYMENT_ACCOUNT_YANDEX = '1111'
 
 WEBMASTER_TAG_YANDEX = '<meta name="yandex-verification" content="111" />'
 WEBMASTER_TAG_GOOGLE = '<meta name="google-site-verification" content="111" />'
+
+# OPTIONAL
+
+SITE_TAB_NAME = 'Student council'
