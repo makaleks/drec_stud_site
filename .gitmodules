@@ -1,0 +1,3 @@
+[submodule "vk_bot"]
+	path = vk_bot
+	url = https://github.com/alekseik1/simple_vk_warning.git
