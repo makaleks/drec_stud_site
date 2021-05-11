@@ -5,6 +5,8 @@ services:
       context: .
     depends_on:
       - postgres
+    volumes:
+    - ./logs/:/app/logs
     restart: always
 
   postgres:
@@ -78,6 +80,21 @@ services:
       - POSTGRES_PASSWORD=postgres
     restart: always
     entrypoint: ["/scripts/wait-for-it.sh", "redis:6379", "--", "/app/entrypoint.sh"]
+
+  money_return_service:
+    build:
+      context: machine_closed_watchdog/
+    depends_on:
+      - postgres
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_DB: drec_stud_site
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+    - ./scripts:/scripts
+    entrypoint: ["/scripts/wait-for-it.sh", "postgres:5432", "--", "/app/entrypoint.sh"]
+
 
 volumes:
   pg_data:
