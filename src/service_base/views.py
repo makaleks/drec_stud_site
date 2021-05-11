@@ -1,3 +1,5 @@
+import datetime
+
 from django.shortcuts import render
 from django.views.generic.base import TemplateView
 from django.http import HttpResponseRedirect, HttpResponse
@@ -8,7 +10,7 @@ from decimal import Decimal
 import hashlib
 
 
-from user.models import User
+from user.models import User, MoneyTransaction
 from .models import ServiceBase
 
 import logging
@@ -88,8 +90,23 @@ class ServiceListView(TemplateView):
                         log_error = True
                         log_str += '- HASH_ERROR - required {0} != recieved {1}\n'.format(m.hexdigest(), data['sha1_hash'])
                     else:
-                        user.account += Decimal(amount)
+                        money = Decimal(amount)
+                        user.account += money
                         user.save()
+                        # Collect statistics
+                        try:
+                            tr = MoneyTransaction.objects.create(
+                                user=user,
+                                # NOTE: do not pass tz=.. in now() since no function does it
+                                registered_at=datetime.datetime.now(),
+                                money_came=money,
+                                source='YMoney',
+                            )
+                            # NOTE: no need since autocommit=True, but I'll leave it here
+                            tr.save()
+                        except Exception as e:
+                            payment_logger.warning(f'could not write statistics: {e}')
+                        ####
                         log_str += '- SUCCESS - for user {0}({1}) +{2} = {3}\n'.format(user_id, user.get_full_name(), amount, user.account)
             else:
                 log_error = True

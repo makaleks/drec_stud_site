@@ -190,3 +190,13 @@ class Faculty(models.Model):
         verbose_name        = 'Факультет'
         verbose_name_plural = 'Факультеты'
 
+
+class MoneyTransaction(models.Model):
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE,
+        db_column='user_id',
+        blank=False, null=False, verbose_name='На чей user_id пришли деньги'
+    )
+    registered_at = models.DateTimeField(blank=False, null=False, verbose_name='Когда была зарегистрирована')
+    money_came = models.FloatField(blank=False, null=False, verbose_name='Сколько пришло денег')
+    source = models.CharField(max_length=10, blank=True, null=True, verbose_name='Из какого источника пришли деньги')
