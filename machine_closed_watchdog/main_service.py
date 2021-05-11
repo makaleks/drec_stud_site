@@ -60,9 +60,10 @@ if __name__ == '__main__':
             with get_connection() as conn:      # type: connection
                 try:
                     with conn.cursor() as curr:     # type: cursor
-                        # Удалить заказ
+                        # Пометить заказ как с вернувшимися деньгами (не стоит удалять)
                         curr.execute("""
-                        DELETE FROM washing_order
+                        UPDATE washing_order
+                        SET payed = 0
                         WHERE id = %s
                         """, (order_id, ))
                         # Вернуть деньги
