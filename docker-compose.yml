@@ -5,6 +5,8 @@ services:
       context: .
     depends_on:
       - postgres
+    volumes:
+    - ./logs/:/app/logs
     restart: always
 
   postgres:
