@@ -3,6 +3,10 @@ name: test
 on:
   push:
 
+defaults:
+  run:
+    working-directory: ./vk_bot
+
 jobs:
   test:
 
@@ -12,8 +16,6 @@ jobs:
         # 3.6.8 - CentOS 7; 3.9.5 - Heroku-tested
         # NOTE: 3.6.8 by CentOS is NOT supported!
         python-version: ['3.9.5']
-    env:
-      working-directory: vk_bot
 
     steps:
       - uses: actions/checkout@v2
