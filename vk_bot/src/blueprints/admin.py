@@ -44,13 +44,6 @@ bl.labeler.auto_rules = [
 @bl.labeler.message(command=AdminOpenLock.raw_message_name)
 @bl.labeler.message(payload={'cmd': AdminOpenLock.key})
 async def handle_open_door_request(message: Message, **kwargs):
-    state = await bl.state_dispenser.get(message.peer_id)
-    if state and state.state == AdminDoorControlStates.OPENED:
-        await message.answer(
-            message='Уже был запрос на открытие двери. Возврат',
-            keyboard=KEYBOARD_ENTRYPOINT
-        )
-        return
     try:
         status, content_text = await send_signal_door_open(room_name='5b')
     except Exception as e:
@@ -70,7 +63,6 @@ async def handle_open_door_request(message: Message, **kwargs):
         )
         return
     else:
-        await bl.state_dispenser.set(message.peer_id, AdminDoorControlStates.OPENED)
         await message.answer(
             message='Дверь в 5Б должна быть открыта.',
             keyboard=KEYBOARD_ENTRYPOINT
@@ -80,13 +72,6 @@ async def handle_open_door_request(message: Message, **kwargs):
 @bl.labeler.message(command=AdminCloseLock.raw_message_name)
 @bl.labeler.message(payload={'cmd': AdminCloseLock.key})
 async def handle_close_door_request(message: Message, **kwargs):
-    state = await bl.state_dispenser.get(message.peer_id)
-    if state and state.state == AdminDoorControlStates.CLOSED:
-        await message.answer(
-            message='Уже был запрос на закрытие двери. Возврат',
-            keyboard=KEYBOARD_ENTRYPOINT
-        )
-        return
     try:
         status, content_text = await send_signal_door_close(room_name='5b')
     except Exception as e:
@@ -106,7 +91,6 @@ async def handle_close_door_request(message: Message, **kwargs):
         )
         return
     else:
-        await bl.state_dispenser.set(message.peer_id, AdminDoorControlStates.CLOSED)
         await message.answer(
             message='Дверь в 5Б должна быть закрыта.',
             keyboard=KEYBOARD_ENTRYPOINT
