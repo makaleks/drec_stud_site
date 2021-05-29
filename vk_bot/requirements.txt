@@ -1,0 +1,12 @@
+aioredis
+aiohttp
+coverage
+python-dotenv
+fakeredis
+pytest
+pytest-asyncio
+pytest-mock
+loguru
+vk_api
+https://github.com/timoniq/vkbottle/archive/fba8eaf4d2cc1333642766ae70b94980e41ccec3.zip
+redis
