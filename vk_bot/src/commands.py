@@ -1,8 +1,11 @@
 class CommandBase:
-    key: str
-    raw_message_name: str
-    button_name: str
-    description: str
+    """
+    Базовый класс, по которому строятся команды
+    """
+    key: str                # внутренний id-шник, должен быть уникален
+    raw_message_name: str   # что печатать пользователю, чтобы достучаться до этой команды
+    button_name: str        # Текст в кнопке
+    description: str        # Описание, которое отдаст "Помощь"
 
 
 class HelpCommand(CommandBase):
