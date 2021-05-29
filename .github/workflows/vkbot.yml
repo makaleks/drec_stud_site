@@ -1,0 +1,39 @@
+name: test
+
+on:
+  push:
+
+defaults:
+  run:
+    working-directory: ./vk_bot
+
+jobs:
+  test:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # 3.6.8 - CentOS 7; 3.9.5 - Heroku-tested
+        # NOTE: 3.6.8 by CentOS is NOT supported!
+        python-version: ['3.9.5']
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Restore pip cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Test with pytest
+        run: |
+          pytest -vv -l --tb=long
