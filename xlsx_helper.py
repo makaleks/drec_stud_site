@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-import sys, argparse, os, datetime, glob, getpass
-from os.path import isfile
+# TODO: может сломаться после рефакторинга
+import sys, argparse, os
 import re
 from openpyxl import load_workbook
 import json
@@ -12,7 +12,7 @@ import datetime
 _todo_str = 'user_todo_{0}.csv'.format(datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S'))
 _err_str  = 'user_errors.csv'
 
-from src.utils import validators
+from backend.src.utils import validators
 
 _err_countdown = 20
 def err_countdown():

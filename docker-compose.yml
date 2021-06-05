@@ -2,12 +2,15 @@ version: '3'
 services:
   app:
     build:
-      context: .
+      context: backend
     depends_on:
       - postgres
     volumes:
-    - ./logs/:/app/logs
+    - ./backend/logs/:/app/logs
+    # NOTE: используйте volume mount для подключения папки скриптов для оркестрации
+    - ./scripts/:/scripts:ro
     restart: always
+    entrypoint: ["/scripts/wait-for-it.sh", "postgres:5432", "--", "/app/entrypoint.sh"]
 
   postgres:
     image: postgres
@@ -18,7 +21,7 @@ services:
     ports:
     - 54325:5432
     volumes:
-    - ./sql:/docker-entrypoint-initdb.d:ro
+    - ./postgres/sql:/docker-entrypoint-initdb.d:ro
     - pg_data:/var/lib/postgresql
     restart: always
 
@@ -35,7 +38,7 @@ services:
     image: prodrigestivill/postgres-backup-local
     restart: always
     volumes:
-      - ./db_backups:/backups
+      - ./postgres/db_backups:/backups
     links:
       - postgres
     depends_on:
@@ -69,7 +72,8 @@ services:
       - postgres
       - redis
     volumes:
-    - ./scripts:/scripts
+      # NOTE: используйте volume mount для подключения папки скриптов для оркестрации
+    - ./scripts:/scripts:ro
     environment:
       - POSTGRES_HOST=postgres
       - POSTGRES_DB=drec_stud_site
@@ -89,7 +93,8 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     volumes:
-    - ./scripts:/scripts
+      # NOTE: используйте volume mount для подключения папки скриптов для оркестрации
+    - ./scripts:/scripts:ro
     entrypoint: ["/scripts/wait-for-it.sh", "postgres:5432", "--", "/app/entrypoint.sh"]
 
 
