@@ -1,4 +1,0 @@
-# This file tells Heroku dev. that it is a Python app. Required in root.
-# https://devcenter.heroku.com/articles/python-runtimes#activation-1
-# Not required if development is finished
--r src/requirements.txt
