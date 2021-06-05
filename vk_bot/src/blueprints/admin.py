@@ -6,7 +6,7 @@ from vkbottle_types import BaseStateGroup
 from loguru import logger
 from src.keyboards import KEYBOARD_ENTRYPOINT
 from src.settings import TECHNICAL_ADMIN_ID
-from src.commands import AdminOpenLock, AdminCloseLock
+from src.commands import AdminOpenLock5, AdminCloseLock5, AdminOpenLock6, AdminCloseLock6
 from src.lockbox_api import send_signal_door_open, send_signal_door_close
 
 ADMIN_HARDCODED_LIST = [
@@ -41,57 +41,54 @@ bl.labeler.auto_rules = [
 ]
 
 
-@bl.labeler.message(command=AdminOpenLock.raw_message_name)
-@bl.labeler.message(payload={'cmd': AdminOpenLock.key})
+async def process_door_command(message: Message, room_id: str, display_room_name: str, do_open: bool):
+    try:
+        status, content_text = await (
+            send_signal_door_open(room_name=room_id) if do_open
+            else send_signal_door_close(room_name=room_id)
+        )
+    except Exception as e:
+        logger.error(f'Unknown error: {e}')
+        await message.answer(
+            message='Произошла неизвестная ошибка, '
+                    'но разработчики смогут о ней узнать',
+            keyboard=KEYBOARD_ENTRYPOINT
+        )
+        return
+    if status != 200:
+        logger.warning(f'response is invalid | status = {status} | content={content_text}')
+        await message.answer(
+            message=f'Запрос вернул status_code={status} != 200, так не должно быть. '
+                    f'Вот контент: {content_text}',
+            keyboard=KEYBOARD_ENTRYPOINT
+        )
+        return
+    else:
+        await message.answer(
+            message=f'Дверь в {display_room_name} должна быть {"открыта" if do_open else "закрыта"}.',
+            keyboard=KEYBOARD_ENTRYPOINT
+        )
+
+
+@bl.labeler.message(command=AdminOpenLock5.raw_message_name)
+@bl.labeler.message(payload={'cmd': AdminOpenLock5.key})
 async def handle_open_door_request(message: Message, **kwargs):
-    try:
-        status, content_text = await send_signal_door_open(room_name='5b')
-    except Exception as e:
-        logger.error(f'Unknown error: {e}')
-        await message.answer(
-            message='Произошла неизвестная ошибка, '
-                    'но разработчики смогут о ней узнать',
-            keyboard=KEYBOARD_ENTRYPOINT
-        )
-        return
-    if status != 200:
-        logger.warning(f'response is invalid | status = {status} | content={content_text}')
-        await message.answer(
-            message=f'Запрос вернул status_code={status} != 200, так не должно быть. '
-                    f'Вот контент: {content_text}',
-            keyboard=KEYBOARD_ENTRYPOINT
-        )
-        return
-    else:
-        await message.answer(
-            message='Дверь в 5Б должна быть открыта.',
-            keyboard=KEYBOARD_ENTRYPOINT
-        )
+    await process_door_command(message=message, room_id='5b', display_room_name='5Б', do_open=True)
 
 
-@bl.labeler.message(command=AdminCloseLock.raw_message_name)
-@bl.labeler.message(payload={'cmd': AdminCloseLock.key})
+@bl.labeler.message(command=AdminOpenLock6.raw_message_name)
+@bl.labeler.message(payload={'cmd': AdminOpenLock6.key})
+async def handle_open_door_request(message: Message, **kwargs):
+    await process_door_command(message=message, room_id='6b', display_room_name='6Б', do_open=True)
+
+
+@bl.labeler.message(command=AdminCloseLock5.raw_message_name)
+@bl.labeler.message(payload={'cmd': AdminCloseLock5.key})
 async def handle_close_door_request(message: Message, **kwargs):
-    try:
-        status, content_text = await send_signal_door_close(room_name='5b')
-    except Exception as e:
-        logger.error(f'Unknown error: {e}')
-        await message.answer(
-            message='Произошла неизвестная ошибка, '
-                    'но разработчики смогут о ней узнать',
-            keyboard=KEYBOARD_ENTRYPOINT
-        )
-        return
-    if status != 200:
-        logger.warning(f'response is invalid | status = {status} | content={content_text}')
-        await message.answer(
-            message=f'Запрос вернул status_code={status} != 200, так не должно быть. '
-                    f'Вот контент: {content_text}',
-            keyboard=KEYBOARD_ENTRYPOINT
-        )
-        return
-    else:
-        await message.answer(
-            message='Дверь в 5Б должна быть закрыта.',
-            keyboard=KEYBOARD_ENTRYPOINT
-        )
+    await process_door_command(message=message, room_id='5b', display_room_name='5Б', do_open=False)
+
+
+@bl.labeler.message(command=AdminCloseLock6.raw_message_name)
+@bl.labeler.message(payload={'cmd': AdminCloseLock6.key})
+async def handle_close_door_request(message: Message, **kwargs):
+    await process_door_command(message=message, room_id='6b', display_room_name='6Б', do_open=False)
