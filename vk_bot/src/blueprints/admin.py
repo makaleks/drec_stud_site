@@ -5,14 +5,9 @@ from vkbottle.bot import Message, rules
 from vkbottle_types import BaseStateGroup
 from loguru import logger
 from src.keyboards import KEYBOARD_ENTRYPOINT
-from src.settings import TECHNICAL_ADMIN_ID
+from src.settings import ADMIN_HARDCODED_LIST
 from src.commands import AdminOpenLock5, AdminCloseLock5, AdminOpenLock6, AdminCloseLock6
 from src.lockbox_api import send_signal_door_open, send_signal_door_close
-
-ADMIN_HARDCODED_LIST = [
-    TECHNICAL_ADMIN_ID,
-    94592201
-]
 
 
 class AdminDoorControlStates(BaseStateGroup):
