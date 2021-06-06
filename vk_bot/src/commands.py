@@ -22,17 +22,36 @@ class GetPasswordCommand(CommandBase):
     description = 'Получить логин и пароль для экстренной авторизации'
 
 
-class AdminOpenLock(CommandBase):
+class AdminOpenLock5(CommandBase):
     key = 'open_lock_5b'
     raw_message_name = 'открыть_5Б'
     button_name = 'Открыть 5Б'
     description = '(ТОЛЬКО АДМИНАМ) Открыть замок 5Б'
 
-class AdminCloseLock(CommandBase):
+
+class AdminCloseLock5(CommandBase):
     key = 'close_lock_5b'
     raw_message_name = 'закрыть_5Б'
     button_name = 'Закрыть 5Б'
     description = '(ТОЛЬКО АДМИНАМ) Закрыть замок 5Б'
 
 
-available_commands = [AdminOpenLock, AdminCloseLock, HelpCommand, GetPasswordCommand]
+class AdminOpenLock6(CommandBase):
+    key = 'open_lock_6b'
+    raw_message_name = 'открыть_6Б'
+    button_name = 'Открыть 6Б'
+    description = '(ТОЛЬКО АДМИНАМ) Открыть замок 6Б'
+
+
+class AdminCloseLock6(CommandBase):
+    key = 'close_lock_6b'
+    raw_message_name = 'закрыть_6Б'
+    button_name = 'Закрыть 6Б'
+    description = '(ТОЛЬКО АДМИНАМ) Закрыть замок 6Б'
+
+
+available_commands = [
+    AdminOpenLock5, AdminCloseLock5,
+    AdminOpenLock6, AdminCloseLock6,
+    HelpCommand, GetPasswordCommand
+]
