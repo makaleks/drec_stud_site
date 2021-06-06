@@ -40,3 +40,5 @@ async def test_correct_handler_based_on_text(
     # THEN: bot calls handler once
     target_mock.assert_called_once()
     # THEN: no other handler is called
+    for mock in other_mocks:
+        mock.assert_not_called()
