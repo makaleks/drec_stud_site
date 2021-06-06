@@ -1,6 +1,7 @@
 from pytest_cases import case, parametrize
 from src.commands import AdminOpenLock5, AdminOpenLock6, AdminCloseLock5, AdminCloseLock6, HelpCommand, GetPasswordCommand
-from src.blueprints.admin import handle_open_5b, handle_open_6b, handle_close_5b, handle_close_6b
+from src.blueprints.admin import handle_close_5b, handle_close_6b
+from src.blueprints.door import handle_open_5b, handle_open_6b
 from src.blueprints.defaults import hello_admin
 from src.blueprints.help import print_help
 from src.blueprints.emergency_password import send_emergency_password
@@ -43,7 +44,7 @@ class AdminCases:
     'from_id': [188477847],
     'command_prefix': ['!', '/'],
     # Сюда пишите команды, которые запрещены обычным пользователям
-    'command': [AdminOpenLock6, AdminCloseLock6, AdminCloseLock5, AdminOpenLock5]
+    'command': [AdminCloseLock5, AdminCloseLock6]
 })
 class RestrictedCommandsCases:
     def case_forbidden_command(self, from_id, command_prefix, command):
