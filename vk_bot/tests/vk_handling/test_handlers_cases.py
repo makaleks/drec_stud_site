@@ -39,7 +39,15 @@ def case_help_message(text, from_id):
     return text, from_id, print_help
 
 
-@parametrize(**{'text': ['!пароль', '/пароль'], 'from_id': ADMIN_HARDCODED_LIST})
-@case(tags='from_admin')
-def case_password_message(text, from_id):
-    return text, from_id, send_emergency_password
+# Проверка на то, что на запретной команде сваливается в `hello_admin`
+@case(tags='from_nonadmin')
+@parametrize(**{
+    'from_id': [188477847],
+    'command_prefix': ['!', '/'],
+    # Сюда пишите команды, которые запрещены обычным пользователям
+    'command': [AdminOpenLock6, AdminCloseLock6, AdminCloseLock5, AdminOpenLock5]
+})
+class RestrictedCommandsCases:
+    def case_forbidden_command(self, from_id, command_prefix, command):
+        # text, id, handler_function
+        return command_prefix + command.raw_message_name, from_id, hello_admin
