@@ -1,5 +1,11 @@
 # Department of Radio Electronics and Cybernetics student site
 
+[06-06-2021] - **НЕ ИСПОЛЬЗУЕТСЯ**.
+Вся статика идет из `backend/src/static`. Оставляю этот код для будущих разбирательств.
+
+TODO: мб перенсти под `src/static` в Django и переиспользовать html оттуда?
+Это избавит от копипасты `.html`-файлов сюда.
+
 ### Pages info
 
 - core - contains data (in most - html), which may need to add django layout code

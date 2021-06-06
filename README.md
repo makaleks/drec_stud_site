@@ -3,7 +3,9 @@
 
 Состоит из нескольких микросервисов:
 1. Бекенд сайта: `backend/`, написан на Django, [readme](backend/README.md).
-2. nginx: `nginx/`, раздает статику. Пока не знаем, как генерить, поэтому просто лежит в VCS.
+2. Фронтенд: `frontend/`, раздает статику. Генерится целиком из `backend/src/static`, потом через volume mount
+   прокидывается в `nginx` по пути `/app/collected_static`. Внутри лежит `swdc` для исторических причин,
+   фактически же ничего из него не используется в деплое.
 3. Чат-бот ВК: `vk_bot/`, написан на [vk_bottle](https://github.com/timoniq/vkbottle), [readme](vk_bot/README.md).
 4. Postgres DB: `postgres/`, хранит все данные сайта, в `postgres/sql` лежат init-скрипты.
 5. Backup service: ежедневные, еженедельные и ежемесячные бекапы с ротацией ([подробнее](https://registry.hub.docker.com/r/prodrigestivill/postgres-backup-local)). 
@@ -16,9 +18,11 @@
    
 # Запуск
 1. В `backend/` заполняем `backend_setting_additions.py` по примеру `backend_setting_additions_example.py`
-2. В `vk_bot` заполняем `.env` по примеру `.env.example`
+2. В `vk_bot` заполняем `.env` по примеру `.env.example`.
+3. При необходимости правим картиночки в `backend/src/static/img`, там же можно прочие фронтендовские
+   штуки поменять.
 
-Потом дергаем
+Потом дергаем:
 ```shell
 docker-compose up
 ```

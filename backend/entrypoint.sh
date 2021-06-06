@@ -5,7 +5,8 @@ cd src/
 chmod +x manage.py
 ./manage.py makemigrations
 ./manage.py migrate
-#./manage.py collectstatic
+# Статику потом заберет nginx через volume mount
+./manage.py collectstatic
 cd ..
 
 
