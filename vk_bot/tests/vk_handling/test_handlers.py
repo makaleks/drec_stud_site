@@ -1,35 +1,20 @@
 import pytest
-from pytest_mock import MockFixture
-from pytest_cases import parametrize_with_cases
+from pytest_cases import unpack_fixture, parametrize_with_cases, fixture
+
+
+@fixture
+@parametrize_with_cases(argnames='text, from_id, expected_handler', cases='.cases_vk_messages')
+def build_bot(fake_bot_builder, text, from_id, expected_handler):
+    return fake_bot_builder(text=text, from_id=from_id, expected_handler=expected_handler)
+
+
+bot, target_mock, other_mocks = unpack_fixture('bot, target_mock, other_mocks', 'build_bot')
 
 
 @pytest.mark.asyncio
 @pytest.mark.unit
-@parametrize_with_cases("text, from_id, expected_handler")
-async def test_correct_handler_based_on_text(
-        monkeypatch,
-        text,
-        from_id,
-        expected_handler,
-        fake_vk_api_message_builder,
-        mocker: MockFixture,
-):
+async def test_correct_handler_based_on_text(bot, target_mock, other_mocks):
     # GIVEN: prepared bot
-    monkeypatch.setenv('SECRET_BOT_TOKEN', '')
-    from src.bot import bot
-    bot.api = fake_vk_api_message_builder(
-        from_id=from_id,
-        text=text
-    )
-    target_mock = None
-    other_mocks = []
-    for handler in bot.labeler.message_view.handlers:
-        tmp_mock = mocker.AsyncMock()
-        handler.handle = tmp_mock
-        if expected_handler.__name__ == handler.handler.__name__:
-            target_mock = tmp_mock
-        else:
-            other_mocks.append(tmp_mock)
     # WHEN: bot receives a message with unknown command
     async for event in bot.polling.listen():
         # Придут ивенты из fake_vk_api_message_builder
