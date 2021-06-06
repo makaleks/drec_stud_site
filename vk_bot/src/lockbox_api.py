@@ -13,7 +13,7 @@ async def perform_lockbox_request(url: str) -> Tuple[int, str]:
     async with aiohttp.ClientSession() as session:
         async with session.get(
                 url,
-                params={'secret_token': SECRET_LOCK_TOKEN}
+                params={'secret_token': str(SECRET_LOCK_TOKEN)}
         ) as resp:
             status, response_text = resp.status, await resp.text()
             logger.debug(f'got response status={status} | text={response_text}')
