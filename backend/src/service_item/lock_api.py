@@ -21,12 +21,16 @@ def log_and_response(scenario, card_uid, service_model, service_order):
         lock_logger.info(s)
     return HttpResponse(json.dumps(scenario))
 
+
 # Check unlock
 # test with:
 # bash$ curl 'http://localhost/services/washing/unlock/?uid=200'
 def unlock(request, service_model, order_model, service_order = 1):
     # The order of checks is important!
-    card_uid = request.GET.get('uid')
+    lock_logger.critical('hello from lock_api')
+    card_uid, vk_id = request.GET.get('uid'), None
+    if card_uid is None:
+        vk_id = request.GET.get('vk_id')
     scenario = {
         'success': {
             'status': 'yes',
@@ -62,6 +66,9 @@ def unlock(request, service_model, order_model, service_order = 1):
             'name'  : '',
         },
     }
+    # At least one of `card_uid` or `vk_id` should be in request params
+    if not card_uid and not vk_id:
+        return HttpResponse(json.dumps(scenario['unknown_user']))
     # disable unknown services
     pk = order_to_pk(service_model, service_order)
     if pk is None:
@@ -73,12 +80,17 @@ def unlock(request, service_model, order_model, service_order = 1):
         response = scenario['lock_disabled']
         return log_and_response(response, card_uid, service_model, service_order)
     # disable unknown users
-    if not User.objects.all().filter(card_uid = card_uid).exists():
+    pred = (
+        User.objects.all().filter(card_uid=card_uid)
+        if card_uid is not None else
+        User.objects.all().filter(account_id=vk_id)
+    )
+    if not pred.exists():
         response = scenario['unknown_user']
         return log_and_response(response, card_uid, service_model, service_order)
     # pass all staff
-    user = User.objects.all().filter(card_uid = card_uid).first()
-    if card_uid and user.is_staff:
+    user = pred.first()
+    if (card_uid or vk_id) and user.is_staff:
         response = scenario['staff']
         response['name'] = user.get_full_name()
         return log_and_response(response, card_uid, service_model, service_order)
@@ -89,7 +101,11 @@ def unlock(request, service_model, order_model, service_order = 1):
 
     # Interval = 1sec. as an alternative to 1 moment
     interval = datetime.timedelta(seconds = 0.5)
-    orders = order_model.get_queryset(now - interval, now + interval, time_margin_start, time_margin_end).filter(item__service = service, user__card_uid = card_uid)
+    tmp = order_model.get_queryset(now - interval, now + interval, time_margin_start, time_margin_end)
+    if card_uid:
+        orders = tmp.filter(item__service=service, user__card_uid=card_uid)
+    else:
+        orders = tmp.filter(item__service=service, user__account_id=vk_id)
     if orders:
         # Check endings - 'is_used' required
         order_lst = list(orders)
