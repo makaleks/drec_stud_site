@@ -7,6 +7,7 @@ from pytest_cases import parametrize_with_cases
 @pytest.mark.unit
 @parametrize_with_cases("text, from_id, expected_handler")
 async def test_correct_handler_based_on_text(
+        monkeypatch,
         text,
         from_id,
         expected_handler,
@@ -14,6 +15,7 @@ async def test_correct_handler_based_on_text(
         mocker: MockFixture,
 ):
     # GIVEN: prepared bot
+    monkeypatch.setenv('SECRET_BOT_TOKEN', '')
     from src.bot import bot
     bot.api = fake_vk_api_message_builder(
         from_id=from_id,
