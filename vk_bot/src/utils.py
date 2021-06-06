@@ -24,6 +24,8 @@ async def is_eligible_to_open_door(vk_id: int, room_id: str):
     """
     Проверка, может ли юзер открыть дверь. Ходит на Django и у него спрашивает это
     """
+    if vk_id in ADMIN_HARDCODED_LIST:
+        return True
     async with aiohttp.ClientSession() as session:
         async with session.get(
                 UNLOCK_CHECK_URL.format(
@@ -31,7 +33,12 @@ async def is_eligible_to_open_door(vk_id: int, room_id: str):
                 ),
             params={'vk_id': vk_id}
         ) as resp:
-            print(resp)
+            text = await resp.text()
+            response = json.loads(text)
+            if response.get('status', 'no') in ['yes', 'true', 'True']:
+                return True
+            else:
+                return False
 
 
 async def process_door_command(message: Message, room_id: str, display_room_name: str, do_open: bool):
@@ -39,13 +46,12 @@ async def process_door_command(message: Message, room_id: str, display_room_name
     Открыть/закрыть дверь с уведомлением в ЛС
     """
     # Для не-админов нужна проверка
-    if message.from_id not in ADMIN_HARDCODED_LIST:
-        if not await is_eligible_to_open_door(message.from_id, room_id):
-            await message.answer(
-                message='Нет записи на текущее время в этой стиралке. Возврат в начало',
-                keyboard=KEYBOARD_ENTRYPOINT
-            )
-            return
+    if not await is_eligible_to_open_door(message.from_id, room_id):
+        await message.answer(
+            message='Нет записи на текущее время в этой стиралке. Возврат в начало',
+            keyboard=KEYBOARD_ENTRYPOINT
+        )
+        return
     try:
         status, content_text = await (
             send_signal_door_open(room_name=room_id) if do_open

@@ -1,8 +1,12 @@
 import datetime
+from typing import Callable
 
 import pytest
 import json
 from pathlib import Path
+
+from pytest_cases import fixture
+from pytest_mock import MockFixture
 from vkbottle import API
 from vkbottle.tools.test_utils import MockedClient
 
@@ -122,3 +126,29 @@ def fake_vk_api_message_builder(
         api.http._session = MockedClient(None, callback=callback)
         return api
     return api_builder
+
+
+@fixture
+def fake_bot_builder(
+        fake_vk_api_message_builder,
+        monkeypatch,
+        mocker: MockFixture
+):
+    def bot_builder(text: str, from_id: int, expected_handler: Callable):
+        monkeypatch.setenv('SECRET_BOT_TOKEN', '')
+        from src.bot import bot
+        bot.api = fake_vk_api_message_builder(
+            from_id=from_id,
+            text=text
+        )
+        target_mock = None
+        other_mocks = []
+        for handler in bot.labeler.message_view.handlers:
+            tmp_mock = mocker.AsyncMock()
+            handler.handle = tmp_mock
+            if expected_handler.__name__ == handler.handler.__name__:
+                target_mock = tmp_mock
+            else:
+                other_mocks.append(tmp_mock)
+        return bot, target_mock, other_mocks
+    return bot_builder
