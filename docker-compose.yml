@@ -9,6 +9,8 @@ services:
     - ./backend/logs/:/app/logs
     # NOTE: используйте volume mount для подключения папки скриптов для оркестрации
     - ./scripts/:/scripts:ro
+    # Сюда уйдет collected_static после ./manage.py collectstatic
+    - collected_static:/app/collected_static:rw
     restart: always
     entrypoint: ["/scripts/wait-for-it.sh", "postgres:5432", "--", "/app/entrypoint.sh"]
 
@@ -27,11 +29,15 @@ services:
 
   nginx:
     build:
-      context: nginx
+      context: frontend
     depends_on:
       - app
     ports:
       - 80:80
+    volumes:
+    # NOTE: collected_static генерится на бекенде (ну вот так, да)
+    # пока что передаем в nginx через volume mount
+    - collected_static:/app/collected_static
     restart: always
 
   database_backup_service:
@@ -101,3 +107,4 @@ services:
 volumes:
   pg_data:
   redis_data:
+  collected_static:
