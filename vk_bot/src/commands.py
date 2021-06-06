@@ -26,7 +26,7 @@ class AdminOpenLock5(CommandBase):
     key = 'open_lock_5b'
     raw_message_name = 'открыть_5Б'
     button_name = 'Открыть 5Б'
-    description = '(ТОЛЬКО АДМИНАМ) Открыть замок 5Б'
+    description = 'Открыть замок 5Б'
 
 
 class AdminCloseLock5(CommandBase):
@@ -40,7 +40,7 @@ class AdminOpenLock6(CommandBase):
     key = 'open_lock_6b'
     raw_message_name = 'открыть_6Б'
     button_name = 'Открыть 6Б'
-    description = '(ТОЛЬКО АДМИНАМ) Открыть замок 6Б'
+    description = 'Открыть замок 6Б'
 
 
 class AdminCloseLock6(CommandBase):
