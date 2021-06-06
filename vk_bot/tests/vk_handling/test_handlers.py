@@ -1,20 +1,19 @@
 import pytest
 from pytest_mock import MockFixture
-from pytest_cases import parametrize_with_cases
+from typing import Callable
+from pytest_cases import parametrize_with_cases, fixture, unpack_fixture
 
 
-@pytest.mark.asyncio
-@pytest.mark.unit
-@parametrize_with_cases("text, from_id, expected_handler")
-async def test_correct_handler_based_on_text(
-        monkeypatch,
-        text,
-        from_id,
-        expected_handler,
+@fixture
+@parametrize_with_cases('text, from_id, expected_handler')
+def fake_bot_builder(
+        text: str,
+        from_id: int,
+        expected_handler: Callable,
         fake_vk_api_message_builder,
-        mocker: MockFixture,
+        monkeypatch,
+        mocker: MockFixture
 ):
-    # GIVEN: prepared bot
     monkeypatch.setenv('SECRET_BOT_TOKEN', '')
     from src.bot import bot
     bot.api = fake_vk_api_message_builder(
@@ -30,6 +29,16 @@ async def test_correct_handler_based_on_text(
             target_mock = tmp_mock
         else:
             other_mocks.append(tmp_mock)
+    return bot, target_mock, other_mocks
+
+
+bot, target_mock, other_mocks = unpack_fixture('bot, target_mock, other_mocks', fake_bot_builder)
+
+
+@pytest.mark.asyncio
+@pytest.mark.unit
+async def test_correct_handler_based_on_text(bot, target_mock, other_mocks):
+    # GIVEN: prepared bot
     # WHEN: bot receives a message with unknown command
     async for event in bot.polling.listen():
         # Придут ивенты из fake_vk_api_message_builder
