@@ -1,5 +1,7 @@
 import os
+import datetime
 import sys
+from pathlib import Path
 from loguru import logger
 
 from vkbottle import load_blueprints_from_package
@@ -7,13 +9,15 @@ from vkbottle.bot import Bot
 from dotenv import load_dotenv
 from src.middlewares import RedisMiddleware
 
-load_dotenv('../.env')
-TOKEN = os.environ.get('ACCESS_TOKEN')
+basedir = Path(__file__).absolute().parent
+load_dotenv(str(basedir.parent / '.env'))
+TOKEN = os.environ['ACCESS_TOKEN']
 
 bot = Bot(TOKEN)
 
 logger.remove()
 logger.add(sys.stderr, level="DEBUG")
+logger.add(basedir.parent / 'logs/log_{time}.log', rotation=datetime.timedelta(days=1), level='INFO')
 
 
 bp_default = None

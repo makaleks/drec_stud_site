@@ -80,6 +80,7 @@ services:
     volumes:
       # NOTE: используйте volume mount для подключения папки скриптов для оркестрации
     - ./scripts:/scripts:ro
+    - ./vk_bot/logs:/app/logs:rw
     environment:
       - POSTGRES_HOST=postgres
       - POSTGRES_DB=drec_stud_site
