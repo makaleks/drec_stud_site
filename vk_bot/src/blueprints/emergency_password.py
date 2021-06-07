@@ -2,9 +2,10 @@ import aioredis
 from vkbottle import BotBlueprint
 from vkbottle.bot import Message, rules
 from src.redis_.crud import get_password_from_redis
-from src.keyboards import KEYBOARD_ENTRYPOINT
+from src.keyboards import build_keyboard
 from src.settings import TECHNICAL_ADMIN_ID
 from src.commands import GetPasswordCommand
+from src.utils import is_admin
 
 bl = BotBlueprint()
 bl.labeler.auto_rules = [rules.PeerRule(from_chat=False)]
@@ -21,4 +22,4 @@ async def send_emergency_password(message: Message, redis: aioredis.Redis):
         answer = f"Логин: {user_id}\n" \
              f"Пароль: {await get_password_from_redis(redis, user_id=user_id)}\n\n" \
              f"Что-то еще?"
-    await message.answer(message=answer, keyboard=KEYBOARD_ENTRYPOINT)
+    await message.answer(message=answer, keyboard=build_keyboard(is_admin=is_admin(message.from_id)))

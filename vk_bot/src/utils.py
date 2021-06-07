@@ -7,7 +7,7 @@ from vkbottle.bot import Message, rules
 from vkbottle.tools.dev_tools.mini_types.bot.message import MessageMin
 from typing import Union
 
-from src.keyboards import KEYBOARD_ENTRYPOINT
+from src.keyboards import build_keyboard
 from src.lockbox_api import send_signal_door_open, send_signal_door_close
 from src.settings import UNLOCK_CHECK_URL, ADMIN_HARDCODED_LIST
 
@@ -49,7 +49,7 @@ async def process_door_command(message: Message, room_id: str, display_room_name
     if not await is_eligible_to_open_door(message.from_id, room_id):
         await message.answer(
             message='Нет записи на текущее время в этой стиралке. Возврат в начало',
-            keyboard=KEYBOARD_ENTRYPOINT
+            keyboard=build_keyboard(is_admin=is_admin(message.from_id))
         )
         return
     try:
@@ -62,7 +62,7 @@ async def process_door_command(message: Message, room_id: str, display_room_name
         await message.answer(
             message='Произошла неизвестная ошибка, '
                     'но разработчики смогут о ней узнать',
-            keyboard=KEYBOARD_ENTRYPOINT
+            keyboard=build_keyboard(is_admin=is_admin(message.from_id))
         )
         return
     if status != 200:
@@ -70,13 +70,13 @@ async def process_door_command(message: Message, room_id: str, display_room_name
         await message.answer(
             message=f'Запрос вернул status_code={status} != 200, так не должно быть. '
                     f'Вот контент: {content_text}',
-            keyboard=KEYBOARD_ENTRYPOINT
+            keyboard=build_keyboard(is_admin=is_admin(message.from_id))
         )
         return
     else:
         await message.answer(
             message=f'Дверь в {display_room_name} должна быть {"открыта" if do_open else "закрыта"}.',
-            keyboard=KEYBOARD_ENTRYPOINT
+            keyboard=build_keyboard(is_admin=is_admin(message.from_id))
         )
 
 
@@ -87,7 +87,11 @@ class LockboxTokenIsPresentRule(rules.ABCMessageRule):
             logger.warning('failure in token read')
             await message.answer(
                 message='Мне не удалось считать токен, поэтому я не смогу управлять замком. Возврат в меню',
-                keyboard=KEYBOARD_ENTRYPOINT
+                keyboard=build_keyboard(is_admin=is_admin(message.from_id))
             )
             return False
         return True
+
+
+def is_admin(user_id: int):
+    return user_id in ADMIN_HARDCODED_LIST

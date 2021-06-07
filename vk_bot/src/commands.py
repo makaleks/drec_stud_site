@@ -50,8 +50,14 @@ class AdminCloseLock6(CommandBase):
     description = '(ТОЛЬКО АДМИНАМ) Закрыть замок 6Б'
 
 
-available_commands = [
-    AdminOpenLock5, AdminCloseLock5,
-    AdminOpenLock6, AdminCloseLock6,
-    HelpCommand, GetPasswordCommand
+regular_commands = [
+    AdminOpenLock5,
+    AdminOpenLock6,
+    HelpCommand,
+    GetPasswordCommand,
+]
+
+admin_commands = [
+    AdminCloseLock5,
+    AdminCloseLock6,
 ]

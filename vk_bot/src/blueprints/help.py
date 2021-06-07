@@ -1,7 +1,8 @@
 from vkbottle import BotBlueprint
 from vkbottle.bot import Message, rules
-from src.keyboards import KEYBOARD_ENTRYPOINT
-from src.commands import HelpCommand, available_commands
+from src.keyboards import build_keyboard
+from src.commands import HelpCommand, regular_commands, admin_commands
+from src.utils import is_admin
 
 
 bl = BotBlueprint()
@@ -23,5 +24,9 @@ async def print_help(message: Message, **kwargs):
         '\n'
     )
     help_message += '\n'.join([f"/{x.raw_message_name} (кнопка \"{x.button_name}\") - {x.description}"
-                               for x in available_commands])
-    await message.answer(message=help_message, keyboard=KEYBOARD_ENTRYPOINT)
+                               for x in regular_commands])
+    if is_admin(message.from_id):
+        help_message += '\n\nТак как ты админ, тебе доступны дополнительные команды:\n'
+        help_message += '\n'.join([f"/{x.raw_message_name} (кнопка \"{x.button_name}\") - {x.description}"
+                                   for x in admin_commands])
+    await message.answer(message=help_message, keyboard=build_keyboard(is_admin=is_admin(message.from_id)))
