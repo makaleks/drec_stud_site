@@ -5,15 +5,15 @@ from typing import Tuple
 
 
 BASE_DOOR_URL = 'http://8ka.mipt.ru/lockbox/{room_name}/{device}/{command}'
-SECRET_LOCK_TOKEN = os.environ.get('SECRET_BOT_TOKEN')
 
 
 async def perform_lockbox_request(url: str) -> Tuple[int, str]:
+    secret_bot_token = os.environ['SECRET_BOT_TOKEN']
     logger.debug(f'performing request to {url}')
     async with aiohttp.ClientSession() as session:
         async with session.get(
                 url,
-                params={'secret_token': str(SECRET_LOCK_TOKEN)}
+                params={'secret_token': str(secret_bot_token)}
         ) as resp:
             status, response_text = resp.status, await resp.text()
             logger.debug(f'got response status={status} | text={response_text}')
