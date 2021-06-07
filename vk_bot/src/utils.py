@@ -24,7 +24,9 @@ async def is_eligible_to_open_door(vk_id: int, room_id: str):
     """
     Проверка, может ли юзер открыть дверь. Ходит на Django и у него спрашивает это
     """
+    logger.info(f'checking id {vk_id}')
     if vk_id in ADMIN_HARDCODED_LIST:
+        logger.info(f'{vk_id} is admin, permitting')
         return True
     async with aiohttp.ClientSession() as session:
         async with session.get(
@@ -36,8 +38,10 @@ async def is_eligible_to_open_door(vk_id: int, room_id: str):
             text = await resp.text()
             response = json.loads(text)
             if response.get('status', 'no') in ['yes', 'true', 'True']:
+                logger.info('server responded with `yes`, permitting')
                 return True
             else:
+                logger.info('server responded with `no`, denying')
                 return False
 
 
@@ -47,12 +51,14 @@ async def process_door_command(message: Message, room_id: str, display_room_name
     """
     # Для не-админов нужна проверка
     if not await is_eligible_to_open_door(message.from_id, room_id):
+        logger.debug('sending `no orders sorry` message')
         await message.answer(
             message='Нет записи на текущее время в этой стиралке. Возврат в начало',
             keyboard=build_keyboard(is_admin=is_admin(message.from_id))
         )
         return
     try:
+        logger.info(f'sending room={room_id} command to {"open" if do_open else "close"}')
         status, content_text = await (
             send_signal_door_open(room_name=room_id) if do_open
             else send_signal_door_close(room_name=room_id)
@@ -74,6 +80,7 @@ async def process_door_command(message: Message, room_id: str, display_room_name
         )
         return
     else:
+        logger.debug('sending user a message that door is opened')
         await message.answer(
             message=f'Дверь в {display_room_name} должна быть {"открыта" if do_open else "закрыта"}.',
             keyboard=build_keyboard(is_admin=is_admin(message.from_id))
