@@ -10,8 +10,8 @@ services:
   # Elasticsearch: https://www.elastic.co/guide/en/elasticsearch/reference/7.10/docker.html
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.2
-    volumes:
-      - es_data:/usr/share/elasticsearch/data
+#    volumes:
+#      - es_data:/usr/share/elasticsearch/data
     environment:
       - http.host=0.0.0.0
       - transport.host=localhost
@@ -58,15 +58,32 @@ services:
       # GELF UDP
       - 12201:12201/udp
 
-  logspout:
-    image: gliderlabs/logspout:latest
-    container_name: logspout
-    restart: always
+#  logspout:
+#    image: gliderlabs/logspout:latest
+#    container_name: logspout
+#    restart: always
+#    volumes:
+#      - /etc/hostname:/etc/host_hostname:ro
+#      - /var/run/docker.sock:/var/run/docker.sock
+#    command:
+#      multiline+syslog://graylog:1514
+#    networks:
+#      - graylog
+
+  graylog-sidecar-all-files:
+    image: markusgulden/graylog2-sidecar-docker
+    environment:
+      - GS_SERVER_URL=http://graylog:9000/api/
+      - GS_NODE_ID=all-logs
+      - GS_SERVER_API_TOKEN=1pa2emmbq0ahlv2pnp68qppqr6hbc73blsl9oj0c20khal0febt9
+      - GS_LIST_LOG_FILES=/var/log/all_logs/
     volumes:
-      - /etc/hostname:/etc/host_hostname:ro
-      - /var/run/docker.sock:/var/run/docker.sock
-    command:
-      multiline+syslog://graylog:1514
+      # От бота
+      - ../vk_bot/logs:/var/log/all_logs/vk_bot:ro
+      # От сайта
+      - ../backend/logs:/var/log/all_logs/backend:ro
+      # От nginx
+      - ../frontend/logs:/var/log/all_logs/frontend:ro
     networks:
       - graylog
 

@@ -1,0 +1,54 @@
+rule "parse door command"
+when
+  starts_with(to_string($message.parsed_msg), "sending") &&
+  contains(to_string($message.parsed_msg), "command")
+then
+  let res = regex("room=(\\d\\w?) command to (open|close)", to_string($message.parsed_msg));
+  set_field("room", res["0"]);
+  set_field("command", res["1"]);
+  set_field("type", "door command");
+end
+
+rule "parse message"
+when
+true
+then
+let grok_pattern = "%{TIMESTAMP_ISO8601:timestamp} \\| %{LOGLEVEL}%{SPACE}\\| (?<module>(%{WORD}\\.?)+):%{WORD:function}:%{NUMBER:line_number} - %{GREEDYDATA:parsed_msg}";
+set_fields(grok(pattern: grok_pattern, value: to_string($message.message)));
+end
+
+rule "parse open request"
+when
+  contains(value: to_string($message.parsed_msg), search: "open request for")
+then
+  let reg = regex("open request for (\\d\\w) from (\\d+)", to_string($message.parsed_msg));
+  set_field("room", reg["0"]);
+  set_field("account_id", reg["1"]);
+  set_field("type", "open request");
+end
+
+rule "parse scenaio"
+when
+  contains(to_string($message.message), "Scenario")
+then
+  let expr = grok("(?s)%{TIMESTAMP_ISO8601:timestamp} %{LOGLEVEL}: Scenario:%{GREEDYDATA:json}", to_string($message.message));
+  let sc = parse_json(to_string(expr["json"]));
+  set_field("json", to_string(expr["json"]));
+  set_fields(to_map(sc));
+end
+
+rule "extract IP"
+when
+  true
+then
+  set_fields(grok("%{IPORHOST:clientip} (?:-|(%{WORD}.%{WORD})) %{USER:ident} \\[%{HTTPDATE:timestamp}\\] \"(?:%{WORD:verb} %{NOTSPACE:request}(?: HTTP/%{NUMBER:httpversion})?|%{DATA:rawrequest})\" %{NUMBER:response} (?:%{NUMBER:bytes}|-) %{QS:referrer} %{QS:agent} %{QS:forwarder}", to_string($message.message)));
+end
+
+rule "parse payment"
+when
+true
+  contains(to_string($message.filebeat_log_file_path), "payment_events")
+then
+  let grok_expr = "(?s)%{TIMESTAMP_ISO8601:timestamp}%{SPACE}%{LOGLEVEL}:%{SPACE}- SUCCESS - for user %{NUMBER:user_id}%{GREEDYDATA}+%{NUMBER:add_money} = %{NUMBER:total_money}";
+  set_fields(grok(grok_expr, to_string($message.message)));
+end
