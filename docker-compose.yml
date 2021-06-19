@@ -41,6 +41,7 @@ services:
     # NOTE: collected_static генерится на бекенде (ну вот так, да)
     # пока что передаем в nginx через volume mount
     - collected_static:/app/collected_static
+    - ./frontend/logs:/var/log/nginx/:rw
     restart: always
 
   # backups with rotation
