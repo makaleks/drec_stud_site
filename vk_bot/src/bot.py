@@ -17,7 +17,7 @@ bot = Bot(TOKEN)
 
 logger.remove()
 logger.add(sys.stderr, level="DEBUG")
-logger.add(basedir.parent / 'logs/log_{time}.log', rotation=datetime.timedelta(days=1), retention=10, level='INFO')
+logger.add(basedir.parent / 'logs/log_{time}.log', rotation=datetime.timedelta(days=1), retention=30, level='INFO')
 
 
 bp_default = None
