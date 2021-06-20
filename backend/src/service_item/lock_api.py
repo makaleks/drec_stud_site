@@ -27,7 +27,6 @@ def log_and_response(scenario, card_uid, service_model, service_order):
 # bash$ curl 'http://localhost/services/washing/unlock/?uid=200'
 def unlock(request, service_model, order_model, service_order = 1):
     # The order of checks is important!
-    lock_logger.critical('hello from lock_api')
     card_uid, vk_id = request.GET.get('uid'), None
     if card_uid is None:
         vk_id = request.GET.get('vk_id')
