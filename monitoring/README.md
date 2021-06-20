@@ -3,6 +3,10 @@
 
 ## Как поднять
 Инструкции одноразовые, их выполнять только после падения mongodb на graylog.
+
+### Пароли
+Заполняем .env по примеру .env.example
+
 ### Стримы
 Нужны, чтобы делить логи от разных сервисов.
 Фильтры в них ставим по `filebeat_log_file_path` contains:
@@ -30,7 +34,7 @@
 2. Логин/пароль admin/admin, идем с ним на `localhost:9000`, логинимся.
 3. `System` -> `Sidecars` -> `Create or reuse a token for the graylog-sidecar user`
 4. Token name ставим в `filebeat`. Копируем токен, открываем `docker-compose.yml`,
-   вставляем токен в `GS_SERVER_API_TOKEN`.
+   вставляем токен в `.env` в поле `GS_SERVER_API_TOKEN`.
 5. Заново деплоим мониторинг: `docker-compose up -d`. Должен перезапуститься только `graylog-sidecar-all-filesd`.
 6. Настраиваем заливку логов: `System` -> `Sidecars` -> `Configuration` (наверху) ->
    зеленая кнопка `Create configuration`. Имя `filebeat` (можно другое), collector
