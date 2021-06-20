@@ -16,7 +16,7 @@ def log_and_response(scenario, card_uid, service_model, service_order):
     s = 'Scenario:\n{0}\n####################'.format(json.dumps(scenario, indent = 2, ensure_ascii = False))
     if scenario['status'] == 'no':
         s = 'Got service  = {0}({1})\nGot card_uid = {2}\n'.format(service_model, service_order, card_uid) + s
-        lock_logger.error(s)
+        lock_logger.info(s)
     else:
         lock_logger.info(s)
     return HttpResponse(json.dumps(scenario))
