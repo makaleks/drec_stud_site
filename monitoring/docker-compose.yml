@@ -36,9 +36,21 @@ services:
       # CHANGE ME (must be at least 16 characters)!
       - GRAYLOG_PASSWORD_SECRET=somepasswordpepper
       # Password: admin
-      - GRAYLOG_ROOT_PASSWORD_SHA2=8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
+      - GRAYLOG_ROOT_PASSWORD_SHA2=123123
       - GRAYLOG_HTTP_ENABLE_CORS=true
-      - GRAYLOG_HTTP_EXTERNAL_URI=http://127.0.0.1:9000/
+      - GRAYLOG_HTTP_EXTERNAL_URI=https://8ka.mipt.ru/graylog/
+#      - GRAYLOG_HTTP_EXTERNAL_URI=http://localhost:9000/
+      - GRAYLOG_TIMEZONE=Europe/Moscow
+      # Email
+      - GRAYLOG_TRANSPORT_EMAIL_ENABLED=true
+      - GRAYLOG_TRANSPORT_EMAIL_HOSTNAME=smtp.yandex.ru
+      - GRAYLOG_TRANSPORT_EMAIL_PORT=587
+      - GRAYLOG_TRANSPORT_EMAIL_USE_AUTH=true
+#      - GRAYLOG_TRANSPORT_EMAIL_AUTH_USERNAME=heyhey
+      # TODO: нормально передавать пароль
+#      - GRAYLOG_TRANSPORT_EMAIL_AUTH_PASSWORD=ttt
+      - GRAYLOG_TRANSPORT_EMAIL_SUBJECT_PREFIX=[graylog]
+      - GRAYLOG_TRANSPORT_EMAIL_FROM_EMAIL=graylog@example.com
     entrypoint: /usr/bin/tini -- wait-for-it elasticsearch:9200 --  /docker-entrypoint.sh
     networks:
       - graylog
@@ -75,7 +87,8 @@ services:
     environment:
       - GS_SERVER_URL=http://graylog:9000/api/
       - GS_NODE_ID=all-logs
-      - GS_SERVER_API_TOKEN=1pa2emmbq0ahlv2pnp68qppqr6hbc73blsl9oj0c20khal0febt9
+      # NOTE: подставьте свой
+      - GS_SERVER_API_TOKEN=heyheyhey
       - GS_LIST_LOG_FILES=/var/log/all_logs/
     volumes:
       # От бота
