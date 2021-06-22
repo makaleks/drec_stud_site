@@ -63,8 +63,10 @@ services:
       - 1514:1514/udp
       # GELF TCP
       - 12201:12201
+      - 12202:12202
       # GELF UDP
       - 12201:12201/udp
+      - 12202:12202/udp
 
 #  logspout:
 #    image: gliderlabs/logspout:latest
