@@ -16,7 +16,7 @@ def log_and_response(scenario, card_uid, service_model, service_order):
     s = 'Scenario:\n{0}\n####################'.format(json.dumps(scenario, indent = 2, ensure_ascii = False))
     if scenario['status'] == 'no':
         s = 'Got service  = {0}({1})\nGot card_uid = {2}\n'.format(service_model, service_order, card_uid) + s
-        lock_logger.error(s)
+        lock_logger.info(s)
     else:
         lock_logger.info(s)
     return HttpResponse(json.dumps(scenario))
@@ -27,7 +27,6 @@ def log_and_response(scenario, card_uid, service_model, service_order):
 # bash$ curl 'http://localhost/services/washing/unlock/?uid=200'
 def unlock(request, service_model, order_model, service_order = 1):
     # The order of checks is important!
-    lock_logger.critical('hello from lock_api')
     card_uid, vk_id = request.GET.get('uid'), None
     if card_uid is None:
         vk_id = request.GET.get('vk_id')

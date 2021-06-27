@@ -1,5 +1,6 @@
 version: '3'
 services:
+  # main application
   app:
     build:
       context: backend
@@ -14,6 +15,7 @@ services:
     restart: always
     entrypoint: ["/scripts/wait-for-it.sh", "postgres:5432", "--", "/app/entrypoint.sh"]
 
+  # database
   postgres:
     image: postgres
     environment:
@@ -27,6 +29,7 @@ services:
     - pg_data:/var/lib/postgresql
     restart: always
 
+  # static files
   nginx:
     build:
       context: frontend
@@ -38,8 +41,10 @@ services:
     # NOTE: collected_static генерится на бекенде (ну вот так, да)
     # пока что передаем в nginx через volume mount
     - collected_static:/app/collected_static
+    - ./frontend/logs:/var/log/nginx/:rw
     restart: always
 
+  # backups with rotation
   database_backup_service:
     image: prodrigestivill/postgres-backup-local
     restart: always
@@ -61,6 +66,7 @@ services:
       # - BACKUP_KEEP_MONTHS=6
       - HEALTHCHECK_PORT=8080
 
+  # Offline passwords storage
   redis:
     image: redis
     volumes:
@@ -71,6 +77,7 @@ services:
       - 6379
     restart: always
 
+  # VK bot
   vk_bot:
     build:
       context: vk_bot/
@@ -89,6 +96,7 @@ services:
     restart: always
     entrypoint: ["/scripts/wait-for-it.sh", "redis:6379", "--", "/app/entrypoint.sh"]
 
+  # return money for unavailable machines
   money_return_service:
     build:
       context: machine_closed_watchdog/
@@ -103,7 +111,6 @@ services:
       # NOTE: используйте volume mount для подключения папки скриптов для оркестрации
     - ./scripts:/scripts:ro
     entrypoint: ["/scripts/wait-for-it.sh", "postgres:5432", "--", "/app/entrypoint.sh"]
-
 
 volumes:
   pg_data:

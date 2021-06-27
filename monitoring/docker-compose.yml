@@ -1,0 +1,111 @@
+version: '3'
+services:
+  # MongoDB: https://hub.docker.com/_/mongo/
+  mongo:
+    image: mongo:4.2
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - graylog
+  # Elasticsearch: https://www.elastic.co/guide/en/elasticsearch/reference/7.10/docker.html
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.2
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    environment:
+      - http.host=0.0.0.0
+      - transport.host=localhost
+      - network.host=0.0.0.0
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+    networks:
+      - graylog
+  # Graylog: https://hub.docker.com/r/graylog/graylog/
+  graylog:
+    image: graylog/graylog:4.0
+    volumes:
+      - graylog_data:/usr/share/graylog/data
+    environment:
+      - GRAYLOG_PASSWORD_SECRET=${GRAYLOG_PASSWORD_SECRET}
+      - GRAYLOG_ROOT_PASSWORD_SHA2=${GRAYLOG_ROOT_PASSWORD_SHA2}
+      - GRAYLOG_HTTP_ENABLE_CORS=true
+      - GRAYLOG_HTTP_EXTERNAL_URI=${GRAYLOG_HTTP_EXTERNAL_URI}
+      - GRAYLOG_TIMEZONE=Europe/Moscow
+      # Email
+      - GRAYLOG_TRANSPORT_EMAIL_ENABLED=true
+      - GRAYLOG_TRANSPORT_EMAIL_HOSTNAME=smtp.yandex.ru
+      - GRAYLOG_TRANSPORT_EMAIL_PORT=587
+      - GRAYLOG_TRANSPORT_EMAIL_USE_AUTH=true
+      - GRAYLOG_TRANSPORT_EMAIL_AUTH_USERNAME=${GRAYLOG_TRANSPORT_EMAIL_AUTH_USERNAME}
+      - GRAYLOG_TRANSPORT_EMAIL_AUTH_PASSWORD=${GRAYLOG_TRANSPORT_EMAIL_AUTH_PASSWORD}
+      - GRAYLOG_TRANSPORT_EMAIL_SUBJECT_PREFIX=[graylog]
+      - GRAYLOG_TRANSPORT_EMAIL_FROM_EMAIL=graylog@example.com
+    entrypoint: /usr/bin/tini -- wait-for-it elasticsearch:9200 --  /docker-entrypoint.sh
+    networks:
+      - graylog
+    restart: always
+    depends_on:
+      - mongo
+      - elasticsearch
+    ports:
+      # Graylog web interface and REST API
+      - 9000:9000
+      # Syslog TCP
+      - 1514:1514
+      # Syslog UDP
+      - 1514:1514/udp
+      # GELF TCP
+      - 12201:12201
+      - 12202:12202
+      # GELF UDP
+      - 12201:12201/udp
+      - 12202:12202/udp
+
+#  logspout:
+#    image: gliderlabs/logspout:latest
+#    container_name: logspout
+#    restart: always
+#    volumes:
+#      - /etc/hostname:/etc/host_hostname:ro
+#      - /var/run/docker.sock:/var/run/docker.sock
+#    command:
+#      multiline+syslog://graylog:1514
+#    networks:
+#      - graylog
+
+  graylog-sidecar-all-files:
+    image: markusgulden/graylog2-sidecar-docker
+    environment:
+      - GS_SERVER_URL=http://graylog:9000/api/
+      - GS_NODE_ID=all-logs
+      # NOTE: подставьте свой
+      - GS_SERVER_API_TOKEN=${GS_SERVER_API_TOKEN}
+      - GS_LIST_LOG_FILES=/var/log/all_logs/
+    volumes:
+      # От бота
+      - ../vk_bot/logs:/var/log/all_logs/vk_bot:ro
+      # От сайта
+      - ../backend/logs:/var/log/all_logs/backend:ro
+      # От nginx
+      - ../frontend/logs:/var/log/all_logs/frontend:ro
+    networks:
+      - graylog
+
+volumes:
+  mongo_data:
+    driver: local
+  es_data:
+    driver: local
+  graylog_data:
+    driver: local
+
+networks:
+  graylog:
+    driver: bridge
