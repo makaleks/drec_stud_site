@@ -72,7 +72,7 @@ async def process_door_command(message: Message, room_id: str, display_room_name
         )
         return
     if status != 200:
-        logger.warning(f'response is invalid | status = {status} | content={content_text}')
+        logger.error(f'response is invalid | status = {status} | content={content_text}')
         await message.answer(
             message=f'Запрос вернул status_code={status} != 200, так не должно быть. '
                     f'Вот контент: {content_text}',
