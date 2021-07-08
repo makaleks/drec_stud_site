@@ -94,7 +94,7 @@ services:
       # От сайта
       - ../backend/logs:/var/log/all_logs/backend:ro
       # От nginx
-      - ../frontend/logs:/var/log/all_logs/frontend:ro
+#      - ../frontend/logs:/var/log/all_logs/frontend:ro
     networks:
       - graylog
 
