@@ -31,6 +31,10 @@ filebeat.inputs:
   multiline.negate: true
   multiline.match: after
   type: log
+- input_type: log
+  paths:
+    - /var/log/all_logs/lockbox_health_check/*.log
+  type: log
 output.logstash:
    hosts: ["graylog:5044"]
 path:

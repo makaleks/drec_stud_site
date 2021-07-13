@@ -95,6 +95,8 @@ services:
       - ../backend/logs:/var/log/all_logs/backend:ro
       # От nginx
 #      - ../frontend/logs:/var/log/all_logs/frontend:ro
+      # От health check замков
+      - ../lockbox_health_check/logs:/var/log/all_logs/lockbox_health_check:ro
     networks:
       - graylog
 

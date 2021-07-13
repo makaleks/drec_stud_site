@@ -112,6 +112,12 @@ services:
     - ./scripts:/scripts:ro
     entrypoint: ["/scripts/wait-for-it.sh", "postgres:5432", "--", "/app/entrypoint.sh"]
 
+  lockbox_health_check_service:
+    build:
+      context: lockbox_health_check/
+    volumes:
+      - ./lockbox_health_check/logs:/app/logs:rw
+
 volumes:
   pg_data:
   redis_data:
