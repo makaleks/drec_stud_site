@@ -3,7 +3,7 @@ import json
 from typing import List
 
 from pydantic import BaseModel
-from vkbottle import API
+from vkbottle import API, Bot
 from vkbottle.tools.test_utils import MockedClient
 
 from src.settings import GROUP_ID, TECHNICAL_ADMIN_ID
@@ -86,3 +86,16 @@ def build_fake_api(list_messages: List[Message]) -> API:
     api = API("token")
     api.http._session = MockedClient(None, callback=callback)
     return api
+
+
+async def handle_next_message(bot: Bot):
+    """Прокрутить боту следующее сообщение, затем отдать управление обратно."""
+    async for event in bot.polling.listen():
+        # Придут ивенты из fake_vk_api_message_builder
+        assert "updates" in event
+        for update in event["updates"]:
+            await bot.router.route(update, bot.api)
+            yield
+        # Но в конце бот будет бесконечно ждать новых сообщений
+        # Это фиксится одним break
+        break
