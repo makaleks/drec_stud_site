@@ -36,6 +36,9 @@ def mock_bot_handlers(mocker: MockFixture):
         target_mock = None
         other_mocks = []
         for handler in bot.labeler.message_view.handlers:
+            # Всегда вызывается, т.к. проверяет стейт
+            if handler.handler.__name__ == "set_default_state":
+                continue
             tmp_mock = mocker.AsyncMock()
             handler.handle = tmp_mock
             if expected_handler.__name__ == handler.handler.__name__:
