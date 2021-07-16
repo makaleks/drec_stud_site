@@ -12,7 +12,7 @@ bl = BotBlueprint()
 bl.labeler.auto_rules = [rules.PeerRule(from_chat=False)]
 
 
-@bl.labeler.message(command=GetPasswordCommand.raw_message_name)
+@bl.labeler.message(text=GetPasswordCommand.raw_message_name)
 @bl.labeler.message(payload={"cmd": GetPasswordCommand.key})
 async def send_emergency_password(message: Message, redis: aioredis.Redis):
     user_id = message.from_id
