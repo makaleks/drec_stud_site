@@ -59,7 +59,7 @@ def build_updates(list_messages: List[Message]):
     }
 
 
-def build_fake_api(list_messages: List[Message]):
+def build_fake_api(list_messages: List[Message]) -> API:
     # Все подобрано как отвечает реальный ВК, поэтому дважды подумайте, прежде чем менять
     # Забрал с https://github.com/timoniq/vkbottle/blob/c6ebefb/tests/bot_test.py
     def callback(data: dict):
@@ -86,7 +86,3 @@ def build_fake_api(list_messages: List[Message]):
     api = API("token")
     api.http._session = MockedClient(None, callback=callback)
     return api
-
-
-def build_fake_bot(list_messages: List[Message]):
-    pass
