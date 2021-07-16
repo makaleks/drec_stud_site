@@ -9,7 +9,7 @@ bl = BotBlueprint()
 bl.labeler.auto_rules = [rules.PeerRule(from_chat=False), LockboxTokenIsPresentRule()]
 
 
-@bl.labeler.message(command=AdminOpenLock5.raw_message_name)
+@bl.labeler.message(text=AdminOpenLock5.raw_message_name)
 @bl.labeler.message(payload={"cmd": AdminOpenLock5.key})
 async def handle_open_5b(message: Message, **kwargs):
     logger.info(f"open request for 5b from {message.from_id}")
@@ -18,7 +18,7 @@ async def handle_open_5b(message: Message, **kwargs):
     )
 
 
-@bl.labeler.message(command=AdminOpenLock6.raw_message_name)
+@bl.labeler.message(text=AdminOpenLock6.raw_message_name)
 @bl.labeler.message(payload={"cmd": AdminOpenLock6.key})
 async def handle_open_6b(message: Message, **kwargs):
     logger.info(f"open request for 6b from {message.from_id}")
