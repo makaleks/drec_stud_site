@@ -11,7 +11,7 @@ bl.labeler.auto_rules = [rules.PeerRule(from_chat=False)]
 
 
 @bl.labeler.message(
-    command=CancelAction.raw_message_name, state=ReportingStates.IS_WRITING
+    text=CancelAction.raw_message_name, state=ReportingStates.IS_WRITING
 )
 async def cancel(message: Message):
     user_id = message.peer_id
@@ -22,7 +22,7 @@ async def cancel(message: Message):
     )
 
 
-@bl.labeler.message(command=ReportProblemStart.raw_message_name, state=None)
+@bl.labeler.message(text=ReportProblemStart.raw_message_name, state=None)
 async def report_problem_start(message: Message):
     await message.answer(
         message=(await bl.state_dispenser.get(message.peer_id)) is None
