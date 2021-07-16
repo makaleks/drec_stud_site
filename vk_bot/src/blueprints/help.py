@@ -3,10 +3,14 @@ from vkbottle.bot import Message, rules
 
 from src.commands import HelpCommand, admin_commands, regular_commands
 from src.keyboards import build_keyboard
+from src.states import ReportingStates
 from src.utils import is_admin
 
 bl = BotBlueprint()
-bl.labeler.auto_rules = [rules.PeerRule(from_chat=False)]
+bl.labeler.auto_rules = [
+    rules.PeerRule(from_chat=False),
+    rules.StateRule(ReportingStates.DEFAULT),
+]
 
 
 @bl.labeler.message(text=HelpCommand.raw_message_name)

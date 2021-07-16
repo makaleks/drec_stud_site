@@ -6,10 +6,14 @@ from src.commands import GetPasswordCommand
 from src.keyboards import build_keyboard
 from src.redis_.crud import get_password_from_redis
 from src.settings import TECHNICAL_ADMIN_ID
+from src.states import ReportingStates
 from src.utils import is_admin
 
 bl = BotBlueprint()
-bl.labeler.auto_rules = [rules.PeerRule(from_chat=False)]
+bl.labeler.auto_rules = [
+    rules.PeerRule(from_chat=False),
+    rules.StateRule(ReportingStates.DEFAULT),
+]
 
 
 @bl.labeler.message(text=GetPasswordCommand.raw_message_name)

@@ -3,10 +3,15 @@ from vkbottle import BotBlueprint
 from vkbottle.bot import Message, rules
 
 from src.commands import AdminOpenLock5, AdminOpenLock6
+from src.states import ReportingStates
 from src.utils import LockboxTokenIsPresentRule, process_door_command
 
 bl = BotBlueprint()
-bl.labeler.auto_rules = [rules.PeerRule(from_chat=False), LockboxTokenIsPresentRule()]
+bl.labeler.auto_rules = [
+    rules.PeerRule(from_chat=False),
+    rules.StateRule(ReportingStates.DEFAULT),
+    LockboxTokenIsPresentRule(),
+]
 
 
 @bl.labeler.message(text=AdminOpenLock5.raw_message_name)

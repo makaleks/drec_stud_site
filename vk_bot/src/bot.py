@@ -9,12 +9,14 @@ from vkbottle import load_blueprints_from_package
 from vkbottle.bot import Bot
 
 from src.middlewares import RedisMiddleware
+from src.states import DatabaseState
 
 basedir = Path(__file__).absolute().parent
 load_dotenv(str(basedir.parent / ".env"))
 TOKEN = os.environ["ACCESS_TOKEN"]
 
 bot = Bot(TOKEN)
+bot.state_dispenser = DatabaseState()
 
 logger.remove()
 logger.add(sys.stderr, level="DEBUG")

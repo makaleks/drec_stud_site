@@ -4,6 +4,7 @@ from vkbottle.bot import Message, rules
 
 from src.commands import AdminCloseLock5, AdminCloseLock6
 from src.settings import ADMIN_HARDCODED_LIST
+from src.states import ReportingStates
 from src.utils import LockboxTokenIsPresentRule, process_door_command
 
 bl = BotBlueprint()
@@ -11,6 +12,7 @@ bl.labeler.auto_rules = [
     rules.PeerRule(from_chat=False),
     rules.FromPeerRule(peer_ids=ADMIN_HARDCODED_LIST),
     LockboxTokenIsPresentRule(),
+    rules.StateRule(ReportingStates.DEFAULT),
 ]
 
 
