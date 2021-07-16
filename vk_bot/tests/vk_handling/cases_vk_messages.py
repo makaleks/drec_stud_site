@@ -5,7 +5,6 @@ from src.blueprints.defaults import hello_admin
 from src.blueprints.door import handle_open_5b, handle_open_6b
 from src.blueprints.emergency_password import send_emergency_password
 from src.blueprints.help import print_help
-from src.blueprints.reporting import report_problem_start
 from src.commands import (
     AdminCloseLock5,
     AdminCloseLock6,
@@ -13,7 +12,6 @@ from src.commands import (
     AdminOpenLock6,
     GetPasswordCommand,
     HelpCommand,
-    ReportProblemStart,
 )
 from src.settings import ADMIN_HARDCODED_LIST
 
@@ -57,13 +55,6 @@ class AdminCases:
             command_prefix + GetPasswordCommand.raw_message_name,
             from_id,
             send_emergency_password,
-        )
-
-    def case_report_problem(self, from_id, command_prefix):
-        return (
-            command_prefix + ReportProblemStart.raw_message_name,
-            from_id,
-            report_problem_start,
         )
 
 
