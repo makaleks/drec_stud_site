@@ -31,3 +31,13 @@ def build_keyboard(is_admin: bool = False):
             color=KeyboardButtonColor.SECONDARY,
         )
     return keyboard
+
+
+def build_cancel_keyboard():
+    """Клавиатура с единственной кнопкой 'Отмена'."""
+    keyboard = Keyboard(inline=False, one_time=True)
+    keyboard.add(
+        Text(CancelAction.button_name, payload={"cmd": CancelAction.key}),
+        color=KeyboardButtonColor.SECONDARY,
+    )
+    return keyboard
