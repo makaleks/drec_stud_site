@@ -3,6 +3,8 @@ name: deploy to dockerhub
 
 on:
   push:
+    branches:
+      - master
 
 jobs:
   push_to_registry:
