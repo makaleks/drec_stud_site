@@ -1,12 +1,12 @@
 # https://docs.github.com/en/actions/guides/publishing-docker-images
-name: Publish Docker image
+name: deploy to dockerhub
 
 on:
   push:
 
 jobs:
   push_to_registry:
-    name: Push Docker image to Docker Hub
+    name: dockerhub push
     strategy:
       matrix:
         service: ["backend", "frontend", "lockbox_health_check", "vk_bot", "money_return"]
