@@ -1,9 +1,13 @@
 version: '3'
 services:
+  # update containers automatically
+  watchtower:
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
   # main application
   app:
-    build:
-      context: backend
+    image: alekseik1/8ka_backend:latest
     depends_on:
       - postgres
     volumes:
@@ -12,12 +16,14 @@ services:
     - ./scripts/:/scripts:ro
     # Сюда уйдет collected_static после ./manage.py collectstatic
     - collected_static:/app/collected_static:rw
+    # Секреты приложения
+    - ./backend/setting_additions.py:/app/setting_additions.py:ro
     restart: always
     entrypoint: ["/scripts/wait-for-it.sh", "postgres:5432", "--", "/app/entrypoint.sh"]
 
   # database
   postgres:
-    image: postgres
+    image: postgres:13
     environment:
       POSTGRES_PASSWORD: postgres
     expose:
@@ -31,8 +37,7 @@ services:
 
   # static files
   nginx:
-    build:
-      context: frontend
+    image: alekseik1/8ka_frontend:latest
     depends_on:
       - app
     ports:
@@ -79,8 +84,7 @@ services:
 
   # VK bot
   vk_bot:
-    build:
-      context: vk_bot/
+    image: alekseik1/8ka_vk_bot:latest
     depends_on:
       - postgres
       - redis
@@ -88,6 +92,8 @@ services:
       # NOTE: используйте volume mount для подключения папки скриптов для оркестрации
     - ./scripts:/scripts:ro
     - ./vk_bot/logs:/app/logs:rw
+    # Секреты приложения
+    - ./vk_bot/.env:/app/.env:ro
     environment:
       - POSTGRES_HOST=postgres
       - POSTGRES_DB=drec_stud_site
@@ -98,8 +104,7 @@ services:
 
   # return money for unavailable machines
   money_return_service:
-    build:
-      context: machine_closed_watchdog/
+    image: alekseik1/8ka_money_return:latest
     depends_on:
       - postgres
     environment:
@@ -113,8 +118,7 @@ services:
     entrypoint: ["/scripts/wait-for-it.sh", "postgres:5432", "--", "/app/entrypoint.sh"]
 
   lockbox_health_check_service:
-    build:
-      context: lockbox_health_check/
+    image: alekseik1/8ka_lockbox_health_check:latest
     volumes:
       - ./lockbox_health_check/logs:/app/logs:rw
 
