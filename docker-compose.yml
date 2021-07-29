@@ -74,7 +74,7 @@ services:
 
   # Offline passwords storage
   redis:
-    image: redis
+    image: redis:6
     volumes:
     - redis_data:/data
     ports:
