@@ -10,7 +10,7 @@
 4. Postgres DB: `postgres/`, хранит все данные сайта, в `postgres/sql` лежат init-скрипты.
 5. Backup service: ежедневные, еженедельные и ежемесячные бекапы с ротацией ([подробнее](https://registry.hub.docker.com/r/prodrigestivill/postgres-backup-local)). 
    Кладет бекапы в `postgres/db_backups/`.
-6. money return service: `machine_closed_watchdog/`, костыль, 
+6. money return service: `money_return/`, костыль, 
    который раз в 30 минут ходит в БД и возвращает деньги всем, 
    кто записался на машинку, закрытую админом, а также обнуляет оплату за заказ.
 7. redis: хранит пароли для экстренной авторизации, они раздаются через чат-бота. 
