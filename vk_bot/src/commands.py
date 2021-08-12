@@ -49,11 +49,26 @@ class AdminCloseLock6(CommandBase):
     description = "(ТОЛЬКО АДМИНАМ) Закрыть замок 6Б"
 
 
+class ReportProblemStart(CommandBase):
+    key = "report_problem"
+    raw_message_name = "проблема"
+    button_name = "Есть проблема"
+    description = "Доложить о проблеме в стиралке"
+
+
+class CancelAction(CommandBase):
+    key = "cancel"
+    raw_message_name = "отмена"
+    button_name = "Отмена"
+    description = "Отменить действие"
+
+
 regular_commands = [
     AdminOpenLock5,
     AdminOpenLock6,
     HelpCommand,
     GetPasswordCommand,
+    ReportProblemStart,
 ]
 
 admin_commands = [
