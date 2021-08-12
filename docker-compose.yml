@@ -6,6 +6,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     command: --interval 30 --cleanup
+    restart: always
   # main application
   app:
     image: alekseik1/8ka_backend:latest
