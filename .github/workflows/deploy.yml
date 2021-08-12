@@ -34,5 +34,5 @@ jobs:
         with:
           context: ./${{ matrix.service }}
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ steps.meta.outputs.tags }},alekseik1/8ka_${{ matrix.service }}:latest
           labels: ${{ steps.meta.outputs.labels }}
