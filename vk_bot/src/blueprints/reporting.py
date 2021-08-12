@@ -15,6 +15,7 @@ bl.labeler.auto_rules = [rules.PeerRule(from_chat=False)]
 @bl.labeler.message(
     text=ReportProblemStart.raw_message_name, state=ReportingStates.DEFAULT
 )
+@bl.labeler.message(payload={"cmd": ReportProblemStart.key})
 async def report_problem_start(message: Message):
     await bl.state_dispenser.set(message.peer_id, ReportingStates.IS_WRITING)
     await message.answer(
@@ -28,6 +29,9 @@ async def report_problem_start(message: Message):
 @bl.labeler.message(state=ReportingStates.IS_WRITING)
 async def report_problem_finish(message: Message, **kwargs):
     user_id = message.from_id
+    # NOTE: если один из админов запретил сообщения, то падает с ошибкой и не сбрасывает состояния
+    # TODO: напиши тесты на это
+    await bl.state_dispenser.set(user_id, ReportingStates.DEFAULT)
     if message.text == CancelAction.button_name:
         await message.answer(
             message="Хорошо, возвращаю в начало",
@@ -43,7 +47,6 @@ async def report_problem_finish(message: Message, **kwargs):
         )
         await report_to_admin(original_message=message)
 
-    await bl.state_dispenser.set(user_id, ReportingStates.DEFAULT)
     print(bl.state_dispenser)
 
 
