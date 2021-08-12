@@ -16,9 +16,6 @@ bl.labeler.auto_rules = [rules.PeerRule(from_chat=False)]
     text=ReportProblemStart.raw_message_name, state=ReportingStates.DEFAULT
 )
 async def report_problem_start(message: Message):
-    await message.answer(
-        message=(await bl.state_dispenser.get(message.peer_id)) is None
-    )
     await bl.state_dispenser.set(message.peer_id, ReportingStates.IS_WRITING)
     await message.answer(
         message="Что-то пошло не так?\n"
@@ -56,6 +53,6 @@ async def report_to_admin(original_message: Message):
         await original_message.answer(
             message=f"Проблема у пользователя "
             f"@id{original_message.from_id}({user.first_name + ' ' + user.last_name})."
-            f" Вот что пишет:\n{original_message.text}",
+            f" Вот что пишет:\n\n{original_message.text}",
             user_id=admin_id,
         )
