@@ -29,6 +29,9 @@ async def report_problem_start(message: Message):
 @bl.labeler.message(state=ReportingStates.IS_WRITING)
 async def report_problem_finish(message: Message, **kwargs):
     user_id = message.from_id
+    # NOTE: если один из админов запретил сообщения, то падает с ошибкой и не сбрасывает состояния
+    # TODO: напиши тесты на это
+    await bl.state_dispenser.set(user_id, ReportingStates.DEFAULT)
     if message.text == CancelAction.button_name:
         await message.answer(
             message="Хорошо, возвращаю в начало",
