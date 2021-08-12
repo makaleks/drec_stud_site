@@ -52,9 +52,10 @@ async def report_problem_finish(message: Message, **kwargs):
 
 async def report_to_admin(original_message: Message):
     user = await original_message.get_user()
-    await original_message.answer(
-        message=f"Проблема у пользователя "
-        f"@id{original_message.from_id}({user.first_name + ' ' + user.last_name})."
-        f" Вот что пишет:\n{original_message.text}",
-        user_id=TECHNICAL_ADMIN_ID,
-    )
+    for admin_id in ADMIN_HARDCODED_LIST:
+        await original_message.answer(
+            message=f"Проблема у пользователя "
+            f"@id{original_message.from_id}({user.first_name + ' ' + user.last_name})."
+            f" Вот что пишет:\n{original_message.text}",
+            user_id=admin_id,
+        )
