@@ -15,6 +15,7 @@ bl.labeler.auto_rules = [rules.PeerRule(from_chat=False)]
 @bl.labeler.message(
     text=ReportProblemStart.raw_message_name, state=ReportingStates.DEFAULT
 )
+@bl.labeler.message(payload={"cmd": ReportProblemStart.key})
 async def report_problem_start(message: Message):
     await bl.state_dispenser.set(message.peer_id, ReportingStates.IS_WRITING)
     await message.answer(
@@ -43,7 +44,6 @@ async def report_problem_finish(message: Message, **kwargs):
         )
         await report_to_admin(original_message=message)
 
-    await bl.state_dispenser.set(user_id, ReportingStates.DEFAULT)
     print(bl.state_dispenser)
 
 

@@ -30,6 +30,12 @@ def build_keyboard(is_admin: bool = False):
             Text(command.button_name, payload={"cmd": command.key}),
             color=KeyboardButtonColor.SECONDARY,
         )
+    # TODO: тест на клавиатуру
+    keyboard.row()
+    keyboard.add(
+        Text(ReportProblemStart.button_name, payload={"cmd": ReportProblemStart.key}),
+        color=KeyboardButtonColor.PRIMARY,
+    )
     return keyboard
 
 
