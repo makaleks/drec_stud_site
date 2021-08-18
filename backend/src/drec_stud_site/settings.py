@@ -70,7 +70,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -179,6 +179,7 @@ module = util.module_from_spec(spec)
 spec.loader.exec_module(module)
 SOCIAL_AUTH_VK_OAUTH2_KEY = module.SOCIAL_AUTH_VK_OAUTH2_KEY
 SOCIAL_AUTH_VK_OAUTH2_SECRET = module.SOCIAL_AUTH_VK_OAUTH2_SECRET
+REGISTRATION_TOKEN = module.REGISTRATION_TOKEN
 SOCIAL_AUTH_VK_OAUTH2_EXTRA_DATA = ['photo_100']
 SERVICE_KEY_VK = module.SERVICE_KEY_VK
 

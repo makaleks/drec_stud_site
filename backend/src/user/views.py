@@ -1,7 +1,11 @@
+import json
+
 from django.contrib.auth.views import LoginView
+from django.contrib.auth import get_user_model
 from django.shortcuts import render
 from django.conf import settings
-from django.http import Http404, HttpResponseRedirect
+from django.db import transaction
+from django.http import Http404, HttpResponseRedirect, HttpResponse
 
 from django.views.generic import TemplateView
 
@@ -82,3 +86,25 @@ def long_logout(request):
         'logout_text': logout_text
     })
 
+
+def register_user(request):
+    def response(status, error):
+        return HttpResponse(json.dumps({"status": status, "error": error}))
+
+    data = json.loads(request.body)
+    if data.get('token') != settings.REGISTRATION_TOKEN:
+        return response("fail", "token is incorrect")
+    User = get_user_model()
+    required_keys = {'first_name', 'last_name', 'group_number', 'room_number', 'account_id'}
+    parsed_data = {k: v for k, v in data.items() if k in required_keys}
+    missing = required_keys - set(parsed_data.keys())
+    if missing:
+        return response("fail", f"keys missing: {missing}")
+    # NOTE: no values validation
+    user = User(**parsed_data)
+    try:
+        with transaction.atomic():
+            user.save(no_clean=True)
+    except Exception as e:
+        return response("fail", str(e))
+    return response("ok", None)
