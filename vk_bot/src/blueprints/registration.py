@@ -37,13 +37,13 @@ async def process_group_entry(message: Message, **kwargs):
     if message.text == GoBackwards.button_name:
         await bl.state_dispenser.set(user_id, RegistrationStates.DEFAULT)
         await message.answer(
-            message="Хорошо, возвращаю назад",
+            message="Хорошо, возвращаю в начало",
             keyboard=build_keyboard(is_admin=is_admin(user_id)),
         )
     else:
         await bl.state_dispenser.set(user_id, RegistrationStates.WRITING_ROOM_NUMBER)
         await message.answer(
-            message="Хорошо, принял. Какой у тебя номер комнаты?",
+            message="Какой у тебя номер комнаты?",
             keyboard=build_backwards_keyboard(),
         )
     print(bl.state_dispenser)
@@ -55,7 +55,11 @@ async def process_room_entry(message: Message, **kwargs):
     if message.text == GoBackwards.button_name:
         await bl.state_dispenser.set(user_id, RegistrationStates.WRITING_GROUP_NUMBER)
         await message.answer(
-            message="Хорошо, возвращаю назад",
+            message="Хорошо, возвращаю назад.",
+            keyboard=build_backwards_keyboard(),
+        )
+        await message.answer(
+            message="Напиши номер своей группы. Пример: М05-002а, Б04-123, 734",
             keyboard=build_backwards_keyboard(),
         )
     else:
@@ -81,6 +85,10 @@ async def registration_finish(message: Message, **kwargs):
         await bl.state_dispenser.set(user_id, RegistrationStates.WRITING_ROOM_NUMBER)
         await message.answer(
             message="Хорошо, возвращаю назад",
+            keyboard=build_backwards_keyboard(),
+        )
+        await message.answer(
+            message="Какой у тебя номер комнаты?",
             keyboard=build_backwards_keyboard(),
         )
     else:
