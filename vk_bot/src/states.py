@@ -30,8 +30,10 @@ class DatabaseState(ABCStateDispenser):
         )
 
     async def set(self, peer_id: int, state: BaseStateGroup, **payload):
+        new_payload = (await self.get(peer_id)).payload
+        new_payload.update(payload)
         self.dictionary[peer_id] = StatePeer(
-            peer_id=peer_id, state=state, payload=payload
+            peer_id=peer_id, state=state, payload=new_payload
         )
 
     async def delete(self, peer_id: int):
