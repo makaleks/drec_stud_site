@@ -101,6 +101,17 @@ def register_user(request):
     if missing:
         return response("fail", f"keys missing: {missing}")
     # NOTE: no values validation
+    from utils.validators import is_valid_name, is_valid_email, is_valid_group, is_valid_group, is_valid_phone
+    # Валидация
+    # NOTE: если поменяете формат у валидаторов, поменяйте и здесь
+    if is_valid_name(parsed_data['last_name']) is False:
+        return response("fail", 'Неверный формат фамилии')
+    if is_valid_name(parsed_data['first_name']) is False:
+        return response("fail", 'Неверный формат имени')
+    # Format of group
+    if is_valid_group(parsed_data['group_number']) is False:
+        return response("fail", 'Неверный формат группы')
+    #######
     user = User(**parsed_data)
     try:
         with transaction.atomic():
