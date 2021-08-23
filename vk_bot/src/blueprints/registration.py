@@ -34,6 +34,7 @@ async def start_registration(message: Message):
 @bl.labeler.message(state=RegistrationStates.WRITING_GROUP_NUMBER)
 async def process_group_entry(message: Message, **kwargs):
     user_id = message.from_id
+    group_number = message.text
     if message.text == GoBackwards.button_name:
         await bl.state_dispenser.set(user_id, RegistrationStates.DEFAULT)
         await message.answer(
@@ -41,7 +42,11 @@ async def process_group_entry(message: Message, **kwargs):
             keyboard=build_keyboard(is_admin=is_admin(user_id)),
         )
     else:
-        await bl.state_dispenser.set(user_id, RegistrationStates.WRITING_ROOM_NUMBER)
+        await bl.state_dispenser.set(
+            user_id,
+            RegistrationStates.WRITING_ROOM_NUMBER,
+            group_number=group_number,
+        )
         await message.answer(
             message="Какой у тебя номер комнаты?",
             keyboard=build_backwards_keyboard(),
@@ -52,6 +57,7 @@ async def process_group_entry(message: Message, **kwargs):
 @bl.labeler.message(state=RegistrationStates.WRITING_ROOM_NUMBER)
 async def process_room_entry(message: Message, **kwargs):
     user_id = message.from_id
+    room_number = message.text
     if message.text == GoBackwards.button_name:
         await bl.state_dispenser.set(user_id, RegistrationStates.WRITING_GROUP_NUMBER)
         await message.answer(
@@ -64,7 +70,13 @@ async def process_room_entry(message: Message, **kwargs):
         )
     else:
         await bl.state_dispenser.set(user_id, RegistrationStates.APPROVING_INPUT)
-        name, surname, group, room_number = "Ололош", "Ололошев", "321", "123-1"
+        user = await message.get_user()
+        name, surname, group, room_number = (
+            user.first_name,
+            user.last_name,
+            message.state_peer.payload["group_number"],
+            room_number,
+        )
         await message.answer(
             message="Итак, вот данные для регистрации. Имя и фамилию я взял из ВК."
             "\n\n"
