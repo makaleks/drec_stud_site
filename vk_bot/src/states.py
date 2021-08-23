@@ -9,6 +9,14 @@ class ReportingStates(BaseStateGroup):
     IS_WRITING = 1
 
 
+class RegistrationStates(BaseStateGroup):
+    # required_keys = {'first_name', 'last_name', 'group_number', 'room_number', 'account_id'}
+    DEFAULT = 0
+    WRITING_GROUP_NUMBER = 10
+    WRITING_ROOM_NUMBER = 11
+    APPROVING_INPUT = 12
+
+
 class DatabaseState(ABCStateDispenser):
     def __init__(self):
         super().__init__()

@@ -63,6 +63,27 @@ class CancelAction(CommandBase):
     description = "Отменить действие"
 
 
+class GoBackwards(CommandBase):
+    key = "backwards"
+    raw_message_name = "назад"
+    button_name = "Назад"
+    description = "К предыдущему выбору"
+
+
+class RegistrationStart(CommandBase):
+    key = "register_user"
+    raw_message_name = "зарегистрироваться"
+    button_name = "Я новый пользователь"
+    description = "Регистрация на сайте через ВК"
+
+
+class RegistrationDataCorrect(CommandBase):
+    key = "registration_data_correct"
+    raw_message_name = "данные_верны"
+    button_name = "Да, все верно"
+    description = "Подтвердить правильность данных регистрации"
+
+
 regular_commands = [
     AdminOpenLock5,
     AdminOpenLock6,
