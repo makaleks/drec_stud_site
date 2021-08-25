@@ -150,18 +150,29 @@ async def registration_finish(message: Message, **kwargs):
                     )
                     resp_json = json.loads(resp_text)
                     if resp_json.get("status") != "ok":
-                        error = resp_text
+                        error = resp_json
                 except Exception as e:
                     error = e
                 if error is not None:
-                    logger.error(
-                        f"{message.from_id}: failed to register with error: {error}"
-                    )
-                    await message.answer(
-                        message=f"Что-то пошло не так, вот ошибка {error}\n\n"
-                        f"Попробуй переслать это сообщение @id{TECHNICAL_ADMIN_ID}",
-                        keyboard=build_keyboard(is_admin(user_id)),
-                    )
+                    if isinstance(error, dict) and error.get("status") == "fail":
+                        logger.info(f"{message.from_id}: user input problem: {error}")
+                        await message.answer(
+                            message=f"Кажется, ошибка в вводе данных: {error.get('error')}\n\n"
+                            f"Проверь данные и попробуй зарегистрироваться еще раз. "
+                            f"Если совсем ничего не получается, пиши @id{TECHNICAL_ADMIN_ID}",
+                            keyboard=build_keyboard(is_admin=is_admin(user_id)),
+                        )
+
+                    else:
+                        logger.error(
+                            f"{message.from_id}: failed to register with error: {error}"
+                        )
+                        await message.answer(
+                            message=f"Что-то пошло не так, и я не понимаю, как это случилось. "
+                            f"Не ругайся, я только учусь!\n\n"
+                            f"Напиши @id{TECHNICAL_ADMIN_ID} об этом",
+                            keyboard=build_keyboard(is_admin(user_id)),
+                        )
                 else:
                     logger.info(f"{message.from_id}: successfully registered")
                     await message.answer(
