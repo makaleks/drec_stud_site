@@ -28,6 +28,7 @@ async def start_registration(message: Message):
     await bl.state_dispenser.set(
         message.peer_id, RegistrationStates.WRITING_GROUP_NUMBER
     )
+    logger.info(f"{message.from_id}: entering group number")
     await message.answer(
         message="Напиши номер своей группы. Пример: М05-002а, Б04-123, 734",
         keyboard=build_backwards_keyboard(),
@@ -41,6 +42,7 @@ async def process_group_entry(message: Message, **kwargs):
     group_number = message.text
     if message.text == GoBackwards.button_name:
         await bl.state_dispenser.set(user_id, RegistrationStates.DEFAULT)
+        logger.info(f"{message.from_id}: back to default state")
         await message.answer(
             message="Хорошо, возвращаю в начало",
             keyboard=build_keyboard(is_admin=is_admin(user_id)),
@@ -51,6 +53,7 @@ async def process_group_entry(message: Message, **kwargs):
             RegistrationStates.WRITING_ROOM_NUMBER,
             group_number=group_number,
         )
+        logger.info(f"{message.from_id}: entering room number")
         await message.answer(
             message="Какой у тебя номер комнаты?",
             keyboard=build_backwards_keyboard(),
@@ -64,18 +67,20 @@ async def process_room_entry(message: Message, **kwargs):
     room_number = message.text
     if message.text == GoBackwards.button_name:
         await bl.state_dispenser.set(user_id, RegistrationStates.WRITING_GROUP_NUMBER)
+        logger.info(f"{message.from_id}: back to WRITING_GROUP_NUMBER")
         await message.answer(
             message="Хорошо, возвращаю назад.",
             keyboard=build_backwards_keyboard(),
         )
         await message.answer(
-            message="Напиши номер своей группы. Пример: М05-002а, Б04-123, 734",
+            message="Напиши номер своей группы. Пример: М04-002а, Б04-123, 734",
             keyboard=build_backwards_keyboard(),
         )
     else:
         await bl.state_dispenser.set(
             user_id, RegistrationStates.APPROVING_INPUT, room_number=room_number
         )
+        logger.info(f"{message.from_id}: approving input")
         user = await message.get_user()
         name, surname, group, room_number = (
             user.first_name,
@@ -101,6 +106,7 @@ async def registration_finish(message: Message, **kwargs):
     user_id = message.from_id
     if message.text == GoBackwards.button_name:
         await bl.state_dispenser.set(user_id, RegistrationStates.WRITING_ROOM_NUMBER)
+        logger.info(f"{message.from_id}: back to WRITING_ROOM_NUMBER")
         await message.answer(
             message="Хорошо, возвращаю назад",
             keyboard=build_backwards_keyboard(),
@@ -112,6 +118,9 @@ async def registration_finish(message: Message, **kwargs):
     else:
         await bl.state_dispenser.set(user_id, RegistrationStates.DEFAULT)
         # Get info
+        logger.info(
+            f"{message.from_id}: getting user data before finishing registration"
+        )
         user = await message.get_user()
         name, surname, group, room_number = (
             user.first_name,
@@ -120,6 +129,7 @@ async def registration_finish(message: Message, **kwargs):
             message.state_peer.payload["room_number"],
         )
         # Send registration request to the website
+        logger.info(f"{message.from_id}: sending registration request to backend")
         async with aiohttp.ClientSession() as session:
             async with session.post(
                 f'{os.environ["STIRKA_SITE"]}/user/register',
@@ -135,7 +145,7 @@ async def registration_finish(message: Message, **kwargs):
                 error = None
                 try:
                     resp_text = await response.text()
-                    logger.debug(
+                    logger.info(
                         f"got response status {response.status} and text: {resp_text}"
                     )
                     resp_json = json.loads(resp_text)
@@ -144,12 +154,16 @@ async def registration_finish(message: Message, **kwargs):
                 except Exception as e:
                     error = e
                 if error is not None:
+                    logger.error(
+                        f"{message.from_id}: failed to register with error: {error}"
+                    )
                     await message.answer(
                         message=f"Что-то пошло не так, вот ошибка {error}\n\n"
                         f"Попробуй переслать это сообщение @id{TECHNICAL_ADMIN_ID}",
                         keyboard=build_keyboard(is_admin(user_id)),
                     )
                 else:
+                    logger.info(f"{message.from_id}: successfully registered")
                     await message.answer(
                         message="Зарегистрировал тебя в стиралку. "
                         'Теперь можно зайти в https://8ka.mipt.ru и нажать кнопку "Войти через ВК".',
