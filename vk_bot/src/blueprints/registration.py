@@ -20,11 +20,23 @@ bl = BotBlueprint()
 bl.labeler.auto_rules = [rules.PeerRule(from_chat=False)]
 
 
+async def is_registered(user_id: int) -> bool:
+    return False
+
+
 @bl.labeler.message(
     text=RegistrationStart.raw_message_name, state=RegistrationStates.DEFAULT
 )
 @bl.labeler.message(payload={"cmd": RegistrationStart.key})
 async def start_registration(message: Message):
+    user_id = message.from_id
+    if await is_registered(user_id):
+        logger.info(f"{message.from_id}: user is already registered, rejecting")
+        await message.answer(
+            message="Насколько я вижу, ты уже зарегистрирован в стиралке. Возврат в начало",
+            keyboard=build_keyboard(is_admin=is_admin(user_id)),
+        )
+        return True
     await bl.state_dispenser.set(
         message.peer_id, RegistrationStates.WRITING_GROUP_NUMBER
     )
