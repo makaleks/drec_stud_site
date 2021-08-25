@@ -1,3 +1,4 @@
+import json
 import os
 
 import aiohttp
@@ -134,8 +135,11 @@ async def registration_finish(message: Message, **kwargs):
                 error = None
                 try:
                     resp_text = await response.text()
-                    print(resp_text)
-                    if response.status != 400:
+                    logger.debug(
+                        f"got response status {response.status} and text: {resp_text}"
+                    )
+                    resp_json = json.loads(resp_text)
+                    if resp_json.get("status") != "ok":
                         error = resp_text
                 except Exception as e:
                     error = e
