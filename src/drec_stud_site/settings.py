@@ -262,7 +262,10 @@ USE_X_FORWARDED_HOST = True
 # See version history to update the following setting:
 # https://vk.com/dev/versions
 # Also be ready to update static/web_copy/vk_openapi/openapi-X.js
-VK_API_VERSION = '5.122'
+VK_API_VERSION = '5.131'
+
+# The default value at python-social-auth/social_core/backends/vk.py is outdated
+SOCIAL_AUTH_VK_OAUTH2_API_VERSION = VK_API_VERSION
 
 FILE_UPLOAD_PERMISSIONS = 0o644
 
