@@ -11,7 +11,7 @@ psycopg2==2.7.3.2
 social-auth-app-django==2.1.0
 
 # Image library
-Pillow==4.2.1
+Pillow==9.0.1
 
 # Deletes from /media when object deleted (not done by default)
 django-cleanup==1.0.1
