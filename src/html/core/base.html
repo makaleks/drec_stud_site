@@ -32,6 +32,14 @@
 
     </head>
     <body>
+        {# Django does not support logout vie GET since 5.0 (deprecated in 4) #}
+        {# so here is a form-based hack I looked in google ai answer #}
+        <form id='logoutHackPostForm' action='{% url 'logout' %}?next={{ next_return }}' method='post' style="display: none;">
+            {% csrf_token %}
+            <!-- Add hidden input fields if you need to pass data -->
+            {#<input type="hidden" name="key" value="value">#}
+        </form>
+
         <input type='checkbox' class='hidden' id='showside'>
         <script type='text/javascript'>
           var $buoop = {
@@ -162,7 +170,8 @@
                             {% else %}
                                 <img src='{{ STATIC_URL }}img/vk.svg'>
                             {% endif %}
-                            <a href='{% url 'logout' %}?next={{ next_return }}' class='btn btn-vk'>
+			    {#<a href='{% url 'logout' %}?next={{ next_return }}' class='btn btn-vk'>#}
+                            <a href='#' onclick='document.getElementById("logoutHackPostForm").submit();return false;' class='btn btn-vk'>
                                 <span>Привет, {{ user.get_short_name }}</span>
                             </a>
                         {% else %}
@@ -240,7 +249,8 @@
                             {% endif %}
                             <section>
                                 <p>Привет, {{ user.get_short_name }}</p>
-                                <a href='{% url 'logout' %}?next={{ next_return }}' class='btn btn-vk'>Выйти</a>
+				{#<a href='{% url 'logout' %}?next={{ next_return }}' class='btn btn-vk'>Выйти</a>#}
+                                <a href='#' onclick='document.getElementById("logoutHackPostForm").submit();return false;' class='btn btn-vk'>Выйти</a>
                                 <label for='modal_refill_check'>
                                     <a class='m-btn m-dark'>
                                         <span>На счету: {{ user.account|urlencode }}руб.</span>

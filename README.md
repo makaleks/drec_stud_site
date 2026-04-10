@@ -99,7 +99,37 @@ http {
 > `sudo apt-get purge nginx nginx-common nginx-full`  
 > `sudo apt-get install nginx`  
 > We strongly recommend to use HTTPS-connections!
-5. Don`t forget to run Nginx and PostgreSQL (PostgreSQL is recommended to be newer). You may also want to enable them (run on starup), also before its first start Postgres requires [installation](https://wiki.archlinux.org/index.php/PostgreSQL#Installing_PostgreSQL):
+5. Allow site user to connect to Postgres locally. For example, add the
+   following to your `/etc/postgresql/YOUR_VERSION/main/pg_gba.conf`:
+   ```
+   # TYPE  DATABASE        USER            ADDRESS                 METHOD
+   
+   # "local" is for Unix domain socket connections only
+   local   drec_stud_site  drec_stud_site_admin                    trust
+   host    drec_stud_site  drec_stud_site_admin 127.0.0.1/32       trust
+   ```
+6. If you have local firewall, allow external http-connections.
+   For example, Ubuntu 24.04 (2024, LTS), requires the following commands:
+   ```sh
+   sudo ufw status
+   sudo ufw allow http
+   sudo ufw status
+   ```
+   You may also need some distro-specific commands. For the same Ubuntu 24.04
+   in 2026 the following commands were useful
+   ```
+   sudo apt install unzip
+   
+   sudo systemctl daemon-reload
+   
+   # Allow nginx enter subdirectories of directory,
+   # so collected_static is reachable
+   sudo chmod o+rx /home/mipt-user/
+   
+   # check the syntax
+   sudo systemd-analyze verify ../gunicorn-background.service 
+   ```
+7. Don`t forget to run Nginx and PostgreSQL (PostgreSQL is recommended to be newer). You may also want to enable them (run on starup), also before its first start Postgres requires [installation](https://wiki.archlinux.org/index.php/PostgreSQL#Installing_PostgreSQL):
 ```bash
 sudo systemctl start nginx
 sudo systemctl start postgresql
@@ -115,14 +145,14 @@ sudo service postgresql restart
 sudo chkconfig nginx on
 sudo chkconfig postgresql on
 ```
-6. Enter pgsql shell and set up PostgreSQL database for site (note: Django expects UTF-8)
+8. Enter pgsql shell and set up PostgreSQL database for site (note: Django expects UTF-8)
 ```sql
 CREATE DATABASE drec_stud_site;
 CREATE USER drec_stud_site_admin;
 GRANT ALL PRIVILEGES ON DATABASE drec_stud_site TO drec_stud_site_admin;
 ALTER DATABASE drec_stud_site OWNER TO drec_stud_site_admin;
 ```
-7. Migrate all your models (don`t forget moving to src/):
+9. Migrate all your models (don`t forget moving to src/):
 ```bash
 cd src/
 ./manage.py makemigrations
@@ -141,16 +171,16 @@ cd src/
 >
 > If you got errors during 'migrate', try detecting Django apps separately:  
 > `manage.py makemigrations user`  
-8. (Optional) If you have a *.zip* of backup and wish to insert some data for demonstration, run:
+10. (Optional) If you have a *.zip* of backup and wish to insert some data for demonstration, run:
 ```bash
 ./postgresql_helper.py -r *yourfile.zip*
 ```
 > run with --help argument to show all arguments  
-9. Don`t forget to collect static files from all applications:
+11. Don`t forget to collect static files from all applications:
 ```bash
 ./manage.py collectstatic
 ```
-10. Create a Django superuser (password is required only for superusers):
+12. Create a Django superuser (password is required only for superusers):
 ``` bash
 ./manage.py shell
 from user.managers import UserManager
@@ -162,13 +192,13 @@ m.create_superuser('Lastname', 'Firstname', 'Patronymicname', *drec group number
 > Make sure your strings a valid (see `get\_all\_errors()` in `src/user/models.py`)
 > We don\`t use any passwords, so simple way doesn\`t work:  
 > "manage.py createsuperuser"  
-11. Start gunicorn to run Gunicorn server:
+13. Start gunicorn to run Gunicorn server:
 ```bash
 gunicorn --reload -b localhost:8080 -w 4 --pythonpath src drec_stud_site.wsgi:application
 ```
 In addition, a simple `gunicorn-background.service` provided to run the server via systemd. If you have SystemV init system, see `gunicorn-background`. These files need to be placed in appropriate directories of /etc/ and edited for your paths.  
 Now, you can view [the site](localhost) at localhost and play with models in [admin panel](localhost/admin) at localhost/admin after login. Moreover, you are able to access static files in `collected static` and `media` using links `localhost/static/FILENAME` and `localhost/media/FILENAME`. Good luck!
-12. (Optional) If you have some styles to apply, add configs and build styles.  
+14. (Optional) If you have some styles to apply, add configs and build styles.  
 The config example layout:
 ```
 config/

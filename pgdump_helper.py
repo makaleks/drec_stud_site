@@ -32,14 +32,16 @@ def main(argv):
                 args.file = l[0]
         pswd = getpass.getpass(prompt = 'Enter \'postgres\' password: ')
         if pswd:
-            pswd = '-p {0}'.format(pswd)
+            #pswd = '-p {0}'.format(pswd)
+            pswd = 'PGPASSWORD="{0}"'.format(pswd)
         try:
-            os.system('dropdb -U postgres {0} drec_stud_site'.format(pswd))
+            os.system('{0} dropdb -U postgres drec_stud_site'.format(pswd))
         except:
             pass
-        command_str = 'createdb -U postgres {0} -T template0 drec_stud_site\n'.format(pswd)
-        command_str += 'psql -U postgres {0} -d drec_stud_site < {1}\n'.format(pswd, args.file)
-        command_str += 'psql -U postgres {0} -d drec_stud_site -c "GRANT ALL PRIVILEGES ON DATABASE drec_stud_site TO drec_stud_site_admin"'.format(pswd)
+        command_str = '{0} createdb -U postgres -T template0 drec_stud_site\n'.format(pswd)
+        command_str += '{0} psql -U postgres -d drec_stud_site < {1}\n'.format(pswd, args.file)
+        command_str += '{0} psql -U postgres -d drec_stud_site -c "GRANT ALL PRIVILEGES ON DATABASE drec_stud_site TO drec_stud_site_admin"\n'.format(pswd)
+        command_str += '{0} psql -U postgres -d drec_stud_site -c "ALTER DATABASE drec_stud_site OWNER TO drec_stud_site_admin;"\n'.format(pswd)
     else:
         command_str = 'pg_dump -U drec_stud_site_admin drec_stud_site > {0}'.format(args.file)
         
