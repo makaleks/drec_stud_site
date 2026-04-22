@@ -80,7 +80,7 @@ class UserAdmin(BaseUserAdmin, VersionAdmin):
     history_latest_first = True
     form = UserChangeForm
     add_form = UserCreationForm
-    list_display = ('last_name', 'first_name', 'patronymic_name', 'group_number', 'is_staff')
+    list_display = ('id', 'last_name', 'first_name', 'patronymic_name', 'group_number', 'is_staff')
     list_filter = ('is_staff', 'groups', 'group_number')
     fieldsets = (
         # Uncomment to enable #passwordAuth
@@ -108,7 +108,7 @@ class UserAdmin(BaseUserAdmin, VersionAdmin):
         ),
     )
     add_form_template = 'admin/user/user/change_form.html'
-    search_fields = ('last_name', 'group_number', 'phone_number', 'account_id', 'first_name', 'patronymic_name', 'email',)
+    search_fields = ('id', 'last_name', 'group_number', 'phone_number', 'account_id', 'first_name', 'patronymic_name', 'email',)
     filter_horizontal = ()
     ordering = ['-is_superuser', '-is_staff', 'group_number', 'last_name', 'first_name', 'patronymic_name']
     change_list_template = 'admin/user/user/change_list.html'
